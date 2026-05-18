@@ -141,20 +141,14 @@ extension View {
 
 extension Shape {
     /// Draw dashed line for data gaps (#FF6F00 orange)
-    func gappedStroke(dashPhase: CGFloat = 0) -> some ShapeStyle {
-        let dashStyle = StrokeStyle(
+    func gappedStroke(dashPhase: CGFloat = 0) -> StrokeStyle {
+        StrokeStyle(
             lineWidth: 2.0,
             lineCap: .round,
             lineJoin: .round,
             dash: [5, 5],
             dashPhase: dashPhase
         )
-        return StrokeStyle(
-            lineWidth: 2.0,
-            lineCap: .round,
-            lineJoin: .round,
-            dash: [5, 5]
-        ) as! ShapeStyle
     }
 }
 

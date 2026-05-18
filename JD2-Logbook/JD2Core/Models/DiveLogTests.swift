@@ -80,8 +80,7 @@ struct DiveLogTests {
             location: "Old Site",
             maxDepth: 20.0,
             diveTimeSeconds: 1800,
-            waterTemperature: 15.0,
-            notes: ""
+            waterTemperature: 15.0
         )
 
         let oldUpdatedAt = dive.updatedAt

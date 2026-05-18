@@ -82,7 +82,7 @@ final class UDDFParserTests: XCTestCase {
 
     func testValidateContentZIPMagicBytes() {
         // ZIP 魔術位元組 PK\x03\x04
-        var bytes: [UInt8] = [0x50, 0x4B, 0x03, 0x04, 0x00, 0x00]
+        let bytes: [UInt8] = [0x50, 0x4B, 0x03, 0x04, 0x00, 0x00]
         let data = Data(bytes)
         XCTAssertTrue(parser.validateContent(data))
     }
@@ -131,8 +131,8 @@ final class UDDFParserTests: XCTestCase {
         XCTAssertEqual(log.diveTimeSeconds, 2730)
         XCTAssertEqual(log.waterTemperature, 28.0, accuracy: 0.01)
         XCTAssertEqual(log.sourceFormat, "UDDF")
-        XCTAssertEqual(log.latitude,  21.95,   accuracy: 0.0001)
-        XCTAssertEqual(log.longitude, 120.75,  accuracy: 0.0001)
+        XCTAssertEqual(log.latitude!,  21.95,   accuracy: 0.0001)
+        XCTAssertEqual(log.longitude!, 120.75,  accuracy: 0.0001)
         // Nitrox 32%
         XCTAssertTrue(log.gasMixJSON.contains("nitrox"), "應識別為 Nitrox")
         XCTAssertTrue(log.gasMixJSON.contains("0.32"),   "fO2 應為 0.32")
@@ -289,8 +289,8 @@ final class UDDFParserTests: XCTestCase {
         let logs = try UDDFParser.parseXMLData(xml.data(using: .utf8)!)
         XCTAssertEqual(logs.count, 1)
         XCTAssertEqual(logs[0].location, "Auto Site")
-        XCTAssertEqual(logs[0].latitude,  10.0,  accuracy: 0.0001)
-        XCTAssertEqual(logs[0].longitude, 110.0, accuracy: 0.0001)
+        XCTAssertEqual(logs[0].latitude!,  10.0,  accuracy: 0.0001)
+        XCTAssertEqual(logs[0].longitude!, 110.0, accuracy: 0.0001)
     }
 
     func testParseMissingTemperature_UsesDefault() throws {
@@ -477,7 +477,7 @@ final class UDDFParserTests: XCTestCase {
         // ── 日期 ──（UDDF 無時區 → 解析為 UTC）
         let calendar = Calendar(identifier: .gregorian)
         let utcTZ    = TimeZone(secondsFromGMT: 0)!
-        var components = calendar.dateComponents(in: utcTZ, from: log.dateTime)
+        let components = calendar.dateComponents(in: utcTZ, from: log.dateTime)
         XCTAssertEqual(components.year,   2014)
         XCTAssertEqual(components.month,  4)
         XCTAssertEqual(components.day,    2)

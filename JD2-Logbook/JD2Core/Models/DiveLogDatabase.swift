@@ -96,14 +96,13 @@ final class DiveLogDatabase {
 
     /// 取得特定地點的所有潛水日誌
     /// - Parameter location: 地點名稱
+    /// - Note: SwiftData #Predicate 不支援 localizedCaseInsensitiveContains，改為 fetch-then-filter
     func fetchDives(at location: String) throws -> [DiveLog] {
         let descriptor = FetchDescriptor<DiveLog>(
-            predicate: #Predicate { dive in
-                dive.location.localizedCaseInsensitiveContains(location)
-            },
             sortBy: [SortDescriptor(\.dateTime, order: .reverse)]
         )
-        return try context.fetch(descriptor)
+        let all = try context.fetch(descriptor)
+        return all.filter { $0.location.localizedCaseInsensitiveContains(location) }
     }
 
     /// 取得深度超過閾值的潛水日誌
@@ -150,22 +149,14 @@ final class DiveLogDatabase {
     }
 
     /// 導出所有潛水日誌為 JSON（用於備份）
+    /// - TODO: DiveLog 需要實作 Codable 後才能啟用（Week 9 備份功能）
     func exportAsJSON() throws -> Data {
-        let dives = try fetchAllDives()
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        return try encoder.encode(dives)
+        throw DiveLogImportError.unsupportedFormat("JSON 導出功能待實現（需要 Codable 支援）")
     }
 
     /// 導入潛水日誌從 JSON
+    /// - TODO: DiveLog 需要實作 Codable 後才能啟用（Week 9 備份功能）
     func importFromJSON(_ data: Data) throws {
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        let dives = try decoder.decode([DiveLog].self, from: data)
-
-        for dive in dives {
-            context.insert(dive)
-        }
-        try context.save()
+        throw DiveLogImportError.unsupportedFormat("JSON 導入功能待實現（需要 Codable 支援）")
     }
 }
