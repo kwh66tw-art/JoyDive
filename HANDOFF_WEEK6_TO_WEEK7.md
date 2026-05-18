@@ -165,16 +165,33 @@ private var repoRoot: String {
 
 ---
 
+## ✅ Audit 修補紀錄（2026-05-18，commit 待 push）
+
+以下 5 個 Critical 問題已在稽核後當天修補：
+
+| # | 問題 | 修補方式 |
+|---|------|---------|
+| A | SubsurfaceXMLParser `maxDepth > 0` | 改為 `>= 0`，snorkeling 記錄不再被丟棄 |
+| B | 三個 `makeGasMixJSON` 浮點插值不穩定 | 改用 `String(format: "%.4g", fO2)` |
+| C | SubsurfaceXMLParserTests vacuous test | 改為 `XCTAssertEqual(result.count, 0)` |
+| D | ImportCoordinator emoji（違反 CLAUDE.md） | 移除全部 emoji，改純文字 |
+| E | `recursive` 參數未實作 + 死掉的 typealias | 移除參數、移除 `ImportCompletionCallback` |
+
+---
+
 ## ⚠️ 已知技術債（Week 8 前需處理）
 
 | # | 問題 | 位置 | 嚴重度 | 計劃修復時間 |
 |---|------|------|--------|------------|
-| 1 | `deduplicateDives` 從未被 `importFile` 呼叫 — 批量匯入不去重 | ImportCoordinator.swift L96 vs L222 | 🟡 中 | Week 8 |
-| 2 | `recursive` 參數宣告但完全未實作 | ImportCoordinator.swift L155 | 🟡 中 | Week 8 |
-| 3 | `ImportCompletionCallback` typealias 宣告但從未使用 | ImportCoordinator.swift L12 | 🟢 低 | Week 9（UI 整合時） |
-| 4 | `importErrors` 警告從不回傳給呼叫者（UI 拿不到警告） | ImportCoordinator.swift L52 | 🟢 低 | Week 9（UI 整合時） |
-| 5 | N+1 save：每筆 dive 單獨 `context.save()` | ImportCoordinator.swift L99 | 🟢 低 | Week 8（性能測試時） |
-| 6 | 性能初測（100 檔案 < 10s）Week 6 未完成 | — | 🟢 低 | Week 8 一起補 |
+| 1 | `deduplicateDives` 從未被 `importFile` 呼叫 — 批量匯入不去重 | ImportCoordinator.swift | 🟡 中 | Week 8 |
+| 2 | `importMultipleFiles` progressCallback 計算錯誤（各檔案數量不同） | ImportCoordinator.swift L126-130 | 🟡 中 | Week 9 UI |
+| 3 | `importErrors` 警告從不回傳給呼叫者（UI 拿不到警告） | ImportCoordinator.swift | 🟢 低 | Week 9 UI |
+| 4 | N+1 save：每筆 dive 單獨 `context.save()` | ImportCoordinator.swift L99 | 🟢 低 | Week 8 性能測試 |
+| 5 | 性能初測（100 檔案 < 10s）Week 6 未完成 | — | 🟢 低 | Week 8 一起補 |
+| 6 | UDDF `<notes>` 多段 `<para>` 只保留最後一段 | DiveLogImporter.swift L1019 | 🟢 低 | Week 8 |
+| 7 | SubsurfaceCSVParser 二位數年份 `< 100 → +2000`，應為 `< 70 → +2000` | DiveLogImporter.swift L471 | 🟡 中 | Week 8 |
+| 8 | `sourceFormat` 命名風格不一致（UDDF vs subsurface vs csv vs suunto-json） | 四個解析器 | 🟡 中 | Week 9 統一 |
+| 9 | 無地點時 location 值不一致（"Unknown Location" vs ""） | UDDF/XML vs CSV/Suunto | 🟡 中 | Week 9 統一 |
 
 ---
 

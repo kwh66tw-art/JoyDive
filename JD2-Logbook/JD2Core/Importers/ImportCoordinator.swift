@@ -7,9 +7,8 @@
 
 import Foundation
 
-/// 匯入進度回調
+/// 匯入進度回調（已處理筆數, 總筆數）
 typealias ImportProgressCallback = (Int, Int) -> Void
-typealias ImportCompletionCallback = (Result<[DiveLog], Error>) -> Void
 
 /// 匯入結果統計
 struct ImportStatistics {
@@ -53,7 +52,9 @@ final class ImportCoordinator {
 
     // MARK: - 初始化
 
-    init(database: DiveLogDatabase = .shared) {
+    // NOTE: DiveLogDatabase.shared is @MainActor isolated; do not use as default
+    // parameter value in Swift 6 strict concurrency mode.
+    init(database: DiveLogDatabase) {
         self.database = database
     }
 
@@ -83,7 +84,7 @@ final class ImportCoordinator {
             throw DiveLogImportError.unsupportedFormat(filePath)
         }
 
-        print("📥 匯入: \(importer.format.displayName) (\(filePath))")
+        print("[Import] \(importer.format.displayName): \(filePath)")
 
         // Step 3: 解析檔案
         let dives = try importer.parse(from: filePath)
@@ -101,7 +102,7 @@ final class ImportCoordinator {
             progressCallback?(index + 1, validatedDives.count)
         }
 
-        print("✅ 成功匯入 \(validatedDives.count) 個潛水日誌")
+        print("[Import] done: \(validatedDives.count) dives imported")
         return validatedDives
     }
 
@@ -117,7 +118,7 @@ final class ImportCoordinator {
         let startTime = Date()
         var successCount = 0
         var failureCount = 0
-        var skippedCount = 0
+        let skippedCount = 0
         var allErrors: [String] = []
         var totalProcessed = 0
 
@@ -148,12 +149,11 @@ final class ImportCoordinator {
     /// 從目錄匯入所有支援格式的檔案
     /// - Parameters:
     ///   - directoryPath: 目錄路徑
-    ///   - recursive: 是否遞迴搜尋子資料夾
     ///   - progressCallback: 進度回調
     /// - Returns: 匯入統計
+    /// - Note: 目前只掃描第一層，不遞迴。Week 8 再實作遞迴版本。
     func importFromDirectory(
         _ directoryPath: String,
-        recursive: Bool = false,
         progressCallback: ImportProgressCallback? = nil
     ) async -> ImportStatistics {
         let fileManager = FileManager.default
@@ -163,7 +163,7 @@ final class ImportCoordinator {
             DiveLogFormat.allCases.flatMap { $0.supportedExtensions }
         )
 
-        // 掃描目錄
+        // 掃描第一層目錄（非遞迴）
         guard let contents = try? fileManager.contentsOfDirectory(atPath: directoryPath) else {
             return ImportStatistics(
                 successCount: 0,
@@ -194,37 +194,38 @@ final class ImportCoordinator {
         return dives.filter { dive in
             // 基本驗證
             guard dive.maxDepth >= 0 else {
-                importErrors.append("⚠️ 略過: 深度為負值 (\(dive.location))")
+                importErrors.append("[skip] negative depth (\(dive.location))")
                 return false
             }
 
             guard dive.diveTimeSeconds > 0 else {
-                importErrors.append("⚠️ 略過: 潛水時間為 0 (\(dive.location))")
+                importErrors.append("[skip] zero dive time (\(dive.location))")
                 return false
             }
 
             // 警告（但不略過）
             if dive.maxDepth > 40 {
-                importErrors.append("⚠️ 警告: 深度超過 40m (\(dive.location) - \(dive.maxDepth)m)")
+                importErrors.append("[warn] depth > 40m (\(dive.location) - \(dive.maxDepth)m)")
             }
 
             if dive.diveTimeSeconds > 14400 {  // 4 小時
-                importErrors.append("⚠️ 警告: 潛水時間超過 4 小時 (\(dive.location))")
+                importErrors.append("[warn] dive time > 4h (\(dive.location))")
             }
 
             return true
         }
     }
 
-    /// 檢測重複日誌（相同日期、地點、深度）
+    /// 檢測重複日誌（相同地點、深度，且時間差小於 60 秒）
     /// - Parameter dives: 候選日誌
     /// - Returns: 未重複的日誌
+    /// - Note: 使用精確時間差比對（< 60s），避免同一天兩次相同深度的潛水被誤判重複。
     func deduplicateDives(_ dives: [DiveLog]) async throws -> [DiveLog] {
         let existing = try database.fetchAllDives()
 
         return dives.filter { dive in
             !existing.contains { existing in
-                Calendar.current.isDate(existing.dateTime, inSameDayAs: dive.dateTime)
+                abs(existing.dateTime.timeIntervalSince(dive.dateTime)) < 60
                     && existing.location == dive.location
                     && existing.maxDepth == dive.maxDepth
             }
@@ -239,20 +240,20 @@ final class ImportCoordinator {
     func generateReport(_ statistics: ImportStatistics) -> String {
         var report = """
         ===============================
-        📊 匯入完成報告
+        匯入完成報告
         ===============================
-        ✅ 成功: \(statistics.successCount) 個日誌
-        ❌ 失敗: \(statistics.failureCount) 個日誌
-        ⏭️  略過: \(statistics.skippedCount) 個日誌
-        ─────────────────────────────
-        📈 成功率: \(String(format: "%.1f%%", statistics.successRate * 100))
-        ⏱️  耗時: \(String(format: "%.2f", statistics.elapsedTime)) 秒
+        成功: \(statistics.successCount) 個日誌
+        失敗: \(statistics.failureCount) 個日誌
+        略過: \(statistics.skippedCount) 個日誌
+        -------------------------------
+        成功率: \(String(format: "%.1f%%", statistics.successRate * 100))
+        耗時: \(String(format: "%.2f", statistics.elapsedTime)) 秒
         """
 
         if !statistics.errors.isEmpty {
-            report += "\n\n❌ 錯誤詳情:\n"
+            report += "\n\n錯誤詳情:\n"
             for error in statistics.errors.prefix(5) {
-                report += "  • \(error)\n"
+                report += "  - \(error)\n"
             }
             if statistics.errors.count > 5 {
                 report += "  ... 及其他 \(statistics.errors.count - 5) 個錯誤\n"

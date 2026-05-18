@@ -341,10 +341,13 @@ final class SubsurfaceXMLParserTests: XCTestCase {
         XCTAssertEqual(logs.count, 0, "缺少 date/time 的 dive 應被跳過")
     }
 
-    func testParseSkipsInvalidDive_ZeroDepth() throws {
+    func testParseAllowsZeroDepthDive() throws {
+        // maxDepth = 0 代表 snorkeling 或海面訓練，不應被解析器濾除
+        // 與 ImportCoordinator.validateDives (maxDepth >= 0) 行為一致
         let xml = minimalXML(maxDepth: "0.0 m")
         let logs = try SubsurfaceXMLParser.parseXMLData(xml.data(using: .utf8)!)
-        XCTAssertEqual(logs.count, 0, "深度為 0 的 dive 應被跳過")
+        XCTAssertEqual(logs.count, 1, "深度 0 的 dive（snorkeling）應被保留")
+        XCTAssertEqual(logs.first?.maxDepth, 0.0)
     }
 
     func testDefaultTemperature_WhenNoneProvided() throws {
@@ -515,12 +518,16 @@ final class SubsurfaceXMLParserTests: XCTestCase {
         }
     }
 
-    func testParseEmptyFile_ThrowsEmptyFileError() {
-        // importFile 層會拋 emptyFile；parseXMLData 層回傳空陣列
-        let result = try? SubsurfaceXMLParser.parseXMLData(Data())
-        // 空 Data 可能導致 parsingFailed，或回傳空陣列，兩者皆可接受
-        // 主要確保不 crash
-        XCTAssertNotNil(result ?? [])
+    func testParseEmptyFile_ThrowsParsingFailed() {
+        // 空 Data 傳入時，XMLParser 無法解析，拋出 parsingFailed
+        // emptyFile 錯誤由 ImportCoordinator.importFile 層負責，不是 parseXMLData 層
+        XCTAssertThrowsError(
+            try SubsurfaceXMLParser.parseXMLData(Data())
+        ) { error in
+            guard case DiveLogImportError.parsingFailed = error else {
+                XCTFail("應拋出 parsingFailed，實際得到 \(error)"); return
+            }
+        }
     }
 
     func testParseValidXMLNoDives_ReturnsEmpty() throws {

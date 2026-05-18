@@ -463,6 +463,8 @@ struct SubsurfaceCSVParser: DiveLogImporter {
     // MARK: - 日期時間解析
 
     /// 解析 `M/D/YY` 或 `M/D/YYYY` + `HH:MM`，回傳 UTC Date
+    /// NOTE: 僅支援 Subsurface 標準匯出格式（斜線分隔，月份在前）。
+    /// 不支援歐洲格式（DD.MM.YYYY）或 ISO 格式（YYYY-MM-DD）。
     static func parseDateTime(date: String, time: String) -> Date? {
         let dp = date.split(separator: "/").map(String.init)
         guard dp.count == 3,
@@ -483,13 +485,22 @@ struct SubsurfaceCSVParser: DiveLogImporter {
         return cal.date(from: comps)
     }
 
-    /// 解析 `MM:SS` 格式 → 秒數（Subsurface CSV duration 單位為分:秒）
+    /// 解析 `MM:SS` 或 `HH:MM:SS` 格式 → 秒數（Subsurface CSV duration）
     static func parseDurationMMSS(_ str: String) -> Int {
         let parts = str.split(separator: ":").map(String.init)
-        guard parts.count == 2,
-              let minutes = Int(parts[0]),
-              let seconds = Int(parts[1]) else { return 0 }
-        return minutes * 60 + seconds
+        switch parts.count {
+        case 2:  // MM:SS
+            guard let minutes = Int(parts[0]),
+                  let seconds = Int(parts[1]) else { return 0 }
+            return minutes * 60 + seconds
+        case 3:  // HH:MM:SS（超過 1 小時的潛水）
+            guard let hours   = Int(parts[0]),
+                  let minutes = Int(parts[1]),
+                  let seconds = Int(parts[2]) else { return 0 }
+            return hours * 3600 + minutes * 60 + seconds
+        default:
+            return 0
+        }
     }
 }
 
@@ -710,11 +721,12 @@ struct SuuntoJSONParser: DiveLogImporter {
     }
 
     /// fO2 → gasMixJSON（與其他解析器格式一致）
+    /// 使用 "%.4g" 格式化浮點數，確保跨平台輸出一致（避免 Swift 插值的不確定精度）
     private static func makeGasMixJSON(fO2: Double) -> String {
         if abs(fO2 - 0.21) < 0.005 {
             return "\"air\""
         }
-        return "{\"nitrox\":{\"fO2\":\(fO2)}}"
+        return "{\"nitrox\":{\"fO2\":\(String(format: "%.4g", fO2))}}"
     }
 }
 
@@ -1157,13 +1169,14 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
     ///   - air       → `"air"`
     ///   - nitrox    → `{"nitrox":{"fO2":0.32}}`
     ///   - trimix    → `{"trimix":{"fO2":0.16,"fHe":0.45}}`
+    /// 使用 "%.4g" 確保浮點數跨平台輸出一致
     private static func makeGasMixJSON(fO2: Double, fHe: Double) -> String {
         if fHe > 0.001 {
-            return "{\"trimix\":{\"fO2\":\(fO2),\"fHe\":\(fHe)}}"
+            return "{\"trimix\":{\"fO2\":\(String(format: "%.4g", fO2)),\"fHe\":\(String(format: "%.4g", fHe))}}"
         } else if abs(fO2 - 0.21) < 0.005 {
             return "\"air\""
         } else {
-            return "{\"nitrox\":{\"fO2\":\(fO2)}}"
+            return "{\"nitrox\":{\"fO2\":\(String(format: "%.4g", fO2))}}"
         }
     }
 }
@@ -1385,7 +1398,7 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
                   let durationSec = parseDuration(dive.durationStr),
                   durationSec > 0,
                   let maxDepth = dive.maxDepth,
-                  maxDepth > 0
+                  maxDepth >= 0
             else { return nil }
 
             // 溫度：dive 層級 > computer 層級 > 預設值
@@ -1454,9 +1467,10 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
         return parts[0] * 60 + parts[1]
     }
 
+    /// 使用 "%.4g" 確保浮點數跨平台輸出一致
     private static func buildGasMixJSON(fO2: Double) -> String {
         if abs(fO2 - 0.21) < 0.005 { return "\"air\"" }
-        return "{\"nitrox\":{\"fO2\":\(fO2)}}"
+        return "{\"nitrox\":{\"fO2\":\(String(format: "%.4g", fO2))}}"
     }
 }
 
