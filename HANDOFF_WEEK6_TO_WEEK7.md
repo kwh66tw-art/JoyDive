@@ -9,7 +9,7 @@
 **PM 累積投入**: ~36 小時（Week 1-6 估算）  
 **計畫剩餘**: Week 7–12（約 44 小時）  
 **編譯狀態**: ✅ Build Succeeded（Xcode，iPhone 16 模擬器）  
-**最新 Git commit**: `1e350f0` Week 6: ImportCoordinator fix + cross-format integration tests  
+**最新 Git commit**: `dc5b826` fix: W3-W6 dual audit fixes — parsers, tests, dedup, orphan files  
 **分支**: main
 
 ---
@@ -165,17 +165,29 @@ private var repoRoot: String {
 
 ---
 
-## ✅ Audit 修補紀錄（2026-05-18，commit 待 push）
+## ✅ Audit 修補紀錄（2026-05-18，commit dc5b826）
 
-以下 5 個 Critical 問題已在稽核後當天修補：
+### 內部稽核（W3-W6 Self-Audit）修補項目
 
 | # | 問題 | 修補方式 |
 |---|------|---------|
 | A | SubsurfaceXMLParser `maxDepth > 0` | 改為 `>= 0`，snorkeling 記錄不再被丟棄 |
 | B | 三個 `makeGasMixJSON` 浮點插值不穩定 | 改用 `String(format: "%.4g", fO2)` |
-| C | SubsurfaceXMLParserTests vacuous test | 改為 `XCTAssertEqual(result.count, 0)` |
-| D | ImportCoordinator emoji（違反 CLAUDE.md） | 移除全部 emoji，改純文字 |
-| E | `recursive` 參數未實作 + 死掉的 typealias | 移除參數、移除 `ImportCompletionCallback` |
+| C | SubsurfaceXMLParserTests vacuous test | 重寫為 `testParseAllowsZeroDepthDive`，驗證 count==1 且 depth==0.0 |
+| D | SubsurfaceXMLParserTests empty file test | 改為 `testParseEmptyFile_ThrowsParsingFailed`，正確 expect `parsingFailed` |
+| E | ImportCoordinator emoji（違反 CLAUDE.md） | validateDives 全部改為純文字 |
+| F | `recursive` 參數未實作 + 死掉的 typealias | 移除參數、移除 `ImportCompletionCallback` |
+| G | `init(database: .shared)` Swift 6 @MainActor 警告 | 移除 default value，改為必填參數 |
+| H | `var skippedCount = 0` 從不變動 | 改為 `let` |
+
+### 外部稽核（PARSERS_AUDIT_REPORT.md）修補項目
+
+| # | 問題 | 修補方式 |
+|---|------|---------|
+| I | 根目錄孤立草稿 `UDDFParser.swift` / `UDDFParserTests.swift` | 手動刪除（PM 執行），一併 commit |
+| J | `deduplicateDives` 以 `inSameDayAs` 比對過粗 | 改為 `abs(timeInterval) < 60`，避免同天兩次潛水誤刪 |
+| K | `parseDurationMMSS` 不支援 HH:MM:SS | 改為 switch/case 支援 2 段或 3 段格式 |
+| L | `parseDateTime` 格式限制未文件化 | 加 NOTE comment 說明僅支援 Subsurface 格式，不改邏輯 |
 
 ---
 
@@ -183,15 +195,15 @@ private var repoRoot: String {
 
 | # | 問題 | 位置 | 嚴重度 | 計劃修復時間 |
 |---|------|------|--------|------------|
-| 1 | `deduplicateDives` 從未被 `importFile` 呼叫 — 批量匯入不去重 | ImportCoordinator.swift | 🟡 中 | Week 8 |
-| 2 | `importMultipleFiles` progressCallback 計算錯誤（各檔案數量不同） | ImportCoordinator.swift L126-130 | 🟡 中 | Week 9 UI |
-| 3 | `importErrors` 警告從不回傳給呼叫者（UI 拿不到警告） | ImportCoordinator.swift | 🟢 低 | Week 9 UI |
-| 4 | N+1 save：每筆 dive 單獨 `context.save()` | ImportCoordinator.swift L99 | 🟢 低 | Week 8 性能測試 |
-| 5 | 性能初測（100 檔案 < 10s）Week 6 未完成 | — | 🟢 低 | Week 8 一起補 |
-| 6 | UDDF `<notes>` 多段 `<para>` 只保留最後一段 | DiveLogImporter.swift L1019 | 🟢 低 | Week 8 |
-| 7 | SubsurfaceCSVParser 二位數年份 `< 100 → +2000`，應為 `< 70 → +2000` | DiveLogImporter.swift L471 | 🟡 中 | Week 8 |
-| 8 | `sourceFormat` 命名風格不一致（UDDF vs subsurface vs csv vs suunto-json） | 四個解析器 | 🟡 中 | Week 9 統一 |
-| 9 | 無地點時 location 值不一致（"Unknown Location" vs ""） | UDDF/XML vs CSV/Suunto | 🟡 中 | Week 9 統一 |
+| 1 | `deduplicateDives` 從未被 `importFile` 呼叫 — 批量匯入不去重 | ImportCoordinator.swift | 中 | Week 8 |
+| 2 | `importMultipleFiles` progressCallback 計算錯誤（各檔案數量不同） | ImportCoordinator.swift L126-130 | 中 | Week 9 UI |
+| 3 | `importErrors` 警告從不回傳給呼叫者（UI 拿不到警告） | ImportCoordinator.swift | 低 | Week 9 UI |
+| 4 | N+1 save：每筆 dive 單獨 `context.save()` | ImportCoordinator.swift L99 | 低 | Week 8 性能測試 |
+| 5 | 性能初測（100 檔案 < 10s）Week 6 未完成 | — | 低 | Week 8 一起補 |
+| 6 | UDDF `<notes>` 多段 `<para>` 只保留最後一段 | DiveLogImporter.swift L1019 | 低 | Week 8 |
+| 7 | SubsurfaceCSVParser 二位數年份 `< 100 → +2000`，應為 `< 70 → +2000` | DiveLogImporter.swift L471 | 中 | Week 8 |
+| 8 | `sourceFormat` 命名風格不一致（UDDF vs subsurface vs csv vs suunto-json） | 四個解析器 | 中 | Week 9 統一 |
+| 9 | 無地點時 location 值不一致（"Unknown Location" vs ""） | UDDF/XML vs CSV/Suunto | 中 | Week 9 統一 |
 
 ---
 
@@ -256,6 +268,7 @@ struct GarminDescentParser: DiveLogImporter {
 ## 🔗 Git 提交歷史（Week 3–6）
 
 ```
+dc5b826  fix: W3-W6 dual audit fixes — parsers, tests, dedup, orphan files
 1e350f0  Week 6: ImportCoordinator fix + cross-format integration tests
 6bafd59  Week 6: SuuntoJSONParser — DeviceLog JSON，22 tests，3 個真實檔案驗證
 f2c3bbf  Fix: CSV parser CRLF grapheme cluster、empty data guard、date overflow test
@@ -307,7 +320,7 @@ JD2-Logbook 是 iOS/macOS 潛水日誌 app，支援多種潛水電腦格式匯�
 - SuuntoJSONParser（26 tests）
 - ImportCoordinator fix + 30 integration tests
 
-最新 commit：1e350f0（main branch）
+最新 commit：dc5b826（main branch）
 
 ### 關鍵技術細節
 
@@ -343,8 +356,7 @@ parse() 直接拋出 unsupportedFormat 錯誤。
 3. 評估 FIT vs API 路線，提出建議後開始實作
 
 ### 技術債備忘（Week 8 處理，本週勿動）
-- deduplicateDives 未接入 importFile 主流程
-- recursive 參數未實作
+- deduplicateDives 未接入 importFile 主流程（邏輯已修正，接入待 Week 8）
 - N+1 save 待批次優化
 - 性能初測（100 檔案 < 10s）待補
 
