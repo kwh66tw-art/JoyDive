@@ -3,7 +3,7 @@
 //
 // 潛水日誌匯入器協議 (Protocol)
 // 定義所有格式解析器的統一介面
-// 支援: UDDF, SHEARWATER, Peregrine, Cressi/Mares, Garmin, Suunto, Oceanic
+// 支援: UDDF, SHEARWATER, Peregrine, Subsurface CSV, Garmin, Suunto JSON, Oceanic
 
 import Foundation
 
@@ -54,7 +54,7 @@ enum DiveLogFormat: String, CaseIterable {
         case .peregrine:  return ["xml"]
         case .csv:        return ["csv"]
         case .garmin:     return ["fit"]
-        case .suunto:     return ["xml", "sde", "sdp"]
+        case .suunto:     return ["json"]
         case .oceanic:    return ["ocf", "xml"]
         }
     }
@@ -140,7 +140,7 @@ struct DiveLogImporterFactory {
         PeregrineParser(),
         SubsurfaceCSVParser(),
         GarminDescentParser(),
-        SuuntoParser(),
+        SuuntoJSONParser(),
         OceanicParser()
     ]
 
@@ -565,12 +565,156 @@ struct SubsurfaceXMLParser: DiveLogImporter {
     }
 }
 
-/// Suunto 解析器 (SDE binary + XML + SDP)
-struct SuuntoParser: DiveLogImporter {
+/// Suunto JSON 解析器 — Suunto app 匯出的 DeviceLog JSON 格式
+///
+/// 格式特徵：
+///   - 根鍵 "DeviceLog"，含 "Header" 子物件與 "Samples" 陣列
+///   - Header.DateTime：ISO 8601 含毫秒及時區偏移（如 2024-10-06T02:33:51.530+02:00）
+///   - Header.Duration：浮點秒數 → 四捨五入取整
+///   - Header.Depth.Max：最大深度（公尺）
+///   - Header.Diving.Gases[0].Oxygen：O2 分率（0.21≈Air, 0.32=Nitrox 32%）；缺失 → Air
+///   - Header.Notes：備註字串（可選）
+///   - Samples[].Temperature：水溫（Kelvin）；min - 273.15 = 最低水溫（°C）
+///
+/// 測試驗證：
+///   - suunto_eon_core_nitrox.json  (Nitrox 32%, Duration=3970s, MaxDepth=22.65m, Temp=29.10°C)
+///   - suunto_nautic_sidemount.json (Air, Duration=2011s, MaxDepth=21.24m, Temp=9.19°C, Notes)
+///   - suunto_ocean_air.json        (Air, Duration=3312s, MaxDepth=23.4m, Temp=28.96°C, Notes)
+// AI-generated (Claude)
+struct SuuntoJSONParser: DiveLogImporter {
+
     let format = DiveLogFormat.suunto
 
+    // MARK: - DiveLogImporter 協議
+
+    /// 格式偵測：.json 副檔名 + 內容前 256 bytes 含 "DeviceLog"
+    func canHandle(filePath: String) -> Bool {
+        let ext = (filePath as NSString).pathExtension.lowercased()
+        guard ext == "json" else { return false }
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath),
+                                   options: .mappedIfSafe) else { return false }
+        return validateContent(data)
+    }
+
+    /// 驗證：前 256 bytes 含 "DeviceLog" 字串
+    func validateContent(_ data: Data) -> Bool {
+        guard let head = String(data: data.prefix(256), encoding: .utf8) else { return false }
+        return head.contains("DeviceLog")
+    }
+
     func parse(from filePath: String) throws -> [DiveLog] {
-        throw DiveLogImportError.unsupportedFormat("Suunto 解析器待實現 (Week 7)")
+        guard FileManager.default.fileExists(atPath: filePath) else {
+            throw DiveLogImportError.fileNotFound(filePath)
+        }
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath),
+                                   options: .mappedIfSafe) else {
+            throw DiveLogImportError.corruptedData("無法讀取: \(filePath)")
+        }
+        guard !data.isEmpty else { throw DiveLogImportError.emptyFile }
+        return try SuuntoJSONParser.parseJSONData(data)
+    }
+
+    // MARK: - 靜態輔助（供單元測試直接呼叫）
+
+    /// 從 Data 解析一筆 Suunto DeviceLog 潛水記錄
+    static func parseJSONData(_ data: Data) throws -> [DiveLog] {
+        guard !data.isEmpty else {
+            throw DiveLogImportError.corruptedData("Suunto JSON 資料為空")
+        }
+        let json: Any
+        do {
+            json = try JSONSerialization.jsonObject(with: data)
+        } catch {
+            throw DiveLogImportError.parsingFailed("JSON 解析失敗", underlyingError: error)
+        }
+        guard let root      = json as? [String: Any],
+              let deviceLog = root["DeviceLog"] as? [String: Any],
+              let header    = deviceLog["Header"] as? [String: Any]
+        else {
+            throw DiveLogImportError.invalidFormat("缺少 DeviceLog.Header 結構")
+        }
+
+        // ── DateTime ─────────────────────────────────────────────
+        guard let dateTimeStr = header["DateTime"] as? String,
+              let dateTime    = SuuntoJSONParser.parseISO8601(dateTimeStr)
+        else {
+            throw DiveLogImportError.parsingFailed("無法解析 Header.DateTime")
+        }
+
+        // ── Duration（浮點或整數秒數 → Int）─────────────────────
+        guard let durationNum = header["Duration"] as? NSNumber else {
+            throw DiveLogImportError.parsingFailed("缺少 Header.Duration")
+        }
+        let durationSec = Int(durationNum.doubleValue.rounded())
+        guard durationSec > 0 else {
+            throw DiveLogImportError.parsingFailed("Header.Duration 無效（≤ 0）")
+        }
+
+        // ── Depth.Max（公尺）────────────────────────────────────
+        guard let depthDict = header["Depth"] as? [String: Any],
+              let depthNum  = depthDict["Max"] as? NSNumber
+        else {
+            throw DiveLogImportError.parsingFailed("缺少 Header.Depth.Max")
+        }
+        let maxDepth = depthNum.doubleValue
+
+        // ── 氣體（O2 分率；缺失 → 預設空氣）────────────────────
+        let fO2: Double
+        if let diving   = header["Diving"] as? [String: Any],
+           let gases    = diving["Gases"] as? [[String: Any]],
+           let firstGas = gases.first,
+           let oxyNum   = firstGas["Oxygen"] as? NSNumber {
+            fO2 = oxyNum.doubleValue
+        } else {
+            fO2 = 0.21
+        }
+        let gasMixJSON = SuuntoJSONParser.makeGasMixJSON(fO2: fO2)
+
+        // ── 水溫（Samples 最低溫 Kelvin → Celsius；缺失 → 20°C）─
+        var waterTemp = 20.0
+        if let samples = deviceLog["Samples"] as? [[String: Any]] {
+            let kelvins = samples.compactMap { ($0["Temperature"] as? NSNumber)?.doubleValue }
+            if let minK = kelvins.min() {
+                waterTemp = (minK - 273.15).rounded(toDecimalPlaces: 2)
+            }
+        }
+
+        // ── 建立 DiveLog ─────────────────────────────────────────
+        let dive = DiveLog(
+            dateTime:         dateTime,
+            location:         "",
+            maxDepth:         maxDepth,
+            diveTimeSeconds:  durationSec,
+            gasMixJSON:       gasMixJSON,
+            waterTemperature: waterTemp
+        )
+        dive.sourceFormat = "suunto-json"
+
+        if let notes = header["Notes"] as? String, !notes.isEmpty {
+            dive.notes = notes
+        }
+
+        return [dive]
+    }
+
+    // MARK: - 私有輔助
+
+    /// ISO 8601 解析（優先嘗試含毫秒格式，其次標準格式）
+    static func parseISO8601(_ str: String) -> Date? {
+        let fracFmt = ISO8601DateFormatter()
+        fracFmt.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let d = fracFmt.date(from: str) { return d }
+        let stdFmt = ISO8601DateFormatter()
+        stdFmt.formatOptions = [.withInternetDateTime]
+        return stdFmt.date(from: str)
+    }
+
+    /// fO2 → gasMixJSON（與其他解析器格式一致）
+    private static func makeGasMixJSON(fO2: Double) -> String {
+        if abs(fO2 - 0.21) < 0.005 {
+            return "\"air\""
+        }
+        return "{\"nitrox\":{\"fO2\":\(fO2)}}"
     }
 }
 
