@@ -320,10 +320,13 @@ struct SubsurfaceXMLParser: DiveLogImporter {
 
     // MARK: - DiveLogImporter 協議
 
-    /// 副檔名 + 內容雙重驗證，避免誤判其他 .xml 格式
+    /// 格式偵測：
+    ///   - .ssrf → Subsurface 專屬副檔名，直接接受
+    ///   - .xml  → 需讀取內容確認含 program='subsurface'，避免誤判其他 XML 格式
     func canHandle(filePath: String) -> Bool {
         let ext = (filePath as NSString).pathExtension.lowercased()
-        guard ext == "ssrf" || ext == "xml" else { return false }
+        if ext == "ssrf" { return true }
+        guard ext == "xml" else { return false }
         guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath),
                                    options: .mappedIfSafe) else { return false }
         return validateContent(data)

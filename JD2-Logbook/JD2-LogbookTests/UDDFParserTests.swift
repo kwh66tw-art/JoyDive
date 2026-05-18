@@ -534,7 +534,7 @@ final class UDDFParserTests: XCTestCase {
 
         // ── 日期 ──
         let utcTZ = TimeZone(secondsFromGMT: 0)!
-        var components = Calendar(identifier: .gregorian).dateComponents(in: utcTZ, from: log.dateTime)
+        let components = Calendar(identifier: .gregorian).dateComponents(in: utcTZ, from: log.dateTime)
         XCTAssertEqual(components.year,   2022)
         XCTAssertEqual(components.month,  4)
         XCTAssertEqual(components.day,    24)
