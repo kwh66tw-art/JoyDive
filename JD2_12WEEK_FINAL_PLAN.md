@@ -98,40 +98,48 @@ Week 12:    7 小時 (6h 基礎 + 1h WCAG 2.1 AA 審核)
 - 10 個 UDDF 測試檔案通過率 > 95% ✅
 - 單元測試覆蓋率 > 85% ✅
 
-#### Week 4（PM 6 小時）- SHEARWATER + Peregrine 解析器
+#### Week 4（PM 6 小時）- Subsurface XML 解析器 ✅ 已完成
 
-| 解析器 | PM 時數 | Claude Agent 執行 | 特點 |
-|--------|--------|-----------------|------|
-| **SHEARWATER** | 3h | 生成 SHEARWATERParser.swift + 5 個測試 | 成熟的 XML 格式 |
-| **Peregrine** | 3h | 生成 PeregrineParser.swift + 5 個測試 | 新格式 ppO2 支援 |
-| **小計** | **6h** | | **2 個解析器完成** |
+> **計劃調整（2026-05-18）**：原定 Shearwater + Peregrine 因無公開樣本檔案，改為 SubsurfaceXML。
+> SubsurfaceXML 透過 libdivecomputer 涵蓋 Suunto / Shearwater / Cressi / Mares / Garmin 等主流品牌匯出。
 
-#### Week 5（PM 6 小時）- Cressi/Mares CSV 解析器
+| 解析器 | 實際交付 | 測試數 | 樣本檔案 |
+|--------|---------|--------|---------|
+| **SubsurfaceXMLParser** | `DiveLogImporter.swift` | 42 XCTests ✅ | Suunto EON Core、Nautic、Ocean（3 個 .ssrf） |
+| **小計** | **✅ 完成** | | **累計解析器：UDDF + SubsurfaceXML = 2 種** |
+
+#### Week 5（PM 6 小時）- Subsurface CSV 解析器
+
+> **計劃調整（2026-05-18）**：原定 Cressi/Mares CSV 因無公開樣本，改為 Subsurface CSV 手動格式。
+> 使用 Subsurface 開源專案內 `test41.csv` 作為樣本（4 筆潛水，含多行 notes、引號轉義）。
 
 | 工作環節 | PM 時數 | Claude Agent 執行 | 交付物 |
 |--------|--------|-----------------|--------|
-| **CSV 格式分析** | 1h | 分析 CSV 結構、邊界情況 | 格式規格 |
-| **代碼生成** | 2h | 生成 CreassiMaResParser.swift | 可編譯的解析器 |
-| **單元測試** | 2h | 10+ 測試檔案 | 測試套件 |
-| **複雜情況驗證** | 1h | 缺失欄位、不同編碼測試 | 邊界情況報告 |
-| **小計** | **6h** | | **Cressi/Mares 解析器完成** |
+| **CSV 格式分析** | 1h | 分析 test41.csv 結構、RFC 4180 邊界情況 | 格式規格 |
+| **代碼生成** | 2h | 生成 SubsurfaceCSVParser（加入 DiveLogImporter.swift） | 可編譯的解析器 |
+| **單元測試** | 2h | 20+ XCTests（test41.csv 真實資料驗證） | 測試套件 |
+| **驗證** | 1h | 多行 notes、引號轉義、日期格式邊界測試 | 邊界情況報告 |
+| **小計** | **6h** | | **SubsurfaceCSVParser 完成，累計 3 種解析器** |
 
 **里程碑檢查** ✅（Week 5 結束）
-- [ ] 4 種核心解析器全部可編譯？
+- [ ] 3 種核心解析器全部可編譯（UDDF + SubsurfaceXML + SubsurfaceCSV）？
 - [ ] 各解析器都有 > 80% 單元測試覆蓋率？
-- [ ] ImportCoordinator 能否統一匯入流程？
 
-#### Week 6（PM 6 小時）- 解析器整合 + 跨格式測試
+#### Week 6（PM 6 小時）- Suunto JSON 解析器 + 解析器整合
+
+> **計劃調整（2026-05-18）**：原定純整合週，加入 Suunto JSON 作為第 4 種解析器（有 3 個官方樣本檔）。
 
 | 工作環節 | PM 時數 | Claude Agent 執行 | 交付物 |
 |--------|--------|-----------------|--------|
-| **ImportCoordinator 實現** | 2h | 生成統一匯入流程代碼 | 協調器實現 |
-| **跨格式批量測試** | 2h | 生成混合格式批量匯入測試 | 測試報告 |
-| **錯誤處理改進** | 1h | 強化錯誤訊息與恢復邏輯 | 改進版協調器 |
+| **Suunto JSON 解析器** | 3h | SuuntoJSONParser（DeviceLog → DiveLog）+ 15+ XCTests | 第 4 種解析器 |
+| **ImportCoordinator 實現** | 1h | 統一匯入流程、格式自動偵測 | 協調器實現 |
+| **跨格式整合測試** | 1h | 4 種格式混合批量匯入測試 | 測試報告 |
 | **性能初測** | 1h | 測試 100 個檔案批量匯入速度 | 性能報告 |
 | **小計** | **6h** | | **4 種解析器可生產使用** |
 
 **里程碑檢查** ✅（Week 6 結束）
+- [ ] 4 種核心解析器全部可編譯（UDDF + SubsurfaceXML + SubsurfaceCSV + SuuntoJSON）？
+- [ ] ImportCoordinator 能否統一匯入流程？
 - [ ] 批量匯入成功率 > 95%？
 - [ ] 100 個檔案匯入耗時 < 10 秒？
 
@@ -139,17 +147,20 @@ Week 12:    7 小時 (6h 基礎 + 1h WCAG 2.1 AA 審核)
 
 ### **Week 7-8：擴展解析器（12 小時 PM 投入）**
 
-#### Week 7（PM 6 小時）- Garmin + Suunto
+#### Week 7（PM 6 小時）- Garmin + 額外格式 TBD
+
+> **計劃調整（2026-05-18）**：Suunto JSON 已移至 Week 6。
+> Garmin Connect API 路線（非 FIT 二進位）為優先策略；Week 7 第 2 個解析器視當時可用樣本決定。
 
 | 解析器 | PM 時數 | Claude Agent 執行 | 複雜度 |
 |--------|--------|-----------------|--------|
-| **Garmin Descent** | 3h | 複雜 XML，多命名空間 | 高複雜度 |
-| **Suunto (SDE+XML+SDP)** | 3h | 三種格式整合，利用 Subsurface 開源 | 極高複雜度 |
+| **Garmin Connect API** | 3h | GarminConnectParser 或 FIT 格式（視 API 開放狀況） | 中–高複雜度 |
+| **第 2 格式 TBD** | 3h | 依 Week 6 結束時可用樣本決定 | 待確認 |
 | **小計** | **6h** | | **2 個解析器完成** |
 
 **風險評估**：
-- Suunto 逆向工程可能遇到困難
-- 應對方案：優先完成 XML+SDP，SDE 可選後續
+- Garmin FIT 為二進位格式，需引入解碼庫，複雜度高
+- 應對方案：優先 Garmin Connect API JSON；FIT 可選後續
 
 #### Week 8（PM 6 小時）- Oceanic + 最終驗證
 
@@ -309,7 +320,8 @@ v1.0 正式上線：2026 年 8 月 18 日 ✅
 |------|------|------|------|
 | Week 2 | i18n 架構選擇困難 | 10% | 預設使用 Localizable.strings (成熟方案) |
 | Week 3-4 | 解析器複雜度超期 | 20% | Claude 加快代碼生成，簡化邊界情況 |
-| Week 7 | Suunto 逆向工程困難 | 30% | 降級為 XML+SDP，跳過 SDE |
+| Week 6 | Suunto JSON 格式變更 | 15% | 以 Subsurface 開源樣本為基準，版本差異降級處理 |
+| Week 7 | Garmin FIT 二進位解析困難 | 30% | 改走 Garmin Connect API JSON 路線 |
 | Week 9-10 | 地圖性能卡頓 | 15% | 採用更激進的聚類演算法 |
 | Week 9-11 | 多語系文字缺失/不完整 | 20% | 在 Week 11 集中補充所有遺漏文字 |
 | Week 11 | iOS 18 功能相容性問題 | 18% | Control Center/Lock Screen 不可用時降級為基礎 UI |

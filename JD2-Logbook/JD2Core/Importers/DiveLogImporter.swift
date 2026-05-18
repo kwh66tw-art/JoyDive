@@ -40,7 +40,7 @@ enum DiveLogFormat: String, CaseIterable {
     case subsurface = "Subsurface"   // Subsurface XML (.ssrf / .xml)
     case shearwater = "SHEARWATER"
     case peregrine  = "Peregrine"
-    case cresiMares = "Cressi/Mares"
+    case csv        = "CSV"           // Subsurface 手動 CSV 格式（#Nr header）
     case garmin     = "Garmin"
     case suunto     = "Suunto"
     case oceanic    = "Oceanic"
@@ -52,7 +52,7 @@ enum DiveLogFormat: String, CaseIterable {
         case .subsurface: return ["ssrf", "xml"]   // .ssrf 原生，.xml 為 Subsurface 匯出
         case .shearwater: return ["xml"]
         case .peregrine:  return ["xml"]
-        case .cresiMares: return ["csv"]
+        case .csv:        return ["csv"]
         case .garmin:     return ["fit"]
         case .suunto:     return ["xml", "sde", "sdp"]
         case .oceanic:    return ["ocf", "xml"]
@@ -75,7 +75,7 @@ enum DiveLogFormat: String, CaseIterable {
         case .suunto:     return 4
         case .oceanic:    return 5
         case .peregrine:  return 6
-        case .cresiMares: return 7
+        case .csv:        return 7
         }
     }
 }
@@ -138,7 +138,7 @@ struct DiveLogImporterFactory {
         UDDFParser(),
         SHEARWATERParser(),
         PeregrineParser(),
-        CresiMaresParser(),
+        SubsurfaceCSVParser(),
         GarminDescentParser(),
         SuuntoParser(),
         OceanicParser()
@@ -287,12 +287,209 @@ struct PeregrineParser: DiveLogImporter {
     }
 }
 
-/// Cressi/Mares 解析器 (CSV format)
-struct CresiMaresParser: DiveLogImporter {
-    let format = DiveLogFormat.cresiMares
+/// Subsurface CSV 解析器 — Subsurface 手動 CSV 匯入格式
+///
+/// 格式特徵：
+///   - 第一行為 header，以 `#Nr` 開頭
+///   - 欄位：#Nr, date(M/D/YY), time(HH:MM), duration(MM:SS),
+///           maxdepth, avgdepth, buddy, suit, notes
+///   - RFC 4180 引號規則（欄位含逗號或換行時用 "" 包覆，
+///     欄位內的 " 以 "" 轉義）
+///   - 無氣體、無溫度欄位（使用 DiveLog 預設值）
+///
+/// 測試驗證：
+///   - test41.csv（4 筆潛水，含多行 notes、逗號 buddy、double-quote 轉義）
+///   - 參考輸出：test-csv.xml（Subsurface 原始碼 dives/test-csv.xml）
+// AI-generated (Claude)
+struct SubsurfaceCSVParser: DiveLogImporter {
+
+    let format = DiveLogFormat.csv
+
+    // MARK: - DiveLogImporter 協議
+
+    /// 格式偵測：.csv 副檔名 + 內容首行以 "#Nr" 開頭
+    func canHandle(filePath: String) -> Bool {
+        let ext = (filePath as NSString).pathExtension.lowercased()
+        guard ext == "csv" else { return false }
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath),
+                                   options: .mappedIfSafe) else { return false }
+        return validateContent(data)
+    }
+
+    /// 驗證：讀取前 512 bytes 確認以 "#Nr" 開頭
+    func validateContent(_ data: Data) -> Bool {
+        guard let head = String(data: data.prefix(512), encoding: .utf8) else { return false }
+        return head.hasPrefix("#Nr")
+    }
 
     func parse(from filePath: String) throws -> [DiveLog] {
-        throw DiveLogImportError.unsupportedFormat("Cressi/Mares 解析器待實現 (Week 5)")
+        guard FileManager.default.fileExists(atPath: filePath) else {
+            throw DiveLogImportError.fileNotFound(filePath)
+        }
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath),
+                                   options: .mappedIfSafe) else {
+            throw DiveLogImportError.corruptedData("無法讀取: \(filePath)")
+        }
+        guard !data.isEmpty else { throw DiveLogImportError.emptyFile }
+        return try SubsurfaceCSVParser.parseCSVData(data)
+    }
+
+    // MARK: - 靜態輔助（供單元測試直接呼叫）
+
+    /// 從 Data 解析所有潛水記錄
+    static func parseCSVData(_ data: Data) throws -> [DiveLog] {
+        guard let text = String(data: data, encoding: .utf8) else {
+            throw DiveLogImportError.corruptedData("CSV 無法解碼為 UTF-8")
+        }
+        let rows = parseRFC4180(text)
+        // 過濾 header 行（以 "#" 開頭的第一欄）及空行
+        let dataRows = rows.filter { row in
+            guard let first = row.first else { return false }
+            return !first.hasPrefix("#") && !row.allSatisfy({ $0.isEmpty })
+        }
+        var dives: [DiveLog] = []
+        for row in dataRows {
+            if let dive = buildDiveLog(from: row) {
+                dives.append(dive)
+            }
+        }
+        if dives.isEmpty && !dataRows.isEmpty {
+            throw DiveLogImportError.parsingFailed("CSV 無法解析任何有效潛水記錄")
+        }
+        return dives
+    }
+
+    // MARK: - RFC 4180 CSV 解析器
+
+    /// RFC 4180 相容的 CSV 解析：支援多行 quoted fields 及 "" 轉義
+    static func parseRFC4180(_ text: String) -> [[String]] {
+        var rows: [[String]] = []
+        var fields: [String] = []
+        var current: [Character] = []
+        var inQuotes = false
+        let chars = Array(text)
+        var i = 0
+
+        while i < chars.count {
+            let ch = chars[i]
+            if inQuotes {
+                if ch == "\"" {
+                    if i + 1 < chars.count && chars[i + 1] == "\"" {
+                        // "" → 轉義的雙引號
+                        current.append("\"")
+                        i += 2
+                        continue
+                    } else {
+                        inQuotes = false
+                    }
+                } else {
+                    current.append(ch)
+                }
+            } else {
+                switch ch {
+                case "\"":
+                    inQuotes = true
+                case ",":
+                    fields.append(String(current))
+                    current = []
+                case "\r":
+                    fields.append(String(current))
+                    rows.append(fields)
+                    fields = []
+                    current = []
+                    // 吃掉緊接的 \n（CRLF）
+                    if i + 1 < chars.count && chars[i + 1] == "\n" {
+                        i += 1
+                    }
+                case "\n":
+                    fields.append(String(current))
+                    rows.append(fields)
+                    fields = []
+                    current = []
+                default:
+                    current.append(ch)
+                }
+            }
+            i += 1
+        }
+        // 末尾殘留的欄位 / 行
+        if !fields.isEmpty || !current.isEmpty {
+            fields.append(String(current))
+            if !fields.allSatisfy({ $0.isEmpty }) {
+                rows.append(fields)
+            }
+        }
+        return rows
+    }
+
+    // MARK: - 從 CSV row 建構 DiveLog
+
+    /// 欄位對應：0=Nr, 1=date, 2=time, 3=duration, 4=maxdepth,
+    ///           5=avgdepth, 6=buddy, 7=suit, 8=notes
+    static func buildDiveLog(from row: [String]) -> DiveLog? {
+        guard row.count >= 5 else { return nil }
+
+        // 日期 + 時間
+        let dateStr = row[1].trimmingCharacters(in: .whitespaces)
+        let timeStr = row.count > 2 ? row[2].trimmingCharacters(in: .whitespaces) : "0:00"
+        guard let dateTime = parseDateTime(date: dateStr, time: timeStr) else { return nil }
+
+        // duration: MM:SS → seconds（注意：非 HH:MM）
+        let durationStr = row.count > 3 ? row[3].trimmingCharacters(in: .whitespaces) : "0:00"
+        let durationSec = parseDurationMMSS(durationStr)
+        guard durationSec > 0 else { return nil }
+
+        // maxdepth（公尺）
+        let depthStr = row[4].trimmingCharacters(in: .whitespaces)
+        guard let maxDepth = Double(depthStr), maxDepth >= 0 else { return nil }
+
+        // notes（第 8 欄，optional）
+        let notes = row.count > 8 ? row[8] : ""
+
+        let dive = DiveLog(
+            dateTime: dateTime,
+            location: "",
+            maxDepth: maxDepth,
+            diveTimeSeconds: durationSec
+            // gasMixJSON 預設 "\"air\""，waterTemperature 預設 15.0
+        )
+        if !notes.isEmpty {
+            dive.update(notes: notes)
+        }
+        dive.sourceFormat = "csv"
+        return dive
+    }
+
+    // MARK: - 日期時間解析
+
+    /// 解析 `M/D/YY` 或 `M/D/YYYY` + `HH:MM`，回傳 UTC Date
+    static func parseDateTime(date: String, time: String) -> Date? {
+        let dp = date.split(separator: "/").map(String.init)
+        guard dp.count == 3,
+              let month = Int(dp[0]),
+              let day   = Int(dp[1]),
+              var year  = Int(dp[2]) else { return nil }
+        if year < 100 { year += 2000 }
+
+        let tp = time.split(separator: ":").map(String.init)
+        let hour   = tp.count >= 1 ? (Int(tp[0]) ?? 0) : 0
+        let minute = tp.count >= 2 ? (Int(tp[1]) ?? 0) : 0
+
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(secondsFromGMT: 0)!
+        var comps = DateComponents()
+        comps.year = year; comps.month = month; comps.day = day
+        comps.hour = hour; comps.minute = minute; comps.second = 0
+        return cal.date(from: comps)
+    }
+
+    /// 解析 `MM:SS` 格式 → 秒數（Subsurface CSV duration 單位為分:秒）
+    static func parseDurationMMSS(_ str: String) -> Int {
+        let parts = str.split(separator: ":").map(String.init)
+        guard parts.count == 2,
+              let minutes = Int(parts[0]),
+              let seconds = Int(parts[1]) else { return 0 }
+        return minutes * 60 + seconds
     }
 }
 
