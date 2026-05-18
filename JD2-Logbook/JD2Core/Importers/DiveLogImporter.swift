@@ -36,31 +36,26 @@ enum DiveLogImportError: Error, LocalizedError {
 
 /// 匯入格式列舉
 enum DiveLogFormat: String, CaseIterable {
-    case uddf = "UDDF"
+    case uddf       = "UDDF"
+    case subsurface = "Subsurface"   // Subsurface XML (.ssrf / .xml)
     case shearwater = "SHEARWATER"
-    case peregrine = "Peregrine"
+    case peregrine  = "Peregrine"
     case cresiMares = "Cressi/Mares"
-    case garmin = "Garmin"
-    case suunto = "Suunto"
-    case oceanic = "Oceanic"
+    case garmin     = "Garmin"
+    case suunto     = "Suunto"
+    case oceanic    = "Oceanic"
 
     /// 支援的檔案副檔名
     var supportedExtensions: [String] {
         switch self {
-        case .uddf:
-            return ["uddf", "zip"]
-        case .shearwater:
-            return ["xml"]
-        case .peregrine:
-            return ["xml"]
-        case .cresiMares:
-            return ["csv"]
-        case .garmin:
-            return ["fit"]
-        case .suunto:
-            return ["xml", "sde", "sdp"]
-        case .oceanic:
-            return ["ocf", "xml"]
+        case .uddf:       return ["uddf", "zip"]
+        case .subsurface: return ["ssrf", "xml"]   // .ssrf 原生，.xml 為 Subsurface 匯出
+        case .shearwater: return ["xml"]
+        case .peregrine:  return ["xml"]
+        case .cresiMares: return ["csv"]
+        case .garmin:     return ["fit"]
+        case .suunto:     return ["xml", "sde", "sdp"]
+        case .oceanic:    return ["ocf", "xml"]
         }
     }
 
@@ -70,15 +65,17 @@ enum DiveLogFormat: String, CaseIterable {
     }
 
     /// 優先順序（用於格式自動偵測）
+    /// Subsurface 優先級最高：canHandle 含內容驗證，不會誤判其他 .xml
     var priority: Int {
         switch self {
-        case .uddf:       return 1   // 最常見
+        case .subsurface: return 0   // 最優先，內容驗證確保正確性
+        case .uddf:       return 1
         case .shearwater: return 2
         case .garmin:     return 3
         case .suunto:     return 4
         case .oceanic:    return 5
         case .peregrine:  return 6
-        case .cresiMares: return 7   // 最不常見
+        case .cresiMares: return 7
         }
     }
 }
@@ -137,6 +134,7 @@ struct DiveLogImporterFactory {
 
     /// 所有可用的解析器
     static let availableParsers: [DiveLogImporter] = [
+        SubsurfaceXMLParser(),
         UDDFParser(),
         SHEARWATERParser(),
         PeregrineParser(),
@@ -304,6 +302,66 @@ struct GarminDescentParser: DiveLogImporter {
 
     func parse(from filePath: String) throws -> [DiveLog] {
         throw DiveLogImportError.unsupportedFormat("Garmin Descent 解析器待實現 (Week 7)")
+    }
+}
+
+/// Subsurface XML 解析器 (Subsurface v3 XML, .ssrf / .xml)
+///
+/// 涵蓋所有透過 Subsurface 軟體匯出的品牌資料：
+///   Suunto EON Core、Nautic、Ocean、Shearwater、Cressi、Mares 等
+///
+/// 測試驗證：
+///   - suunto_eon_core_nitrox.xml  (Nitrox 32%, 無地點)
+///   - suunto_nautic_sidemount.xml (Air, 有 GPS 地點, 備註)
+///   - suunto_ocean_air.xml        (Air, 有備註)
+struct SubsurfaceXMLParser: DiveLogImporter {
+
+    let format = DiveLogFormat.subsurface
+
+    // MARK: - DiveLogImporter 協議
+
+    /// 副檔名 + 內容雙重驗證，避免誤判其他 .xml 格式
+    func canHandle(filePath: String) -> Bool {
+        let ext = (filePath as NSString).pathExtension.lowercased()
+        guard ext == "ssrf" || ext == "xml" else { return false }
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath),
+                                   options: .mappedIfSafe) else { return false }
+        return validateContent(data)
+    }
+
+    /// 驗證為 Subsurface XML（檢查 divelog program='subsurface'）
+    func validateContent(_ data: Data) -> Bool {
+        guard let head = String(data: data.prefix(256), encoding: .utf8) else { return false }
+        return head.contains("divelog") &&
+               (head.contains("program='subsurface'") || head.contains("program=\"subsurface\""))
+    }
+
+    func parse(from filePath: String) throws -> [DiveLog] {
+        guard FileManager.default.fileExists(atPath: filePath) else {
+            throw DiveLogImportError.fileNotFound(filePath)
+        }
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath),
+                                   options: .mappedIfSafe) else {
+            throw DiveLogImportError.corruptedData("無法讀取: \(filePath)")
+        }
+        guard !data.isEmpty else { throw DiveLogImportError.emptyFile }
+        return try SubsurfaceXMLParser.parseXMLData(data)
+    }
+
+    // MARK: - 靜態輔助（供單元測試直接呼叫）
+
+    static func parseXMLData(_ data: Data) throws -> [DiveLog] {
+        let delegate = SubsurfaceXMLDelegate()
+        let xmlParser = XMLParser(data: data)
+        xmlParser.delegate = delegate
+        xmlParser.shouldProcessNamespaces = false
+        xmlParser.shouldReportNamespacePrefixes = false
+        guard xmlParser.parse() else {
+            let msg = xmlParser.parserError?.localizedDescription ?? "未知 XML 錯誤"
+            throw DiveLogImportError.parsingFailed("Subsurface XML 解析失敗: \(msg)")
+        }
+        if let err = delegate.fatalError { throw DiveLogImportError.parsingFailed(err) }
+        return delegate.buildDiveLogs()
     }
 }
 
@@ -805,4 +863,276 @@ private extension Double {
         let factor = pow(10.0, Double(places))
         return (self * factor).rounded() / factor
     }
+}
+
+// ============================================================
+// MARK: - Subsurface XML 私有實現
+// ============================================================
+
+// MARK: - Subsurface XML Delegate
+
+/// Subsurface XML v3 狀態機
+///
+/// 解析優先順序：
+///   1. `<divesites>/<site uuid='' name='' gps='lat lon'>` → 地點字典
+///   2. `<dives>/<dive date='' time='' duration='' divesiteid=''>` → 潛水記錄
+///
+/// 溫度優先順序：
+///   `<divetemperature water='X.XX C'>` > `<divecomputer>/<temperature water='X.XX C'>`
+///
+/// 氣體：取第一個 `<cylinder o2='...'>` 的 fO2；無 o2 屬性 → Air
+private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
+
+    // MARK: 解析結果
+
+    private var sites:       [String: SubsurfaceSite]       = [:]   // uuid → site
+    private var parsedDives: [SubsurfaceParsedDive]          = []
+
+    private(set) var fatalError: String?
+
+    // MARK: 解析狀態
+
+    private var currentText       = ""
+    private var inDiveSites       = false
+    private var currentSiteUUID:  String?
+    private var currentSite:      SubsurfaceSite?
+
+    private var inDives           = false
+    private var currentDive:      SubsurfaceParsedDive?
+    private var inDiveComputer    = false
+    private var inNotes           = false
+    private var firstCylinderDone = false   // 只取第一個 cylinder
+
+    // MARK: - XMLParserDelegate：開始元素
+
+    func parser(
+        _ parser: XMLParser,
+        didStartElement elementName: String,
+        namespaceURI: String?,
+        qualifiedName qName: String?,
+        attributes attrs: [String: String] = [:]
+    ) {
+        currentText = ""
+
+        switch elementName {
+
+        // ── 地點區塊 ──────────────────────────────────────────
+        case "divesites":
+            inDiveSites = true
+
+        case "site" where inDiveSites:
+            currentSiteUUID = attrs["uuid"]
+            var site = SubsurfaceSite()
+            site.name = attrs["name"]
+            if let gps = attrs["gps"] {
+                // gps='48.332115 7.777142'  → lat lon
+                let parts = gps.split(separator: " ").compactMap { Double($0) }
+                if parts.count == 2 {
+                    site.latitude  = parts[0]
+                    site.longitude = parts[1]
+                }
+            }
+            currentSite = site
+
+        // ── 潛水區塊 ──────────────────────────────────────────
+        case "dives":
+            inDives = true
+
+        case "dive" where inDives:
+            var dive          = SubsurfaceParsedDive()
+            dive.dateString   = attrs["date"]
+            dive.timeString   = attrs["time"]
+            dive.durationStr  = attrs["duration"]
+            dive.diveSiteId   = attrs["divesiteid"]
+            currentDive       = dive
+            firstCylinderDone = false
+
+        case "cylinder" where currentDive != nil && !firstCylinderDone:
+            firstCylinderDone = true
+            // o2='32.0%' → fO2 = 0.32；無屬性 → nil（預設 air）
+            if let o2Str = attrs["o2"] {
+                let cleaned = o2Str.replacingOccurrences(of: "%", with: "")
+                                    .trimmingCharacters(in: .whitespaces)
+                currentDive?.cylinderFO2 = (Double(cleaned) ?? 21.0) / 100.0
+            }
+
+        // 潛水層級溫度（優先於電腦內溫度）
+        case "divetemperature" where currentDive != nil:
+            if let s = attrs["water"] { currentDive?.diveTemperature = parseTemp(s) }
+
+        case "divecomputer" where currentDive != nil:
+            inDiveComputer = true
+            if currentDive?.diveComputerModel == nil {
+                currentDive?.diveComputerModel = attrs["model"]
+            }
+
+        case "depth" where inDiveComputer:
+            if let s = attrs["max"] { currentDive?.maxDepth = parseMeters(s) }
+
+        // 電腦層級溫度（次要來源）
+        case "temperature" where inDiveComputer:
+            if let s = attrs["water"] { currentDive?.computerTemperature = parseTemp(s) }
+
+        case "notes" where currentDive != nil:
+            inNotes = true
+
+        default:
+            break
+        }
+    }
+
+    func parser(_ parser: XMLParser, foundCharacters string: String) {
+        currentText += string
+    }
+
+    // MARK: - XMLParserDelegate：結束元素
+
+    func parser(
+        _ parser: XMLParser,
+        didEndElement elementName: String,
+        namespaceURI: String?,
+        qualifiedName qName: String?
+    ) {
+        defer { currentText = "" }
+
+        switch elementName {
+
+        case "divesites":
+            inDiveSites = false
+
+        case "site" where inDiveSites:
+            if let uuid = currentSiteUUID, let site = currentSite {
+                sites[uuid] = site
+            }
+            currentSiteUUID = nil
+            currentSite     = nil
+
+        case "dives":
+            inDives = false
+
+        case "dive" where inDives:
+            if let dive = currentDive { parsedDives.append(dive) }
+            currentDive       = nil
+            firstCylinderDone = false
+
+        case "divecomputer":
+            inDiveComputer = false
+
+        case "notes":
+            currentDive?.notes = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
+            inNotes = false
+
+        default:
+            break
+        }
+    }
+
+    func parser(_ parser: XMLParser, parseErrorOccurred parseError: Error) {
+        fatalError = "XML 解析錯誤: \(parseError.localizedDescription)"
+    }
+
+    // MARK: - 建立 DiveLog
+
+    func buildDiveLogs() -> [DiveLog] {
+        parsedDives.compactMap { dive in
+            guard let dateStr = dive.dateString,
+                  let timeStr = dive.timeString,
+                  let dateTime = parseDateTime(date: dateStr, time: timeStr),
+                  let durationSec = parseDuration(dive.durationStr),
+                  durationSec > 0,
+                  let maxDepth = dive.maxDepth,
+                  maxDepth > 0
+            else { return nil }
+
+            // 溫度：dive 層級 > computer 層級 > 預設值
+            let temp = dive.diveTemperature ?? dive.computerTemperature ?? 20.0
+
+            // 地點與 GPS
+            var locationName = "Unknown Location"
+            var lat: Double?
+            var lon: Double?
+            if let siteId = dive.diveSiteId, let site = sites[siteId] {
+                locationName = site.name ?? "Unknown Location"
+                lat = site.latitude
+                lon = site.longitude
+            }
+
+            // 氣體：有 fO2 → Nitrox 或 Air；無 → Air
+            let fO2 = dive.cylinderFO2 ?? 0.21
+            let gasMixJSON = SubsurfaceXMLDelegate.buildGasMixJSON(fO2: fO2)
+
+            let log = DiveLog(
+                dateTime:        dateTime,
+                location:        locationName,
+                maxDepth:        maxDepth,
+                diveTimeSeconds: durationSec,
+                gasMixJSON:      gasMixJSON,
+                waterTemperature: temp
+            )
+            log.sourceFormat = "Subsurface"
+            log.notes        = dive.notes ?? ""
+            if let lat, let lon {
+                log.latitude  = lat
+                log.longitude = lon
+            }
+            return log
+        }
+    }
+
+    // MARK: - 私有工具方法
+
+    private func parseTemp(_ str: String) -> Double? {
+        // "29.1 C" 或 "29.1C"
+        Double(str.replacingOccurrences(of: "C", with: "").trimmingCharacters(in: .whitespaces))
+    }
+
+    private func parseMeters(_ str: String) -> Double? {
+        // "22.65 m"
+        Double(str.replacingOccurrences(of: "m", with: "").trimmingCharacters(in: .whitespaces))
+    }
+
+    private func parseDateTime(date: String, time: String) -> Date? {
+        // date="2024-10-06" time="00:33:51" → UTC
+        let f = DateFormatter()
+        f.dateFormat  = "yyyy-MM-dd HH:mm:ss"
+        f.timeZone    = TimeZone(secondsFromGMT: 0)
+        return f.date(from: "\(date) \(time)")
+    }
+
+    private func parseDuration(_ str: String?) -> Int? {
+        // "66:10 min" → 66*60+10 = 3970
+        // "31:00 min" → 1860
+        guard let str else { return nil }
+        let cleaned = str.replacingOccurrences(of: " min", with: "")
+                         .trimmingCharacters(in: .whitespaces)
+        let parts = cleaned.split(separator: ":").compactMap { Int($0) }
+        guard parts.count == 2 else { return nil }
+        return parts[0] * 60 + parts[1]
+    }
+
+    private static func buildGasMixJSON(fO2: Double) -> String {
+        if abs(fO2 - 0.21) < 0.005 { return "\"air\"" }
+        return "{\"nitrox\":{\"fO2\":\(fO2)}}"
+    }
+}
+
+// MARK: - Subsurface 私有資料結構
+
+private struct SubsurfaceSite {
+    var name:      String?
+    var latitude:  Double?
+    var longitude: Double?
+}
+
+private struct SubsurfaceParsedDive {
+    var dateString:          String?
+    var timeString:          String?
+    var durationStr:         String?
+    var diveSiteId:          String?
+    var maxDepth:            Double?
+    var diveTemperature:     Double?   // <divetemperature> — 優先
+    var computerTemperature: Double?   // <divecomputer>/<temperature> — 次要
+    var cylinderFO2:         Double?   // nil = air
+    var diveComputerModel:   String?
+    var notes:               String?
 }
