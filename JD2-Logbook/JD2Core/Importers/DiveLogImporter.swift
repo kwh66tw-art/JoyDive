@@ -338,7 +338,7 @@ struct SubsurfaceCSVParser: DiveLogImporter {
 
     /// 從 Data 解析所有潛水記錄
     static func parseCSVData(_ data: Data) throws -> [DiveLog] {
-        guard let text = String(data: data, encoding: .utf8) else {
+        guard let text = String(data: data, encoding: .utf8), !text.isEmpty else {
             throw DiveLogImportError.corruptedData("CSV 無法解碼為 UTF-8")
         }
         let rows = parseRFC4180(text)
@@ -362,12 +362,21 @@ struct SubsurfaceCSVParser: DiveLogImporter {
     // MARK: - RFC 4180 CSV 解析器
 
     /// RFC 4180 相容的 CSV 解析：支援多行 quoted fields 及 "" 轉義
+    ///
+    /// Swift 的 Array(String) 會將 \r\n 合併為單一 grapheme cluster，
+    /// 導致 switch case "\r" 無法命中。
+    /// 解法：解析前先正規化換行（\r\n 和 \r → \n），switch 只需處理 \n。
     static func parseRFC4180(_ text: String) -> [[String]] {
+        // 正規化換行符號（\r\n 必須先於 \r 替換，避免重複替換）
+        let normalized = text
+            .replacingOccurrences(of: "\r\n", with: "\n")
+            .replacingOccurrences(of: "\r",   with: "\n")
+
         var rows: [[String]] = []
         var fields: [String] = []
         var current: [Character] = []
         var inQuotes = false
-        let chars = Array(text)
+        let chars = Array(normalized)
         var i = 0
 
         while i < chars.count {
@@ -392,15 +401,6 @@ struct SubsurfaceCSVParser: DiveLogImporter {
                 case ",":
                     fields.append(String(current))
                     current = []
-                case "\r":
-                    fields.append(String(current))
-                    rows.append(fields)
-                    fields = []
-                    current = []
-                    // 吃掉緊接的 \n（CRLF）
-                    if i + 1 < chars.count && chars[i + 1] == "\n" {
-                        i += 1
-                    }
                 case "\n":
                     fields.append(String(current))
                     rows.append(fields)

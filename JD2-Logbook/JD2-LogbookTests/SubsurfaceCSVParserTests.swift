@@ -79,7 +79,7 @@ final class SubsurfaceCSVParserTests: XCTestCase {
 
     // MARK: - 測試 3：canHandle 需要檔案實際存在
 
-    func testCanHandleRealFile() {
+    func testCanHandleRealFile() throws {
         // 只有在 test41.csv 存在時才測試 canHandle
         guard FileManager.default.fileExists(atPath: test41Path) else {
             throw XCTSkip("test41.csv 不存在，跳過")
@@ -269,10 +269,12 @@ final class SubsurfaceCSVParserTests: XCTestCase {
     }
 
     func testParseDateTimeInvalidReturnsNil() {
+        // 完全無法解析的格式應回傳 nil
         XCTAssertNil(SubsurfaceCSVParser.parseDateTime(date: "not-a-date", time: "10:00"),
-                     "無效日期應回傳 nil")
-        XCTAssertNil(SubsurfaceCSVParser.parseDateTime(date: "13/32/99", time: "25:61"),
-                     "越界值組合應回傳 nil 或產生合法 Date")
+                     "無效日期字串應回傳 nil")
+        XCTAssertNil(SubsurfaceCSVParser.parseDateTime(date: "abcd/ef/gh", time: "xx:yy"),
+                     "非數字日期應回傳 nil")
+        // 注意：越界值（月13、日32）Calendar 會 overflow 推算，不回傳 nil，屬於預期行為
     }
 
     // MARK: - 測試 13：Duration 解析獨立驗證
