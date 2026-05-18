@@ -1,5 +1,6 @@
 // ImportCoordinator.swift — JD2Core/Importers/ImportCoordinator.swift
-// v1.0 INITIAL
+// v1.1
+// AI-generated (Claude)
 //
 // 統一匯入流程協調器
 // 負責檔案驗證、格式自動偵測、解析、資料庫儲存的完整流程
@@ -188,7 +189,8 @@ final class ImportCoordinator {
     /// 驗證潛水日誌合理性
     /// - Parameter dives: 潛水日誌陣列
     /// - Returns: 有效的潛水日誌
-    private func validateDives(_ dives: [DiveLog]) -> [DiveLog] {
+    /// - Note: location 可為空字串（CSV 及 Suunto JSON 匯入時不填 location），不作為過濾條件
+    func validateDives(_ dives: [DiveLog]) -> [DiveLog] {
         return dives.filter { dive in
             // 基本驗證
             guard dive.maxDepth >= 0 else {
@@ -198,11 +200,6 @@ final class ImportCoordinator {
 
             guard dive.diveTimeSeconds > 0 else {
                 importErrors.append("⚠️ 略過: 潛水時間為 0 (\(dive.location))")
-                return false
-            }
-
-            guard !dive.location.trimmingCharacters(in: .whitespaces).isEmpty else {
-                importErrors.append("⚠️ 略過: 地點為空 (\(dive.dateFormatted))")
                 return false
             }
 
