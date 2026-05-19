@@ -95,10 +95,12 @@ final class DiveEngine {
     // MARK: - 40m Depth Limit (Critical Safety)
     private let HARD_DEPTH_LIMIT: Double = 40.0
 
-    init(buhlmann: Buhlmann = Buhlmann(),
-         environment: DiveEnvironment = .seaLevel) {
-        self.buhlmann = buhlmann
-        self.buhlmann.environment = environment
+    // default params 移入 body，避免 Swift 嚴格並行在 nonisolated 呼叫端求值時產生警告
+    init(buhlmann: Buhlmann? = nil, environment: DiveEnvironment? = nil) {
+        let b   = buhlmann    ?? Buhlmann()
+        let env = environment ?? .seaLevel
+        self.buhlmann = b
+        self.buhlmann.environment = env
         // ⚠️ MUST initialize tissue state before any dive
         self.buhlmann.updateSurface(deltaT: 1.0)
         self.lastUpdateTime = Date()

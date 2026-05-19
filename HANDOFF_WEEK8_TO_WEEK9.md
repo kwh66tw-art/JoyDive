@@ -8,8 +8,9 @@
 **完成時間**: 2026-05-19  
 **PM 累積投入**: ~50 小時（Week 1-8 估算）  
 **計畫剩餘**: Week 9–12（約 30 小時）  
-**編譯狀態**: ✅ Build Succeeded（Xcode，待 PM 在 Xcode 驗證）  
-**最新 Git commit**: 待 PM 執行（見下方「PM 待辦」）  
+**編譯狀態**: ✅ Build Succeeded  
+**最新 Git commit**: `11e41b6` — Audit fix: 8 critical bugs in DiveEngine + Buhlmann  
+**測試狀態**: ✅ 215/215 全綠（Xcode ⌘+U 確認）  
 **分支**: main  
 
 ---
@@ -108,10 +109,29 @@ JD2-Logbook/
 
 ---
 
+## ✅ 稽核修復補記（Week 8 結尾 — commit 11e41b6）
+
+外部稽核報告（W3_W8_MASTER_AUDIT_REPORT.md）指出 DiveEngine 狀態機與 Buhlmann 接縫處有 8 個致命問題，已全部修復並通過 215 tests：
+
+| Fix | 檔案 | 說明 |
+|-----|------|------|
+| #1 | Buhlmann.swift | `rawCeiling()` 改回傳 Bar（原回傳 Meters，GF 插值崩潰） |
+| #2 | DiveEngine.swift | 移除 40m Bühlmann 更新阻斷（深海氮氣吸收不再停算） |
+| #3 | DiveEngine.swift | CNS 改為 NOAA Oxygen Clock 時間積分（含水面 90 分半衰期衰減） |
+| #4.1 | DiveEngine.swift | `.ascent→.diving` 加 1.0m 防抖閾值（防感測器雜訊震盪） |
+| #4.2 | DiveEngine.swift | `.decompression` 天花板解除後轉 `.ascent` 而非鎖死到 1m |
+| #5 | DiveEngine.swift | Safety Stop 觸發深度統一為 6.0m（原 .ascent 分支誤用 5.0m） |
+| #6 | DiveEngine.swift | 移除 `abs()`，快速下潛不再誤觸上升警報 |
+| #7 | DiveEngine.swift | 潛水時間在 .ascent/.safetyStop/.decompression 均累積 |
+| Latent | DiveEngine.swift | `prevDepth = depth` 移到 `determineState()` 之後（原本 .diving→.ascent 永遠無法觸發） |
+| Test | SeabearCSVParserTests.swift | 修正 expectedUnixTime（原值多 28 小時，為計算錯誤） |
+
+---
+
 ## ⚠️ PM 待辦（Week 8 收尾）
 
-### 1. Git Commit（必做）
-sandbox git 操作被 Xcode Source Control 的 index.lock 阻擋（已知問題）。請從 Mac Terminal 執行：
+### 1. Git Commit ✅ 已完成
+commit `11e41b6` 於 2026-05-19 由 PM 在 Terminal 執行，包含 Week 8 全部工作 + 稽核修復。原本的 index.lock 問題：
 
 ```bash
 cd ~/Documents/Claude/Projects/JD2-Logbook
