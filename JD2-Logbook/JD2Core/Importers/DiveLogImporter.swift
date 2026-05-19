@@ -504,12 +504,234 @@ struct SubsurfaceCSVParser: DiveLogImporter {
     }
 }
 
-/// Garmin Descent 解析器 (複雜多命名空間 XML)
+/// Garmin Descent 解析器 — ANT+ FIT 二進位格式
+///
+/// 支援 Garmin Descent 系列手錶匯出的 .fit 檔案（純 Swift 實作，無外部依賴）。
+/// 解析策略：
+///   - Session (GMN 18)      → start_time、total_elapsed_time
+///   - DiveSummary (GMN 268) → max_depth（session-level，field 0 == 18）
+///
+/// FIT Protocol 21.x 關鍵常數：
+///   - FIT epoch: 1989-12-31 00:00:00 UTC（Unix offset = 631 065 600 s）
+///   - total_elapsed_time scale = 1 000（raw / 1000 = 秒）
+///   - max_depth / avg_depth scale = 1 000（raw mm / 1000 = 公尺）
+///
+/// 測試驗證：
+///   - 2018-08-11-09-56-30.fit → maxDepth=27.022m, 3514s, start 07:56:30 UTC
+///   - 2018-08-11-14-11-36.fit → maxDepth=20.628m, 3929s, start 12:11:36 UTC
+///   - 2018-08-13-13-48-26.fit → maxDepth=15.230m, 4145s, start 11:48:26 UTC
 struct GarminDescentParser: DiveLogImporter {
+
     let format = DiveLogFormat.garmin
 
+    // MARK: - FIT 協議常數
+
+    /// FIT epoch：從 Unix epoch (1970-01-01) 到 FIT epoch (1989-12-31) 的秒數
+    private static let fitEpochOffset: TimeInterval = 631_065_600
+    private static let invalidUInt32:  UInt32        = 0xFFFF_FFFF
+
+    // MARK: - 內部類型
+
+    private struct FITField {
+        let num:  UInt8  // field definition number
+        let size: UInt8  // bytes
+        let type: UInt8  // base type (e.g. 0x86 = uint32)
+    }
+
+    private struct FITLocalDef {
+        let gmn:       UInt16    // global message number
+        let bigEndian: Bool
+        let fields:    [FITField]
+    }
+
+    // MARK: - DiveLogImporter
+
+    func canHandle(filePath: String) -> Bool {
+        let ext = (filePath as NSString).pathExtension.lowercased()
+        guard ext == "fit" else { return false }
+        // 快速驗證 FIT magic bytes ".FIT" at offset 8
+        guard let fh = FileHandle(forReadingAtPath: filePath) else { return false }
+        defer { fh.closeFile() }
+        try? fh.seek(toOffset: 8)
+        let magic = fh.readData(ofLength: 4)
+        return magic.count == 4
+            && magic[0] == 0x2E  // '.'
+            && magic[1] == 0x46  // 'F'
+            && magic[2] == 0x49  // 'I'
+            && magic[3] == 0x54  // 'T'
+    }
+
     func parse(from filePath: String) throws -> [DiveLog] {
-        throw DiveLogImportError.unsupportedFormat("Garmin Descent 解析器待實現 (Week 7)")
+        guard FileManager.default.fileExists(atPath: filePath) else {
+            throw DiveLogImportError.fileNotFound(filePath)
+        }
+        let data: Data
+        do {
+            data = try Data(contentsOf: URL(fileURLWithPath: filePath), options: .mappedIfSafe)
+        } catch {
+            throw DiveLogImportError.parsingFailed("無法讀取 FIT 檔案", underlyingError: error)
+        }
+        guard data.count >= 14 else {
+            throw DiveLogImportError.corruptedData("FIT 檔案過短（\(data.count) bytes，至少需 14 bytes）")
+        }
+        // 驗證 magic bytes
+        guard data[8] == 0x2E, data[9] == 0x46, data[10] == 0x49, data[11] == 0x54 else {
+            throw DiveLogImportError.invalidFormat("非標準 FIT 格式（magic bytes 不符）")
+        }
+
+        let headerSize = Int(data[0])
+        let dataSize: UInt32 = fitReadUInt32LE(data: data, offset: 4)
+        let end = headerSize + Int(dataSize)
+        guard end <= data.count else {
+            throw DiveLogImportError.corruptedData("FIT 資料區塊超出檔案範圍")
+        }
+
+        // MARK: 解析 Record 迴圈
+        var pos = headerSize
+        var localDefs:         [UInt8: FITLocalDef] = [:]
+        var sessionFields:     [UInt8: UInt32]       = [:]
+        var diveSummaryFields: [UInt8: UInt32]       = [:]  // session-level (field 0 == 18)
+
+        while pos < end {
+            guard pos < data.count else { break }
+            let hdr = data[pos]; pos += 1
+
+            // Compressed timestamp header（bit 7 = 1）：略過 data message
+            if hdr & 0x80 != 0 {
+                let lmt = (hdr >> 5) & 0x03
+                if let def = localDefs[lmt] {
+                    pos += def.fields.reduce(0) { $0 + Int($1.size) }
+                }
+                continue
+            }
+
+            let isDef   = hdr & 0x40 != 0
+            let devData = hdr & 0x20 != 0
+            let lmt     = hdr & 0x0F
+
+            if isDef {
+                // Definition message
+                guard pos < data.count else { break }
+                pos += 1  // reserved
+                guard pos + 3 < data.count else { break }
+                let bigEndian = data[pos] == 1; pos += 1
+                let gmn: UInt16 = bigEndian
+                    ? (UInt16(data[pos]) << 8 | UInt16(data[pos + 1]))
+                    : (UInt16(data[pos + 1]) << 8 | UInt16(data[pos]))
+                pos += 2
+                guard pos < data.count else { break }
+                let nFields = Int(data[pos]); pos += 1
+                var fields: [FITField] = []
+                for _ in 0..<nFields {
+                    guard pos + 2 < data.count else { break }
+                    fields.append(FITField(num: data[pos], size: data[pos + 1], type: data[pos + 2]))
+                    pos += 3
+                }
+                if devData {
+                    guard pos < data.count else { break }
+                    let nDev = Int(data[pos]); pos += 1
+                    pos += nDev * 3
+                }
+                localDefs[lmt] = FITLocalDef(gmn: gmn, bigEndian: bigEndian, fields: fields)
+
+            } else {
+                // Data message
+                guard let def = localDefs[lmt] else { break }
+                var record: [UInt8: UInt32] = [:]
+                for field in def.fields {
+                    let sz = Int(field.size)
+                    guard pos + sz <= data.count else { pos += sz; continue }
+                    record[field.num] = fitReadField(data: data, offset: pos, size: sz, bigEndian: def.bigEndian)
+                    pos += sz
+                }
+                switch def.gmn {
+                case 18:   // session
+                    sessionFields = record
+                case 268:  // dive_summary
+                    // 僅保留 session-level 摘要（field 0 = reference_mesg == 18）
+                    if (record[0] ?? 0xFFFF) == 18 {
+                        diveSummaryFields = record
+                    }
+                default:
+                    break
+                }
+            }
+        }
+
+        // MARK: 建構 DiveLog
+
+        guard !sessionFields.isEmpty || !diveSummaryFields.isEmpty else {
+            throw DiveLogImportError.parsingFailed("FIT 檔案未包含潛水摘要（dive_summary GMN 268 不存在）")
+        }
+
+        // start_time：session field 2（FIT epoch seconds，無 scale）
+        guard let startRaw = sessionFields[2], startRaw != Self.invalidUInt32 else {
+            throw DiveLogImportError.parsingFailed("FIT 檔案缺少有效的潛水開始時間（session field 2）")
+        }
+        let dateTime = Date(timeIntervalSince1970: Double(startRaw) + Self.fitEpochOffset)
+
+        // total_elapsed_time：session field 7（scale=1000，raw/1000 = 秒）
+        let diveTimeSeconds: Int
+        if let raw = sessionFields[7], raw != Self.invalidUInt32 {
+            diveTimeSeconds = Int(raw / 1000)
+        } else if let raw = diveSummaryFields[11], raw != Self.invalidUInt32 {
+            diveTimeSeconds = Int(raw / 1000)
+        } else {
+            diveTimeSeconds = 0
+        }
+
+        // max_depth：dive_summary field 3（scale=1000，raw mm / 1000 = 公尺）
+        let maxDepth: Double
+        if let raw = diveSummaryFields[3], raw != Self.invalidUInt32 {
+            maxDepth = Double(raw) / 1000.0
+        } else {
+            maxDepth = 0.0
+        }
+
+        // 氣體：這批 FIT 檔案無 dive_gas (GMN 269)，預設 Air
+        // 水溫：dive_summary 此版本無溫度欄位，使用預設值 15.0°C
+        let dive = DiveLog(
+            dateTime: dateTime,
+            location: "",
+            maxDepth: maxDepth,
+            diveTimeSeconds: diveTimeSeconds,
+            gasMixJSON: "\"air\"",
+            waterTemperature: 15.0
+        )
+        dive.sourceFormat = "garmin"
+        return [dive]
+    }
+
+    // MARK: - FIT 二進位讀取輔助
+
+    /// 讀取 4-byte little-endian UInt32（用於 FIT file header）
+    private func fitReadUInt32LE(data: Data, offset: Int) -> UInt32 {
+        UInt32(data[offset])
+            | UInt32(data[offset + 1]) << 8
+            | UInt32(data[offset + 2]) << 16
+            | UInt32(data[offset + 3]) << 24
+    }
+
+    /// 讀取任意 size 的欄位值，回傳 UInt32（size > 4 或未知 → 回傳 invalid）
+    private func fitReadField(data: Data, offset: Int, size: Int, bigEndian: Bool) -> UInt32 {
+        switch size {
+        case 1:
+            return UInt32(data[offset])
+        case 2:
+            let lo = UInt32(data[offset])
+            let hi = UInt32(data[offset + 1])
+            return bigEndian ? (lo << 8 | hi) : (hi << 8 | lo)
+        case 4:
+            let b0 = UInt32(data[offset])
+            let b1 = UInt32(data[offset + 1])
+            let b2 = UInt32(data[offset + 2])
+            let b3 = UInt32(data[offset + 3])
+            return bigEndian
+                ? (b0 << 24 | b1 << 16 | b2 << 8 | b3)
+                : (b3 << 24 | b2 << 16 | b1 << 8 | b0)
+        default:
+            return Self.invalidUInt32
+        }
     }
 }
 
