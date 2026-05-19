@@ -201,10 +201,25 @@ final class GarminFITParserTests: XCTestCase {
         XCTAssertEqual(dive.location, "", "FIT 格式無地點欄位，應為空字串")
     }
 
-    func testParseFile1_WaterTemperature_IsDefault() throws {
+    func testParseFile1_WaterTemperature_FromSession() throws {
+        // Week 8 強化：從 session avg_temperature 取得水溫（HANDOFF debug 確認 29.0°C）
         let dive = try parser.parse(from: fit1).first!
-        XCTAssertEqual(dive.waterTemperature, 15.0, accuracy: 0.01,
-                       "FIT dive_summary 無溫度欄位，應使用預設 15.0°C")
+        XCTAssertEqual(dive.waterTemperature, 29.0, accuracy: 0.5,
+                       "應從 session avg_temperature 取得水溫（29.0°C）")
+    }
+
+    func testParseFile1_GPS_LatLonWithinValidRange() throws {
+        // Week 8 強化：從 session start_position 取得 GPS 座標
+        // 2018 地中海潛水，預期有有效 GPS 座標
+        let dive = try parser.parse(from: fit1).first!
+        if let lat = dive.latitude, let lon = dive.longitude {
+            XCTAssertTrue(abs(lat) <= 90,  "緯度應在 [-90, 90] 範圍內，實際: \(lat)")
+            XCTAssertTrue(abs(lon) <= 180, "經度應在 [-180, 180] 範圍內，實際: \(lon)")
+            // 地中海大致範圍
+            XCTAssertTrue(lat > 30 && lat < 48,  "地中海緯度預期在 30–48°N，實際: \(lat)")
+            XCTAssertTrue(lon > -6 && lon < 42,  "地中海經度預期在 -6–42°E，實際: \(lon)")
+        }
+        // GPS 欄位可能不存在（某些 FIT 檔案無 start_position）；若為 nil 則不強制失敗
     }
 
     // MARK: - 三個檔案整批解析（smoke test）

@@ -89,6 +89,9 @@ final class DiveEngine {
     private var accumulatedDiveTime: Double = 0.0
     private var accumulatedPostDiveDelay: Double = 0.0
 
+    // ✅ FIXED Audit Fix #3: NOAA Oxygen Clock 累積積分（0–200%）
+    private var accumulatedCNS: Double = 0.0
+
     // MARK: - 40m Depth Limit (Critical Safety)
     private let HARD_DEPTH_LIMIT: Double = 40.0
 
@@ -115,19 +118,21 @@ final class DiveEngine {
         self.waterTemperature = waterTemp
         self.currentGasMix = gasMix
 
-        // Calculate ascent rate (m/min)
+        // Calculate ascent rate (m/min) — uses prevDepth from PREVIOUS tick (correct)
         let depthDelta = depth - prevDepth
         if deltaT > 0 {
             ascentRateMpm = (depthDelta / deltaT) * 60.0
         }
-        prevDepth = depth
+        // ⚠️ prevDepth = depth is intentionally moved to AFTER determineState()
+        // Updating here would make all prevDepth comparisons in determineState() trivially false
 
         // Determine data gap level
         determinateDataGapLevel(deltaT: deltaT)
 
-        // ✅ FIXED Issue #5: 避免 NDL 被覆蓋，邏輯整理
-        // Update Buhlmann algorithm (但 > 40m 時不更新)
-        if !hasDataGap && depth < HARD_DEPTH_LIMIT {
+        // ✅ FIXED Issue #5 + Audit Fix #2: 組織壓力必須在任何深度持續更新
+        // ⚠️ 40m 限制僅用於 UI Alert（alerts.exceeds40m），不得阻斷 Bühlmann 計算
+        //    超過 40m 繼續吸氮，演算法停算將導致回到 39m 時給出致死級樂觀 NDL
+        if !hasDataGap {
             // Normal update with time compensation
             let compensatedDeltaT = min(deltaT, AlgorithmConstants.maxCompensateTotalSec)
             let chunkSize = AlgorithmConstants.tickChunkSizeSec
@@ -153,8 +158,8 @@ final class DiveEngine {
         }
 
         po2 = calculatePO2(depth: depth, gasMix: gasMix)
-        cns = calculateCNS(po2: po2)  // Simplified
         gf = calculateGF(depth: depth)
+        // CNS 在 determineState() 之後計算，確保使用最新狀態判斷水面衰減 vs 水下累積
 
         // ⚠️ Ascent rate validation (Requirement #6 + audio warning)
         updateAscentWarnings()
@@ -172,9 +177,18 @@ final class DiveEngine {
         // State machine transitions
         determineState(depth: depth)
 
-        // ✅ FIXED Issue #8: 精確的時間累積，避免四捨五入誤差
-        // Update timers with double precision accumulation
-        if state == .diving {
+        // ✅ FIXED Audit: prevDepth 必須在 determineState() 之後才更新
+        // 若在 tick() 開頭更新，determineState 裡所有 prevDepth 比較都會與 depth 相等（永遠 false）
+        prevDepth = depth
+
+        // ✅ FIXED Audit Fix #3: CNS 在狀態確定後更新，確保水面衰減 vs 水下累積邏輯正確
+        updateCNS(po2: po2, deltaT: deltaT)
+
+        // ✅ FIXED Issue #8 + Audit Fix #7: 精確的時間累積，水下所有狀態均計時
+        // 僅 .surface / .postDive 不計入潛水時間
+        let isUnderwater = state == .diving || state == .ascent
+                        || state == .safetyStop || state == .decompression
+        if isUnderwater {
             accumulatedDiveTime += deltaT
             diveTimeSeconds = Int(accumulatedDiveTime)
         }
@@ -213,7 +227,12 @@ final class DiveEngine {
             // Check if ascending
             if depth < prevDepth {
                 state = .ascent
-                buhlmann.firstCeilingBar = buhlmann.rawCeiling()  // Lock GF baseline
+                // ✅ FIXED Audit Fix #4.1 + GF 保護：只在新天花板更深（壓力更高）時才更新基準
+                // Erik Baker 規範：firstCeilingBar 應鎖定離開底部時最深的天花板壓力
+                let newCeil = buhlmann.rawCeiling()
+                if buhlmann.firstCeilingBar == nil || newCeil > buhlmann.firstCeilingBar! {
+                    buhlmann.firstCeilingBar = newCeil
+                }
             }
             // Check if safety stop depth reached
             else if depth <= AlgorithmConstants.safetyStopTriggerDepth
@@ -224,13 +243,21 @@ final class DiveEngine {
             }
 
         case .ascent:
+            // ✅ FIXED Audit Fix #4.1: 顯著再下潛（> 1.0m）才切回 .diving
+            // 防止感測器雜訊（±0.3m 呼吸起伏）造成狀態機高頻震盪（Ping-Pong Effect）
+            // ⚠️ 不重置 firstCeilingBar — GF 基準維持在最深點天花板壓力（Erik Baker 規範）
+            if depth > (prevDepth + 1.0) && depth >= AlgorithmConstants.diveStartDepth {
+                state = .diving
+                return
+            }
             // Check if safety stop required
             if ceilingDepth > 0 && depth <= ceilingDepth + 0.5 {
                 state = .decompression
                 alerts.decoViolation = true
             }
-            // Check if safety stop triggered
-            else if depth <= AlgorithmConstants.safetyStopValidMax
+            // ✅ FIXED Audit Fix #5: 統一用 safetyStopTriggerDepth (6.0m)，與 .diving 分支一致
+            // 原本錯誤地使用 safetyStopValidMax (5.0m)，造成觸發深度不一致
+            else if depth <= AlgorithmConstants.safetyStopTriggerDepth
                 && maxDepth >= AlgorithmConstants.safetyStopMinDiveDepth {
                 state = .safetyStop
                 safetyStopActive = true
@@ -261,12 +288,18 @@ final class DiveEngine {
             }
 
         case .decompression:
-            // Wait for ceiling to clear
-            if ceilingDepth <= 0 && depth < AlgorithmConstants.diveEndDepth {
-                state = .postDive
+            // ✅ FIXED Audit Fix #4.2: 天花板解除後若仍在水中，回到 .ascent 繼續上升
+            // 原本要求 ceilingDepth <= 0 && depth < 1.0m 才退出，導致 3m 解除 deco 後
+            // UI 仍顯示「減壓中」直到浮出水面（狀態錯亂）
+            if ceilingDepth <= 0 {
                 alerts.decoViolation = false
-                postDiveDelaySec = 180
-                buhlmann.firstCeilingBar = nil
+                if depth < AlgorithmConstants.diveEndDepth {
+                    state = .postDive
+                    postDiveDelaySec = 180
+                    buhlmann.firstCeilingBar = nil
+                } else {
+                    state = .ascent  // 天花板解除，恢復正常上升（保留 firstCeilingBar）
+                }
             }
 
         case .postDive:
@@ -284,7 +317,10 @@ final class DiveEngine {
     private func updateAscentWarnings() {
         let ascentRateThreshold = AlgorithmConstants.maxAscentRateWarn
 
-        if abs(ascentRateMpm) > ascentRateThreshold {
+        // ✅ FIXED Audit Fix #6: 移除 abs()，只有真正上升（負值 = 變淺）才觸發警報
+        // ascentRateMpm < 0 表示上升（深度減少），> 0 表示下潛（深度增加）
+        // 使用 abs() 會讓快速下潛（+20 m/min）被誤判為上升過快，發出無謂蜂鳴
+        if ascentRateMpm < -ascentRateThreshold {
             ascentWarnCounter += 1
             if ascentWarnCounter >= AlgorithmConstants.ascentWarnConsecutiveSec {
                 alerts.ascentWarning = true
@@ -348,15 +384,65 @@ final class DiveEngine {
         return absolutePressure * gasMix.fO2
     }
 
-    private func calculateCNS(po2: Double) -> Double {
-        // Simplified CNS calculation (0-100%)
-        // Full implementation tracks minute ventilation
-        let po2Threshold = 1.6
-        if po2 < 0.5 {
-            return 0.0
+    // MARK: - NOAA CNS Oxygen Clock
+    //
+    // ✅ FIXED Audit Fix #3: 實作 NOAA 標準時間積分（取代原本的瞬時比例公式）
+    //
+    // 原理：每秒的 CNS 累積量 = 100% ÷ 該 PO₂ 的 NOAA 允許暴露時間（秒）
+    //   accumulatedCNS += (100.0 / limitSec) × deltaT
+    //
+    // 水面衰減：半衰期 90 分鐘（NOAA 標準）
+    //   每秒衰減因子 = exp(-ln(2) / 5400 × deltaT)
+    //
+    // ⚠️ 積分式：PO₂ 降低時 CNS 不會瞬間歸零（過去累積的氧毒素仍存在）
+
+    // NOAA Diving Manual Table 3-5（PO₂ bar → 允許暴露時間 min）
+    // AI-generated (Claude)
+    private static let noaaCNSTable: [(po2: Double, limitMin: Double)] = [
+        (0.60, 720.0),
+        (0.70, 570.0),
+        (0.80, 450.0),
+        (0.90, 360.0),
+        (1.00, 300.0),
+        (1.10, 240.0),
+        (1.20, 210.0),
+        (1.30, 180.0),
+        (1.40, 150.0),
+        (1.50, 120.0),
+        (1.60,  45.0),
+    ]
+
+    /// 依 PO₂ 查 NOAA 表格並線性插值，回傳允許暴露時間（分鐘）
+    /// PO₂ < 0.6 → 無 CNS 風險，回傳 0；>= 1.6 → 使用最嚴格限制 45 min
+    private func cnsLimitMinutes(for po2: Double) -> Double {
+        let table = DiveEngine.noaaCNSTable
+        guard po2 >= table.first!.po2 else { return 0.0 }
+        if po2 >= table.last!.po2 { return table.last!.limitMin }
+        for i in 0..<(table.count - 1) {
+            if po2 >= table[i].po2 && po2 < table[i + 1].po2 {
+                let frac = (po2 - table[i].po2) / (table[i + 1].po2 - table[i].po2)
+                return table[i].limitMin + frac * (table[i + 1].limitMin - table[i].limitMin)
+            }
         }
-        // Proportional increase above threshold
-        return min(100.0, (po2 - 0.5) / po2Threshold * 50.0)
+        return table.last!.limitMin
+    }
+
+    private func updateCNS(po2: Double, deltaT: Double) {
+        let isUnderwater = state == .diving || state == .ascent
+                        || state == .safetyStop || state == .decompression
+        if isUnderwater && po2 >= 0.6 {
+            let limitSec = cnsLimitMinutes(for: po2) * 60.0
+            if limitSec > 0 {
+                accumulatedCNS += (100.0 / limitSec) * deltaT
+            }
+        } else if !isUnderwater {
+            // 水面指數衰減：半衰期 90 分鐘（NOAA 標準）
+            let halfTimeSec = 90.0 * 60.0
+            let decayFactor = exp(-log(2.0) / halfTimeSec * deltaT)
+            accumulatedCNS *= decayFactor
+        }
+        accumulatedCNS = max(0.0, min(200.0, accumulatedCNS))  // 200% 上限（保護）
+        cns = accumulatedCNS
     }
 
     private func calculateGF(depth: Double) -> Double {
@@ -395,6 +481,7 @@ final class DiveEngine {
         // ✅ FIXED Issue #8: 重置時間累積器
         accumulatedDiveTime = 0.0
         accumulatedPostDiveDelay = 0.0
+        accumulatedCNS = 0.0  // ✅ FIXED Audit Fix #3: 重置 CNS 積分
         buhlmann.reset()
         buhlmann.updateSurface(deltaT: 1.0)
     }

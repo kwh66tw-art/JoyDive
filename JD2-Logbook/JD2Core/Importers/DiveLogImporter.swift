@@ -1,9 +1,9 @@
 // DiveLogImporter.swift — JD2Core/Importers/DiveLogImporter.swift
-// v1.1 Week 7：Garmin FIT 解析改用 roznet/FitFileParser SPM
+// v1.2 Week 8：SeabearCSVParser 新增；GarminDescentParser 水溫 + GPS 強化；tech debt 修復
 //
 // 潛水日誌匯入器協議 (Protocol)
 // 定義所有格式解析器的統一介面
-// 支援: UDDF, SHEARWATER, Peregrine, Subsurface CSV, Garmin, Suunto JSON, Oceanic
+// 支援: UDDF, SHEARWATER, Peregrine, Subsurface CSV, Seabear CSV, Garmin, Suunto JSON, Oceanic
 //
 // SPM 依賴（PM 請透過 Xcode GUI 加入）：
 //   roznet/FitFileParser  https://github.com/roznet/FitFileParser
@@ -46,6 +46,7 @@ enum DiveLogFormat: String, CaseIterable {
     case shearwater = "SHEARWATER"
     case peregrine  = "Peregrine"
     case csv        = "CSV"           // Subsurface 手動 CSV 格式（#Nr header）
+    case seabear    = "Seabear"       // Seabear Diving Technology CSV 格式
     case garmin     = "Garmin"
     case suunto     = "Suunto"
     case oceanic    = "Oceanic"
@@ -58,6 +59,7 @@ enum DiveLogFormat: String, CaseIterable {
         case .shearwater: return ["xml"]
         case .peregrine:  return ["xml"]
         case .csv:        return ["csv"]
+        case .seabear:    return ["csv"]            // .csv（canHandle 以內容區分）
         case .garmin:     return ["fit"]
         case .suunto:     return ["json"]
         case .oceanic:    return ["ocf", "xml"]
@@ -71,6 +73,7 @@ enum DiveLogFormat: String, CaseIterable {
 
     /// 優先順序（用於格式自動偵測）
     /// Subsurface 優先級最高：canHandle 含內容驗證，不會誤判其他 .xml
+    /// Seabear 優先於 CSV：canHandle 讀取前 512 bytes 確認含 "SEABEAR" 特徵
     var priority: Int {
         switch self {
         case .subsurface: return 0   // 最優先，內容驗證確保正確性
@@ -79,8 +82,9 @@ enum DiveLogFormat: String, CaseIterable {
         case .garmin:     return 3
         case .suunto:     return 4
         case .oceanic:    return 5
-        case .peregrine:  return 6
-        case .csv:        return 7
+        case .seabear:    return 6   // 優先於通用 CSV（以內容簽名區分）
+        case .peregrine:  return 7
+        case .csv:        return 8
         }
     }
 }
@@ -143,6 +147,7 @@ struct DiveLogImporterFactory {
         UDDFParser(),
         SHEARWATERParser(),
         PeregrineParser(),
+        SeabearCSVParser(),      // 優先於通用 SubsurfaceCSVParser（內容簽名區分）
         SubsurfaceCSVParser(),
         GarminDescentParser(),
         SuuntoJSONParser(),
@@ -631,17 +636,41 @@ struct GarminDescentParser: DiveLogImporter {
             // gasMixJSON：取第一個 dive_gas；無則預設 Air
             let gasMixJSON = buildGasMixJSON(from: diveGases.first)
 
-            // 水溫：FIT dive_summary 此版本無水溫欄位，使用預設 15.0°C
-            // TODO Week 8: 可嘗試從 RecordMessage 取得 temperature
+            // 水溫：session avg_temperature；無則預設 15.0°C
+            let waterTemperature: Double
+            if let temp = session.interpretedField(key: "avg_temperature")?.valueUnit?.value {
+                waterTemperature = temp
+            } else {
+                waterTemperature = 15.0
+            }
+
+            // GPS：session start_position_lat / start_position_long
+            // FitFileParser 以 degrees 回傳（已套用 semicircle→degree 換算）
+            // 防禦性檢查：若值超出 degrees 範圍則視為 semicircles 並換算
+            let rawLat = session.interpretedField(key: "start_position_lat")?.valueUnit?.value
+            let rawLon = session.interpretedField(key: "start_position_long")?.valueUnit?.value
+
             let dive = DiveLog(
                 dateTime: startDate,
                 location: "",
                 maxDepth: maxDepth,
                 diveTimeSeconds: diveTimeSeconds,
                 gasMixJSON: gasMixJSON,
-                waterTemperature: 15.0
+                waterTemperature: waterTemperature
             )
             dive.sourceFormat = "garmin"
+
+            // 設定 GPS 座標（FIT semicircles → degrees 換算；已在 degrees 範圍則直接使用）
+            if let rawLat, let rawLon {
+                let semicircleScale = 180.0 / pow(2.0, 31.0)
+                let lat = abs(rawLat) > 360 ? rawLat * semicircleScale : rawLat
+                let lon = abs(rawLon) > 360 ? rawLon * semicircleScale : rawLon
+                if abs(lat) <= 90, abs(lon) <= 180 {
+                    dive.latitude  = lat
+                    dive.longitude = lon
+                }
+            }
+
             results.append(dive)
         }
 
@@ -899,7 +928,182 @@ struct OceanicParser: DiveLogImporter {
     let format = DiveLogFormat.oceanic
 
     func parse(from filePath: String) throws -> [DiveLog] {
-        throw DiveLogImportError.unsupportedFormat("Oceanic 解析器待實現 (Week 8)")
+        throw DiveLogImportError.unsupportedFormat("Oceanic 解析器待實現 (Week 9+)")
+    }
+}
+
+// ============================================================
+// MARK: - SeabearCSVParser
+// ============================================================
+
+/// Seabear CSV 解析器 — Seabear Diving Technology HUDC/T1 格式
+///
+/// 格式特徵：
+///   - 開頭為 /* ... */ 版權區塊（可選）
+///   - 接著 // 開頭的 metadata 行：
+///       //SEABEAR DIVING TECHNOLOGY
+///       //DIVE NR: 26
+///       //2014.07.10 08:46:10
+///       //Setting: 0 GF: 30/80 O2: 21%
+///   - 資料區塊：
+///       Time;Depth;NDT;TTS;Ceiling;Temperature;Tank pressure  ← 標題行
+///       1;1;1;1;1;1;1                                          ← 單位縮放行（skip）
+///       0;1;2;3;4;5;6                                          ← 欄位索引行（skip）
+///       （空行）
+///       1;1.2;200;0;0;25;199                                   ← 第一筆資料
+///   - Time 單位：秒；Depth 單位：公尺；Temperature 單位：°C
+///
+/// 測試驗證：
+///   - TestDiveSeabearHUDC.csv (2014-07-10 08:46:10Z, maxDepth=40.0m, diveTime=452s, temp=25.0°C, Air)
+// AI-generated (Claude)
+struct SeabearCSVParser: DiveLogImporter {
+
+    let format = DiveLogFormat.seabear
+
+    // MARK: - DiveLogImporter 協議
+
+    /// 格式偵測：.csv 副檔名 + 前 512 bytes 含 "SEABEAR"
+    func canHandle(filePath: String) -> Bool {
+        guard (filePath as NSString).pathExtension.lowercased() == "csv" else { return false }
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath),
+                                   options: .mappedIfSafe),
+              let head = String(data: data.prefix(512), encoding: .utf8) else { return false }
+        return head.contains("SEABEAR")
+    }
+
+    func validateContent(_ data: Data) -> Bool {
+        guard let head = String(data: data.prefix(512), encoding: .utf8) else { return false }
+        return head.contains("SEABEAR")
+    }
+
+    func parse(from filePath: String) throws -> [DiveLog] {
+
+        // ── 1. 讀取檔案 ──────────────────────────────────────────────
+        guard FileManager.default.fileExists(atPath: filePath) else {
+            throw DiveLogImportError.fileNotFound(filePath)
+        }
+        guard let rawContent = try? String(contentsOfFile: filePath, encoding: .utf8),
+              !rawContent.isEmpty else {
+            throw DiveLogImportError.emptyFile
+        }
+        guard rawContent.contains("SEABEAR") else {
+            throw DiveLogImportError.invalidFormat("非 Seabear CSV 格式（缺少 SEABEAR 標識）")
+        }
+
+        let lines = rawContent.components(separatedBy: .newlines)
+
+        // ── 2. 解析 metadata 區塊（// 開頭的行）──────────────────────
+        var dateTime: Date?
+        var gasFO2: Double = 0.21      // 預設 Air
+
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard trimmed.hasPrefix("//") else { continue }
+            let meta = String(trimmed.dropFirst(2)).trimmingCharacters(in: .whitespaces)
+
+            // 日期時間：形如 "2014.07.10 08:46:10"
+            if dateTime == nil, let dt = parseSeabearDateTime(meta) {
+                dateTime = dt
+            }
+
+            // 氣體：形如 "Setting: 0 GF: 30/80 O2: 21%"
+            if meta.hasPrefix("Setting:"), let fO2 = parseSeabearO2(meta) {
+                gasFO2 = fO2
+            }
+        }
+
+        guard let dt = dateTime else {
+            throw DiveLogImportError.parsingFailed("Seabear CSV 缺少日期時間行")
+        }
+
+        // ── 3. 解析資料行 ────────────────────────────────────────────
+        // 欄位：Time(s); Depth(m); NDT; TTS; Ceiling; Temperature(°C); TankPressure(bar)
+        var maxDepth: Double = 0.0
+        var lastTime: Int    = 0
+        var firstTemp: Double?
+        var inDataSection    = false
+        var skipCount        = 0     // 標題行後跳過 2 行（單位行 + 索引行）
+
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+
+            // 略過空行與 comment 行
+            guard !trimmed.isEmpty,
+                  !trimmed.hasPrefix("//"),
+                  !trimmed.hasPrefix("/*"),
+                  !trimmed.hasPrefix(" *"),
+                  !trimmed.hasPrefix("*") else { continue }
+
+            // 標題行（含 "Time" 或 "Depth"）
+            if !inDataSection && (trimmed.contains("Time") || trimmed.contains("Depth")) {
+                inDataSection = true
+                skipCount = 0
+                continue
+            }
+            guard inDataSection else { continue }
+
+            // 跳過標題後的單位行（1;1;1;...）和索引行（0;1;2;...）
+            if skipCount < 2 {
+                skipCount += 1
+                continue
+            }
+
+            // 解析資料行：分號分隔，至少 6 欄
+            let parts = trimmed.components(separatedBy: ";")
+            guard parts.count >= 6,
+                  let timeSec = Int(parts[0].trimmingCharacters(in: .whitespaces)),
+                  let depth   = Double(parts[1].trimmingCharacters(in: .whitespaces)),
+                  let temp    = Double(parts[5].trimmingCharacters(in: .whitespaces)) else {
+                continue
+            }
+
+            if depth > maxDepth { maxDepth = depth }
+            lastTime = timeSec
+            if firstTemp == nil { firstTemp = temp }
+        }
+
+        guard maxDepth > 0, lastTime > 0 else {
+            throw DiveLogImportError.parsingFailed("Seabear CSV 無有效潛水資料（depth/time 均為 0）")
+        }
+
+        let gasMixJSON = SeabearCSVParser.buildGasMixJSON(fO2: gasFO2)
+
+        let dive = DiveLog(
+            dateTime:         dt,
+            location:         "",
+            maxDepth:         maxDepth,
+            diveTimeSeconds:  lastTime,
+            gasMixJSON:       gasMixJSON,
+            waterTemperature: firstTemp ?? 20.0
+        )
+        dive.sourceFormat = "seabear"
+
+        return [dive]
+    }
+
+    // MARK: - 私有輔助
+
+    /// 解析 Seabear 日期時間格式："2014.07.10 08:46:10"（UTC）
+    private func parseSeabearDateTime(_ s: String) -> Date? {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy.MM.dd HH:mm:ss"
+        f.timeZone = TimeZone(secondsFromGMT: 0)
+        return f.date(from: s)
+    }
+
+    /// 從 "Setting: 0 GF: 30/80 O2: 21%" 解析 O2 百分比 → fO2
+    private func parseSeabearO2(_ s: String) -> Double? {
+        guard let range = s.range(of: "O2:") else { return nil }
+        let after = String(s[range.upperBound...]).trimmingCharacters(in: .whitespaces)
+        let numStr = after.components(separatedBy: CharacterSet(charactersIn: " %\t")).first ?? ""
+        guard let pct = Double(numStr), pct > 0 else { return nil }
+        return pct / 100.0
+    }
+
+    /// 建立 gasMixJSON 字串（使用 "%.4g" 確保浮點輸出一致）
+    private static func buildGasMixJSON(fO2: Double) -> String {
+        if abs(fO2 - 0.21) < 0.005 { return "\"air\"" }
+        return "{\"nitrox\":{\"fO2\":\(String(format: "%.4g", fO2))}}"
     }
 }
 

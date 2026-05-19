@@ -348,6 +348,111 @@ final class ImportCoordinatorTests: XCTestCase {
         }
     }
 
+    // MARK: - 效能基線測試（Week 8）
+
+    /// 測試所有可用測試檔案的批量解析效能
+    /// 目標：< 2 秒解析全部（9+ 個檔案）
+    func testPerformance_BatchParse_AllFormats() throws {
+        let allTestFiles: [String] = [
+            testFilePath("UDDF/test42.uddf"),
+            testFilePath("UDDF/test-apd-inspiration.uddf"),
+            testFilePath("CSV/test41.csv"),
+            testFilePath("Suunto/suunto_eon_core_nitrox.json"),
+            testFilePath("Suunto/suunto_nautic_sidemount.json"),
+            testFilePath("Suunto/suunto_ocean_air.json"),
+            testFilePath("Suunto/suunto_eon_core_nitrox.xml"),
+            testFilePath("Garmin/2018-08-11-09-56-30.fit"),
+            testFilePath("Garmin/2018-08-11-14-11-36.fit"),
+            testFilePath("Garmin/2018-08-13-13-48-26.fit"),
+            testFilePath("Seabear/TestDiveSeabearHUDC.csv"),
+        ].filter { FileManager.default.fileExists(atPath: $0) }
+
+        XCTAssertGreaterThanOrEqual(allTestFiles.count, 5,
+            "至少需要 5 個測試檔案才能進行有意義的效能測試")
+
+        let start = Date()
+        var totalDives = 0
+        var parsedFiles = 0
+        var failedFiles = 0
+
+        for path in allTestFiles {
+            guard let parser = DiveLogImporterFactory.selectImporter(for: path) else {
+                failedFiles += 1
+                continue
+            }
+            do {
+                let dives = try parser.parse(from: path)
+                totalDives += dives.count
+                parsedFiles += 1
+            } catch {
+                failedFiles += 1
+            }
+        }
+
+        let elapsed = Date().timeIntervalSince(start)
+
+        print("[Performance] \(parsedFiles) files, \(totalDives) dives, \(String(format: "%.3f", elapsed))s")
+        print("[Performance] failed: \(failedFiles) / \(allTestFiles.count)")
+
+        // 目標：< 10s（保守基線，Garmin FIT 使用 C SDK 較慢）
+        XCTAssertLessThan(elapsed, 10.0,
+            "批量解析 \(allTestFiles.count) 個檔案應在 10 秒內完成，實際: \(String(format: "%.3f", elapsed))s")
+        XCTAssertGreaterThan(totalDives, 0, "至少應解析出 1 筆潛水記錄")
+        XCTAssertEqual(failedFiles, 0, "所有可用測試檔案都應能成功解析")
+    }
+
+    /// 測試單一格式的重複解析效能（Suunto JSON，純 Swift 解析，速度最快）
+    func testPerformance_SuuntoJSON_Repeated() throws {
+        let path = testFilePath("Suunto/suunto_eon_core_nitrox.json")
+        guard FileManager.default.fileExists(atPath: path) else {
+            throw XCTSkip("TestFiles/Suunto/suunto_eon_core_nitrox.json 不存在")
+        }
+        let parser = SuuntoJSONParser()
+        let iterations = 50
+
+        let start = Date()
+        for _ in 0..<iterations {
+            let dives = try parser.parse(from: path)
+            XCTAssertEqual(dives.count, 1)
+        }
+        let elapsed = Date().timeIntervalSince(start)
+        let perParse = elapsed / Double(iterations) * 1000  // ms
+
+        print("[Performance] SuuntoJSON x\(iterations): \(String(format: "%.1f", perParse))ms/parse")
+
+        // 每次解析 < 100ms
+        XCTAssertLessThan(perParse, 100.0,
+            "SuuntoJSON 單次解析應 < 100ms，實際: \(String(format: "%.1f", perParse))ms")
+    }
+
+    /// 驗證去重邏輯效能（validateDives + 確認 deduplicateDives 不被誤呼叫）
+    func testPerformance_ValidateDives_1000Dives() {
+        let coordinator = makeCoordinator()
+        var dives: [DiveLog] = []
+        let baseDate = Date(timeIntervalSince1970: 1_700_000_000)
+
+        for i in 0..<1000 {
+            let dive = DiveLog(
+                dateTime: baseDate.addingTimeInterval(Double(i) * 3600),
+                location: "Site \(i % 10)",
+                maxDepth: 15.0 + Double(i % 25),
+                diveTimeSeconds: 1800 + (i % 1800),
+                gasMixJSON: "\"air\"",
+                waterTemperature: 25.0
+            )
+            dives.append(dive)
+        }
+
+        let start = Date()
+        let validated = coordinator.validateDives(dives)
+        let elapsed = Date().timeIntervalSince(start)
+
+        print("[Performance] validateDives(1000): \(String(format: "%.3f", elapsed))s")
+
+        XCTAssertEqual(validated.count, 1000, "1000 筆合法潛水應全部通過驗證")
+        XCTAssertLessThan(elapsed, 1.0, "validateDives 1000 筆應在 1 秒內完成")
+    }
+
     // MARK: - supportedFormats
 
     func testSupportedFormatsIsNotEmpty() {

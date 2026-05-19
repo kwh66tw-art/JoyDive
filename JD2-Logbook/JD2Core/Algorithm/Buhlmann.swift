@@ -166,7 +166,10 @@ final class Buhlmann {
     }
 
     func rawCeiling() -> Double {
-        // ✅ COMPLETED: GF = 1.0（用於鎖定 firstCeilingBar）
+        // ✅ FIXED: GF = 1.0，回傳絕對壓力（Bar）供 DiveEngine.firstCeilingBar 鎖定 GF 基準
+        // ⚠️ 回傳值為 Bar（絕對壓力），不是深度（Meters）
+        //    用途：firstCeilingBar = rawCeiling()，接著在 currentGF() 以 Bar 做插值運算
+        //    ceil()  函式回傳深度（Meters），職責不同，勿混淆
         let gf = 1.0
         var maxPceil = environment.surfacePressureBar
         for c in compartments {
@@ -174,7 +177,7 @@ final class Buhlmann {
             guard d > 0 else { continue }
             maxPceil = max(maxPceil, (c.pN2 - c.aN2 * gf) / d)
         }
-        return max(0, (maxPceil - environment.surfacePressureBar) * environment.metersPerBar)
+        return maxPceil  // 絕對壓力 Bar（無 deco 時 ≈ surfacePressureBar）
     }
 
     // MARK: - Reset

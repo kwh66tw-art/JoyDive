@@ -96,14 +96,23 @@ final class ImportCoordinator {
         // Step 4: 驗證與預處理
         let validatedDives = validateDives(dives)
 
-        // Step 5: 儲存到資料庫
-        for (index, dive) in validatedDives.enumerated() {
-            try database.add(dive)
-            progressCallback?(index + 1, validatedDives.count)
+        // Step 4.5: 去重（對照資料庫現有記錄，避免重複匯入）
+        let newDives = try await deduplicateDives(validatedDives)
+        let skippedCount = validatedDives.count - newDives.count
+        if skippedCount > 0 {
+            print("[Import] dedup: skipped \(skippedCount) duplicate(s)")
         }
 
-        print("[Import] done: \(validatedDives.count) dives imported")
-        return validatedDives
+        // Step 5: 批次儲存到資料庫（單次 save，避免 N+1 效能問題）
+        if !newDives.isEmpty {
+            try database.addBatch(newDives)
+        }
+        for index in newDives.indices {
+            progressCallback?(index + 1, newDives.count)
+        }
+
+        print("[Import] done: \(newDives.count) dives imported, \(skippedCount) skipped")
+        return newDives
     }
 
     /// 批量匯入多個檔案

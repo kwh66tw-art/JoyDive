@@ -57,6 +57,16 @@ final class DiveLogDatabase {
         try context.save()
     }
 
+    /// 批次新增多筆潛水日誌（僅 save 一次，避免 N+1 save）
+    /// - Parameter diveLogs: 潛水日誌陣列
+    func addBatch(_ diveLogs: [DiveLog]) throws {
+        guard !diveLogs.isEmpty else { return }
+        for diveLog in diveLogs {
+            context.insert(diveLog)
+        }
+        try context.save()
+    }
+
     /// 刪除潛水日誌
     /// - Parameter diveLog: 潛水日誌實例
     func delete(_ diveLog: DiveLog) throws {
