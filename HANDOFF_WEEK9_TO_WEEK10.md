@@ -1,7 +1,8 @@
 # Handoff: Week 9 → Week 10
 
 **日期**：2026-05-19
-**狀態**：Week 9 coding 完成，待 Xcode 整合驗證（由 PM 執行）
+**狀態**：✅ Week 9 全部完成
+**Git commit**：`716c69f` feat(Week9): UI phase — TabBar navigation, Logbook/Calendar/Detail/Import views
 
 ---
 
@@ -25,7 +26,7 @@ UI Phase 啟動：建立 Bottom TabBar 導航架構、潛水日誌列表、日�
 | 9 | `ImportWizardView.swift` — 3 步驟匯入嚮導（Select / Import / Result） | ✅ |
 | 10 | `MapPlaceholderView.swift` — 地圖 Tab 佔位視圖 | ✅ |
 | 11 | `SettingsPlaceholderView.swift` — 設定 Tab 佔位視圖 | ✅ |
-| 12 | Xcode 驗證（build + 模擬器截圖）| ⏳ PM 執行 |
+| 12 | Xcode 驗證（build + 模擬器截圖）| ✅ Build Succeeded，0 errors，0 warnings |
 
 ---
 
