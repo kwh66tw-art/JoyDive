@@ -1,11 +1,16 @@
 // DiveLogImporter.swift — JD2Core/Importers/DiveLogImporter.swift
-// v1.0 INITIAL
+// v1.1 Week 7：Garmin FIT 解析改用 roznet/FitFileParser SPM
 //
 // 潛水日誌匯入器協議 (Protocol)
 // 定義所有格式解析器的統一介面
 // 支援: UDDF, SHEARWATER, Peregrine, Subsurface CSV, Garmin, Suunto JSON, Oceanic
+//
+// SPM 依賴（PM 請透過 Xcode GUI 加入）：
+//   roznet/FitFileParser  https://github.com/roznet/FitFileParser
+//   （取代 FitDataProtocol —— 後者無 DiveSummaryMessage / DiveGasMessage）
 
 import Foundation
+import FitFileParser   // roznet/FitFileParser — 封裝 Garmin 官方 C SDK FitSDK 21.115
 
 /// 匯入錯誤類型定義
 enum DiveLogImportError: Error, LocalizedError {
@@ -504,19 +509,22 @@ struct SubsurfaceCSVParser: DiveLogImporter {
     }
 }
 
-/// Garmin Descent 解析器 — ANT+ FIT 二進位格式
+/// Garmin Descent 解析器 — ANT+ FIT 格式（roznet/FitFileParser SPM）
 ///
-/// 支援 Garmin Descent 系列手錶匯出的 .fit 檔案（純 Swift 實作，無外部依賴）。
-/// 解析策略：
-///   - Session (GMN 18)      → start_time、total_elapsed_time
-///   - DiveSummary (GMN 268) → max_depth（session-level，field 0 == 18）
+/// 支援 Garmin Descent 系列手錶匯出的 .fit 檔案。
+/// 依賴 roznet/FitFileParser（https://github.com/roznet/FitFileParser）
+/// 該函式庫封裝 Garmin 官方 C SDK（FitSDK 21.115），支援所有官方訊息類型。
 ///
-/// FIT Protocol 21.x 關鍵常數：
-///   - FIT epoch: 1989-12-31 00:00:00 UTC（Unix offset = 631 065 600 s）
-///   - total_elapsed_time scale = 1 000（raw / 1000 = 秒）
-///   - max_depth / avg_depth scale = 1 000（raw mm / 1000 = 公尺）
+/// 解析策略（強型別 FitFileParser API，零 raw byte offset 運算）：
+///   - session (GMN 18)       → start_time, total_elapsed_time
+///   - dive_summary (GMN 268) → max_depth
+///   - dive_gas (GMN 269)     → oxygen_content, helium_content → gasMixJSON
 ///
-/// 測試驗證：
+/// scale 換算由 FitFileParser 自動套用（官方 Profile.xlsx）：
+///   - total_elapsed_time: raw ms → seconds（÷1000）
+///   - max_depth: raw mm → metres（÷1000）
+///
+/// 測試驗證（Python binary 分析確認）：
 ///   - 2018-08-11-09-56-30.fit → maxDepth=27.022m, 3514s, start 07:56:30 UTC
 ///   - 2018-08-11-14-11-36.fit → maxDepth=20.628m, 3929s, start 12:11:36 UTC
 ///   - 2018-08-13-13-48-26.fit → maxDepth=15.230m, 4145s, start 11:48:26 UTC
@@ -524,213 +532,147 @@ struct GarminDescentParser: DiveLogImporter {
 
     let format = DiveLogFormat.garmin
 
-    // MARK: - FIT 協議常數
+    // MARK: - 常數（唯一的 Data 存取：magic bytes 驗證，非 parser 邏輯）
 
-    /// FIT epoch：從 Unix epoch (1970-01-01) 到 FIT epoch (1989-12-31) 的秒數
-    private static let fitEpochOffset: TimeInterval = 631_065_600
-    private static let invalidUInt32:  UInt32        = 0xFFFF_FFFF
-
-    // MARK: - 內部類型
-
-    private struct FITField {
-        let num:  UInt8  // field definition number
-        let size: UInt8  // bytes
-        let type: UInt8  // base type (e.g. 0x86 = uint32)
-    }
-
-    private struct FITLocalDef {
-        let gmn:       UInt16    // global message number
-        let bigEndian: Bool
-        let fields:    [FITField]
-    }
+    private static let fitMinHeaderSize = 14
+    // FIT magic bytes ".FIT" at offset 8
+    private static let magic0: UInt8 = 0x2E  // '.'
+    private static let magic1: UInt8 = 0x46  // 'F'
+    private static let magic2: UInt8 = 0x49  // 'I'
+    private static let magic3: UInt8 = 0x54  // 'T'
 
     // MARK: - DiveLogImporter
 
     func canHandle(filePath: String) -> Bool {
-        let ext = (filePath as NSString).pathExtension.lowercased()
-        guard ext == "fit" else { return false }
-        // 快速驗證 FIT magic bytes ".FIT" at offset 8
-        guard let fh = FileHandle(forReadingAtPath: filePath) else { return false }
-        defer { fh.closeFile() }
-        try? fh.seek(toOffset: 8)
-        let magic = fh.readData(ofLength: 4)
-        return magic.count == 4
-            && magic[0] == 0x2E  // '.'
-            && magic[1] == 0x46  // 'F'
-            && magic[2] == 0x49  // 'I'
-            && magic[3] == 0x54  // 'T'
+        guard filePath.lowercased().hasSuffix(".fit") else { return false }
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath),
+                                   options: .mappedIfSafe),
+              data.count >= 12 else { return false }
+        return hasFITMagic(data)
+    }
+
+    func validateContent(_ data: Data) -> Bool {
+        guard data.count >= 12 else { return false }
+        return hasFITMagic(data)
     }
 
     func parse(from filePath: String) throws -> [DiveLog] {
+
+        // ── 1. 檔案存在性 ──────────────────────────────────────────────
         guard FileManager.default.fileExists(atPath: filePath) else {
             throw DiveLogImportError.fileNotFound(filePath)
         }
-        let data: Data
-        do {
-            data = try Data(contentsOf: URL(fileURLWithPath: filePath), options: .mappedIfSafe)
-        } catch {
-            throw DiveLogImportError.parsingFailed("無法讀取 FIT 檔案", underlyingError: error)
+
+        // ── 2. 讀取資料 + 長度驗證 ─────────────────────────────────────
+        let url = URL(fileURLWithPath: filePath)
+        guard let rawData = try? Data(contentsOf: url, options: .mappedIfSafe) else {
+            throw DiveLogImportError.corruptedData("無法讀取 FIT 檔案")
         }
-        guard data.count >= 14 else {
-            throw DiveLogImportError.corruptedData("FIT 檔案過短（\(data.count) bytes，至少需 14 bytes）")
+        guard rawData.count >= Self.fitMinHeaderSize else {
+            throw DiveLogImportError.corruptedData(
+                "FIT 檔案過短（\(rawData.count) bytes，至少需 \(Self.fitMinHeaderSize) bytes）"
+            )
         }
-        // 驗證 magic bytes
-        guard data[8] == 0x2E, data[9] == 0x46, data[10] == 0x49, data[11] == 0x54 else {
+
+        // ── 3. Magic bytes 驗證（Data 下標，非 pointer arithmetic）───────
+        guard hasFITMagic(rawData) else {
             throw DiveLogImportError.invalidFormat("非標準 FIT 格式（magic bytes 不符）")
         }
 
-        let headerSize = Int(data[0])
-        let dataSize: UInt32 = fitReadUInt32LE(data: data, offset: 4)
-        let end = headerSize + Int(dataSize)
-        guard end <= data.count else {
-            throw DiveLogImportError.corruptedData("FIT 資料區塊超出檔案範圍")
+        // ── 4. FitFileParser 解析（.generic 模式解析所有 mesg_num，含 268/269）─
+        // .fast 模式僅解析 fit_example.h 定義的訊息，不含 dive_summary / dive_gas
+        let fitFile = FitFile(data: rawData, parsingType: .generic)
+
+        // ── 5. 取出各訊息清單 ──────────────────────────────────────────
+        // FitMessageType aka UInt16；dive-specific mesg_num 無具名常數，使用 raw value
+        let sessions:      [FitMessage] = fitFile.messages(forMessageType: .session)
+        let diveSummaries: [FitMessage] = fitFile.messages(forMessageType: 268)  // dive_summary GMN 268
+        let diveGases:     [FitMessage] = fitFile.messages(forMessageType: 269)  // dive_gas     GMN 269
+
+        guard !sessions.isEmpty else {
+            throw DiveLogImportError.parsingFailed("FIT 檔案無 session 訊息（GMN 18 不存在）")
         }
 
-        // MARK: 解析 Record 迴圈
-        var pos = headerSize
-        var localDefs:         [UInt8: FITLocalDef] = [:]
-        var sessionFields:     [UInt8: UInt32]       = [:]
-        var diveSummaryFields: [UInt8: UInt32]       = [:]  // session-level (field 0 == 18)
+        // ── 6. 逐 session 建構 DiveLog ────────────────────────────────
+        var results: [DiveLog] = []
 
-        while pos < end {
-            guard pos < data.count else { break }
-            let hdr = data[pos]; pos += 1
+        for (index, session) in sessions.enumerated() {
 
-            // Compressed timestamp header（bit 7 = 1）：略過 data message
-            if hdr & 0x80 != 0 {
-                let lmt = (hdr >> 5) & 0x03
-                if let def = localDefs[lmt] {
-                    pos += def.fields.reduce(0) { $0 + Int($1.size) }
-                }
-                continue
+            // start_time → Date（FitFileParser 自動轉換 FIT epoch → Unix）
+            guard let startDate = session.interpretedField(key: "start_time")?.time else {
+                throw DiveLogImportError.parsingFailed("session[\(index)] 缺少 start_time")
             }
 
-            let isDef   = hdr & 0x40 != 0
-            let devData = hdr & 0x20 != 0
-            let lmt     = hdr & 0x0F
+            // total_elapsed_time → 秒（scale=1000 已由 FitFileParser 套用，回傳值單位為秒）
+            guard let elapsedSecs = session.interpretedField(
+                key: "total_elapsed_time")?.valueUnit?.value else {
+                throw DiveLogImportError.parsingFailed(
+                    "session[\(index)] 缺少 total_elapsed_time")
+            }
+            // Int() 截斷對應 FIT SDK integer division（raw ms / 1000）
+            // 3514.748s → Int(3514.748) = 3514，與測試期望值一致
+            let diveTimeSeconds = Int(elapsedSecs)
 
-            if isDef {
-                // Definition message
-                guard pos < data.count else { break }
-                pos += 1  // reserved
-                guard pos + 3 < data.count else { break }
-                let bigEndian = data[pos] == 1; pos += 1
-                let gmn: UInt16 = bigEndian
-                    ? (UInt16(data[pos]) << 8 | UInt16(data[pos + 1]))
-                    : (UInt16(data[pos + 1]) << 8 | UInt16(data[pos]))
-                pos += 2
-                guard pos < data.count else { break }
-                let nFields = Int(data[pos]); pos += 1
-                var fields: [FITField] = []
-                for _ in 0..<nFields {
-                    guard pos + 2 < data.count else { break }
-                    fields.append(FITField(num: data[pos], size: data[pos + 1], type: data[pos + 2]))
-                    pos += 3
-                }
-                if devData {
-                    guard pos < data.count else { break }
-                    let nDev = Int(data[pos]); pos += 1
-                    pos += nDev * 3
-                }
-                localDefs[lmt] = FITLocalDef(gmn: gmn, bigEndian: bigEndian, fields: fields)
-
+            // max_depth → 公尺（scale=1000 已由 FitFileParser 套用）
+            // 優先 dive_summary，fallback session.max_depth
+            let maxDepth: Double
+            let summary = diveSummaries.indices.contains(index)
+                ? diveSummaries[index]
+                : diveSummaries.first
+            if let d = summary?.interpretedField(key: "max_depth")?.valueUnit?.value {
+                maxDepth = d
+            } else if let d = session.interpretedField(key: "max_depth")?.valueUnit?.value {
+                maxDepth = d
             } else {
-                // Data message
-                guard let def = localDefs[lmt] else { break }
-                var record: [UInt8: UInt32] = [:]
-                for field in def.fields {
-                    let sz = Int(field.size)
-                    guard pos + sz <= data.count else { pos += sz; continue }
-                    record[field.num] = fitReadField(data: data, offset: pos, size: sz, bigEndian: def.bigEndian)
-                    pos += sz
-                }
-                switch def.gmn {
-                case 18:   // session
-                    sessionFields = record
-                case 268:  // dive_summary
-                    // 僅保留 session-level 摘要（field 0 = reference_mesg == 18）
-                    if (record[0] ?? 0xFFFF) == 18 {
-                        diveSummaryFields = record
-                    }
-                default:
-                    break
-                }
+                throw DiveLogImportError.parsingFailed(
+                    "session[\(index)] 找不到 max_depth（dive_summary GMN 268 缺失）")
             }
+
+            // gasMixJSON：取第一個 dive_gas；無則預設 Air
+            let gasMixJSON = buildGasMixJSON(from: diveGases.first)
+
+            // 水溫：FIT dive_summary 此版本無水溫欄位，使用預設 15.0°C
+            // TODO Week 8: 可嘗試從 RecordMessage 取得 temperature
+            let dive = DiveLog(
+                dateTime: startDate,
+                location: "",
+                maxDepth: maxDepth,
+                diveTimeSeconds: diveTimeSeconds,
+                gasMixJSON: gasMixJSON,
+                waterTemperature: 15.0
+            )
+            dive.sourceFormat = "garmin"
+            results.append(dive)
         }
 
-        // MARK: 建構 DiveLog
-
-        guard !sessionFields.isEmpty || !diveSummaryFields.isEmpty else {
-            throw DiveLogImportError.parsingFailed("FIT 檔案未包含潛水摘要（dive_summary GMN 268 不存在）")
-        }
-
-        // start_time：session field 2（FIT epoch seconds，無 scale）
-        guard let startRaw = sessionFields[2], startRaw != Self.invalidUInt32 else {
-            throw DiveLogImportError.parsingFailed("FIT 檔案缺少有效的潛水開始時間（session field 2）")
-        }
-        let dateTime = Date(timeIntervalSince1970: Double(startRaw) + Self.fitEpochOffset)
-
-        // total_elapsed_time：session field 7（scale=1000，raw/1000 = 秒）
-        let diveTimeSeconds: Int
-        if let raw = sessionFields[7], raw != Self.invalidUInt32 {
-            diveTimeSeconds = Int(raw / 1000)
-        } else if let raw = diveSummaryFields[11], raw != Self.invalidUInt32 {
-            diveTimeSeconds = Int(raw / 1000)
-        } else {
-            diveTimeSeconds = 0
-        }
-
-        // max_depth：dive_summary field 3（scale=1000，raw mm / 1000 = 公尺）
-        let maxDepth: Double
-        if let raw = diveSummaryFields[3], raw != Self.invalidUInt32 {
-            maxDepth = Double(raw) / 1000.0
-        } else {
-            maxDepth = 0.0
-        }
-
-        // 氣體：這批 FIT 檔案無 dive_gas (GMN 269)，預設 Air
-        // 水溫：dive_summary 此版本無溫度欄位，使用預設值 15.0°C
-        let dive = DiveLog(
-            dateTime: dateTime,
-            location: "",
-            maxDepth: maxDepth,
-            diveTimeSeconds: diveTimeSeconds,
-            gasMixJSON: "\"air\"",
-            waterTemperature: 15.0
-        )
-        dive.sourceFormat = "garmin"
-        return [dive]
+        return results
     }
 
-    // MARK: - FIT 二進位讀取輔助
+    // MARK: - 私有輔助
 
-    /// 讀取 4-byte little-endian UInt32（用於 FIT file header）
-    private func fitReadUInt32LE(data: Data, offset: Int) -> UInt32 {
-        UInt32(data[offset])
-            | UInt32(data[offset + 1]) << 8
-            | UInt32(data[offset + 2]) << 16
-            | UInt32(data[offset + 3]) << 24
+    /// 驗證 FIT magic bytes ".FIT"（offset 8–11）
+    private func hasFITMagic(_ data: Data) -> Bool {
+        data[8] == Self.magic0 && data[9]  == Self.magic1
+            && data[10] == Self.magic2 && data[11] == Self.magic3
     }
 
-    /// 讀取任意 size 的欄位值，回傳 UInt32（size > 4 或未知 → 回傳 invalid）
-    private func fitReadField(data: Data, offset: Int, size: Int, bigEndian: Bool) -> UInt32 {
-        switch size {
-        case 1:
-            return UInt32(data[offset])
-        case 2:
-            let lo = UInt32(data[offset])
-            let hi = UInt32(data[offset + 1])
-            return bigEndian ? (lo << 8 | hi) : (hi << 8 | lo)
-        case 4:
-            let b0 = UInt32(data[offset])
-            let b1 = UInt32(data[offset + 1])
-            let b2 = UInt32(data[offset + 2])
-            let b3 = UInt32(data[offset + 3])
-            return bigEndian
-                ? (b0 << 24 | b1 << 16 | b2 << 8 | b3)
-                : (b3 << 24 | b2 << 16 | b1 << 8 | b0)
-        default:
-            return Self.invalidUInt32
+    /// 將 dive_gas 訊息轉換為 JD2 gasMixJSON 格式
+    ///
+    /// - Air:    O₂ ≈ 21%, He = 0  → `"air"`
+    /// - Nitrox: O₂ > 21%, He = 0  → `{"nitrox":{"fO2":0.32}}`
+    /// - Trimix: He > 0             → `{"trimix":{"fO2":0.21,"fHe":0.35}}`
+    private func buildGasMixJSON(from message: FitMessage?) -> String {
+        guard let msg = message else { return "\"air\"" }
+        let o2Pct = msg.interpretedField(key: "oxygen_content")?.valueUnit?.value ?? 21.0
+        let hePct = msg.interpretedField(key: "helium_content")?.valueUnit?.value ?? 0.0
+
+        if hePct > 0 {
+            return "{\"trimix\":{\"fO2\":\(String(format: "%.2f", o2Pct / 100.0))," +
+                   "\"fHe\":\(String(format: "%.2f", hePct / 100.0))}}"
+        } else if abs(o2Pct - 21.0) < 0.5 {
+            return "\"air\""
+        } else {
+            return "{\"nitrox\":{\"fO2\":\(String(format: "%.2f", o2Pct / 100.0))}}"
         }
     }
 }
