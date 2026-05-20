@@ -116,13 +116,18 @@ struct MapView: View {
     // MARK: - Empty State
 
     private var emptyState: some View {
-        ContentUnavailableView {
-            Label(
-                String(localized: "No GPS Dive Sites"),
-                systemImage: "map.fill"
-            )
-        } description: {
-            Text("Dives with GPS coordinates will appear on this map.")
+        VStack(spacing: 0) {
+            ContentUnavailableView {
+                Label(
+                    String(localized: "No GPS Dive Sites"),
+                    systemImage: "map.fill"
+                )
+            } description: {
+                Text("Dives with GPS coordinates will appear on this map.")
+            }
+
+            // 決策 #5：地圖空狀態 inline 廣告（Premium 用戶隱藏）
+            PremiumAwareAdBanner(adUnitID: AdUnitID.mapEmptyState)
         }
     }
 }

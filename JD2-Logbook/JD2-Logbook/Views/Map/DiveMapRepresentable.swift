@@ -65,8 +65,7 @@ struct DiveMapRepresentable: UIViewRepresentable {
 
         // ── Annotation diff ──────────────────────────────────────────
         let existing = mapView.annotations.compactMap { $0 as? DiveSiteAnnotation }
-        let existingIDs = Set(existing.map { $0.dive.persistentModelID })
-        let newIDs      = Set(dives.map { $0.persistentModelID })
+        let newIDs   = Set(dives.map { $0.persistentModelID })
 
         // Remove stale annotations
         let toRemove = existing.filter { !newIDs.contains($0.dive.persistentModelID) }

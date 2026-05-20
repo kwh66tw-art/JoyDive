@@ -8,6 +8,10 @@ struct DiveLogListView: View {
     @Query(sort: \DiveLog.dateTime, order: .reverse) var dives: [DiveLog]
     @State private var searchText = ""
 
+    /// 匯入後高亮顯示的潛水 ID（由 MainTabView / ImportWizardView 傳入）
+    var highlightedDiveID: PersistentIdentifier? = nil
+    @State private var highlightFlash: PersistentIdentifier? = nil
+
     var filteredDives: [DiveLog] {
         guard !searchText.isEmpty else { return dives }
         return dives.filter {
@@ -41,10 +45,26 @@ struct DiveLogListView: View {
                             }
                             .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Color.clear)
+                            .listRowBackground(
+                                highlightFlash == dive.persistentModelID
+                                    ? Color.accentColor.opacity(0.15)
+                                    : Color.clear
+                            )
                         }
                     }
                     .listStyle(.plain)
+                    .onChange(of: highlightedDiveID) { _, newID in
+                        guard let newID else { return }
+                        // flash 動畫：高亮 → 1.5 秒後消失
+                        withAnimation(.easeIn(duration: 0.3)) {
+                            highlightFlash = newID
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            withAnimation(.easeOut(duration: 0.5)) {
+                                highlightFlash = nil
+                            }
+                        }
+                    }
                     .searchable(
                         text: $searchText,
                         placement: .navigationBarDrawer(displayMode: .always),

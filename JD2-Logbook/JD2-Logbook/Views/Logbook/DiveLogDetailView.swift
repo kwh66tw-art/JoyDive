@@ -5,6 +5,7 @@ import SwiftUI
 
 struct DiveLogDetailView: View {
     let dive: DiveLog
+    @State private var showEditSheet = false
 
     // MARK: - Computed
 
@@ -105,6 +106,19 @@ struct DiveLogDetailView: View {
         .listStyle(.insetGrouped)
         .navigationTitle("Dive Details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showEditSheet = true
+                } label: {
+                    Text("Edit")
+                }
+                .accessibilityLabel(String(localized: "Edit Dive"))
+            }
+        }
+        .sheet(isPresented: $showEditSheet) {
+            DiveLogEditSheet(mode: .edit(dive))
+        }
     }
 
     // MARK: - Hero Header

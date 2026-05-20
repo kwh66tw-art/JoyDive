@@ -6,6 +6,7 @@
 // Step 3: 匯入結果
 
 import SwiftUI
+import SwiftData
 import UniformTypeIdentifiers
 
 // MARK: - 匯入精靈狀態機
@@ -23,6 +24,10 @@ struct ImportWizardView: View {
     @State private var step: ImportStep = .ready
     @State private var showFilePicker = false
     @State private var selectedFileName: String? = nil
+
+    /// 匯入成功後回調：傳回最新一筆潛水的 PersistentIdentifier（用於 highlight）
+    /// 由 MainTabView 傳入，負責切換 Tab
+    var onImportSuccess: ((PersistentIdentifier?) -> Void)? = nil
 
     // ImportCoordinator 是 @MainActor，在 MainActor 視圖中直接使用
     private let coordinator = ImportCoordinator(database: DiveLogDatabase.shared)
@@ -48,6 +53,9 @@ struct ImportWizardView: View {
                         failureView(message: message)
                     }
                 }
+
+                // 決策 #5：Import 頁 Banner 廣告（底部，Premium 用戶隱藏）
+                PremiumAwareAdBanner(adUnitID: AdUnitID.importBanner)
             }
             .navigationTitle("Import Dives")
             .navigationBarTitleDisplayMode(.large)
@@ -360,6 +368,11 @@ struct ImportWizardView: View {
 
                 // 計算跳過數（dedup 已在 coordinator 內處理，這裡無法直接取得）
                 step = .success(count: imported.count, skipped: 0)
+
+                // 決策 #2：匯入成功 → 觸發切換 Tab callback
+                // 取最新一筆（排序後首筆），用於 highlight 動畫
+                let latestID = imported.sorted { $0.dateTime > $1.dateTime }.first?.persistentModelID
+                onImportSuccess?(latestID)
 
             } catch DiveLogImportError.fileNotFound(let path) {
                 step = .failure(message: "File not found: \(path)")
