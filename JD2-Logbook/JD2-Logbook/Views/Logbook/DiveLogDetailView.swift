@@ -5,7 +5,11 @@ import SwiftUI
 
 struct DiveLogDetailView: View {
     let dive: DiveLog
-    @State private var showEditSheet = false
+    @State private var showEditSheet          = false
+    @State private var purchaseManager        = PurchaseManager.shared
+    @State private var showPremiumSheet       = false
+    @State private var showExportFormatPicker = false
+    @State private var exportItem: ExportItem?
 
     // MARK: - Computed
 
@@ -107,6 +111,34 @@ struct DiveLogDetailView: View {
         .navigationTitle("Dive Details")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            // ── Export 按鈕 ──────────────────────────────────
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    if purchaseManager.isPremium {
+                        showExportFormatPicker = true
+                    } else {
+                        showPremiumSheet = true
+                    }
+                } label: {
+                    // 非 Premium：圖示半透明 + 右下角小鎖頭
+                    ZStack(alignment: .bottomTrailing) {
+                        Image(systemName: "square.and.arrow.up")
+                            .opacity(purchaseManager.isPremium ? 1.0 : 0.4)
+                        if !purchaseManager.isPremium {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 7, weight: .bold))
+                                .foregroundStyle(.secondary)
+                                .offset(x: 3, y: 3)
+                        }
+                    }
+                }
+                .accessibilityLabel(
+                    purchaseManager.isPremium
+                        ? String(localized: "Export Dive")
+                        : String(localized: "Export Dive — Premium Required")
+                )
+            }
+            // ── Edit 按鈕 ────────────────────────────────────
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showEditSheet = true
@@ -116,6 +148,25 @@ struct DiveLogDetailView: View {
                 .accessibilityLabel(String(localized: "Edit Dive"))
             }
         }
+        // ── Format 選擇 ──────────────────────────────────────
+        .confirmationDialog(
+            String(localized: "Export Format"),
+            isPresented: $showExportFormatPicker,
+            titleVisibility: .visible
+        ) {
+            Button("UDDF (.uddf)") { triggerExport(format: .uddf) }
+            Button("CSV (.csv)")   { triggerExport(format: .csv)  }
+            Button(String(localized: "Cancel"), role: .cancel) { }
+        }
+        // ── Share Sheet ──────────────────────────────────────
+        .sheet(item: $exportItem) { item in
+            ActivityView(url: item.url)
+        }
+        // ── Premium Upgrade ──────────────────────────────────
+        .sheet(isPresented: $showPremiumSheet) {
+            PremiumUpgradeSheet()
+        }
+        // ── Edit Sheet ───────────────────────────────────────
         .sheet(isPresented: $showEditSheet) {
             DiveLogEditSheet(mode: .edit(dive))
         }
@@ -186,6 +237,18 @@ struct DiveLogDetailView: View {
             )
         }
         .padding(.vertical, 8)
+    }
+
+    // MARK: - Export
+
+    private func triggerExport(format: ExportFormat) {
+        do {
+            let url = try DiveExporter.exportToTempFile([dive], as: format)
+            exportItem = ExportItem(url: url)
+        } catch {
+            // 生成失敗時靜默處理（儲存空間不足等極端情況）
+            print("[DiveLogDetailView] Export failed: \(error)")
+        }
     }
 
     // MARK: - Helpers
