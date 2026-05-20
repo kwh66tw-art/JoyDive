@@ -160,6 +160,30 @@ struct SettingsView: View {
                     }
                 }
 
+                #if DEBUG
+                Section(header: Text("Developer Tools")) {
+                    Button {
+                        do {
+                            try MockDataSeeder.seed(database: DiveLogDatabase.shared, count: 105)
+                        } catch {
+                            print("Seeding failed: \(error)")
+                        }
+                    } label: {
+                        Label("Inject 100+ Mock Dives", systemImage: "square.stack.3d.up.fill")
+                    }
+                    
+                    Button(role: .destructive) {
+                        do {
+                            try DiveLogDatabase.shared.deleteAllDives()
+                        } catch {
+                            print("Clear failed: \(error)")
+                        }
+                    } label: {
+                        Label("Clear All Dives", systemImage: "trash")
+                    }
+                }
+                #endif
+
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.large)

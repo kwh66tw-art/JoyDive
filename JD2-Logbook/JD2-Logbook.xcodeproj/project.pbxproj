@@ -30,6 +30,7 @@
 
 /* Begin PBXFileReference section */
 		0A07DAF62FBD3D33007E7EA9 /* JD2-Logbook.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "JD2-Logbook.xcodeproj"; sourceTree = "<group>"; };
+		0A07DBA52FBDD0D2007E7EA9 /* JD2-Logbook.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "JD2-Logbook.xcodeproj"; sourceTree = "<group>"; };
 		0A37CEA12FB9E822004E01E9 /* JD2-Logbook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "JD2-Logbook.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A37CEAE2FB9E823004E01E9 /* JD2-LogbookTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "JD2-LogbookTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A37CEB82FB9E824004E01E9 /* JD2-LogbookUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "JD2-LogbookUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,6 +87,13 @@
 
 /* Begin PBXGroup section */
 		0A07DAF72FBD3D33007E7EA9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0A07DBA72FBDD0D2007E7EA9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -253,6 +261,10 @@
 				{
 					ProductGroup = 0A07DAF72FBD3D33007E7EA9 /* Products */;
 					ProjectRef = 0A07DAF62FBD3D33007E7EA9 /* JD2-Logbook.xcodeproj */;
+				},
+				{
+					ProductGroup = 0A07DBA72FBDD0D2007E7EA9 /* Products */;
+					ProjectRef = 0A07DBA52FBDD0D2007E7EA9 /* JD2-Logbook.xcodeproj */;
 				},
 			);
 			projectRoot = "";
