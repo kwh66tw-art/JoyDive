@@ -14,8 +14,8 @@ struct MainTabView: View {
                     Label("Logbook", systemImage: "list.bullet.below.rectangle")
                 }
 
-            // MARK: - 地圖 Tab（Week 10 實作）
-            MapPlaceholderView()
+            // MARK: - 地圖 Tab
+            MapView()
                 .tabItem {
                     Label("Map", systemImage: "map")
                 }
