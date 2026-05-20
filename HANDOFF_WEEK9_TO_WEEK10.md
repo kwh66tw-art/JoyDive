@@ -1,8 +1,15 @@
 # Handoff: Week 9 → Week 10
 
-**日期**：2026-05-19
+**日期**：2026-05-20
 **狀態**：✅ Week 9 全部完成
-**Git commit**：`716c69f` feat(Week9): UI phase — TabBar navigation, Logbook/Calendar/Detail/Import views
+
+**Git commits（依序）：**
+| Hash | 說明 |
+|------|------|
+| `716c69f` | feat(Week9): UI phase — 10 new View files + String Catalog |
+| `af20cc5` | chore: ignore 品牌跨平台色彩系統計畫.md |
+| `76d6e34` | docs: finalize HANDOFF_WEEK9_TO_WEEK10 |
+| `8b72604` | chore: add Localizable.xcstrings to project, register zh-Hant/zh-Hans localizations |
 
 ---
 
