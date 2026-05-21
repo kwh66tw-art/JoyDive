@@ -27,10 +27,12 @@ struct LogbookContainerView: View {
                 }
             }
             .navigationTitle("Dive Logbook")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
+            #endif
             .toolbar {
-                // 右側：視圖切換
-                ToolbarItem(placement: .topBarTrailing) {
+                // 視圖切換
+                ToolbarItem(placement: .automatic) {
                     Button {
                         withAnimation(.easeInOut(duration: 0.2)) {
                             viewMode = (viewMode == .list) ? .calendar : .list
@@ -46,8 +48,8 @@ struct LogbookContainerView: View {
                     )
                 }
 
-                // 右側：新增潛水（決策 #7）
-                ToolbarItem(placement: .topBarTrailing) {
+                // 新增潛水（決策 #7）
+                ToolbarItem(placement: .primaryAction) {
                     Button {
                         showNewDiveSheet = true
                     } label: {

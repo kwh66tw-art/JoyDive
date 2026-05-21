@@ -15,7 +15,9 @@ struct MapPlaceholderView: View {
                 }
             )
             .navigationTitle("Map")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
+            #endif
         }
     }
 }

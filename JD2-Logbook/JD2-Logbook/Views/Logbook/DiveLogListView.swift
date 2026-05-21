@@ -65,11 +65,19 @@ struct DiveLogListView: View {
                             }
                         }
                     }
+                    #if os(iOS)
                     .searchable(
                         text: $searchText,
                         placement: .navigationBarDrawer(displayMode: .always),
                         prompt: Text("Search location…")
                     )
+                    #else
+                    .searchable(
+                        text: $searchText,
+                        placement: .toolbar,
+                        prompt: Text("Search location…")
+                    )
+                    #endif
                 }
             }
         }

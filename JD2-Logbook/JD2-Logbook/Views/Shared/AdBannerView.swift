@@ -114,7 +114,7 @@ struct AdBannerView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: adBannerHeight)
-        .background(Color(.tertiarySystemFill))
+        .background(Color.platformTertiaryFill)
         .overlay(
             Rectangle()
                 .strokeBorder(Color.secondary.opacity(0.25), lineWidth: 1)

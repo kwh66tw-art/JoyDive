@@ -58,7 +58,9 @@ struct ImportWizardView: View {
                 PremiumAwareAdBanner(adUnitID: AdUnitID.importBanner)
             }
             .navigationTitle("Import Dives")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
+            #endif
             .fileImporter(
                 isPresented: $showFilePicker,
                 allowedContentTypes: [
@@ -112,7 +114,7 @@ struct ImportWizardView: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
-        .background(Color(.systemGroupedBackground))
+        .background(Color.platformGroupedBackground)
     }
 
     private var stepLabels: [String] { ["Select", "Import", "Result"] }
@@ -128,7 +130,7 @@ struct ImportWizardView: View {
     private func stepCircleColor(_ index: Int) -> Color {
         if index < currentStepIndex { return .accentColor }
         if index == currentStepIndex { return .accentColor }
-        return Color(.tertiarySystemFill)
+        return Color.platformTertiaryFill
     }
 
     private func stepCircleTextColor(_ index: Int) -> Color {
@@ -431,7 +433,7 @@ private struct FormatCard: View {
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color.platformSecondaryGroupedBackground)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }

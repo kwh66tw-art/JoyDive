@@ -56,7 +56,9 @@ struct MapView: View {
                     .padding(.trailing, 12)
             }
             .navigationTitle(String(localized: "Map"))
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
 
             // ── Empty State ───────────────────────────────────────────
             .overlay {

@@ -50,7 +50,7 @@ struct DiveRowView: View {
             Spacer(minLength: 0)
         }
         .padding(12)
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color.platformSecondaryGroupedBackground)
         .clipShape(RoundedRectangle(cornerRadius: 14))
         // WCAG: 整張卡片作為可點選元素
         .accessibilityElement(children: .combine)

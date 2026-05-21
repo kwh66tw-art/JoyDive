@@ -15,7 +15,9 @@ struct SettingsPlaceholderView: View {
                 }
             )
             .navigationTitle("Settings")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
+            #endif
         }
     }
 }

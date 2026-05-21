@@ -163,7 +163,11 @@ struct DiveSiteSheetView: View {
             )
         }
         .padding(.vertical, 6)
+        #if os(iOS)
         .background(Color(.secondarySystemGroupedBackground))
+        #else
+        .background(Color(NSColor.controlBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 

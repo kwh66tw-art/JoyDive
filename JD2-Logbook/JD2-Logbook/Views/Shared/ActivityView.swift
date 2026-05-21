@@ -1,17 +1,17 @@
 // ActivityView.swift — JD2-Logbook/Views/Shared/
-// Week 12 — UIActivityViewController 封裝，含 iPad Popover 防崩潰保護
+// Week 12 — Cross-platform Share Sheet
 //
-// iPad 必要保護：
-//   未設定 popoverPresentationController.sourceView 時，iOS 在 iPad 上
-//   會拋出 NSException 導致 App 強制崩潰。
-//   此處使用 iOS 15+ keyWindow API（與 Week 11 AdBannerView 修正方式一致）。
+// iOS:   UIActivityViewController（已含 iPad popover 防崩潰保護）
+// macOS: SwiftUI Sheet + ShareLink（原生 macOS 分享選單）
 //
-// 使用方式：
+// 使用方式（兩平台相同）：
 //   .sheet(item: $exportItem) { item in
 //       ActivityView(url: item.url)
 //   }
 
 import SwiftUI
+
+#if os(iOS)
 import UIKit
 
 struct ActivityView: UIViewControllerRepresentable {
@@ -25,10 +25,8 @@ struct ActivityView: UIViewControllerRepresentable {
         )
 
         // ── iPad Popover 防崩潰保護 ──────────────────────────
-        // iPad 呈現 UIActivityViewController 必須提供 popover 錨點，
-        // 否則 iOS 拋出 NSException（App 閃退，App Store 審核必被拒）。
-        // 使用 iOS 15+ 的 foregroundActive + keyWindow，
-        // 與 Week 11 對 isKeyWindow 廢棄 API 的修正方式一致。
+        // 未設定錨點時 iOS 在 iPad 上拋出 NSException 強制崩潰。
+        // 使用 iOS 15+ foregroundActive + keyWindow（Week 11 同款修法）。
         if let popover = controller.popoverPresentationController {
             let scene = UIApplication.shared.connectedScenes
                 .compactMap { $0 as? UIWindowScene }
@@ -42,7 +40,6 @@ struct ActivityView: UIViewControllerRepresentable {
                     width:  0,
                     height: 0
                 )
-                // 螢幕正中央彈出，不顯示方向箭頭
                 popover.permittedArrowDirections = []
             }
         }
@@ -51,7 +48,48 @@ struct ActivityView: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: UIActivityViewController,
-                                context: Context) {
-        // 無需更新：UIActivityViewController 為一次性呈現
+                                context: Context) {}
+}
+
+#else
+
+// ── macOS ────────────────────────────────────────────────
+// UIKit 不可用。呈現一個小 Sheet 內含 ShareLink，
+// 使用者點擊後觸發原生 macOS 分享選單（NSSharingServicePicker）。
+
+struct ActivityView: View {
+    let url: URL
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "square.and.arrow.up.circle.fill")
+                .font(.system(size: 56))
+                .foregroundStyle(.tint)
+
+            Text(url.lastPathComponent)
+                .font(.headline)
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .frame(maxWidth: 280)
+
+            ShareLink(
+                item: url,
+                preview: SharePreview(url.lastPathComponent)
+            ) {
+                Label("Share File", systemImage: "square.and.arrow.up")
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+            }
+            .buttonStyle(.borderedProminent)
+            .padding(.horizontal, 24)
+
+            Button("Cancel") { dismiss() }
+                .foregroundStyle(.secondary)
+        }
+        .padding(32)
+        .frame(minWidth: 320)
     }
 }
+
+#endif

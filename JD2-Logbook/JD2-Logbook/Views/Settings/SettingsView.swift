@@ -186,7 +186,9 @@ struct SettingsView: View {
 
             }
             .navigationTitle("Settings")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
+            #endif
             // ── Bulk Export：格式選擇 ────────────────────────
             .confirmationDialog(
                 String(localized: "Export Format"),
@@ -225,10 +227,17 @@ struct SettingsView: View {
     }
 
     private func openAppLanguageSettings() {
-        // iOS 18+：直接跳 App 語言設定頁（App-Specific Language Settings）
+        #if os(iOS)
+        // iOS 16+：直接跳 App 語言設定頁（App-Specific Language Settings）
         if let url = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(url)
         }
+        #else
+        // macOS：開啟系統設定的語言偏好
+        if let url = URL(string: "x-apple.systempreferences:com.apple.Localization-Settings.extension") {
+            NSWorkspace.shared.open(url)
+        }
+        #endif
     }
 
     private func restorePurchases() async {
@@ -275,7 +284,9 @@ private struct LicensesView: View {
             .accessibilityLabel("\(item.name), \(item.license)")
         }
         .navigationTitle("Open Source Licenses")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
     }
 }
 
@@ -358,7 +369,9 @@ struct PremiumUpgradeSheet: View {
                 .padding(.bottom, 24)
             }
             .navigationTitle("")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(String(localized: "Close")) { dismiss() }
@@ -396,7 +409,7 @@ private struct PremiumFeatureRow: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color.platformSecondaryGroupedBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(title). \(subtitle)")

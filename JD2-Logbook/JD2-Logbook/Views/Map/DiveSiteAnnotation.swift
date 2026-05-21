@@ -1,17 +1,24 @@
 // DiveSiteAnnotation.swift — JD2-Logbook/Views/Map/
-// Week 10 — MKAnnotation + annotation view classes for dive site pins and clusters
+// Week 10 — MKAnnotation + annotation view classes
 //
-// Three classes in this file:
-//   DiveSiteAnnotation        – data model, one DiveLog per pin
-//   DiveSiteAnnotationView    – blue marker pin, no callout (Sheet handles interaction)
-//   DiveClusterAnnotationView – 44 pt circular badge with dive count
+// iOS:   UIImage / UIColor / UILabel
+// macOS: NSImage / NSColor / NSTextField（label style）
+//
+// DiveSiteAnnotation（純資料 class）無平台相依，兩平台共用。
+// DiveSiteAnnotationView / DiveClusterAnnotationView 依平台使用對應 API。
 
 import MapKit
 
-// MARK: - DiveSiteAnnotation
+#if os(iOS)
+import UIKit
+#else
+import AppKit
+#endif
 
-/// Wraps a single DiveLog as an MKAnnotation for display on MKMapView.
-/// `@objc dynamic` on `coordinate` is required for MapKit's KVO observation.
+// MARK: - DiveSiteAnnotation（共用）
+
+/// 將單筆 DiveLog 包裝為 MKAnnotation，供 MKMapView 顯示。
+/// `@objc dynamic` on `coordinate` 是 MapKit KVO 觀察的必要條件。
 final class DiveSiteAnnotation: NSObject, MKAnnotation {
 
     let dive: DiveLog
@@ -21,7 +28,7 @@ final class DiveSiteAnnotation: NSObject, MKAnnotation {
     var subtitle: String?
 
     init(dive: DiveLog) {
-        self.dive = dive
+        self.dive       = dive
         self.coordinate = CLLocationCoordinate2D(
             latitude:  dive.latitude  ?? 0,
             longitude: dive.longitude ?? 0
@@ -36,11 +43,9 @@ final class DiveSiteAnnotation: NSObject, MKAnnotation {
 
 // MARK: - DiveSiteAnnotationView
 
-/// Blue marker pin for a single dive site.
-///
-/// - `clusteringIdentifier = "diveCluster"` enables MapKit's native clustering.
-/// - `canShowCallout = false`: tapping a pin is handled entirely by the
-///   Medium Detent Sheet in MapView — no UIKit callout is shown.
+/// 單一潛點的藍色 marker pin。
+/// `clusteringIdentifier` 啟用 MapKit 原生聚類；`canShowCallout = false`，
+/// 點擊事件完全交由 Medium Detent Sheet 處理。
 final class DiveSiteAnnotationView: MKMarkerAnnotationView {
 
     static let reuseID = "DiveSiteAnnotationView"
@@ -48,9 +53,17 @@ final class DiveSiteAnnotationView: MKMarkerAnnotationView {
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
         clusteringIdentifier = "diveCluster"
-        glyphImage           = UIImage(systemName: "figure.open.water.swim")
-        markerTintColor      = .systemBlue
         canShowCallout       = false
+
+#if os(iOS)
+        glyphImage      = UIImage(systemName: "figure.open.water.swim")
+        markerTintColor = .systemBlue
+#else
+        // macOS 11+：NSImage 不有 init(systemName:)，正確 API 是 systemSymbolName
+        glyphImage      = NSImage(systemSymbolName: "figure.open.water.swim",
+                                  accessibilityDescription: nil)
+        markerTintColor = NSColor.systemBlue
+#endif
     }
 
     required init?(coder: NSCoder) {
@@ -60,29 +73,36 @@ final class DiveSiteAnnotationView: MKMarkerAnnotationView {
 
 // MARK: - DiveClusterAnnotationView
 
-/// Circular badge displayed when multiple dive sites are clustered together.
-///
-/// Shows the member count ("N" for < 100, "99+" otherwise).
-/// Registered for `MKMapViewDefaultClusterAnnotationViewReuseIdentifier` so
-/// MapKit automatically uses it for every cluster annotation on this map.
+/// 多個潛點聚集時顯示的圓形 badge，顯示成員數量。
 final class DiveClusterAnnotationView: MKAnnotationView {
 
     static let reuseID = MKMapViewDefaultClusterAnnotationViewReuseIdentifier
 
-    // MARK: - Badge Label
+    // MARK: Badge Label（平台差異：UILabel vs NSTextField）
 
+#if os(iOS)
     private let badgeLabel: UILabel = {
         let label = UILabel()
-        label.textColor              = .white
-        label.font                   = .systemFont(ofSize: 14, weight: .bold)
-        label.textAlignment          = .center
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor     = 0.7
+        label.textColor                          = .white
+        label.font                               = .systemFont(ofSize: 14, weight: .bold)
+        label.textAlignment                      = .center
+        label.adjustsFontSizeToFitWidth          = true
+        label.minimumScaleFactor                 = 0.7
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+#else
+    private let badgeLabel: NSTextField = {
+        let field = NSTextField(labelWithString: "")
+        field.textColor                          = .white
+        field.font                               = .systemFont(ofSize: 14, weight: .bold)
+        field.alignment                          = .center
+        field.translatesAutoresizingMaskIntoConstraints = false
+        return field
+    }()
+#endif
 
-    // MARK: - Init
+    // MARK: Init
 
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
@@ -93,12 +113,14 @@ final class DiveClusterAnnotationView: MKAnnotationView {
         fatalError("init(coder:) not implemented")
     }
 
-    // MARK: - Layout
+    // MARK: Layout
 
     private func setupBadge() {
         let size: CGFloat = 44
         frame = CGRect(x: 0, y: 0, width: size, height: size)
 
+#if os(iOS)
+        // UIView：layer 為非 optional
         backgroundColor     = .systemBlue
         layer.cornerRadius  = size / 2
         layer.borderWidth   = 2.5
@@ -107,6 +129,17 @@ final class DiveClusterAnnotationView: MKAnnotationView {
         layer.shadowOpacity = 0.25
         layer.shadowRadius  = 4
         layer.shadowOffset  = CGSize(width: 0, height: 2)
+#else
+        // NSView：需先啟用 layer，layer 為 optional
+        wantsLayer              = true
+        layer?.backgroundColor  = NSColor.systemBlue.cgColor
+        layer?.cornerRadius     = size / 2
+        layer?.borderWidth      = 2.5
+        layer?.borderColor      = NSColor.white.cgColor
+        layer?.shadowColor      = NSColor.black.cgColor
+        layer?.shadowOpacity    = 0.25
+        layer?.shadowRadius     = 4
+#endif
 
         addSubview(badgeLabel)
         NSLayoutConstraint.activate([
@@ -121,13 +154,21 @@ final class DiveClusterAnnotationView: MKAnnotationView {
         collisionMode  = .circle
     }
 
-    // MARK: - Content Update
+    // MARK: Content Update
 
     override func prepareForDisplay() {
         super.prepareForDisplay()
         guard let cluster = annotation as? MKClusterAnnotation else { return }
         let count = cluster.memberAnnotations.count
-        badgeLabel.text      = count < 100 ? "\(count)" : "99+"
-        accessibilityLabel   = "\(count) dive sites"
+        let text  = count < 100 ? "\(count)" : "99+"
+
+#if os(iOS)
+        badgeLabel.text        = text
+        accessibilityLabel     = "\(count) dive sites"
+#else
+        badgeLabel.stringValue = text
+        // macOS NSView：accessibilityLabel 是 method，需用 setter
+        setAccessibilityLabel("\(count) dive sites")
+#endif
     }
 }

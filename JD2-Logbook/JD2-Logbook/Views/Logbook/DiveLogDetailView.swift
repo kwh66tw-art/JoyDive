@@ -107,12 +107,18 @@ struct DiveLogDetailView: View {
                 }
             }
         }
+        #if os(iOS)
         .listStyle(.insetGrouped)
+        #else
+        .listStyle(.inset)
+        #endif
         .navigationTitle("Dive Details")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .toolbar {
             // ── Export 按鈕 ──────────────────────────────────
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .automatic) {
                 Button {
                     if purchaseManager.isPremium {
                         showExportFormatPicker = true
@@ -139,7 +145,7 @@ struct DiveLogDetailView: View {
                 )
             }
             // ── Edit 按鈕 ────────────────────────────────────
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .primaryAction) {
                 Button {
                     showEditSheet = true
                 } label: {

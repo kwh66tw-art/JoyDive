@@ -1,5 +1,5 @@
 // GasMix.swift — JoyDiveCore/Models/GasMix.swift
-// v6.0 FINAL 🔒
+// v6.1 — 加入自訂 Codable（修正 air bare-string 格式）
 
 import Foundation
 
@@ -58,5 +58,69 @@ enum GasMix: Codable, Hashable, CustomStringConvertible {
     var isTrimix: Bool {
         if case .trimix = self { return true }
         return false
+    }
+
+    // MARK: - 自訂 Codable
+    //
+    // 全站 JSON 格式（DiveLogEditSheet / DiveLogImporter 均依此規範）：
+    //   air    → "air"                              (bare JSON string)
+    //   nitrox → {"nitrox":{"fO2":0.32}}
+    //   trimix → {"trimix":{"fO2":0.21,"fHe":0.35}}
+    //
+    // Swift 合成的 Codable 對 case air 輸出 {"air":{}}，與全站格式不符，
+    // 故改用自訂實作確保一致。
+
+    private enum CodingKeys: String, CodingKey {
+        case nitrox, trimix
+    }
+
+    private struct NitroxPayload: Codable {
+        let fO2: Double
+    }
+
+    private struct TrimixPayload: Codable {
+        let fO2: Double
+        let fHe: Double
+    }
+
+    init(from decoder: Decoder) throws {
+        // 優先嘗試 bare string（air 格式）
+        if let str = try? decoder.singleValueContainer().decode(String.self) {
+            guard str == "air" else {
+                throw DecodingError.dataCorruptedError(
+                    in: try decoder.singleValueContainer(),
+                    debugDescription: "Unknown GasMix string: \(str)"
+                )
+            }
+            self = .air
+            return
+        }
+        // 再嘗試 keyed container（nitrox / trimix 格式）
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        if let payload = try container.decodeIfPresent(TrimixPayload.self, forKey: .trimix) {
+            self = .trimix(fO2: payload.fO2, fHe: payload.fHe)
+        } else if let payload = try container.decodeIfPresent(NitroxPayload.self, forKey: .nitrox) {
+            self = .nitrox(fO2: payload.fO2)
+        } else {
+            throw DecodingError.dataCorruptedError(
+                forKey: .nitrox,
+                in: container,
+                debugDescription: "Unknown GasMix format"
+            )
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        switch self {
+        case .air:
+            var c = encoder.singleValueContainer()
+            try c.encode("air")
+        case .nitrox(let fO2):
+            var c = encoder.container(keyedBy: CodingKeys.self)
+            try c.encode(NitroxPayload(fO2: fO2), forKey: .nitrox)
+        case .trimix(let fO2, let fHe):
+            var c = encoder.container(keyedBy: CodingKeys.self)
+            try c.encode(TrimixPayload(fO2: fO2, fHe: fHe), forKey: .trimix)
+        }
     }
 }

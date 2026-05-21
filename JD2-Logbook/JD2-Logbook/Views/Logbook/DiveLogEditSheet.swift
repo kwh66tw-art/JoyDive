@@ -132,7 +132,9 @@ struct DiveLogEditSheet: View {
                         Spacer()
                         TextField("0.0", value: $maxDepth,
                                   format: .number.precision(.fractionLength(1)))
+                            #if os(iOS)
                             .keyboardType(.decimalPad)
+                            #endif
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
                         Text("m")
@@ -164,7 +166,9 @@ struct DiveLogEditSheet: View {
                         Spacer()
                         TextField("0.0", value: $waterTemperature,
                                   format: .number.precision(.fractionLength(1)))
+                            #if os(iOS)
                             .keyboardType(.decimalPad)
+                            #endif
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
                         Text("°C")
@@ -234,7 +238,9 @@ struct DiveLogEditSheet: View {
                 }
             }
             .navigationTitle(titleText)
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(String(localized: "Cancel")) { dismiss() }
