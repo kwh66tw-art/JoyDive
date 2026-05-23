@@ -1,9 +1,6 @@
 // ImportWizardView.swift — JD2-Logbook/Views/Import/
-// Week 9 — 3 步驟匯入嚮導
-//
-// Step 1: 格式總覽 + 選擇檔案
-// Step 2: 解析中（自動跳轉）
-// Step 3: 匯入結果
+// Week 9  — 3 步驟匯入嚮導
+// Week 13 — 批次匯入（多選檔案 + 選資料夾）+ 逐檔進度顯示
 
 import SwiftUI
 import SwiftData
@@ -12,10 +9,11 @@ import UniformTypeIdentifiers
 // MARK: - 匯入精靈狀態機
 
 enum ImportStep {
-    case ready          // Step 1: 待選檔案
-    case importing      // Step 2: 解析 + 匯入中
-    case success(count: Int, skipped: Int)   // Step 3: 成功
-    case failure(message: String)            // Step 3: 失敗
+    case ready
+    /// total == 0 → 掃描/準備階段（不確定進度）；total > 0 → 逐檔匯入
+    case importing(current: Int, total: Int, fileName: String)
+    case success(count: Int, skipped: Int)
+    case failure(message: String)
 }
 
 // MARK: - Main View
@@ -23,30 +21,27 @@ enum ImportStep {
 struct ImportWizardView: View {
     @State private var step: ImportStep = .ready
     @State private var showFilePicker = false
-    @State private var selectedFileName: String? = nil
+    /// 顯示在 ready 頁的上次選擇摘要（"dive.uddf" 或 "3 files"）
+    @State private var selectedFileLabel: String? = nil
 
     /// 匯入成功後回調：傳回最新一筆潛水的 PersistentIdentifier（用於 highlight）
-    /// 由 MainTabView 傳入，負責切換 Tab
     var onImportSuccess: ((PersistentIdentifier?) -> Void)? = nil
 
-    // ImportCoordinator 是 @MainActor，在 MainActor 視圖中直接使用
     private let coordinator = ImportCoordinator(database: DiveLogDatabase.shared)
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // 步驟指示器
                 stepIndicator
 
                 Divider()
 
-                // 主要內容
                 ScrollView {
                     switch step {
                     case .ready:
                         readyView
-                    case .importing:
-                        importingView
+                    case .importing(let current, let total, let fileName):
+                        importingView(current: current, total: total, fileName: fileName)
                     case .success(let count, let skipped):
                         successView(count: count, skipped: skipped)
                     case .failure(let message):
@@ -54,7 +49,6 @@ struct ImportWizardView: View {
                     }
                 }
 
-                // 決策 #5：Import 頁 Banner 廣告（底部，Premium 用戶隱藏）
                 PremiumAwareAdBanner(adUnitID: AdUnitID.importBanner)
             }
             .navigationTitle("Import Dives")
@@ -69,9 +63,10 @@ struct ImportWizardView: View {
                     UTType(filenameExtension: "fit")  ?? .data,
                     .xml,
                     .json,
-                    .commaSeparatedText
+                    .commaSeparatedText,
+                    .folder
                 ],
-                allowsMultipleSelection: false
+                allowsMultipleSelection: true
             ) { result in
                 handleFilePickerResult(result)
             }
@@ -128,8 +123,7 @@ struct ImportWizardView: View {
     }
 
     private func stepCircleColor(_ index: Int) -> Color {
-        if index < currentStepIndex { return .accentColor }
-        if index == currentStepIndex { return .accentColor }
+        if index <= currentStepIndex { return .accentColor }
         return Color.platformTertiaryFill
     }
 
@@ -149,7 +143,6 @@ struct ImportWizardView: View {
 
     private var readyView: some View {
         VStack(spacing: 24) {
-            // 說明
             VStack(spacing: 8) {
                 Image(systemName: "square.and.arrow.down.on.square")
                     .font(.system(size: 48))
@@ -162,14 +155,12 @@ struct ImportWizardView: View {
                     .multilineTextAlignment(.center)
             }
 
-            // 支援格式列表
             supportedFormatsSection
 
-            // 選擇檔案按鈕
             Button {
                 showFilePicker = true
             } label: {
-                Label("Select File", systemImage: "folder")
+                Label("Select Files or Folder", systemImage: "folder")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
@@ -177,15 +168,14 @@ struct ImportWizardView: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
             .padding(.horizontal, 24)
-            .accessibilityLabel(String(localized: "Select File"))
-            .accessibilityHint("Opens file picker to choose a dive log file")
+            .accessibilityLabel(String(localized: "Select Files or Folder"))
+            .accessibilityHint("Opens file picker to choose dive log files or a folder")
 
-            // 已選擇的檔案名稱
-            if let name = selectedFileName {
+            if let label = selectedFileLabel {
                 HStack(spacing: 6) {
                     Image(systemName: "doc.fill")
                         .foregroundStyle(.tint)
-                    Text(name)
+                    Text(label)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -205,10 +195,7 @@ struct ImportWizardView: View {
                 .padding(.horizontal, 24)
 
             LazyVGrid(
-                columns: [
-                    GridItem(.flexible()),
-                    GridItem(.flexible())
-                ],
+                columns: [GridItem(.flexible()), GridItem(.flexible())],
                 spacing: 8
             ) {
                 ForEach(supportedFormatCards, id: \.name) { card in
@@ -221,41 +208,62 @@ struct ImportWizardView: View {
 
     private var supportedFormatCards: [(name: String, ext: String, icon: String)] {
         [
-            ("UDDF",          ".uddf",       "doc.badge.gearshape"),
-            ("Subsurface XML",".ssrf / .xml","doc.richtext"),
-            ("Subsurface CSV",".csv",        "tablecells"),
-            ("Suunto JSON",   ".json",       "curlybraces"),
-            ("Garmin Descent",".fit",        "waveform.path.ecg"),
-            ("Seabear CSV",   ".csv",        "tablecells.fill")
+            ("UDDF",           ".uddf",        "doc.badge.gearshape"),
+            ("Subsurface XML", ".ssrf / .xml", "doc.richtext"),
+            ("Subsurface CSV", ".csv",         "tablecells"),
+            ("Suunto JSON",    ".json",        "curlybraces"),
+            ("Garmin Descent", ".fit",         "waveform.path.ecg"),
+            ("Seabear CSV",    ".csv",         "tablecells.fill")
         ]
     }
 
-    // MARK: - Step 2: Importing
+    // MARK: - Step 2: Importing（逐檔進度）
 
-    private var importingView: some View {
+    private func importingView(current: Int, total: Int, fileName: String) -> some View {
         VStack(spacing: 24) {
             Spacer(minLength: 60)
 
-            ProgressView()
-                .scaleEffect(1.6)
-                .tint(.accentColor)
+            if total > 0 {
+                // 確定進度：線性進度條 + 檔案計數
+                VStack(spacing: 16) {
+                    ProgressView(value: Double(current - 1), total: Double(total))
+                        .progressViewStyle(.linear)
+                        .padding(.horizontal, 40)
+                        .tint(.accentColor)
 
-            VStack(spacing: 6) {
-                Text("Importing…")
-                    .font(.headline)
+                    VStack(spacing: 6) {
+                        Text("File \(current) of \(total)")
+                            .font(.headline)
+                            .monospacedDigit()
 
-                if let name = selectedFileName {
-                    Text(name)
-                        .font(.caption)
+                        Text(fileName)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .padding(.horizontal, 40)
+                    }
+                }
+            } else {
+                // 掃描/準備階段：不確定轉圈
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .scaleEffect(1.6)
+                        .tint(.accentColor)
+
+                    Text("Scanning files…")
+                        .font(.headline)
                         .foregroundStyle(.secondary)
-                        .lineLimit(1)
                 }
             }
 
             Spacer()
         }
         .frame(minHeight: 300)
-        .accessibilityLabel(String(localized: "Importing…"))
+        .accessibilityLabel(
+            total > 0
+                ? "Importing file \(current) of \(total): \(fileName)"
+                : "Scanning files"
+        )
     }
 
     // MARK: - Step 3: Success
@@ -339,69 +347,128 @@ struct ImportWizardView: View {
     private func handleFilePickerResult(_ result: Result<[URL], Error>) {
         switch result {
         case .success(let urls):
-            guard let url = urls.first else { return }
-            selectedFileName = url.lastPathComponent
-            runImport(url: url)
+            guard !urls.isEmpty else { return }
+            // 進入掃描狀態，立即給用戶視覺反饋
+            step = .importing(current: 0, total: 0, fileName: "")
+
+            Task { @MainActor in
+                let tempDir = FileManager.default.temporaryDirectory
+                // (displayName, tempURL)：displayName 保留原始檔名供 UI 顯示
+                var tempFiles: [(name: String, url: URL)] = []
+
+                for pickerURL in urls {
+                    let accessed = pickerURL.startAccessingSecurityScopedResource()
+
+                    var isDir: ObjCBool = false
+                    FileManager.default.fileExists(atPath: pickerURL.path, isDirectory: &isDir)
+
+                    if isDir.boolValue {
+                        // 資料夾：在 security scope 有效期間枚舉並複製全部支援檔案
+                        let found = enumerateSupportedFiles(in: pickerURL)
+                        for fileURL in found {
+                            let tempURL = tempDir.appendingPathComponent(
+                                UUID().uuidString + "_" + fileURL.lastPathComponent
+                            )
+                            if (try? FileManager.default.copyItem(at: fileURL, to: tempURL)) != nil {
+                                tempFiles.append((name: fileURL.lastPathComponent, url: tempURL))
+                            }
+                        }
+                    } else {
+                        // 單一檔案
+                        let tempURL = tempDir.appendingPathComponent(
+                            UUID().uuidString + "_" + pickerURL.lastPathComponent
+                        )
+                        if (try? FileManager.default.copyItem(at: pickerURL, to: tempURL)) != nil {
+                            tempFiles.append((name: pickerURL.lastPathComponent, url: tempURL))
+                        }
+                    }
+
+                    if accessed { pickerURL.stopAccessingSecurityScopedResource() }
+                }
+
+                guard !tempFiles.isEmpty else {
+                    step = .failure(message: "No supported dive log files found.")
+                    return
+                }
+
+                selectedFileLabel = tempFiles.count == 1
+                    ? tempFiles[0].name
+                    : "\(tempFiles.count) files"
+
+                await runBatchImport(tempFiles: tempFiles)
+            }
 
         case .failure(let error):
             step = .failure(message: error.localizedDescription)
         }
     }
 
-    private func runImport(url: URL) {
-        step = .importing
+    /// 遞迴枚舉資料夾內支援格式的潛水日誌檔案，依檔名排序
+    private func enumerateSupportedFiles(in folderURL: URL) -> [URL] {
+        let supported = Set(["uddf", "ssrf", "xml", "json", "csv", "fit"])
+        guard let enumerator = FileManager.default.enumerator(
+            at: folderURL,
+            includingPropertiesForKeys: [.isRegularFileKey],
+            options: [.skipsHiddenFiles, .skipsPackageDescendants]
+        ) else { return [] }
 
-        Task { @MainActor in
-            // Security-scoped resource access
-            let accessed = url.startAccessingSecurityScopedResource()
-            defer { if accessed { url.stopAccessingSecurityScopedResource() } }
+        var files: [URL] = []
+        for case let fileURL as URL in enumerator {
+            guard (try? fileURL.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true
+            else { continue }
+            if supported.contains(fileURL.pathExtension.lowercased()) {
+                files.append(fileURL)
+            }
+        }
+        return files.sorted { $0.lastPathComponent < $1.lastPathComponent }
+    }
+
+    /// 批次匯入：逐檔處理，更新 step 進度；完成後切到 success / failure
+    private func runBatchImport(tempFiles: [(name: String, url: URL)]) async {
+        let total = tempFiles.count
+        var allImported: [DiveLog] = []
+        var firstError: String? = nil
+
+        for (index, file) in tempFiles.enumerated() {
+            step = .importing(current: index + 1, total: total, fileName: file.name)
 
             do {
-                // 複製到 temp 目錄，避免 security scope 過期
-                let tempDir = FileManager.default.temporaryDirectory
-                let tempURL = tempDir.appendingPathComponent(url.lastPathComponent)
-                if FileManager.default.fileExists(atPath: tempURL.path) {
-                    try? FileManager.default.removeItem(at: tempURL)
-                }
-                try FileManager.default.copyItem(at: url, to: tempURL)
-
-                // 執行匯入
-                let imported = try await coordinator.importFile(tempURL.path)
-
-                // 計算跳過數（dedup 已在 coordinator 內處理，這裡無法直接取得）
-                step = .success(count: imported.count, skipped: 0)
-
-                // 決策 #2：匯入成功 → 觸發切換 Tab callback
-                // 取最新一筆（排序後首筆），用於 highlight 動畫
-                let latestID = imported.sorted { $0.dateTime > $1.dateTime }.first?.persistentModelID
-                onImportSuccess?(latestID)
-
-            } catch DiveLogImportError.fileNotFound(let path) {
-                step = .failure(message: "File not found: \(path)")
-            } catch DiveLogImportError.unsupportedFormat(let fmt) {
-                step = .failure(message: "Unsupported format: \(fmt)")
+                let imported = try await coordinator.importFile(file.url.path)
+                allImported.append(contentsOf: imported)
             } catch DiveLogImportError.emptyFile {
-                step = .failure(message: "No dives found in this file.")
+                // 空檔案：跳過，不中斷批次
+            } catch DiveLogImportError.fileNotFound(let path) {
+                if firstError == nil { firstError = "File not found: \(path)" }
+            } catch DiveLogImportError.unsupportedFormat(let fmt) {
+                if firstError == nil { firstError = "\(file.name): unsupported format (\(fmt))" }
             } catch DiveLogImportError.parsingFailed(let msg, _) {
-                step = .failure(message: "Parse error: \(msg)")
+                if firstError == nil { firstError = "\(file.name): \(msg)" }
             } catch DiveLogImportError.invalidFormat(let fmt) {
-                step = .failure(message: "Invalid format: \(fmt)")
+                if firstError == nil { firstError = "\(file.name): invalid format (\(fmt))" }
             } catch DiveLogImportError.corruptedData(let detail) {
-                step = .failure(message: "Corrupted data: \(detail)")
+                if firstError == nil { firstError = "\(file.name): corrupted (\(detail))" }
             } catch {
-                step = .failure(message: error.localizedDescription)
+                if firstError == nil { firstError = "\(file.name): \(error.localizedDescription)" }
             }
 
-            // 清理 temp
-            try? FileManager.default.removeItem(
-                at: FileManager.default.temporaryDirectory
-                    .appendingPathComponent(url.lastPathComponent)
-            )
+            // 清理 temp 檔案
+            try? FileManager.default.removeItem(at: file.url)
+        }
+
+        // 決定最終狀態：只要有匯入成功就算成功，firstError 僅在全部失敗時顯示
+        if allImported.isEmpty, let error = firstError {
+            step = .failure(message: error)
+        } else {
+            let latestID = allImported
+                .sorted { $0.dateTime > $1.dateTime }
+                .first?.persistentModelID
+            step = .success(count: allImported.count, skipped: 0)
+            onImportSuccess?(latestID)
         }
     }
 
     private func resetToReady() {
-        selectedFileName = nil
+        selectedFileLabel = nil
         step = .ready
     }
 }
