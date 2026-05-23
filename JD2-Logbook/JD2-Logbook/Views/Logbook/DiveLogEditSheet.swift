@@ -113,6 +113,7 @@ struct DiveLogEditSheet: View {
                         selection: $dateTime,
                         displayedComponents: [.date, .hourAndMinute]
                     )
+                    .datePickerStyle(.graphical)
                     .accessibilityLabel(String(localized: "Date & Time"))
                 }
 

@@ -27,6 +27,9 @@ struct ImportWizardView: View {
     /// 匯入成功後回調：傳回最新一筆潛水的 PersistentIdentifier（用於 highlight）
     var onImportSuccess: ((PersistentIdentifier?) -> Void)? = nil
 
+    /// 暫存最新匯入的潛水 ID，等用戶按「Done」時才觸發 tab 切換
+    @State private var pendingHighlightID: PersistentIdentifier? = nil
+
     private let coordinator = ImportCoordinator(database: DiveLogDatabase.shared)
 
     var body: some View {
@@ -459,15 +462,18 @@ struct ImportWizardView: View {
         if allImported.isEmpty, let error = firstError {
             step = .failure(message: error)
         } else {
-            let latestID = allImported
+            // 暫存 ID，等用戶按 Done 再切換 Tab（讓用戶看到完成頁）
+            pendingHighlightID = allImported
                 .sorted { $0.dateTime > $1.dateTime }
                 .first?.persistentModelID
             step = .success(count: allImported.count, skipped: 0)
-            onImportSuccess?(latestID)
         }
     }
 
     private func resetToReady() {
+        // Done 按鈕觸發：先切換 Tab 再重設狀態
+        onImportSuccess?(pendingHighlightID)
+        pendingHighlightID = nil
         selectedFileLabel = nil
         step = .ready
     }
