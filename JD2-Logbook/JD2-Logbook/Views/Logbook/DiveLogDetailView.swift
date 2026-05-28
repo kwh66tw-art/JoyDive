@@ -2,6 +2,7 @@
 // Week 9 — 單筆潛水詳情頁（唯讀，Week 11 加入編輯）
 
 import SwiftUI
+import Charts
 
 struct DiveLogDetailView: View {
     let dive: DiveLog
@@ -64,6 +65,15 @@ struct DiveLogDetailView: View {
             }
             .listRowInsets(EdgeInsets())
             .listRowBackground(Color.clear)
+
+            // ── 深度剖面圖（有樣本才顯示）──────────────────
+            let profileSamples = dive.profileSamples
+            if !profileSamples.isEmpty {
+                Section(header: Text("Dive Profile")) {
+                    DiveProfileChartView(samples: profileSamples)
+                        .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
+                }
+            }
 
             // ── 關鍵數據 ────────────────────────────────
             Section(header: Text("Key Stats")) {
@@ -302,10 +312,14 @@ private struct KeyStatCell: View {
                         .foregroundStyle(.secondary)
                 }
             }
+            .lineLimit(1)
+            .minimumScaleFactor(0.6) // 「27 min 22 sec」等長值改縮放保持單行，不換行
 
             Text(LocalizedStringKey(label))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)

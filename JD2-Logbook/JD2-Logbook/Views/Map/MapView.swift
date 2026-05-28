@@ -26,9 +26,9 @@ struct MapView: View {
     // MARK: - State
 
     @State private var mapType: MKMapType = .standard
-    /// The dive whose sheet is currently (or about to be) displayed.
+    /// The dive whose detail (sheet on iOS / side panel on macOS) is shown.
     @State private var selectedDive: DiveLog?
-    /// Controls sheet presentation. Kept separate from selectedDive so that
+    /// Controls sheet presentation (iOS). Kept separate from selectedDive so that
     /// tapping a second pin while the sheet is open updates content without
     /// dismissing and re-presenting.
     @State private var isSheetPresented = false
@@ -36,38 +36,54 @@ struct MapView: View {
     // MARK: - Body
 
     var body: some View {
-        NavigationStack {
-            ZStack(alignment: .topTrailing) {
+        // macOS：NavigationStack 由 MainTabView 容器層提供（避免雙層 nav bar 產生頂部空白）
+        #if os(iOS)
+        NavigationStack { iosMapContent }
+        #else
+        macMapContent
+        #endif
+    }
 
-                // ── Map ───────────────────────────────────────────────
-                DiveMapRepresentable(
-                    dives:              mappableDives,
-                    mapType:            $mapType,
-                    onAnnotationTapped: { dive in
-                        selectedDive      = dive
-                        isSheetPresented  = true
-                    }
-                )
-                .ignoresSafeArea(edges: .bottom)
+    // MARK: - Shared Map Pane（地圖 + 控制按鈕 + 空狀態）
 
-                // ── Map Type Toggle ───────────────────────────────────
-                mapTypeToggleButton
-                    .padding(.top, 8)
-                    .padding(.trailing, 12)
-            }
-            .navigationTitle(String(localized: "Map"))
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-            #endif
+    private var mapPane: some View {
+        ZStack(alignment: .topTrailing) {
 
-            // ── Empty State ───────────────────────────────────────────
-            .overlay {
-                if mappableDives.isEmpty {
-                    emptyState
+            // ── Map ───────────────────────────────────────────────
+            DiveMapRepresentable(
+                dives:              mappableDives,
+                mapType:            $mapType,
+                selectedDive:       selectedDive,
+                onAnnotationTapped: { dive in
+                    selectedDive = dive
+                    #if os(iOS)
+                    isSheetPresented = true
+                    #endif
                 }
-            }
+            )
+            .ignoresSafeArea(edges: .bottom)
 
-            // ── Dive Site Sheet ───────────────────────────────────────
+            // ── 懸浮控制按鈕（圖層切換 + 指北）─────────────────────
+            controlButtons
+                .padding(.top, 8)
+                .padding(.trailing, 12)
+        }
+        .navigationTitle(String(localized: "Map"))
+        #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+        #endif
+        .overlay {
+            if mappableDives.isEmpty {
+                emptyState
+            }
+        }
+    }
+
+    // MARK: - iOS：地圖 + Detent Sheet
+
+    #if os(iOS)
+    private var iosMapContent: some View {
+        mapPane
             // Using isPresented (not item:) so sheet stays open when
             // selectedDive changes to a different pin.
             .sheet(isPresented: $isSheetPresented, onDismiss: {
@@ -81,18 +97,62 @@ struct MapView: View {
                         .presentationBackgroundInteraction(.enabled(upThrough: .large))
                 }
             }
-
-            // ── Haptic Feedback ───────────────────────────────────────
-            // Fires whenever selectedDive changes (new pin tapped).
-            // iOS 17+ API — safe because SwiftData requires iOS 17.
             .sensoryFeedback(
                 .impact(flexibility: .solid, intensity: 0.7),
                 trigger: selectedDive?.persistentModelID
             )
+    }
+    #else
+
+    // MARK: - macOS：地圖 + 右側「浮動」側邊欄（不參與版面競爭，永不擠壓/裁切地圖）
+
+    private var macMapContent: some View {
+        HSplitView {
+            mapPane
+                .frame(minWidth: 360, maxWidth: .infinity, maxHeight: .infinity)
+
+            if let dive = selectedDive {
+                macSidePanel(dive: dive)
+                    .frame(width: 320)
+                    .frame(maxHeight: .infinity)
+                    .background(Color(NSColor.windowBackgroundColor))
+            }
         }
     }
 
-    // MARK: - Map Type Toggle Button
+    private func macSidePanel(dive: DiveLog) -> some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("Dive Site")
+                    .font(.headline)
+                Spacer()
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) { selectedDive = nil }
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .help(String(localized: "Close"))
+                .accessibilityLabel(String(localized: "Close"))
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+
+            Divider()
+
+            DiveSiteSheetView(dive: dive)
+        }
+    }
+    #endif
+
+    // MARK: - Control Buttons（僅圖層切換；指北交由 MapKit 內建羅盤）
+
+    private var controlButtons: some View {
+        VStack(spacing: 8) {
+            mapTypeToggleButton
+        }
+    }
 
     private var mapTypeToggleButton: some View {
         Button {
@@ -108,12 +168,14 @@ struct MapView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .shadow(color: .black.opacity(0.15), radius: 4, x: 0, y: 2)
         }
+        .buttonStyle(.plain) // 移除 macOS 預設按鈕外框/焦點環（半透明白圈）
         .accessibilityLabel(
             mapType == .standard
                 ? String(localized: "Switch to Hybrid Map")
                 : String(localized: "Switch to Standard Map")
         )
     }
+
 
     // MARK: - Empty State
 

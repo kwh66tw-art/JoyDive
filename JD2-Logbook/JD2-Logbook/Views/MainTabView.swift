@@ -48,6 +48,8 @@ struct MainTabView: View {
     @State private var selectedTab: Int = 0
     #else
     @State private var sidebarSelection: SidebarItem? = .logbook
+    /// 真正的 @State 綁定（非常數），讓 sidebar toggle 按鈕可正常開合
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
     #endif
 
     var body: some View {
@@ -90,7 +92,7 @@ struct MainTabView: View {
 
     #else
     private var macOSBody: some View {
-        NavigationSplitView(columnVisibility: .constant(.all)) {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             List(SidebarItem.allCases, selection: $sidebarSelection) { item in
                 Label(item.label, systemImage: item.icon)
                     .tag(item)
@@ -102,29 +104,38 @@ struct MainTabView: View {
             switch sidebarSelection ?? .logbook {
             case .logbook:
                 // HSplitView 內部自帶 NavigationStack，不需在此包覆
+                // 詳情 pane 最小尺寸：左列(260) + 右詳情(300) = 560，縱向 480
                 MacLogbookSplitView(highlightID: postImportHighlightID)
+                    .frame(minWidth: 560, minHeight: 480)
 
             case .map:
                 // 提供 NavigationStack，讓 MapView 不再自包（解決頂部空白）
+                // 地圖 pane 最小寬度需容納「地圖 + 右側 320pt 側面板」，
+                // 避免側面板出現時把地圖擠壓/裁切（推開式 HSplitView）。
                 NavigationStack {
                     MapView()
                 }
+                .frame(minWidth: 700, minHeight: 480)
 
             case .importDives:
                 // 提供 NavigationStack，讓 ImportWizardView 不再自包（解決頂部空白）
+                // 匯入 pane 最小尺寸（含步驟列 + 雙欄格式卡片，寬度需求略高）
                 NavigationStack {
                     ImportWizardView(onImportSuccess: { highlightID in
                         postImportHighlightID = highlightID
                         sidebarSelection = .logbook
                     })
                 }
+                .frame(minWidth: 440, minHeight: 440) // 匯入內容較精簡，下限較矮以減少底部留白
 
             case .settings:
                 // 提供 NavigationStack，讓 SettingsView 不再自包
                 // → 解決頂部空白；LicensesView NavigationLink 在此 stack 下正常運作
+                // 設定 pane 最小尺寸（表單較長，下限較高以多顯示內容）
                 NavigationStack {
                     SettingsView()
                 }
+                .frame(minWidth: 420, minHeight: 560)
             }
         }
     }
@@ -145,25 +156,8 @@ private struct MacLogbookSplitView: View {
     var body: some View {
         Group {
             if dives.isEmpty {
-                // ── 空狀態：全版面單一提示（避免左右欄雙重空狀態）──
-                VStack(spacing: 0) {
-                    HStack(spacing: 6) {
-                        Text("Dive Logbook")
-                            .font(.headline)
-                            .padding(.leading, 4)
-                        Spacer()
-                        Button { showNewDiveSheet = true } label: {
-                            Image(systemName: "plus")
-                        }
-                        .help(String(localized: "Add New Dive"))
-                        .accessibilityLabel(String(localized: "Add New Dive"))
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(.bar)
-
-                    Divider()
-
+                // ── 空狀態：採用對稱導航標題與滿版空狀態 ──
+                NavigationStack {
                     ContentUnavailableView(
                         label: {
                             Label("No dives yet", systemImage: "water.waves")
@@ -172,70 +166,82 @@ private struct MacLogbookSplitView: View {
                             Text("Use the Import tab to add your dive computer logs.")
                         }
                     )
-                }
-
-            } else {
-                HSplitView {
-                    // ── 左欄：自訂 header 取代 NavigationStack，消除頂部空白 ──
-                    VStack(spacing: 0) {
-                        HStack(spacing: 6) {
-                            Text("Dive Logbook")
-                                .font(.headline)
-                                .padding(.leading, 4)
-                            Spacer()
-                            Button {
-                                withAnimation(.easeInOut(duration: 0.2)) {
-                                    viewMode = (viewMode == .list) ? .calendar : .list
-                                }
-                            } label: {
-                                Image(systemName: viewMode == .list ? "calendar" : "list.bullet")
-                            }
-                            .help(viewMode == .list
-                                  ? String(localized: "Switch to Calendar View")
-                                  : String(localized: "Switch to List View"))
-                            .accessibilityLabel(
-                                viewMode == .list
-                                    ? String(localized: "Switch to Calendar View")
-                                    : String(localized: "Switch to List View")
-                            )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .navigationTitle("Dive Logbook")
+                    .toolbar {
+                        ToolbarItem(placement: .primaryAction) {
                             Button { showNewDiveSheet = true } label: {
                                 Image(systemName: "plus")
                             }
                             .help(String(localized: "Add New Dive"))
-                            .accessibilityLabel(String(localized: "Add New Dive"))
                         }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(.bar)
+                    }
+                }
 
-                        Divider()
+            } else {
+                HSplitView {
+                    // ── 左欄 (左對稱導航)：List / Calendar 頂滿，由系統 Title 列託管 ──
+                    NavigationStack {
+                        VStack(spacing: 0) {
+                            switch viewMode {
+                            case .list:
+                                DiveLogListView(
+                                    highlightedDiveID: highlightID,
+                                    onDiveTapped: { dive in selectedDive = dive }
+                                )
+                            case .calendar:
+                                DiveCalendarView(onDiveTapped: { dive in
+                                    selectedDive = dive
+                                })
+                            }
+                        }
+                        .frame(maxHeight: .infinity)
+                        .navigationTitle("Dive Logbook")
+                        .toolbar {
+                            ToolbarItemGroup(placement: .primaryAction) {
+                                Button {
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        viewMode = (viewMode == .list) ? .calendar : .list
+                                        selectedDive = nil // 切換時重設，防止右側錯位
+                                    }
+                                } label: {
+                                    Image(systemName: viewMode == .list ? "calendar" : "list.bullet")
+                                }
+                                .help(viewMode == .list
+                                      ? String(localized: "Switch to Calendar View")
+                                      : String(localized: "Switch to List View"))
 
-                        switch viewMode {
-                        case .list:
-                            DiveLogListView(
-                                highlightedDiveID: highlightID,
-                                onDiveTapped: { dive in selectedDive = dive }
-                            )
-                        case .calendar:
-                            DiveCalendarView(onDiveTapped: { dive in selectedDive = dive })
+                                Button { showNewDiveSheet = true } label: {
+                                    Image(systemName: "plus")
+                                }
+                                .help(String(localized: "Add New Dive"))
+                            }
                         }
                     }
                     .frame(minWidth: 260, idealWidth: 320, maxWidth: 440)
+                    .frame(maxHeight: .infinity)
 
-                    // ── 右欄：保留 NavigationStack 供 Edit/Export toolbar 使用 ──
+                    // ── 右欄 (右對稱導航)：獨立 Stack，確保 Edit/Export 100% 渲染穩定 ──
                     NavigationStack {
-                        if let dive = selectedDive {
-                            DiveLogDetailView(dive: dive)
-                        } else {
-                            ContentUnavailableView {
-                                Label("No Dive Selected", systemImage: "list.bullet.below.rectangle")
-                            } description: {
-                                Text("Select a dive from the list to view details.")
+                        Group {
+                            if let dive = selectedDive {
+                                DiveLogDetailView(dive: dive)
+                            } else {
+                                ContentUnavailableView {
+                                    Label("No Dive Selected", systemImage: viewMode == .list ? "list.bullet.below.rectangle" : "calendar")
+                                } description: {
+                                    if viewMode == .list {
+                                        Text("Select a dive from the list to view details.")
+                                    } else {
+                                        Text("Select a date with dives from the calendar to view details.")
+                                    }
+                                }
                             }
-                            .navigationTitle("Dive Details")
                         }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .navigationTitle("") // 保持空標題，確保左右對齊線完全對齊，無多餘高度
                     }
-                    .frame(minWidth: 300)
+                    .frame(minWidth: 300, maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
         }

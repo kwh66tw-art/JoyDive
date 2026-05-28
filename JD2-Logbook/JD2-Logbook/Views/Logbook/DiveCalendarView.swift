@@ -9,8 +9,66 @@ struct DiveCalendarView: View {
     @State private var displayedMonth: Date = Calendar.current.startOfMonth(for: Date())
     @State private var selectedDate: Date? = nil
 
-    /// macOS 專用：點選日誌 row 時的回調（更新右側詳情欄）
-    var onDiveTapped: ((DiveLog) -> Void)? = nil
+    /// 年/月快速跳選 popover（iOS + macOS 共用）
+    @State private var showDatePicker = false
+
+    /// macOS 專用：點選日誌 row 時的回調（支援傳入 nil 以清空詳情欄）
+    var onDiveTapped: ((DiveLog?) -> Void)? = nil
+
+    // MARK: - Month Navigation Helpers
+
+    /// 切換月份（< > 與左右滑動共用）
+    private func changeMonth(by delta: Int) {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            displayedMonth = calendar.date(byAdding: .month, value: delta, to: displayedMonth) ?? displayedMonth
+            selectedDate = nil
+        }
+        #if !os(iOS)
+        onDiveTapped?(nil) // macOS：換月後清空右側詳情，保持一致
+        #endif
+    }
+
+    /// popover 內：只改年份（保留月份，不關閉面板）
+    private func changeDisplayedYear(by delta: Int) {
+        let y = calendar.component(.year, from: displayedMonth) + delta
+        let clamped = min(max(y, 1980), maxCalendarYear)
+        let m = calendar.component(.month, from: displayedMonth)
+        if let d = calendar.date(from: DateComponents(year: clamped, month: m, day: 1)) {
+            withAnimation(.easeInOut(duration: 0.15)) { displayedMonth = d }
+        }
+    }
+
+    /// popover 內：點選月份 → 跳到該年月並關閉面板
+    private func jumpToMonth(_ month: Int) {
+        let y = calendar.component(.year, from: displayedMonth)
+        if let d = calendar.date(from: DateComponents(year: y, month: month, day: 1)) {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                displayedMonth = d
+                selectedDate = nil
+            }
+            #if !os(iOS)
+            onDiveTapped?(nil)
+            #endif
+        }
+        showDatePicker = false
+    }
+
+    /// 跳到今天（iOS + macOS）
+    private func goToToday() {
+        let today = Date()
+        withAnimation(.easeInOut(duration: 0.2)) {
+            displayedMonth = calendar.startOfMonth(for: today)
+            selectedDate   = today
+        }
+        #if !os(iOS)
+        // macOS：同步右側詳情（今天有潛水則選首筆，否則清空）
+        if let firstDive = divesByDay[dayKey(for: today)]?.first {
+            onDiveTapped?(firstDive)
+        } else {
+            onDiveTapped?(nil)
+        }
+        #endif
+    }
 
     private let calendar = Calendar.current
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
@@ -60,114 +118,133 @@ struct DiveCalendarView: View {
                         withAnimation(.easeInOut(duration: 0.15)) {
                             selectedDate = newDate
                         }
-                        // macOS：點選有潛水的日期時，自動同步右側詳情欄
+                        // macOS：點選日期時，自動同步右側詳情欄（支援清空）
                         #if !os(iOS)
-                        if let d = newDate,
-                           let firstDive = divesByDay[dayKey(for: d)]?.first {
-                            onDiveTapped?(firstDive)
+                        if let d = newDate {
+                            if let firstDive = divesByDay[dayKey(for: d)]?.first {
+                                onDiveTapped?(firstDive) // 有潛水，選取首筆
+                            } else {
+                                onDiveTapped?(nil)       // 無潛水，清空右側詳情
+                            }
+                        } else {
+                            onDiveTapped?(nil)           // 取消選取日期，清空右側詳情
                         }
                         #endif
                     }
                 }
             }
             .padding(.horizontal, 4)
+            // 左右滑動切換月份（左滑 → 下個月，右滑 → 上個月）
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 30)
+                    .onEnded { value in
+                        if value.translation.width < -50 {
+                            changeMonth(by: 1)
+                        } else if value.translation.width > 50 {
+                            changeMonth(by: -1)
+                        }
+                    }
+            )
 
+            #if os(iOS)
             Divider()
                 .padding(.top, 4)
 
-            // 選中日的潛水清單
+            // 選中日的潛水清單（iOS：無右側詳情欄，於此顯示）
             selectedDaySection
+            #endif
+        }
+        // 釘到頂部，避免月曆在高欄位中被垂直置中而「浮動」於中央
+        .frame(maxHeight: .infinity, alignment: .top)
+    }
+
+    // MARK: - 年月標題 Label（雙平台共用）
+
+    private var monthTitleLabel: some View {
+        HStack(spacing: 4) {
+            Text(displayedMonth, format: .dateTime.year().month(.wide))
+                .font(.headline)
+                .foregroundStyle(.tint)   // 藍色 tint 暗示可點擊
+                .lineLimit(1)
+                .fixedSize()              // 不折斷換行（解決窄視窗「2026年/5月」斷行）
+            Image(systemName: "chevron.up.chevron.down") // 原生上下箭頭，提示可下拉
+                .font(.caption2)
+                .foregroundStyle(.secondary)
         }
     }
 
-    // MARK: - Year / Month Quick-Jump Helpers（macOS）
+    // MARK: - 年 stepper + 12 月網格 popover（iOS + macOS 共用）
 
-    private var maxCalendarYear: Int {
-        Calendar.current.component(.year, from: Date()) + 2
-    }
-
-    private static let monthSymbols: [String] = {
+    /// 各語系「短月份」名稱（Jan/Feb… 或 1月/2月…）
+    private static let monthShortSymbols: [String] = {
         let fmt = DateFormatter()
         fmt.locale = Locale.current
-        return fmt.monthSymbols
+        return fmt.shortMonthSymbols
     }()
 
-    /// year Picker → 更新 displayedMonth
-    private var yearBinding: Binding<Int> {
-        Binding(
-            get: { calendar.component(.year, from: displayedMonth) },
-            set: { year in
-                let month = calendar.component(.month, from: displayedMonth)
-                if let newDate = calendar.date(
-                    from: DateComponents(year: year, month: month, day: 1)
-                ) {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        displayedMonth = newDate
-                        selectedDate   = nil
+    private var yearMonthGridPicker: some View {
+        let currentYear  = calendar.component(.year,  from: displayedMonth)
+        let currentMonth = calendar.component(.month, from: displayedMonth)
+        return VStack(spacing: 14) {
+            // ── 年份 stepper（‹ 2026 ›）────────────────────
+            HStack {
+                Button { changeDisplayedYear(by: -1) } label: {
+                    Image(systemName: "chevron.left").frame(width: 32, height: 32)
+                }
+                .buttonStyle(.plain)
+                .disabled(currentYear <= 1980)
+                .accessibilityLabel(String(localized: "Previous year"))
+
+                Spacer()
+                Text(verbatim: "\(currentYear)")
+                    .font(.headline.monospacedDigit())
+                Spacer()
+
+                Button { changeDisplayedYear(by: 1) } label: {
+                    Image(systemName: "chevron.right").frame(width: 32, height: 32)
+                }
+                .buttonStyle(.plain)
+                .disabled(currentYear >= maxCalendarYear)
+                .accessibilityLabel(String(localized: "Next year"))
+            }
+
+            // ── 12 個月網格（3×4），當前月份高亮 ──────────────
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
+                ForEach(1...12, id: \.self) { month in
+                    Button { jumpToMonth(month) } label: {
+                        Text(Self.monthShortSymbols[month - 1])
+                            .font(.callout.weight(month == currentMonth ? .semibold : .regular))
+                            .frame(maxWidth: .infinity, minHeight: 34)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(month == currentMonth ? Color.accentColor : Color.clear)
+                            )
+                            .foregroundStyle(month == currentMonth ? Color.white : Color.primary)
+                            .contentShape(RoundedRectangle(cornerRadius: 8))
                     }
+                    .buttonStyle(.plain)
                 }
             }
-        )
+        }
+        .padding(16)
+        .frame(width: 260)
     }
 
-    /// month Picker → 更新 displayedMonth
-    private var monthBinding: Binding<Int> {
-        Binding(
-            get: { calendar.component(.month, from: displayedMonth) },
-            set: { month in
-                let year = calendar.component(.year, from: displayedMonth)
-                if let newDate = calendar.date(
-                    from: DateComponents(year: year, month: month, day: 1)
-                ) {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        displayedMonth = newDate
-                        selectedDate   = nil
-                    }
-                }
-            }
-        )
+    // MARK: - Year Range Helper
+
+    /// 年份上限（今年 + 2）
+    private var maxCalendarYear: Int {
+        Calendar.current.component(.year, from: Date()) + 2
     }
 
     // MARK: - Month Header
 
     private var monthHeader: some View {
         VStack(spacing: 0) {
-            #if !os(iOS)
-            // macOS：年/月快速跳選（iOS 直接用 < > 逐月切換即可）
-            HStack(spacing: 8) {
-                Picker(String(localized: "Year"), selection: yearBinding) {
-                    ForEach(Array(1980...maxCalendarYear), id: \.self) { year in
-                        Text(verbatim: "\(year)").tag(year)
-                    }
-                }
-                .pickerStyle(.menu)
-                .frame(maxWidth: 110)
-
-                Picker(String(localized: "Month"), selection: monthBinding) {
-                    ForEach(1...12, id: \.self) { month in
-                        Text(Self.monthSymbols[month - 1]).tag(month)
-                    }
-                }
-                .pickerStyle(.menu)
-                .frame(maxWidth: 150)
-
-                Spacer()
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-            .padding(.bottom, 4)
-            #endif
-
             // ── < 月份年份 > 導航列（兩平台共用）──────────────
             HStack {
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        displayedMonth = calendar.date(
-                            byAdding: .month, value: -1, to: displayedMonth
-                        ) ?? displayedMonth
-                        selectedDate = nil
-                    }
-                } label: {
+                Button { changeMonth(by: -1) } label: {
                     Image(systemName: "chevron.left")
                         .font(.title3.weight(.semibold))
                         .frame(minWidth: 44, minHeight: 44)
@@ -176,20 +253,33 @@ struct DiveCalendarView: View {
 
                 Spacer()
 
-                Text(displayedMonth, format: .dateTime.year().month(.wide))
-                    .font(.headline)
-                    .accessibilityAddTraits(.isHeader)
+                // 中央：整合年月標題（點擊彈出年 stepper + 月網格 popover）+ Today 按鈕
+                HStack(spacing: 8) {
+                    Button { showDatePicker = true } label: { monthTitleLabel }
+                    #if !os(iOS)
+                    .buttonStyle(.plain)
+                    #endif
+                    .accessibilityLabel(String(localized: "Select year and month"))
+                    .popover(isPresented: $showDatePicker) {
+                        yearMonthGridPicker
+                            .presentationCompactAdaptation(.popover)
+                    }
+
+                    // Today 按鈕（iOS + macOS）
+                    Button { goToToday() } label: {
+                        Image(systemName: "calendar.badge.clock")
+                            .font(.subheadline)
+                    }
+                    #if !os(iOS)
+                    .buttonStyle(.borderless)
+                    .help(String(localized: "Jump to Today"))
+                    #endif
+                    .accessibilityLabel(String(localized: "Jump to Today"))
+                }
 
                 Spacer()
 
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        displayedMonth = calendar.date(
-                            byAdding: .month, value: 1, to: displayedMonth
-                        ) ?? displayedMonth
-                        selectedDate = nil
-                    }
-                } label: {
+                Button { changeMonth(by: 1) } label: {
                     Image(systemName: "chevron.right")
                         .font(.title3.weight(.semibold))
                         .frame(minWidth: 44, minHeight: 44)

@@ -13,8 +13,10 @@ struct DiveLogListView: View {
     @State private var highlightFlash: PersistentIdentifier? = nil   // iOS flash 動畫用
 
     #if !os(iOS)
-    /// macOS List 選取狀態（方向鍵 + 滑鼠點選）
+    /// macOS 選取狀態（方向鍵 + 滑鼠點選）
     @State private var selectedID: PersistentIdentifier? = nil
+    /// macOS：列表鍵盤焦點，讓上下鍵選取生效
+    @FocusState private var listFocused: Bool
     #endif
 
     /// macOS 專用：點擊 row 時的回調（macOS 不用 NavigationLink，用此 binding 更新詳情欄）
@@ -27,6 +29,27 @@ struct DiveLogListView: View {
             $0.notes.localizedCaseInsensitiveContains(searchText)
         }
     }
+
+    #if !os(iOS)
+    /// macOS：上下鍵移動選取，並同步右側詳情與捲動位置
+    private func moveSelection(_ direction: MoveCommandDirection, proxy: ScrollViewProxy) {
+        guard !filteredDives.isEmpty else { return }
+        let currentIndex = filteredDives.firstIndex { $0.persistentModelID == selectedID }
+        let newIndex: Int
+        switch direction {
+        case .up:
+            newIndex = currentIndex.map { max(0, $0 - 1) } ?? (filteredDives.count - 1)
+        case .down:
+            newIndex = currentIndex.map { min(filteredDives.count - 1, $0 + 1) } ?? 0
+        default:
+            return
+        }
+        let dive = filteredDives[newIndex]
+        selectedID = dive.persistentModelID
+        onDiveTapped?(dive)
+        withAnimation { proxy.scrollTo(dive.persistentModelID, anchor: .center) }
+    }
+    #endif
 
     var body: some View {
         Group {
@@ -77,7 +100,7 @@ struct DiveLogListView: View {
                     )
 
                     #else
-                    // ── macOS：搜尋欄內嵌列表上方 + List(selection:) 方向鍵導航 ──
+                    // ── macOS：搜尋欄內嵌列表上方 + ScrollView 卡片（卡片邊框顯示選取）──
                     VStack(spacing: 0) {
                         // 搜尋欄（直接嵌入，避免 .toolbar placement 跑到視窗右上角）
                         HStack(spacing: 8) {
@@ -101,31 +124,46 @@ struct DiveLogListView: View {
 
                         Divider()
 
-                        List(selection: $selectedID) {
-                            ForEach(filteredDives) { dive in
-                                DiveRowView(dive: dive)
-                                    .tag(dive.persistentModelID)
-                                    .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                                    .listRowSeparator(.hidden)
-                                    .listRowBackground(
-                                        selectedID == dive.persistentModelID
-                                            ? Color.accentColor.opacity(0.15)
-                                            : Color.clear
-                                    )
+                        // 不使用 List 的系統選取/焦點框（與卡片圓角衝突會產生偏移粗藍框）
+                        // 改用 ScrollView + LazyVStack，選取狀態直接畫在卡片邊框上
+                        ScrollViewReader { proxy in
+                            ScrollView {
+                                LazyVStack(spacing: 8) {
+                                    ForEach(filteredDives) { dive in
+                                        DiveRowView(
+                                            dive: dive,
+                                            isSelected: selectedID == dive.persistentModelID
+                                        )
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            selectedID = dive.persistentModelID
+                                            onDiveTapped?(dive)
+                                            listFocused = true // 點選後取得鍵盤焦點，方向鍵可接續導覽
+                                        }
+                                        .id(dive.persistentModelID)
+                                    }
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
                             }
-                        }
-                        .listStyle(.plain)
-                        // 選取變化（滑鼠點擊 / 方向鍵）→ 更新右側詳情欄
-                        .onChange(of: selectedID) { _, newID in
-                            guard let newID,
-                                  let dive = filteredDives.first(where: { $0.persistentModelID == newID })
-                            else { return }
-                            onDiveTapped?(dive)
-                        }
-                        // 匯入成功後自動選取新日誌（取代 iOS flash 動畫）
-                        .onChange(of: highlightedDiveID) { _, newID in
-                            guard let newID else { return }
-                            selectedID = newID
+                            // 讓 ScrollView 可接收鍵盤焦點與方向鍵；關閉焦點框避免又出現藍框
+                            .focusable()
+                            .focused($listFocused)
+                            .focusEffectDisabled()
+                            // 上下鍵移動選取（取代原 List 內建的方向鍵導覽）
+                            .onMoveCommand { direction in
+                                moveSelection(direction, proxy: proxy)
+                            }
+                            .onAppear { listFocused = true }
+                            // 匯入成功後自動選取新日誌並捲動到該筆
+                            .onChange(of: highlightedDiveID) { _, newID in
+                                guard let newID else { return }
+                                selectedID = newID
+                                if let dive = filteredDives.first(where: { $0.persistentModelID == newID }) {
+                                    onDiveTapped?(dive)
+                                }
+                                withAnimation { proxy.scrollTo(newID, anchor: .center) }
+                            }
                         }
                     }
                     #endif
@@ -193,10 +231,14 @@ struct StatCell: View {
                 .font(.title3.bold())
                 .monospacedDigit()
                 .foregroundStyle(.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
 
             Text(LocalizedStringKey(label))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)

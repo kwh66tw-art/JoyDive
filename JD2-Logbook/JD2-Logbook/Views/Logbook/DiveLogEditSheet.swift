@@ -29,6 +29,10 @@ struct DiveLogEditSheet: View {
     @State private var notes: String
     @State private var buddy: String
 
+    // Date helpers (iOS year/month dropdowns)
+    @State private var calendarYear:  Int
+    @State private var calendarMonth: Int
+
     // Gas mix
     private enum GasMixPickerType: String, CaseIterable, Identifiable {
         case air    = "Air"
@@ -38,6 +42,12 @@ struct DiveLogEditSheet: View {
     @State private var gasMixType: GasMixPickerType
     @State private var nitroxO2Percent: Double  // 22–40
 
+    // MARK: Keyboard Focus (Tab / Shift+Tab 導覽)
+    private enum Field: Hashable {
+        case location, maxDepth, waterTemp, buddy, notes
+    }
+    @FocusState private var focusedField: Field?
+
     // MARK: - Init
 
     init(mode: DiveEditMode) {
@@ -45,7 +55,11 @@ struct DiveLogEditSheet: View {
 
         switch mode {
         case .new:
-            _dateTime           = State(initialValue: Date())
+            let now = Date()
+            let cal = Calendar.current
+            _dateTime           = State(initialValue: now)
+            _calendarYear       = State(initialValue: cal.component(.year,  from: now))
+            _calendarMonth      = State(initialValue: cal.component(.month, from: now))
             _location           = State(initialValue: "")
             _maxDepth           = State(initialValue: 18.0)
             _durationMinutes    = State(initialValue: 45)
@@ -57,7 +71,10 @@ struct DiveLogEditSheet: View {
             _nitroxO2Percent    = State(initialValue: 32.0)
 
         case .edit(let dive):
+            let cal = Calendar.current
             _dateTime           = State(initialValue: dive.dateTime)
+            _calendarYear       = State(initialValue: cal.component(.year,  from: dive.dateTime))
+            _calendarMonth      = State(initialValue: cal.component(.month, from: dive.dateTime))
             _location           = State(initialValue: dive.location)
             _maxDepth           = State(initialValue: dive.maxDepth)
             _durationMinutes    = State(initialValue: max(1, dive.diveTimeSeconds / 60))
@@ -88,6 +105,40 @@ struct DiveLogEditSheet: View {
         }
     }
 
+    // MARK: - Date Helpers (iOS)
+
+    /// 年份上限（今年 + 2）
+    private var maxCalendarYear: Int {
+        Calendar.current.component(.year, from: Date()) + 2
+    }
+
+    /// 各語系月份名稱（DateFormatter 依裝置語系自動本地化）
+    private static let monthSymbols: [String] = {
+        let fmt = DateFormatter()
+        fmt.locale = Locale.current
+        return fmt.monthSymbols
+    }()
+
+    /// 年月下拉變更後，把 dateTime 移到同一天（若新月沒有那一天則取末日）
+    private func syncDateToYearMonth() {
+        let cal    = Calendar.current
+        let day    = cal.component(.day,    from: dateTime)
+        let hour   = cal.component(.hour,   from: dateTime)
+        let minute = cal.component(.minute, from: dateTime)
+
+        // 計算新月天數，避免「2月31日」之類的無效日期
+        let firstOfMonth = cal.date(from: DateComponents(year: calendarYear, month: calendarMonth, day: 1)) ?? dateTime
+        let daysInMonth  = cal.range(of: .day, in: .month, for: firstOfMonth)?.count ?? 30
+        let clampedDay   = Swift.min(day, daysInMonth)
+
+        if let newDate = cal.date(from: DateComponents(
+            year: calendarYear, month: calendarMonth,
+            day: clampedDay, hour: hour, minute: minute
+        )) {
+            dateTime = newDate
+        }
+    }
+
     // MARK: - Validation
 
     private var isSaveEnabled: Bool {
@@ -107,14 +158,66 @@ struct DiveLogEditSheet: View {
         NavigationStack {
             Form {
                 // ── 日期時間 ────────────────────────────────
+                // Year / Month Picker 在 iOS + macOS 皆顯示（快速跳年月）
                 Section {
+                    // ── 年份（iOS + macOS 共用）──────────────
+                    Picker(String(localized: "Year"), selection: $calendarYear) {
+                        ForEach(Array(1980...maxCalendarYear), id: \.self) { year in
+                            Text(verbatim: "\(year)").tag(year)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .onChange(of: calendarYear) { _, _ in syncDateToYearMonth() }
+
+                    // ── 月份（iOS + macOS 共用）──────────────
+                    Picker(String(localized: "Month"), selection: $calendarMonth) {
+                        ForEach(1...12, id: \.self) { month in
+                            Text(Self.monthSymbols[month - 1]).tag(month)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .onChange(of: calendarMonth) { _, _ in syncDateToYearMonth() }
+
+                    #if os(iOS)
+                    // ── iOS：graphical 月曆選日 ───────────────
+                    DatePicker(
+                        "",
+                        selection: $dateTime,
+                        displayedComponents: [.date]
+                    )
+                    .datePickerStyle(.graphical)
+                    .labelsHidden()
+                    .onChange(of: dateTime) { _, newDate in
+                        let cal = Calendar.current
+                        let y = cal.component(.year,  from: newDate)
+                        let m = cal.component(.month, from: newDate)
+                        if y != calendarYear  { calendarYear  = y }
+                        if m != calendarMonth { calendarMonth = m }
+                    }
+
+                    // ── iOS 時間列 ────────────────────────────
+                    DatePicker(
+                        String(localized: "Time"),
+                        selection: $dateTime,
+                        displayedComponents: [.hourAndMinute]
+                    )
+                    #else
+                    // ── macOS：compact 月曆 + 時間（點擊展開 popover）
+                    // Year/Month Picker 快速跳年月；compact 負責確定精確日期與時間
                     DatePicker(
                         String(localized: "Date & Time"),
                         selection: $dateTime,
                         displayedComponents: [.date, .hourAndMinute]
                     )
-                    .datePickerStyle(.graphical)
-                    .accessibilityLabel(String(localized: "Date & Time"))
+                    .datePickerStyle(.compact)
+                    .onChange(of: dateTime) { _, newDate in
+                        let cal = Calendar.current
+                        let y = cal.component(.year,  from: newDate)
+                        let m = cal.component(.month, from: newDate)
+                        if y != calendarYear  { calendarYear  = y }
+                        if m != calendarMonth { calendarMonth = m }
+                    }
+                    #endif
                 }
 
                 // ── 地點 ─────────────────────────────────
@@ -122,6 +225,7 @@ struct DiveLogEditSheet: View {
                     TextField(String(localized: "Dive Site"), text: $location)
                         .textContentType(.addressCity)
                         .autocorrectionDisabled()
+                        .focused($focusedField, equals: .location)
                 }
 
                 // ── 潛水數據 ─────────────────────────────
@@ -133,11 +237,13 @@ struct DiveLogEditSheet: View {
                         Spacer()
                         TextField("0.0", value: $maxDepth,
                                   format: .number.precision(.fractionLength(1)))
+                            .labelsHidden() // 隱藏 TextField title，移除 macOS Form 多出的「0.0」
                             #if os(iOS)
                             .keyboardType(.decimalPad)
                             #endif
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
+                            .focused($focusedField, equals: .maxDepth)
                         Text("m")
                             .foregroundStyle(.secondary)
                     }
@@ -167,11 +273,13 @@ struct DiveLogEditSheet: View {
                         Spacer()
                         TextField("0.0", value: $waterTemperature,
                                   format: .number.precision(.fractionLength(1)))
+                            .labelsHidden() // 隱藏 TextField title，移除 macOS Form 多出的「0.0」
                             #if os(iOS)
                             .keyboardType(.decimalPad)
                             #endif
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
+                            .focused($focusedField, equals: .waterTemp)
                         Text("°C")
                             .foregroundStyle(.secondary)
                     }
@@ -229,6 +337,7 @@ struct DiveLogEditSheet: View {
                 Section(header: Text("Buddy")) {
                     TextField(String(localized: "Buddy Name (optional)"), text: $buddy)
                         .textContentType(.name)
+                        .focused($focusedField, equals: .buddy)
                 }
 
                 // ── 備註 ─────────────────────────────────
@@ -236,11 +345,14 @@ struct DiveLogEditSheet: View {
                     TextEditor(text: $notes)
                         .frame(minHeight: 80, maxHeight: 200)
                         .accessibilityLabel(String(localized: "Notes"))
+                        .focused($focusedField, equals: .notes)
                 }
             }
             .navigationTitle(titleText)
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #else
+            .formStyle(.grouped) // macOS：原生分組表單，修正 label/控制項間距撐爆問題
             #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -253,6 +365,11 @@ struct DiveLogEditSheet: View {
                 }
             }
         }
+        #if !os(iOS)
+        // macOS：約束 sheet 尺寸，避免 Form 被撐到整個視窗寬度導致版面崩潰
+        .frame(minWidth: 460, idealWidth: 520, maxWidth: 560,
+               minHeight: 560, idealHeight: 660)
+        #endif
     }
 
     // MARK: - Save

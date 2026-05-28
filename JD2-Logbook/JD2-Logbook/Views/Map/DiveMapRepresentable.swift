@@ -17,8 +17,11 @@ import MapKit
 final class DiveMapCoordinator: NSObject, MKMapViewDelegate {
 
     var onAnnotationTapped: (DiveLog) -> Void
-    /// 防止後續資料更新觸發重複 zoom-to-fit。
+    /// 首次 zoom-to-fit 是否已完成。置於 coordinator（reference type），
+    /// 可在 update 內「同步」設值 → 杜絕重複 async fit 排程。
     var hasZoomedToFit = false
+    /// 已平移置中過的潛點 ID，確保每次選取只置中一次。
+    var lastCenteredID: PersistentIdentifier? = nil
 
     init(onAnnotationTapped: @escaping (DiveLog) -> Void) {
         self.onAnnotationTapped = onAnnotationTapped
@@ -31,10 +34,8 @@ final class DiveMapCoordinator: NSObject, MKMapViewDelegate {
         guard !(annotation is MKUserLocation) else { return nil }
 
         if annotation is MKClusterAnnotation {
-            return mapView.dequeueReusableAnnotationView(
-                withIdentifier: DiveClusterAnnotationView.reuseID,
-                for: annotation
-            )
+            // 回傳 nil → 交給 MapKit 原生預設聚合徽章（系統自動算繪數字、自管重用）
+            return nil
         }
 
         if annotation is DiveSiteAnnotation {
@@ -67,6 +68,8 @@ struct DiveMapRepresentable: UIViewRepresentable {
 
     let dives: [DiveLog]
     @Binding var mapType: MKMapType
+    /// 目前選取的潛點，用於大頭針選取狀態雙向同步 + 自動置中。
+    var selectedDive: DiveLog?
     var onAnnotationTapped: (DiveLog) -> Void
 
     func makeCoordinator() -> DiveMapCoordinator {
@@ -88,6 +91,8 @@ struct DiveMapRepresentable: NSViewRepresentable {
 
     let dives: [DiveLog]
     @Binding var mapType: MKMapType
+    /// 目前選取的潛點，用於大頭針選取狀態雙向同步 + 自動置中。
+    var selectedDive: DiveLog?
     var onAnnotationTapped: (DiveLog) -> Void
 
     func makeCoordinator() -> DiveMapCoordinator {
@@ -115,17 +120,18 @@ private extension DiveMapRepresentable {
         mapView.delegate           = coordinator
         mapView.mapType            = mapType
         mapView.showsUserLocation  = false
-        mapView.showsCompass       = true
+        // 關閉旋轉：潛水世界地圖維持正北朝上即可。
+        // 這一併解決 MapKit 內建的「旋轉後自動彈回正北」與羅盤跨平台不一致問題。
+        mapView.isRotateEnabled    = false
+        // 不顯示羅盤（既然不旋轉，永遠正北，兩平台一致：都不出現）。
+        mapView.showsCompass       = false
         mapView.showsScale         = true
 
         mapView.register(
             DiveSiteAnnotationView.self,
             forAnnotationViewWithReuseIdentifier: DiveSiteAnnotationView.reuseID
         )
-        mapView.register(
-            DiveClusterAnnotationView.self,
-            forAnnotationViewWithReuseIdentifier: DiveClusterAnnotationView.reuseID
-        )
+        // cluster 不註冊自訂類別：viewFor 回傳 nil，用 MapKit 原生預設聚合徽章。
 
         return mapView
     }
@@ -141,8 +147,19 @@ private extension DiveMapRepresentable {
 
         // ── Annotation diff ──────────────────────────────────────────
         let existing = mapView.annotations.compactMap { $0 as? DiveSiteAnnotation }
-        let newIDs   = Set(dives.map { $0.persistentModelID })
 
+        // 漏洞 1：對已存在的大頭針即時同步 title/subtitle（編輯潛點後地名/深度更新）
+        for annotation in existing {
+            if let newDive = dives.first(where: { $0.persistentModelID == annotation.dive.persistentModelID }) {
+                let newTitle = newDive.location.isEmpty
+                    ? String(localized: "Unknown Location") : newDive.location
+                if annotation.title != newTitle { annotation.title = newTitle }
+                let newSubtitle = String(format: "%.1f m", newDive.maxDepth)
+                if annotation.subtitle != newSubtitle { annotation.subtitle = newSubtitle }
+            }
+        }
+
+        let newIDs = Set(dives.map { $0.persistentModelID })
         let toRemove = existing.filter { !newIDs.contains($0.dive.persistentModelID) }
         if !toRemove.isEmpty {
             mapView.removeAnnotations(toRemove)
@@ -157,10 +174,41 @@ private extension DiveMapRepresentable {
             .filter { !currentIDs.contains($0.persistentModelID) }
             .map    { DiveSiteAnnotation(dive: $0) }
 
-        guard !toAdd.isEmpty else { return }
         mapView.addAnnotations(toAdd)
 
-        // ── Zoom-to-fit on first load ─────────────────────────────────
+        // ── 漏洞 2 + 選取 pin 自動置中（解決卡死 + 推開式面板遮擋）──────────
+        // ⚠️ 關鍵：選取/取消選取/置中等會觸發地圖重新佈局的操作，
+        // 必須「延後」到 SwiftUI render 之外執行，否則會造成 NSHostingView reentrant
+        // layout + AttributeGraph 無窮迴圈（連帶卡頓、clustering 閃失、旋轉彈回正北）。
+        DispatchQueue.main.async {
+            if let selected = selectedDive {
+                let target = mapView.annotations.first {
+                    ($0 as? DiveSiteAnnotation)?.dive.persistentModelID == selected.persistentModelID
+                } as? DiveSiteAnnotation
+
+                // 確保 MapKit 也選中（支援未來 list→map 跳轉；animated:false 不平移鏡頭）
+                let alreadySelected = mapView.selectedAnnotations.contains {
+                    ($0 as? DiveSiteAnnotation)?.dive.persistentModelID == selected.persistentModelID
+                }
+                if !alreadySelected, let target {
+                    mapView.selectAnnotation(target, animated: false)
+                }
+
+                // 每次選取只置中一次；setCenter 僅平移、保留 heading（不會彈回正北）
+                if coordinator.lastCenteredID != selected.persistentModelID, let target {
+                    coordinator.lastCenteredID = selected.persistentModelID
+                    mapView.setCenter(target.coordinate, animated: true)
+                }
+            } else {
+                // selectedDive 清空（Sheet 滑掉）→ 取消 MapKit 選取，避免再點同一 pin 卡死
+                for anno in mapView.selectedAnnotations {
+                    mapView.deselectAnnotation(anno, animated: true)
+                }
+                coordinator.lastCenteredID = nil
+            }
+        }
+
+        // ── Zoom-to-fit on first load（coordinator 同步旗標，杜絕重複 async fit）──
         guard !coordinator.hasZoomedToFit else { return }
         coordinator.hasZoomedToFit = true
 
@@ -168,14 +216,15 @@ private extension DiveMapRepresentable {
             let all = mapView.annotations.filter { !($0 is MKUserLocation) }
             guard !all.isEmpty else { return }
 
+            // animated: false —— 避免首次 fit 的鏡頭動畫在結束時把地圖拉回正北。
             if all.count == 1 {
                 let region = MKCoordinateRegion(
                     center: all[0].coordinate,
                     span:   MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
                 )
-                mapView.setRegion(region, animated: true)
+                mapView.setRegion(region, animated: false)
             } else {
-                mapView.showAnnotations(all, animated: true)
+                mapView.showAnnotations(all, animated: false)
             }
         }
     }

@@ -22,8 +22,16 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
+        // macOS：NavigationStack 由 MainTabView 容器層提供（避免雙層 nav bar 產生頂部空白）
+        #if os(iOS)
+        NavigationStack { settingsForm }
+        #else
+        settingsForm
+        #endif
+    }
+
+    private var settingsForm: some View {
+        Form {
 
                 // ── 語言 ───────────────────────────────────
                 Section(header: Text("Language")) {
@@ -33,18 +41,27 @@ struct SettingsView: View {
                         HStack {
                             Label("App Language", systemImage: "globe")
                             Spacer()
+                            #if os(iOS)
                             Text("iOS Settings")
-                                .foregroundStyle(.secondary)
-                                .font(.subheadline)
+                            #else
+                            Text("System Settings")
+                            #endif
                             Image(systemName: "arrow.up.right.square")
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
                         }
+                        .foregroundStyle(.secondary)
+                        .font(.subheadline)
                     }
                     .foregroundStyle(.primary)
+                    #if os(iOS)
                     .accessibilityHint(
                         String(localized: "Opens iOS Settings to change the app display language")
                     )
+                    #else
+                    .accessibilityHint(
+                        String(localized: "Opens System Settings to change the app display language")
+                    )
+                    #endif
                 }
 
                 // ── Premium ────────────────────────────────
@@ -171,7 +188,10 @@ struct SettingsView: View {
                     } label: {
                         Label("Inject 100+ Mock Dives", systemImage: "square.stack.3d.up.fill")
                     }
-                    
+                    #if os(macOS)
+                    .buttonStyle(.borderless)
+                    #endif
+
                     Button(role: .destructive) {
                         do {
                             try DiveLogDatabase.shared.deleteAllDives()
@@ -181,6 +201,9 @@ struct SettingsView: View {
                     } label: {
                         Label("Clear All Dives", systemImage: "trash")
                     }
+                    #if os(macOS)
+                    .buttonStyle(.borderless)
+                    #endif
                 }
                 #endif
 
@@ -188,6 +211,9 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
+            #else
+            .formStyle(.grouped)        // macOS 下使用 Grouped 樣式更緊密精緻
+            .padding(.top, -16)         // 負 margin 抵消系統隱藏導航列所造成的過度空白
             #endif
             // ── Bulk Export：格式選擇 ────────────────────────
             .confirmationDialog(
@@ -212,7 +238,6 @@ struct SettingsView: View {
             } message: {
                 Text(restoreAlertMessage)
             }
-        }
     }
 
     // MARK: - Actions

@@ -5,6 +5,8 @@ import SwiftUI
 
 struct DiveRowView: View {
     let dive: DiveLog
+    /// macOS：是否為目前選取的卡片（畫在卡片邊框上，取代 List 系統選取框）
+    var isSelected: Bool = false
 
     // MARK: - Computed properties
 
@@ -50,11 +52,21 @@ struct DiveRowView: View {
             Spacer(minLength: 0)
         }
         .padding(12)
-        .background(Color.platformSecondaryGroupedBackground)
+        .background(
+            isSelected
+                ? Color.accentColor.opacity(0.12)
+                : Color.platformSecondaryGroupedBackground
+        )
         .clipShape(RoundedRectangle(cornerRadius: 14))
+        // 選取時在卡片邊框畫 accent 框（與圓角完全對齊，取代 List 偏移粗藍框）
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .strokeBorder(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
+        )
         // WCAG: 整張卡片作為可點選元素
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityDescription)
+        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
     }
 
     // MARK: - Sub-views
@@ -83,7 +95,7 @@ struct DiveRowView: View {
                 .font(.subheadline.weight(.medium))
                 .lineLimit(1)
 
-            // 主要數據：深度 + 時間
+            // 主要數據：深度 + 時間（單行固定，避免窄欄時被擠成多行）
             HStack(spacing: 14) {
                 Label(
                     String(format: "%.1f m", dive.maxDepth),
@@ -91,13 +103,17 @@ struct DiveRowView: View {
                 )
                 .font(.callout.bold())
                 .foregroundStyle(.tint)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
 
                 Label(durationText, systemImage: "timer")
                     .font(.callout)
                     .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
             }
 
-            // 次要數據：水溫 + 氣體
+            // 次要數據：水溫 + 氣體（單行固定）
             HStack(spacing: 10) {
                 Label(
                     String(format: "%.0f°C", dive.waterTemperature),
@@ -105,9 +121,13 @@ struct DiveRowView: View {
                 )
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
 
                 Text(gasMixText)
                     .font(.caption.weight(.medium))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
                     .padding(.horizontal, 7)
                     .padding(.vertical, 2)
                     .background(Color.accentColor.opacity(0.15))

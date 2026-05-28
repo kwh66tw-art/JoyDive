@@ -5,7 +5,8 @@
 // macOS: NSImage / NSColor / NSTextField（label style）
 //
 // DiveSiteAnnotation（純資料 class）無平台相依，兩平台共用。
-// DiveSiteAnnotationView / DiveClusterAnnotationView 依平台使用對應 API。
+// DiveSiteAnnotationView 為單一潛點釘（含值變更防護）；
+// 聚合徽章不自訂，交由 MapKit 原生預設 view（viewFor 回傳 nil）自動算繪數字。
 
 import MapKit
 
@@ -43,9 +44,9 @@ final class DiveSiteAnnotation: NSObject, MKAnnotation {
 
 // MARK: - DiveSiteAnnotationView
 
-/// 單一潛點的藍色 marker pin。
+/// 單一潛點的藍色標準地圖釘（乾淨 marker，不帶人形字符）。
 /// `clusteringIdentifier` 啟用 MapKit 原生聚類；`canShowCallout = false`，
-/// 點擊事件完全交由 Medium Detent Sheet 處理。
+/// 點擊事件完全交由詳情面板處理。
 final class DiveSiteAnnotationView: MKMarkerAnnotationView {
 
     static let reuseID = "DiveSiteAnnotationView"
@@ -54,121 +55,49 @@ final class DiveSiteAnnotationView: MKMarkerAnnotationView {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
         clusteringIdentifier = "diveCluster"
         canShowCallout       = false
-
-#if os(iOS)
-        glyphImage      = UIImage(systemName: "figure.open.water.swim")
-        markerTintColor = .systemBlue
-#else
-        // macOS 11+：NSImage 不有 init(systemName:)，正確 API 是 systemSymbolName
-        glyphImage      = NSImage(systemSymbolName: "figure.open.water.swim",
-                                  accessibilityDescription: nil)
-        markerTintColor = NSColor.systemBlue
-#endif
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) not implemented")
-    }
-}
-
-// MARK: - DiveClusterAnnotationView
-
-/// 多個潛點聚集時顯示的圓形 badge，顯示成員數量。
-final class DiveClusterAnnotationView: MKAnnotationView {
-
-    static let reuseID = MKMapViewDefaultClusterAnnotationViewReuseIdentifier
-
-    // MARK: Badge Label（平台差異：UILabel vs NSTextField）
-
-#if os(iOS)
-    private let badgeLabel: UILabel = {
-        let label = UILabel()
-        label.textColor                          = .white
-        label.font                               = .systemFont(ofSize: 14, weight: .bold)
-        label.textAlignment                      = .center
-        label.adjustsFontSizeToFitWidth          = true
-        label.minimumScaleFactor                 = 0.7
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-#else
-    private let badgeLabel: NSTextField = {
-        let field = NSTextField(labelWithString: "")
-        field.textColor                          = .white
-        field.font                               = .systemFont(ofSize: 14, weight: .bold)
-        field.alignment                          = .center
-        field.translatesAutoresizingMaskIntoConstraints = false
-        return field
-    }()
-#endif
-
-    // MARK: Init
-
-    override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
-        super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
-        setupBadge()
+        applyStyle()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) not implemented")
     }
 
-    // MARK: Layout
-
-    private func setupBadge() {
-        let size: CGFloat = 44
-        frame = CGRect(x: 0, y: 0, width: size, height: size)
-
-#if os(iOS)
-        // UIView：layer 為非 optional
-        backgroundColor     = .systemBlue
-        layer.cornerRadius  = size / 2
-        layer.borderWidth   = 2.5
-        layer.borderColor   = UIColor.white.cgColor
-        layer.shadowColor   = UIColor.black.cgColor
-        layer.shadowOpacity = 0.25
-        layer.shadowRadius  = 4
-        layer.shadowOffset  = CGSize(width: 0, height: 2)
-#else
-        // NSView：需先啟用 layer，layer 為 optional
-        wantsLayer              = true
-        layer?.backgroundColor  = NSColor.systemBlue.cgColor
-        layer?.cornerRadius     = size / 2
-        layer?.borderWidth      = 2.5
-        layer?.borderColor      = NSColor.white.cgColor
-        layer?.shadowColor      = NSColor.black.cgColor
-        layer?.shadowOpacity    = 0.25
-        layer?.shadowRadius     = 4
-#endif
-
-        addSubview(badgeLabel)
-        NSLayoutConstraint.activate([
-            badgeLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            badgeLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-            badgeLabel.widthAnchor.constraint(
-                lessThanOrEqualTo: widthAnchor, multiplier: 0.85
-            )
-        ])
-
-        canShowCallout = false
-        collisionMode  = .circle
+    /// 👑 關鍵：MapKit 為效能會「原地重指派」既有 view 的 annotation（不觸發 viewFor／
+    /// 不一定觸發 prepareForDisplay），此時 clusteringIdentifier 會被重置為 nil，
+    /// 該 pin 就退出聚合、導致整個聚合解體（看起來像數字/徽章消失）。
+    /// 只有 annotation 的 didSet 是必觸發節點，在此重套 clusteringIdentifier 才能守住聚合。
+    override var annotation: MKAnnotation? {
+        didSet { applyStyle() }
     }
 
-    // MARK: Content Update
-
+    /// MKMarkerAnnotationView 在 reuse 時會把 glyph/tint 重設回預設（紅色）。
+    /// 因此每次顯示都重套樣式，確保所有潛點外觀一致（藍色標準釘）。
     override func prepareForDisplay() {
         super.prepareForDisplay()
-        guard let cluster = annotation as? MKClusterAnnotation else { return }
-        let count = cluster.memberAnnotations.count
-        let text  = count < 100 ? "\(count)" : "99+"
+        applyStyle()
+    }
 
+    private func applyStyle() {
+        // 值變更防護：只有屬性真正改變時才寫入，避免重複 setter 觸發 VectorKit 冗餘重繪。
+        if clusteringIdentifier != "diveCluster" {
+            clusteringIdentifier = "diveCluster"
+        }
+        if glyphImage != nil {
+            glyphImage = nil          // 維持乾淨標準釘（無人形字符）
+        }
+        if displayPriority != .defaultLow {
+            displayPriority = .defaultLow  // 啟用 MapKit 原生聚合
+        }
 #if os(iOS)
-        badgeLabel.text        = text
-        accessibilityLabel     = "\(count) dive sites"
+        let target = UIColor.systemBlue
 #else
-        badgeLabel.stringValue = text
-        // macOS NSView：accessibilityLabel 是 method，需用 setter
-        setAccessibilityLabel("\(count) dive sites")
+        let target = NSColor.systemBlue
 #endif
+        if markerTintColor != target {
+            markerTintColor = target
+        }
     }
 }
+
+// 聚合徽章（cluster）完全交給 MapKit 原生預設 view 管理（viewFor 回傳 nil），
+// 由系統自動算繪成員數量，避免自訂子類別在 reuse / 重聚合時數字消失的問題。
