@@ -61,42 +61,15 @@ JD2-Logbook/
 
 ---
 
-## Xcode 整合步驟（PM 執行）
+## Xcode 整合（已完成）
 
-> 所有檔案已存在磁碟，但需要手動加入 Xcode project。
-
-### 步驟一：加入新 Swift 檔案
-
-1. 在 Xcode Project Navigator，右鍵點擊 `Views` 群組 → **Add Files to "JD2-Logbook"…**
-2. 選取以下群組（注意：連同子資料夾整個加入）：
-   - `Views/MainTabView.swift`
-   - `Views/Logbook/`（5 個檔案）
-   - `Views/Import/`（1 個檔案）
-   - `Views/Map/`（1 個檔案）
-   - `Views/Settings/`（1 個檔案）
-3. 確認 **Target** 勾選 `JD2-Logbook`，點擊 Add。
-
-### 步驟二：加入 String Catalog
-
-1. 將 `Localizable.xcstrings` 拖入 Project Navigator（`JD2-Logbook` 群組根目錄）。
-2. Target Membership 確認勾選 `JD2-Logbook`。
-3. Xcode 15+ 會自動辨識為 String Catalog，無需額外設定。
-
-### 步驟三：啟用多語系
-
-1. 點擊 Project 節點 → **Info** → **Localizations**
-2. 點擊 `+`，加入：
-   - `Chinese, Traditional (zh-Hant)`
-   - `Chinese, Simplified (zh-Hans)`
-3. 對話框出現時，選擇 **Finish**（String Catalog 會自動涵蓋所有語言）。
-
-### 步驟四：驗證
-
-```
-Product → Build (⌘B)
-```
-
-預期結果：**Build Succeeded**，零 Error。
+| 項目 | 狀態 |
+|------|------|
+| 所有 Swift View 檔案加入 project，Target = JD2-Logbook | ✅ |
+| `Localizable.xcstrings` 拖入 project，Xcode 自動辨識 | ✅ |
+| zh-Hant / zh-Hans 自動寫入 `knownRegions`（Xcode 15 行為） | ✅ |
+| Build Succeeded，0 errors，0 warnings | ✅ |
+| `JD2-Logbook.xcodeproj/project.pbxproj` 首次納入 git 追蹤 | ✅ |
 
 ---
 

@@ -33,46 +33,53 @@ struct ImportWizardView: View {
     private let coordinator = ImportCoordinator(database: DiveLogDatabase.shared)
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                stepIndicator
+        // macOS：NavigationStack 由 MainTabView 容器層提供（避免雙層 nav bar 產生頂部空白）
+        #if os(iOS)
+        NavigationStack { importContent }
+        #else
+        importContent
+        #endif
+    }
 
-                Divider()
+    private var importContent: some View {
+        VStack(spacing: 0) {
+            stepIndicator
 
-                ScrollView {
-                    switch step {
-                    case .ready:
-                        readyView
-                    case .importing(let current, let total, let fileName):
-                        importingView(current: current, total: total, fileName: fileName)
-                    case .success(let count, let skipped):
-                        successView(count: count, skipped: skipped)
-                    case .failure(let message):
-                        failureView(message: message)
-                    }
+            Divider()
+
+            ScrollView {
+                switch step {
+                case .ready:
+                    readyView
+                case .importing(let current, let total, let fileName):
+                    importingView(current: current, total: total, fileName: fileName)
+                case .success(let count, let skipped):
+                    successView(count: count, skipped: skipped)
+                case .failure(let message):
+                    failureView(message: message)
                 }
+            }
 
-                PremiumAwareAdBanner(adUnitID: AdUnitID.importBanner)
-            }
-            .navigationTitle("Import Dives")
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.large)
-            #endif
-            .fileImporter(
-                isPresented: $showFilePicker,
-                allowedContentTypes: [
-                    UTType(filenameExtension: "uddf") ?? .xml,
-                    UTType(filenameExtension: "ssrf") ?? .xml,
-                    UTType(filenameExtension: "fit")  ?? .data,
-                    .xml,
-                    .json,
-                    .commaSeparatedText,
-                    .folder
-                ],
-                allowsMultipleSelection: true
-            ) { result in
-                handleFilePickerResult(result)
-            }
+            PremiumAwareAdBanner(adUnitID: AdUnitID.importBanner)
+        }
+        .navigationTitle("Import Dives")
+        #if os(iOS)
+        .navigationBarTitleDisplayMode(.large)
+        #endif
+        .fileImporter(
+            isPresented: $showFilePicker,
+            allowedContentTypes: [
+                UTType(filenameExtension: "uddf") ?? .xml,
+                UTType(filenameExtension: "ssrf") ?? .xml,
+                UTType(filenameExtension: "fit")  ?? .data,
+                .xml,
+                .json,
+                .commaSeparatedText,
+                .folder
+            ],
+            allowsMultipleSelection: true
+        ) { result in
+            handleFilePickerResult(result)
         }
     }
 
@@ -165,12 +172,19 @@ struct ImportWizardView: View {
             } label: {
                 Label("Select Files or Folder", systemImage: "folder")
                     .font(.headline)
+                    #if os(iOS)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
+                    #endif
             }
             .buttonStyle(.borderedProminent)
+            #if os(iOS)
             .controlSize(.large)
             .padding(.horizontal, 24)
+            #else
+            .controlSize(.regular)
+            .padding(.horizontal, 16)
+            #endif
             .accessibilityLabel(String(localized: "Select Files or Folder"))
             .accessibilityHint("Opens file picker to choose dive log files or a folder")
 
@@ -298,12 +312,16 @@ struct ImportWizardView: View {
             } label: {
                 Text("Done")
                     .font(.headline)
+                    #if os(iOS)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
+                    #endif
             }
             .buttonStyle(.borderedProminent)
-            .padding(.horizontal, 40)
             .padding(.top, 8)
+            #if os(iOS)
+            .padding(.horizontal, 40)
+            #endif
 
             Spacer()
         }
@@ -334,11 +352,15 @@ struct ImportWizardView: View {
             } label: {
                 Text("Try Again")
                     .font(.headline)
+                    #if os(iOS)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
+                    #endif
             }
             .buttonStyle(.bordered)
+            #if os(iOS)
             .padding(.horizontal, 40)
+            #endif
 
             Spacer()
         }

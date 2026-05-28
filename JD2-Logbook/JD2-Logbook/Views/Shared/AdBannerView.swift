@@ -22,8 +22,10 @@ import SwiftUI
 #if canImport(GoogleMobileAds)
 import GoogleMobileAds
 
-// MARK: - 真實 AdMob Banner（已安裝 SDK 時啟用）
+// MARK: - 真實 AdMob Banner（已安裝 SDK 時啟用，iOS only）
+// GoogleMobileAds SDK 僅支援 iOS/iPadOS，macOS 不支援
 
+#if os(iOS)
 struct AdBannerView: UIViewRepresentable {
     let adUnitID: String
 
@@ -93,6 +95,8 @@ struct AdBannerView: UIViewRepresentable {
 /// Standard banner 高度（GADAdSizeBanner = 50pt）
 let adBannerHeight: CGFloat = GADAdSizeBanner.size.height
 
+#endif // os(iOS)
+
 #else
 
 // MARK: - 開發用佔位符（未安裝 GoogleMobileAds SDK 時）
@@ -152,9 +156,12 @@ struct PremiumAwareAdBanner: View {
     @State private var purchase = PurchaseManager.shared
 
     var body: some View {
+        // macOS 無 AdMob 支援，廣告版位完全不渲染
+        #if os(iOS)
         if !purchase.isPremium {
             AdBannerView(adUnitID: adUnitID)
                 .accessibilityHidden(true)  // 廣告對 VoiceOver 不具意義
         }
+        #endif
     }
 }

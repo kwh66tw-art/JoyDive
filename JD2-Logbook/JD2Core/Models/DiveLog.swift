@@ -7,6 +7,20 @@
 import Foundation
 import SwiftData
 
+// MARK: - 剖面樣本
+
+/// 單一深度剖面樣本點
+/// 使用短 CodingKey（t/d）節省 JSON 體積（一次潛水可能數百個樣本）
+struct DiveProfileSample: Codable {
+    let timeSeconds: Double   // 距潛水開始的秒數
+    let depthMeters: Double   // 深度（公尺）
+
+    enum CodingKeys: String, CodingKey {
+        case timeSeconds = "t"
+        case depthMeters = "d"
+    }
+}
+
 @Model
 final class DiveLog {
 
@@ -56,6 +70,11 @@ final class DiveLog {
 
     /// 潛伴名字（可選）
     var buddy: String?
+
+    /// 深度剖面樣本（JSON 編碼）
+    /// 格式：[{"t":10.0,"d":4.07},...] t=秒數, d=深度(m)
+    /// SwiftData lightweight migration：有預設值，舊記錄自動補 "[]"
+    var profileSamplesJSON: String = "[]"
 
     /// 源檔案格式: "UDDF", "SHEARWATER", "Garmin" 等
     var sourceFormat: String = "manual"
@@ -123,6 +142,14 @@ final class DiveLog {
         let formatter = DateFormatter()
         formatter.timeStyle = .short
         return formatter.string(from: dateTime)
+    }
+
+    /// 解碼後的剖面樣本陣列（chart 用）
+    var profileSamples: [DiveProfileSample] {
+        guard let data = profileSamplesJSON.data(using: .utf8),
+              let samples = try? JSONDecoder().decode([DiveProfileSample].self, from: data)
+        else { return [] }
+        return samples
     }
 
     /// 深度與時間的平均下潛速率 (m/min)

@@ -874,13 +874,29 @@ struct SuuntoJSONParser: DiveLogImporter {
         }
         let gasMixJSON = SuuntoJSONParser.makeGasMixJSON(fO2: fO2)
 
-        // ── 水溫（Samples 最低溫 Kelvin → Celsius；缺失 → 20°C）─
+        // ── 水溫 + 剖面樣本（Samples 陣列）────────────────────────
         var waterTemp = 20.0
+        var profileSamples: [DiveProfileSample] = []
         if let samples = deviceLog["Samples"] as? [[String: Any]] {
+            // 水溫：最低 Kelvin 值 → Celsius
             let kelvins = samples.compactMap { ($0["Temperature"] as? NSNumber)?.doubleValue }
             if let minK = kelvins.min() {
                 waterTemp = (minK - 273.15).rounded(toDecimalPlaces: 2)
             }
+            // 剖面：Depth（公尺）+ Time（秒）
+            for s in samples {
+                if let depthNum = s["Depth"] as? NSNumber,
+                   let timeNum  = s["Time"]  as? NSNumber {
+                    let d = depthNum.doubleValue
+                    let t = timeNum.doubleValue
+                    if t >= 0, d >= 0 {
+                        profileSamples.append(
+                            DiveProfileSample(timeSeconds: t, depthMeters: d)
+                        )
+                    }
+                }
+            }
+            profileSamples.sort { $0.timeSeconds < $1.timeSeconds }
         }
 
         // ── 建立 DiveLog ─────────────────────────────────────────
@@ -896,6 +912,13 @@ struct SuuntoJSONParser: DiveLogImporter {
 
         if let notes = header["Notes"] as? String, !notes.isEmpty {
             dive.notes = notes
+        }
+
+        // ── 深度剖面 ─────────────────────────────────────────────
+        if !profileSamples.isEmpty,
+           let jsonData = try? JSONEncoder().encode(profileSamples),
+           let jsonStr  = String(data: jsonData, encoding: .utf8) {
+            dive.profileSamplesJSON = jsonStr
         }
 
         return [dive]
@@ -1168,6 +1191,10 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
     private var inWaypoint      = false
     private var inNotes         = false
 
+    // waypoint 暫存（每個樣本點獨立收集後 append）
+    private var waypointTime:  Double?
+    private var waypointDepth: Double?
+
     // MARK: - XMLParserDelegate：開始元素
 
     // swiftlint:disable function_body_length cyclomatic_complexity
@@ -1359,6 +1386,12 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
             inSamples = false
 
         case "waypoint":
+            // 若本樣本點同時有 time 和 depth，寫入剖面陣列
+            if let t = waypointTime, let d = waypointDepth {
+                currentDive?.samples.append((timeSeconds: t, depthMeters: d))
+            }
+            waypointTime  = nil
+            waypointDepth = nil
             inWaypoint = false
 
         case "notes":
@@ -1385,6 +1418,15 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
         case "lowesttemperature" where inInfoAfter:
             // UDDF 最低水溫（Kelvin）
             currentDive?.lowestTempKelvin = Double(text)
+
+        // ── 取樣點時間 / 深度（剖面）────────────────────────
+        case "divetime" where inWaypoint:
+            // UDDF <divetime> 單位：秒（整數或帶小數）
+            if let sec = Double(text) { waypointTime = sec }
+
+        case "depth" where inWaypoint:
+            // UDDF <depth> 單位：公尺
+            if let m = Double(text) { waypointDepth = m }
 
         // ── 取樣點溫度（追蹤最低值）──────────────────────────
         case "temperature" where inWaypoint:
@@ -1523,6 +1565,18 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
                 log.notes = notes
             }
 
+            // ── 深度剖面 ─────────────────────────────────────
+            if !dive.samples.isEmpty {
+                let sorted = dive.samples.sorted { $0.timeSeconds < $1.timeSeconds }
+                let profileSamples = sorted.map {
+                    DiveProfileSample(timeSeconds: $0.timeSeconds, depthMeters: $0.depthMeters)
+                }
+                if let jsonData = try? JSONEncoder().encode(profileSamples),
+                   let jsonStr  = String(data: jsonData, encoding: .utf8) {
+                    log.profileSamplesJSON = jsonStr
+                }
+            }
+
             result.append(log)
         }
 
@@ -1578,6 +1632,7 @@ private struct UDDFParsedDive {
     var airTempKelvin:         Double?         // informationbeforedive airtemperature
     var waypointMinTempKelvin: Double?         // 取樣點最低溫（逐步 min 更新）
     var notes:                 String?
+    var samples: [(timeSeconds: Double, depthMeters: Double)] = []   // 深度剖面樣本
 }
 
 // MARK: - Double 精確度輔助
@@ -1698,6 +1753,16 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
         case "temperature" where inDiveComputer:
             if let s = attrs["water"] { currentDive?.computerTemperature = parseTemp(s) }
 
+        case "sample" where currentDive != nil && inDiveComputer:
+            // <sample time='0:10 min' depth='4.07 m' .../>
+            // 同一時間點出現兩次，buildDiveLogs 去重
+            if let timeStr  = attrs["time"],
+               let depthStr = attrs["depth"],
+               let t = parseTimeToSeconds(timeStr),
+               let d = parseMeters(depthStr) {
+                currentDive?.samples.append((timeSeconds: t, depthMeters: d))
+            }
+
         case "notes" where currentDive != nil:
             inNotes = true
 
@@ -1800,6 +1865,21 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
                 log.latitude  = lat
                 log.longitude = lon
             }
+
+            // 剖面樣本：依時間去重（同一時間點出現兩次），排序後 JSON encode
+            var seen = Set<Double>()
+            let unique = dive.samples
+                .filter { seen.insert($0.timeSeconds).inserted }
+                .sorted { $0.timeSeconds < $1.timeSeconds }
+            let profileSamples = unique.map {
+                DiveProfileSample(timeSeconds: $0.timeSeconds, depthMeters: $0.depthMeters)
+            }
+            if !profileSamples.isEmpty,
+               let encoded = try? JSONEncoder().encode(profileSamples),
+               let json = String(data: encoded, encoding: .utf8) {
+                log.profileSamplesJSON = json
+            }
+
             return log
         }
     }
@@ -1814,6 +1894,15 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
     private func parseMeters(_ str: String) -> Double? {
         // "22.65 m"
         Double(str.replacingOccurrences(of: "m", with: "").trimmingCharacters(in: .whitespaces))
+    }
+
+    private func parseTimeToSeconds(_ str: String) -> Double? {
+        // "0:10 min" → 10.0, "1:30 min" → 90.0, "46:12 min" → 2772.0
+        let cleaned = str.replacingOccurrences(of: " min", with: "")
+                         .trimmingCharacters(in: .whitespaces)
+        let parts = cleaned.split(separator: ":").compactMap { Int($0) }
+        guard parts.count == 2 else { return nil }
+        return Double(parts[0] * 60 + parts[1])
     }
 
     private func parseDateTime(date: String, time: String) -> Date? {
@@ -1861,4 +1950,6 @@ private struct SubsurfaceParsedDive {
     var cylinderFO2:         Double?   // nil = air
     var diveComputerModel:   String?
     var notes:               String?
+    /// 原始樣本（含重複時間點，buildDiveLogs 時去重）
+    var samples:             [(timeSeconds: Double, depthMeters: Double)] = []
 }
