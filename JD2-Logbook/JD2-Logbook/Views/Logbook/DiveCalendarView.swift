@@ -7,7 +7,7 @@ import SwiftData
 struct DiveCalendarView: View {
     @Query(sort: \DiveLog.dateTime, order: .reverse) var allDives: [DiveLog]
     @State private var displayedMonth: Date = Calendar.current.startOfMonth(for: Date())
-    @State private var selectedDate: Date? = nil
+    @State private var selectedDate: Date? = Date() // 初始化為今天
 
     /// 年/月快速跳選 popover（iOS + macOS 共用）
     @State private var showDatePicker = false

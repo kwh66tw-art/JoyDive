@@ -43,10 +43,11 @@ struct DiveLogDetailView: View {
         case .air:
             return String(localized: "Air")
         case .nitrox(let fO2):
-            return String(format: "EANx%d (%.0f%% O₂)", Int(fO2 * 100), fO2 * 100)
+            let eanxLabel = String(localized: "EANx")
+            return String(format: "%@ (EANx%d)", eanxLabel, Int(fO2 * 100))
         case .trimix(let fO2, let fHe):
-            return String(format: "Tx%.0f/%.0f (%.0f%% O₂, %.0f%% He)",
-                          fO2 * 100, fHe * 100, fO2 * 100, fHe * 100)
+            let trimixLabel = String(localized: "Trimix")
+            return String(format: "%@ (Trimix%.0f/%.0f)", trimixLabel, fO2 * 100, fHe * 100)
         }
     }
 
@@ -82,9 +83,46 @@ struct DiveLogDetailView: View {
 
             // ── 潛水資訊 ────────────────────────────────
             Section(header: Text("Dive Info")) {
-                DetailRow(icon: "drop.fill",         label: "Gas",           value: gasMixText)
-                DetailRow(icon: "waveform.path",     label: "Environment",   value: environmentText)
+                DetailRow(icon: "wind",              label: "Gas",           value: gasMixText)
+                DetailRow(icon: "water.waves",       label: "Environment",   value: environmentText)
                 DetailRow(icon: "doc.text",          label: "Source Format", value: sourceFormatDisplayName(dive.sourceFormat))
+            }
+
+            // ── 環境詳細資訊 ──────────────────────────
+            Section(header: Text("Conditions")) {
+                DetailRow(icon: "sun.max.fill",        label: "Weather",           value: weatherDisplayName(dive.weather))
+                DetailRow(icon: "thermometer.medium",  label: "Air Temperature",   value: String(format: "%.0f°C", dive.airTemperature))
+                DetailRow(icon: "water.waves",         label: "Surface Condition", value: surfaceConditionDisplayName(dive.surfaceCondition))
+                DetailRow(icon: "wind",                label: "Water Flow",        value: waterFlowDisplayName(dive.waterflow))
+                DetailRow(icon: "eye.fill",            label: "Visibility",        value: String(format: "%.1f m", dive.visibility))
+            }
+
+            // ── 時間詳細資訊 ──────────────────────────
+            if dive.entryTime != nil || dive.exitTime != nil {
+                Section(header: Text("Entry & Exit")) {
+                    if let entryTime = dive.entryTime {
+                        DetailRow(icon: "arrow.right.to.line",
+                                  label: "Entry Time",
+                                  value: formatTime(entryTime))
+                    }
+                    if let exitTime = dive.exitTime {
+                        DetailRow(icon: "arrow.left.to.line",
+                                  label: "Exit Time",
+                                  value: formatTime(exitTime))
+                    }
+                }
+            }
+
+            // ── 裝備詳細資訊 ──────────────────────────
+            Section(header: Text("Equipment")) {
+                DetailRow(icon: "suit.jacket.fill",    label: "Wetsuit",           value: dive.wetsuitThickness)
+                DetailRow(icon: "scalemass.fill",      label: "Weight",            value: String(format: "%.1f kg", dive.weightTotal))
+                DetailRow(icon: "cylinder.split.1x2",  label: "Cylinder Material", value: cylinderMaterialDisplayName(dive.cylinderMaterial))
+                DetailRow(icon: "cylinder.split.1x2",  label: "Cylinder Size",     value: dive.cylinderSize)
+                DetailRow(icon: "gauge",               label: "Start Pressure",    value: String(format: "%.0f bar", dive.cylinderStartPressure))
+                if let endPressure = dive.cylinderEndPressure {
+                    DetailRow(icon: "gauge",           label: "End Pressure",      value: String(format: "%.0f bar", endPressure))
+                }
             }
 
             // ── 地點 ────────────────────────────────────
@@ -105,14 +143,6 @@ struct DiveLogDetailView: View {
                         .font(.subheadline)
                 } else {
                     Text(dive.notes)
-                        .font(.subheadline)
-                }
-            }
-
-            // ── 潛伴 ────────────────────────────────────
-            if let buddy = dive.buddy, !buddy.isEmpty {
-                Section(header: Text("Buddy")) {
-                    Label(buddy, systemImage: "person.2.fill")
                         .font(.subheadline)
                 }
             }
@@ -268,6 +298,50 @@ struct DiveLogDetailView: View {
     }
 
     // MARK: - Helpers
+
+    private func formatTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
+
+    private func weatherDisplayName(_ raw: String) -> String {
+        switch raw.lowercased() {
+        case "sunny":  return String(localized: "Sunny")
+        case "cloudy": return String(localized: "Cloudy")
+        case "rainy":  return String(localized: "Rainy")
+        case "clear":  return String(localized: "Clear")
+        default:       return raw
+        }
+    }
+
+    private func surfaceConditionDisplayName(_ raw: String) -> String {
+        switch raw.lowercased() {
+        case "calm":     return String(localized: "Calm")
+        case "slight":   return String(localized: "Slight")
+        case "moderate": return String(localized: "Moderate")
+        case "rough":    return String(localized: "Rough")
+        default:         return raw
+        }
+    }
+
+    private func waterFlowDisplayName(_ raw: String) -> String {
+        switch raw.lowercased() {
+        case "none":     return String(localized: "None")
+        case "slight":   return String(localized: "Slight")
+        case "moderate": return String(localized: "Moderate")
+        case "strong":   return String(localized: "Strong")
+        default:         return raw
+        }
+    }
+
+    private func cylinderMaterialDisplayName(_ raw: String) -> String {
+        switch raw.lowercased() {
+        case "aluminum": return String(localized: "Aluminum")
+        case "steel":    return String(localized: "Steel")
+        default:         return raw
+        }
+    }
 
     private func sourceFormatDisplayName(_ raw: String) -> String {
         switch raw.lowercased() {

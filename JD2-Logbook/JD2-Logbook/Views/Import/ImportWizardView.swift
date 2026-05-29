@@ -122,7 +122,11 @@ struct ImportWizardView: View {
         .background(Color.platformGroupedBackground)
     }
 
-    private var stepLabels: [String] { ["Select", "Import", "Result"] }
+    private var stepLabels: [String] {
+        [String(localized: "Select"),
+         String(localized: "Import"),
+         String(localized: "Result")]
+    }
 
     private var currentStepIndex: Int {
         switch step {
@@ -170,7 +174,7 @@ struct ImportWizardView: View {
             Button {
                 showFilePicker = true
             } label: {
-                Label("Select Files or Folder", systemImage: "folder")
+                Label(String(localized: "Select Files or Folder"), systemImage: "folder")
                     .font(.headline)
                     #if os(iOS)
                     .frame(maxWidth: .infinity)
@@ -207,7 +211,7 @@ struct ImportWizardView: View {
 
     private var supportedFormatsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Supported Formats")
+            Text(String(localized: "Supported Formats"))
                 .font(.subheadline.weight(.semibold))
                 .padding(.horizontal, 24)
 
@@ -225,12 +229,12 @@ struct ImportWizardView: View {
 
     private var supportedFormatCards: [(name: String, ext: String, icon: String)] {
         [
-            ("UDDF",           ".uddf",        "doc.badge.gearshape"),
-            ("Subsurface XML", ".ssrf / .xml", "doc.richtext"),
-            ("Subsurface CSV", ".csv",         "tablecells"),
-            ("Suunto JSON",    ".json",        "curlybraces"),
-            ("Garmin Descent", ".fit",         "waveform.path.ecg"),
-            ("Seabear CSV",    ".csv",         "tablecells.fill")
+            ("UDDF",                           ".uddf",        "doc.badge.gearshape"),
+            (String(localized: "Subsurface XML"), ".ssrf / .xml", "doc.richtext"),
+            (String(localized: "Subsurface CSV"), ".csv",         "tablecells"),
+            (String(localized: "Suunto JSON"),    ".json",        "curlybraces"),
+            (String(localized: "Garmin Descent"), ".fit",         "waveform.path.ecg"),
+            (String(localized: "Seabear CSV"),    ".csv",         "tablecells.fill")
         ]
     }
 
@@ -267,7 +271,7 @@ struct ImportWizardView: View {
                         .scaleEffect(1.6)
                         .tint(.accentColor)
 
-                    Text("Scanning files…")
+                    Text(String(localized: "Scanning files"))
                         .font(.headline)
                         .foregroundStyle(.secondary)
                 }
@@ -293,7 +297,7 @@ struct ImportWizardView: View {
                 .font(.system(size: 64))
                 .foregroundStyle(.green)
 
-            Text("Import Successful")
+            Text(String(localized: "Import Successful"))
                 .font(.title2.bold())
 
             VStack(spacing: 6) {

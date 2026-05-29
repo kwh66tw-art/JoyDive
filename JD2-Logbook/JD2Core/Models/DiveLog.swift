@@ -63,6 +63,51 @@ final class DiveLog {
     /// 深度換算係數（m/bar）
     var metersPerBar: Double = 10.0
 
+    // MARK: - 環境與條件詳細資訊
+
+    /// 天氣狀況: "sunny", "cloudy", "rainy"
+    var weather: String = "clear"
+
+    /// 氣溫（攝氏度）
+    var airTemperature: Double = 25.0
+
+    /// 水面狀況: "calm", "slight", "moderate", "rough"
+    var surfaceCondition: String = "calm"
+
+    /// 水流強度: "none", "slight", "moderate", "strong"
+    var waterflow: String = "none"
+
+    /// 能見度（公尺）
+    var visibility: Double = 12.0
+
+    // MARK: - 時間詳細資訊
+
+    /// 入水時間（可選）
+    var entryTime: Date?
+
+    /// 出水時間（可選）
+    var exitTime: Date?
+
+    // MARK: - 裝備信息
+
+    /// 防寒衣厚度: "3mm", "5mm" 等
+    var wetsuitThickness: String = "3mm"
+
+    /// 配重總重量（公斤）
+    var weightTotal: Double = 0
+
+    /// 氣瓶材質: "aluminum", "steel"
+    var cylinderMaterial: String = "aluminum"
+
+    /// 氣瓶規格：例如 "S80(12L)", "S63(8.6L)"
+    var cylinderSize: String = "S80(12L)"
+
+    /// 氣瓶起始壓力（bar）
+    var cylinderStartPressure: Double = 200
+
+    /// 氣瓶結束壓力（bar，可選）
+    var cylinderEndPressure: Double?
+
     // MARK: - 額外信息
 
     /// 潛水備註

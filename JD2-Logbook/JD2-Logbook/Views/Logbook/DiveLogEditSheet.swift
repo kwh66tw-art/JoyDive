@@ -27,7 +27,6 @@ struct DiveLogEditSheet: View {
     @State private var waterTemperature: Double
     @State private var environmentType: String
     @State private var notes: String
-    @State private var buddy: String
 
     // Date helpers (iOS year/month dropdowns)
     @State private var calendarYear:  Int
@@ -42,9 +41,28 @@ struct DiveLogEditSheet: View {
     @State private var gasMixType: GasMixPickerType
     @State private var nitroxO2Percent: Double  // 22–40
 
+    // MARK: - Environment Details
+    @State private var weather: String
+    @State private var airTemperature: Double
+    @State private var surfaceCondition: String
+    @State private var waterflow: String
+    @State private var visibility: Double
+
+    // MARK: - Time Details
+    @State private var entryTime: Date       // 使用者可填入的入水時間（時:分）
+    @State private var exitTime: Date?       // 自動計算的出水時間（只讀）
+
+    // MARK: - Equipment Details
+    @State private var wetsuitThickness: String
+    @State private var weightTotal: Double
+    @State private var cylinderMaterial: String
+    @State private var cylinderSize: String
+    @State private var cylinderStartPressure: Double
+    @State private var cylinderEndPressure: Double?
+
     // MARK: Keyboard Focus (Tab / Shift+Tab 導覽)
     private enum Field: Hashable {
-        case location, maxDepth, waterTemp, buddy, notes
+        case location, entryTime, durationMinutes, maxDepth, waterTemp, notes
     }
     @FocusState private var focusedField: Field?
 
@@ -66,9 +84,27 @@ struct DiveLogEditSheet: View {
             _waterTemperature   = State(initialValue: 28.0)
             _environmentType    = State(initialValue: "seawater")
             _notes              = State(initialValue: "")
-            _buddy              = State(initialValue: "")
             _gasMixType         = State(initialValue: .air)
             _nitroxO2Percent    = State(initialValue: 32.0)
+
+            // Environment Details
+            _weather            = State(initialValue: "clear")
+            _airTemperature     = State(initialValue: 25.0)
+            _surfaceCondition   = State(initialValue: "calm")
+            _waterflow          = State(initialValue: "none")
+            _visibility         = State(initialValue: 12.0)
+
+            // Time Details
+            _entryTime          = State(initialValue: now)
+            _exitTime           = State(initialValue: nil)
+
+            // Equipment Details
+            _wetsuitThickness   = State(initialValue: "3")
+            _weightTotal        = State(initialValue: 0)
+            _cylinderMaterial   = State(initialValue: "aluminum")
+            _cylinderSize       = State(initialValue: "S80(12L)")
+            _cylinderStartPressure  = State(initialValue: 200)
+            _cylinderEndPressure    = State(initialValue: 50)
 
         case .edit(let dive):
             let cal = Calendar.current
@@ -81,7 +117,6 @@ struct DiveLogEditSheet: View {
             _waterTemperature   = State(initialValue: dive.waterTemperature)
             _environmentType    = State(initialValue: dive.environmentType)
             _notes              = State(initialValue: dive.notes)
-            _buddy              = State(initialValue: dive.buddy ?? "")
 
             // 解析已儲存的 gas mix JSON
             if let data = dive.gasMixJSON.data(using: .utf8),
@@ -102,6 +137,25 @@ struct DiveLogEditSheet: View {
                 _gasMixType      = State(initialValue: .air)
                 _nitroxO2Percent = State(initialValue: 32.0)
             }
+
+            // Environment Details
+            _weather            = State(initialValue: dive.weather)
+            _airTemperature     = State(initialValue: dive.airTemperature)
+            _surfaceCondition   = State(initialValue: dive.surfaceCondition)
+            _waterflow          = State(initialValue: dive.waterflow)
+            _visibility         = State(initialValue: dive.visibility)
+
+            // Time Details
+            _entryTime          = State(initialValue: dive.entryTime ?? dive.dateTime)
+            _exitTime           = State(initialValue: dive.exitTime)
+
+            // Equipment Details
+            _wetsuitThickness   = State(initialValue: dive.wetsuitThickness)
+            _weightTotal        = State(initialValue: dive.weightTotal)
+            _cylinderMaterial   = State(initialValue: dive.cylinderMaterial)
+            _cylinderSize       = State(initialValue: dive.cylinderSize)
+            _cylinderStartPressure  = State(initialValue: dive.cylinderStartPressure)
+            _cylinderEndPressure    = State(initialValue: dive.cylinderEndPressure ?? 50)
         }
     }
 
@@ -139,6 +193,14 @@ struct DiveLogEditSheet: View {
         }
     }
 
+    // MARK: - Helpers
+
+    private func formatTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
+
     // MARK: - Validation
 
     private var isSaveEnabled: Bool {
@@ -157,9 +219,10 @@ struct DiveLogEditSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                // ── 日期時間 ────────────────────────────────
-                // Year / Month Picker 在 iOS + macOS 皆顯示（快速跳年月）
-                Section {
+                // ═════════════════════════════════════════════════════════
+                // BLOCK 1: 基本資訊 (Basic Info with 12-grid month selector)
+                // ═════════════════════════════════════════════════════════
+                Section(header: Text("Basic Info")) {
                     // ── 年份（iOS + macOS 共用）──────────────
                     Picker(String(localized: "Year"), selection: $calendarYear) {
                         ForEach(Array(1980...maxCalendarYear), id: \.self) { year in
@@ -169,67 +232,94 @@ struct DiveLogEditSheet: View {
                     .pickerStyle(.menu)
                     .onChange(of: calendarYear) { _, _ in syncDateToYearMonth() }
 
-                    // ── 月份（iOS + macOS 共用）──────────────
-                    Picker(String(localized: "Month"), selection: $calendarMonth) {
-                        ForEach(1...12, id: \.self) { month in
-                            Text(Self.monthSymbols[month - 1]).tag(month)
+                    // ── 12宮格月份選擇器（iOS + macOS 共用）──────────────────
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(String(localized: "Month"))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
+                            ForEach(1...12, id: \.self) { month in
+                                Button(action: {
+                                    calendarMonth = month
+                                    syncDateToYearMonth()
+                                }) {
+                                    Text(Self.monthSymbols[month - 1])
+                                        .font(.subheadline)
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 44)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(calendarMonth == month ? Color.blue : Color(.systemGray5))
+                                        )
+                                        .foregroundStyle(calendarMonth == month ? .white : .primary)
+                                }
+                            }
                         }
+                        .padding(.horizontal, -8)
+                        .padding(.vertical, 8)
                     }
-                    .pickerStyle(.menu)
-                    .onChange(of: calendarMonth) { _, _ in syncDateToYearMonth() }
+                    .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
 
-                    #if os(iOS)
-                    // ── iOS：graphical 月曆選日 ───────────────
-                    DatePicker(
-                        "",
-                        selection: $dateTime,
-                        displayedComponents: [.date]
-                    )
-                    .datePickerStyle(.graphical)
-                    .labelsHidden()
-                    .onChange(of: dateTime) { _, newDate in
-                        let cal = Calendar.current
-                        let y = cal.component(.year,  from: newDate)
-                        let m = cal.component(.month, from: newDate)
-                        if y != calendarYear  { calendarYear  = y }
-                        if m != calendarMonth { calendarMonth = m }
-                    }
-
-                    // ── iOS 時間列 ────────────────────────────
-                    DatePicker(
-                        String(localized: "Time"),
-                        selection: $dateTime,
-                        displayedComponents: [.hourAndMinute]
-                    )
-                    #else
-                    // ── macOS：compact 月曆 + 時間（點擊展開 popover）
-                    // Year/Month Picker 快速跳年月；compact 負責確定精確日期與時間
-                    DatePicker(
-                        String(localized: "Date & Time"),
-                        selection: $dateTime,
-                        displayedComponents: [.date, .hourAndMinute]
-                    )
-                    .datePickerStyle(.compact)
-                    .onChange(of: dateTime) { _, newDate in
-                        let cal = Calendar.current
-                        let y = cal.component(.year,  from: newDate)
-                        let m = cal.component(.month, from: newDate)
-                        if y != calendarYear  { calendarYear  = y }
-                        if m != calendarMonth { calendarMonth = m }
-                    }
-                    #endif
-                }
-
-                // ── 地點 ─────────────────────────────────
-                Section(header: Text("Location")) {
+                    // ── 潛水地點 ─────────────────────────────────
                     TextField(String(localized: "Dive Site"), text: $location)
                         .textContentType(.addressCity)
                         .autocorrectionDisabled()
                         .focused($focusedField, equals: .location)
                 }
 
-                // ── 潛水數據 ─────────────────────────────
-                Section(header: Text("Dive Data")) {
+                // ═════════════════════════════════════════════════════════
+                // BLOCK 2: 潛水數據與時間 (Dive Data & Time)
+                // ═════════════════════════════════════════════════════════
+                Section(header: Text("Dive Data & Time")) {
+                    // 潛水時間（分鐘）
+                    HStack {
+                        Text(String(localized: "Dive Time"))
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        TextField("45", value: $durationMinutes,
+                                  format: .number)
+                            .labelsHidden()
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 70)
+                            .focused($focusedField, equals: .durationMinutes)
+                        Text("min")
+                            .foregroundStyle(.secondary)
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(
+                        String(format: String(localized: "Duration: %d minutes"), durationMinutes)
+                    )
+
+                    // 入水時間（可編輯）
+                    DatePicker(
+                        String(localized: "Entry Time"),
+                        selection: $entryTime,
+                        displayedComponents: [.hourAndMinute]
+                    )
+
+                    // 出水時間（自動計算，唯讀）
+                    HStack {
+                        Text(String(localized: "Exit Time"))
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        if let exit = Calendar.current.date(
+                            byAdding: .minute,
+                            value: durationMinutes,
+                            to: entryTime
+                        ) {
+                            Text(formatTime(exit))
+                                .monospacedDigit()
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("—")
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+
                     // 最大深度
                     HStack {
                         Text("Max Depth")
@@ -237,7 +327,7 @@ struct DiveLogEditSheet: View {
                         Spacer()
                         TextField("0.0", value: $maxDepth,
                                   format: .number.precision(.fractionLength(1)))
-                            .labelsHidden() // 隱藏 TextField title，移除 macOS Form 多出的「0.0」
+                            .labelsHidden()
                             #if os(iOS)
                             .keyboardType(.decimalPad)
                             #endif
@@ -252,20 +342,6 @@ struct DiveLogEditSheet: View {
                         String(format: String(localized: "Max Depth: %.1f metres"), maxDepth)
                     )
 
-                    // 時長（分鐘 Stepper）
-                    Stepper(value: $durationMinutes, in: 1...999) {
-                        HStack {
-                            Text("Duration")
-                            Spacer()
-                            Text("\(durationMinutes) min")
-                                .monospacedDigit()
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .accessibilityLabel(
-                        String(format: String(localized: "Duration: %d minutes"), durationMinutes)
-                    )
-
                     // 水溫
                     HStack {
                         Text("Water Temp")
@@ -273,7 +349,7 @@ struct DiveLogEditSheet: View {
                         Spacer()
                         TextField("0.0", value: $waterTemperature,
                                   format: .number.precision(.fractionLength(1)))
-                            .labelsHidden() // 隱藏 TextField title，移除 macOS Form 多出的「0.0」
+                            .labelsHidden()
                             #if os(iOS)
                             .keyboardType(.decimalPad)
                             #endif
@@ -290,7 +366,7 @@ struct DiveLogEditSheet: View {
                     )
                 }
 
-                // ── 氣體混合 ─────────────────────────────
+                // ── 氣體混合（Gas Mix 配置在此）─────────────
                 Section(header: Text("Gas Mix")) {
                     Picker(String(localized: "Gas"), selection: $gasMixType) {
                         ForEach(GasMixPickerType.allCases) { type in
@@ -324,24 +400,193 @@ struct DiveLogEditSheet: View {
                     }
                 }
 
-                // ── 環境類型 ─────────────────────────────
+                // ═════════════════════════════════════════════════════════
+                // BLOCK 3: 環境 (Environment)
+                // ═════════════════════════════════════════════════════════
                 Section(header: Text("Environment")) {
                     Picker(String(localized: "Water Type"), selection: $environmentType) {
                         Text("Seawater").tag("seawater")
                         Text("Freshwater").tag("freshwater")
                         Text("Altitude").tag("altitude")
                     }
+
+                    // 天氣
+                    Picker(String(localized: "Weather"), selection: $weather) {
+                        Text(LocalizedStringKey("Sunny")).tag("sunny")
+                        Text(LocalizedStringKey("Cloudy")).tag("cloudy")
+                        Text(LocalizedStringKey("Rainy")).tag("rainy")
+                        Text(LocalizedStringKey("Clear")).tag("clear")
+                    }
+
+                    // 氣溫
+                    HStack {
+                        Text(String(localized: "Air Temperature"))
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        TextField("25", value: $airTemperature,
+                                  format: .number.precision(.fractionLength(1)))
+                            .labelsHidden()
+                            #if os(iOS)
+                            .keyboardType(.decimalPad)
+                            #endif
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 70)
+                        Text("°C")
+                            .foregroundStyle(.secondary)
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(
+                        String(format: String(localized: "Air Temperature: %.1f degrees Celsius"),
+                               airTemperature)
+                    )
+
+                    // 水面狀況
+                    Picker(String(localized: "Surface Condition"), selection: $surfaceCondition) {
+                        Text(LocalizedStringKey("Calm")).tag("calm")
+                        Text(LocalizedStringKey("Slight")).tag("slight")
+                        Text(LocalizedStringKey("Moderate")).tag("moderate")
+                        Text(LocalizedStringKey("Rough")).tag("rough")
+                    }
+
+                    // 水流
+                    Picker(String(localized: "Water Flow"), selection: $waterflow) {
+                        Text(LocalizedStringKey("None")).tag("none")
+                        Text(LocalizedStringKey("Slight")).tag("slight")
+                        Text(LocalizedStringKey("Moderate")).tag("moderate")
+                        Text(LocalizedStringKey("Strong")).tag("strong")
+                    }
+
+                    // 能見度
+                    HStack {
+                        Text(String(localized: "Visibility"))
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        TextField("12", value: $visibility,
+                                  format: .number.precision(.fractionLength(1)))
+                            .labelsHidden()
+                            #if os(iOS)
+                            .keyboardType(.decimalPad)
+                            #endif
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 70)
+                        Text("m")
+                            .foregroundStyle(.secondary)
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(
+                        String(format: String(localized: "Visibility: %.1f metres"), visibility)
+                    )
                 }
 
-                // ── 潛伴 ─────────────────────────────────
-                Section(header: Text("Buddy")) {
-                    TextField(String(localized: "Buddy Name (optional)"), text: $buddy)
-                        .textContentType(.name)
-                        .focused($focusedField, equals: .buddy)
+                // ═════════════════════════════════════════════════════════
+                // BLOCK 4: 潛水裝備 (Equipment)
+                // ═════════════════════════════════════════════════════════
+                Section(header: Text("Equipment")) {
+                    // 防寒衣厚度（只輸入數字，mm 單位固定）
+                    HStack {
+                        Text(String(localized: "Wetsuit"))
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        TextField("", text: $wetsuitThickness)
+                            .labelsHidden()
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 50)
+                            // 確保只儲存數字（移除任何非數字字符）
+                            .onChange(of: wetsuitThickness) { _, newValue in
+                                wetsuitThickness = newValue.filter { $0.isNumber || $0 == "." }
+                            }
+                        Text("mm")
+                            .foregroundStyle(.secondary)
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(String(localized: "Wetsuit"))
+
+                    // 配重總重量
+                    HStack {
+                        Text(String(localized: "Weight"))
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        TextField("0", value: $weightTotal,
+                                  format: .number.precision(.fractionLength(1)))
+                            .labelsHidden()
+                            #if os(iOS)
+                            .keyboardType(.decimalPad)
+                            #endif
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 70)
+                        Text("kg")
+                            .foregroundStyle(.secondary)
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(
+                        String(format: String(localized: "Weight: %.1f kilograms"), weightTotal)
+                    )
+
+                    // 氣瓶材質
+                    Picker(String(localized: "Cylinder Material"), selection: $cylinderMaterial) {
+                        Text(LocalizedStringKey("Aluminum")).tag("aluminum")
+                        Text(LocalizedStringKey("Steel")).tag("steel")
+                    }
+
+                    // 氣瓶規格（預定義選項）
+                    Picker(String(localized: "Cylinder Size"), selection: $cylinderSize) {
+                        Text("S80 (12L)").tag("S80(12L)")
+                        Text("S63 (8.6L)").tag("S63(8.6L)")
+                        Text("AL100 (14L)").tag("AL100(14L)")
+                        Text("12L (Steel)").tag("12L(Steel)")
+                        Text("10L (Steel)").tag("10L(Steel)")
+                    }
+
+                    // 氣瓶起始壓力（預設 200 bar）
+                    HStack {
+                        Text(String(localized: "Start Pressure"))
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        TextField("200", value: $cylinderStartPressure,
+                                  format: .number.precision(.fractionLength(0)))
+                            .labelsHidden()
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 70)
+                        Text("bar")
+                            .foregroundStyle(.secondary)
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(
+                        String(format: String(localized: "Start Pressure: %.0f bar"), cylinderStartPressure)
+                    )
+
+                    // 氣瓶結束壓力（預設 50 bar）
+                    HStack {
+                        Text(String(localized: "End Pressure"))
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        TextField("50", value: $cylinderEndPressure,
+                                  format: .number.precision(.fractionLength(0)))
+                            .labelsHidden()
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 70)
+                        Text("bar")
+                            .foregroundStyle(.secondary)
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(
+                        String(localized: "End Pressure")
+                    )
                 }
 
-                // ── 備註 ─────────────────────────────────
-                Section(header: Text("Notes")) {
+                // ═════════════════════════════════════════════════════════
+                // BLOCK 5: 潛水備註 (Dive Notes)
+                // ═════════════════════════════════════════════════════════
+                Section(header: Text("Dive Notes")) {
                     TextEditor(text: $notes)
                         .frame(minHeight: 80, maxHeight: 200)
                         .accessibilityLabel(String(localized: "Notes"))
@@ -351,9 +596,8 @@ struct DiveLogEditSheet: View {
             .navigationTitle(titleText)
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
-            #else
-            .formStyle(.grouped) // macOS：原生分組表單，修正 label/控制項間距撐爆問題
             #endif
+            .formStyle(.grouped) // iOS 會自動呈現 Inset-Grouped 質感；macOS 原生分組表單
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(String(localized: "Cancel")) { dismiss() }
@@ -378,6 +622,13 @@ struct DiveLogEditSheet: View {
         let totalSeconds = durationMinutes * 60
         let gasMixJSON   = buildGasMixJSON()
 
+        // 計算出水時間：基於入水時間 + 潛水時間
+        let calculatedExitTime = Calendar.current.date(
+            byAdding: .minute,
+            value: durationMinutes,
+            to: entryTime
+        )
+
         switch mode {
         case .new:
             let dive = DiveLog(
@@ -390,8 +641,27 @@ struct DiveLogEditSheet: View {
             )
             dive.environmentType = environmentType
             dive.notes  = notes.trimmingCharacters(in: .whitespaces)
-            dive.buddy  = buddy.trimmingCharacters(in: .whitespaces).nilIfEmpty
             dive.sourceFormat = "manual"
+
+            // Environment Details
+            dive.weather = weather
+            dive.airTemperature = airTemperature
+            dive.surfaceCondition = surfaceCondition
+            dive.waterflow = waterflow
+            dive.visibility = visibility
+
+            // Time Details
+            dive.entryTime = entryTime
+            dive.exitTime = calculatedExitTime
+
+            // Equipment Details
+            dive.wetsuitThickness = wetsuitThickness
+            dive.weightTotal = weightTotal
+            dive.cylinderMaterial = cylinderMaterial
+            dive.cylinderSize = cylinderSize
+            dive.cylinderStartPressure = cylinderStartPressure
+            dive.cylinderEndPressure = cylinderEndPressure
+
             modelContext.insert(dive)
 
         case .edit(let dive):
@@ -403,7 +673,26 @@ struct DiveLogEditSheet: View {
             dive.waterTemperature = waterTemperature
             dive.environmentType  = environmentType
             dive.notes  = notes.trimmingCharacters(in: .whitespaces)
-            dive.buddy  = buddy.trimmingCharacters(in: .whitespaces).nilIfEmpty
+
+            // Environment Details
+            dive.weather = weather
+            dive.airTemperature = airTemperature
+            dive.surfaceCondition = surfaceCondition
+            dive.waterflow = waterflow
+            dive.visibility = visibility
+
+            // Time Details
+            dive.entryTime = entryTime
+            dive.exitTime = calculatedExitTime
+
+            // Equipment Details
+            dive.wetsuitThickness = wetsuitThickness
+            dive.weightTotal = weightTotal
+            dive.cylinderMaterial = cylinderMaterial
+            dive.cylinderSize = cylinderSize
+            dive.cylinderStartPressure = cylinderStartPressure
+            dive.cylinderEndPressure = cylinderEndPressure
+
             dive.updatedAt = Date()
         }
 
@@ -422,13 +711,6 @@ struct DiveLogEditSheet: View {
 }
 
 // MARK: - Helpers
-
-private extension String {
-    /// 空字串轉 nil（便於寫回 buddy 可選欄位）
-    var nilIfEmpty: String? {
-        self.isEmpty ? nil : self
-    }
-}
 
 // MARK: - Preview
 

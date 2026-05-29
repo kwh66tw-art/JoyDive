@@ -216,16 +216,6 @@ struct DiveSiteSheetView: View {
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
                 .frame(maxWidth: .infinity, alignment: .leading)
-
-            // ── Buddy ────────────────────────────────────────────────
-            if let buddy = dive.buddy, !buddy.isEmpty {
-                SheetSectionHeader(title: String(localized: "Buddy"))
-
-                Label(buddy, systemImage: "person.2.fill")
-                    .font(.subheadline)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-            }
         }
     }
 }
