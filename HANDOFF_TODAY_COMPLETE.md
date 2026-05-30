@@ -95,33 +95,122 @@
 
 ## 📝 待辦事項（優先順序）
 
-### 🔴 P0 - 必須立即修復
+### 🔴 P0 - 優先級最高
 
-1. **修復 FitFileParser 包解析**
-   - [ ] 在 Xcode GUI：File → Packages → Reset Package Caches
-   - [ ] 或移除後重新添加 FitFileParser 包
-   - [ ] Clean Build Folder
-   - [ ] Run 測試編譯
+#### P0-1：多語系全面審查（i18n Review）
+**狀態**：✅ **已完成**
+- ✅ 審查所有新增欄位的英文和中文（繁體、簡體）翻譯
+- ✅ 驗證翻譯準確性和一致性
+- ✅ 涵蓋：Basic Info、Dive Data & Time、Equipment、Entry Time、Exit Time
 
-### 🟡 P1 - 需要驗證（編譯成功後）
+#### P0-2：WCAG 2.1 AA 可達性審核
+**狀態**：⏳ **待辦**
+- [ ] 檢查顏色對比度（文本 vs 背景）
+- [ ] 驗證鍵盤導航（Tab、Shift+Tab）
+- [ ] 測試 VoiceOver（iOS）/ Narrator（macOS）支援
+- [ ] 驗證表單標籤和 ARIA 屬性
+- [ ] 測試焦點指示器可見性
+- [ ] 檢查動畫/閃爍是否符合規範
 
-2. **iOS 表單驗證**
-   - [ ] 12 宮格月份選擇器顯示正常
-   - [ ] Entry/Exit Time 正確編輯和計算
-   - [ ] 防寒衣「mm」單位保留
-   - [ ] End Pressure 預設 50 bar
+#### P0-3：測試覆蓋率 + 匯入成功率驗證
+**狀態**：⏳ **待辦**
+- [ ] 驗證單元測試涵蓋主要代碼路徑
+- [ ] 測試不同潛水日誌格式匯入（Garmin .fit、Seabear .csv、Suunto .xml、Subsurface）
+- [ ] 測試邊界情況（空文件、損壞文件、不支援格式）
+- [ ] 驗證匯入成功率和錯誤處理
 
-3. **Calendar View 驗證**
-   - [ ] 載入時默認選中「今天」
-   - [ ] 下方顯示該日所有潛水列表
-   - [ ] 單日多筆潛水顯示完整列表
-   - [ ] 點擊其他日期時列表更新
+#### P0-4：實作定位「回到我的位置」按鈕（recenter）
+**狀態**：⏳ **待辦**
+**文件位置**：`Views/Map/` 地圖相關視圖
+- [ ] 添加位置重置按鈕到地圖UI
+- [ ] 實作 CLLocationManager 位置獲取
+- [ ] 地圖自動重心到用戶當前位置
+- [ ] 測試 iOS + macOS 平台
+- [ ] 處理定位權限請求
 
-4. **多語系驗證**
-   - [ ] 新增翻譯字符串正確顯示
+#### P0-5：修復 FitFileParser 包解析
+**狀態**：🔴 **阻塞編譯 - 需要用戶介入**
+**錯誤訊息**：「Missing package product 'FitFileParser'」
+**用途**：Garmin 潛水日誌 (.fit 格式) 解析（DiveLogImporter.swift 第 12 行）
+**倉庫**：https://github.com/roznet/FitFileParser
 
-5. **macOS 驗證**
-   - [ ] 月份選擇器正確顯示 12 宮格（與 iOS 相同）
+**已嘗試的修復**：
+- ✅ 清除 ~/.swiftpm 緩存
+- ✅ 清除 ~/Library/Caches/com.apple.dt.Xcode/SourcePackages
+- ✅ 清除 DerivedData
+- ✅ 驗證 pbxproj 中的包配置正確
+
+**仍需執行**（由用戶在 Xcode 中操作）：
+- [ ] 在 Xcode：**File → Packages → Reset Package Caches**
+- [ ] **Clean Build Folder** (Cmd+Shift+K)
+- [ ] **Build** (Cmd+B) 重新編譯
+- [ ] 如果仍失敗，嘗試：
+  - 移除 FitFileParser 包（在 Project → Package Dependencies）
+  - 通過 File → Add Packages 重新添加：https://github.com/roznet/FitFileParser
+
+**備選方案**（如果倉庫無法訪問）：
+- [ ] 檢查 GitHub 倉庫是否存在或已遷移
+- [ ] 尋找替代的 Garmin FIT 文件解析庫
+- [ ] 考慮暫時禁用 Garmin 匯入功能以解除編譯阻塞
+
+### 🟡 P1 - 高優先級（編譯成功後驗證）
+
+#### P1-1：macOS UI 完全修正（Diff B→P2）
+**狀態**：⏳ **待辦**
+**詳情**：尚未詳細記錄，需調查 Diff B 和 P2 之間的 UI 差異
+- [ ] 識別 macOS 與 iOS 的 UI 差異
+- [ ] 修正佈局問題（如表單寬度、間距、字體大小）
+- [ ] 驗證 macOS Ventura+ 適配
+- [ ] 測試 macOS 月份選擇器（12 宮格）、日期選擇器、時間選擇器
+
+#### P1-2：iOS 表單驗證
+**狀態**：⏳ **待辦**
+- [ ] 12 宮格月份選擇器顯示正常
+- [ ] Entry/Exit Time 正確編輯和計算
+- [ ] 防寒衣「mm」單位保留
+- [ ] End Pressure 預設 50 bar
+- [ ] 表單保存和編輯流程完整
+
+#### P1-3：Calendar View 驗證
+**狀態**：⏳ **待辦**
+- [ ] 載入時默認選中「今天」
+- [ ] 下方顯示該日所有潛水列表
+- [ ] 單日多筆潛水顯示完整列表（不截斷）
+- [ ] 點擊其他日期時列表更新
+- [ ] 日期單元格藍點指示器顯示
+
+#### P1-4：多語系驗證
+**狀態**：⏳ **待辦**
+- [ ] 新增翻譯字符串正確顯示
+- [ ] 中英文、繁體簡體切換正常
+- [ ] 驗證所有新增欄位在各語言下顯示正確
+
+#### P1-5：iOS 18 新功能完整驗證
+**狀態**：⏳ **待辦**
+**詳情**：尚未詳細記錄，需調查 iOS 18 特定功能
+- [ ] 驗證 iOS 18 API 相容性
+- [ ] 測試新的 SwiftUI 功能（如適用）
+- [ ] 檢查廢棄 API 的替代方案
+
+#### P1-6：AdMob 正式 Ad Unit ID 接入
+**狀態**：⏳ **待辦**
+- [ ] 更新測試 Ad Unit ID → 正式 Ad Unit ID
+- [ ] 驗證廣告展示邏輯（何時、何處展示廣告）
+- [ ] 測試不同廣告格式（Banner、Interstitial、Rewarded）
+- [ ] iOS + macOS 平台驗證
+
+### 📋 最終階段
+
+#### v1.0 上線前最後檢查清單
+**狀態**：⏳ **待辦**
+- [ ] 所有 P0 項目完成
+- [ ] 所有 P1 項目驗證通過
+- [ ] 性能測試（啟動時間、記憶體使用、電池消耗）
+- [ ] 隱私和數據保護檢查
+- [ ] App Store 符合性審查
+- [ ] 最終回歸測試（全流程測試）
+- [ ] 版本號和 build 號更新
+- [ ] 發布準備（icon、description、release notes）
 
 ---
 

@@ -15,6 +15,18 @@ struct DiveCalendarView: View {
     /// macOS 專用：點選日誌 row 時的回調（支援傳入 nil 以清空詳情欄）
     var onDiveTapped: ((DiveLog?) -> Void)? = nil
 
+    /// 當前選取的潛水（用於日清單 row 的 focus 框，與右側詳情欄同步）
+    @State private var selectedDiveID: PersistentIdentifier? = nil
+
+    /// macOS：當日清單是否取得鍵盤焦點（讓方向鍵一進來即可用）
+    @FocusState private var dayListFocused: Bool
+
+    /// 統一選取入口：同步本地 focus 狀態與右側詳情欄
+    private func selectDive(_ dive: DiveLog?) {
+        selectedDiveID = dive?.persistentModelID
+        onDiveTapped?(dive)
+    }
+
     // MARK: - Month Navigation Helpers
 
     /// 切換月份（< > 與左右滑動共用）
@@ -24,7 +36,7 @@ struct DiveCalendarView: View {
             selectedDate = nil
         }
         #if !os(iOS)
-        onDiveTapped?(nil) // macOS：換月後清空右側詳情，保持一致
+        selectDive(nil) // macOS：換月後清空右側詳情，保持一致
         #endif
     }
 
@@ -47,7 +59,7 @@ struct DiveCalendarView: View {
                 selectedDate = nil
             }
             #if !os(iOS)
-            onDiveTapped?(nil)
+            selectDive(nil)
             #endif
         }
         showDatePicker = false
@@ -63,9 +75,9 @@ struct DiveCalendarView: View {
         #if !os(iOS)
         // macOS：同步右側詳情（今天有潛水則選首筆，否則清空）
         if let firstDive = divesByDay[dayKey(for: today)]?.first {
-            onDiveTapped?(firstDive)
+            selectDive(firstDive)
         } else {
-            onDiveTapped?(nil)
+            selectDive(nil)
         }
         #endif
     }
@@ -86,6 +98,22 @@ struct DiveCalendarView: View {
         guard let date = selectedDate else { return [] }
         return divesByDay[dayKey(for: date)] ?? []
     }
+
+    #if !os(iOS)
+    /// macOS：以上下方向鍵在當日清單中移動選取
+    private func moveSelection(_ direction: MoveCommandDirection) {
+        guard !selectedDives.isEmpty else { return }
+        let current = selectedDives.firstIndex { $0.persistentModelID == selectedDiveID }
+        var newIndex: Int
+        switch direction {
+        case .up:   newIndex = (current ?? 0) - 1
+        case .down: newIndex = (current ?? -1) + 1
+        default:    return
+        }
+        newIndex = max(0, min(selectedDives.count - 1, newIndex))
+        selectDive(selectedDives[newIndex])
+    }
+    #endif
 
     // MARK: - Body
 
@@ -122,12 +150,12 @@ struct DiveCalendarView: View {
                         #if !os(iOS)
                         if let d = newDate {
                             if let firstDive = divesByDay[dayKey(for: d)]?.first {
-                                onDiveTapped?(firstDive) // 有潛水，選取首筆
+                                selectDive(firstDive) // 有潛水，選取首筆
                             } else {
-                                onDiveTapped?(nil)       // 無潛水，清空右側詳情
+                                selectDive(nil)       // 無潛水，清空右側詳情
                             }
                         } else {
-                            onDiveTapped?(nil)           // 取消選取日期，清空右側詳情
+                            selectDive(nil)           // 取消選取日期，清空右側詳情
                         }
                         #endif
                     }
@@ -147,13 +175,11 @@ struct DiveCalendarView: View {
                     }
             )
 
-            #if os(iOS)
             Divider()
                 .padding(.top, 4)
 
-            // 選中日的潛水清單（iOS：無右側詳情欄，於此顯示）
+            // 選中日的潛水清單（iOS 於此顯示；macOS 同時顯示，點選可同步右側詳情欄）
             selectedDaySection
-            #endif
         }
         // 釘到頂部，避免月曆在高欄位中被垂直置中而「浮動」於中央
         .frame(maxHeight: .infinity, alignment: .top)
@@ -338,15 +364,17 @@ struct DiveCalendarView: View {
                                 ForEach(selectedDives) { dive in
                                     #if os(iOS)
                                     NavigationLink(value: dive) {
-                                        DiveRowView(dive: dive)
+                                        DiveRowView(dive: dive,
+                                                    isSelected: selectedDiveID == dive.persistentModelID)
                                             .padding(.horizontal, 16)
                                     }
                                     .buttonStyle(.plain)
                                     #else
                                     Button {
-                                        onDiveTapped?(dive)
+                                        selectDive(dive)
                                     } label: {
-                                        DiveRowView(dive: dive)
+                                        DiveRowView(dive: dive,
+                                                    isSelected: selectedDiveID == dive.persistentModelID)
                                             .padding(.horizontal, 16)
                                             .contentShape(Rectangle())
                                     }
@@ -356,6 +384,18 @@ struct DiveCalendarView: View {
                             }
                             .padding(.bottom, 12)
                         }
+                        #if !os(iOS)
+                        // macOS：可聚焦 + 上下方向鍵切換選取
+                        .focusable()
+                        .focused($dayListFocused)
+                        .focusEffectDisabled()          // 移除整塊外圍 focus ring
+                        .onMoveCommand { direction in
+                            moveSelection(direction)
+                        }
+                        // 進入清單時自動取得鍵盤焦點，方向鍵立即可用
+                        .onAppear { dayListFocused = true }
+                        .onChange(of: selectedDate) { _, _ in dayListFocused = true }
+                        #endif
                     }
                 }
             } else {

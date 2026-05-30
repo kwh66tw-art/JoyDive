@@ -83,7 +83,7 @@ struct DiveLogDetailView: View {
 
             // ── 潛水資訊 ────────────────────────────────
             Section(header: Text("Dive Info")) {
-                DetailRow(icon: "wind",              label: "Gas",           value: gasMixText)
+                DetailRow(icon: "bubbles.and.sparkles.fill", label: "Gas",      value: gasMixText)
                 DetailRow(icon: "water.waves",       label: "Environment",   value: environmentText)
                 DetailRow(icon: "doc.text",          label: "Source Format", value: sourceFormatDisplayName(dive.sourceFormat))
             }
@@ -98,27 +98,28 @@ struct DiveLogDetailView: View {
             }
 
             // ── 時間詳細資訊 ──────────────────────────
-            if dive.entryTime != nil || dive.exitTime != nil {
-                Section(header: Text("Entry & Exit")) {
-                    if let entryTime = dive.entryTime {
-                        DetailRow(icon: "arrow.right.to.line",
-                                  label: "Entry Time",
-                                  value: formatTime(entryTime))
-                    }
-                    if let exitTime = dive.exitTime {
-                        DetailRow(icon: "arrow.left.to.line",
-                                  label: "Exit Time",
-                                  value: formatTime(exitTime))
-                    }
+            // 匯入的潛水通常未填 entryTime/exitTime；以 dateTime（入水）與
+            // diveTimeSeconds（時長）推導，確保兩個欄位皆有值可顯示。
+            Section(header: Text("Entry & Exit")) {
+                let entry = dive.entryTime ?? dive.dateTime
+                let exit  = dive.exitTime ?? Calendar.current.date(
+                    byAdding: .second, value: dive.diveTimeSeconds, to: entry)
+                DetailRow(icon: "arrow.right.to.line",
+                          label: "Entry Time",
+                          value: formatTime(entry))
+                if let exit {
+                    DetailRow(icon: "arrow.left.to.line",
+                              label: "Exit Time",
+                              value: formatTime(exit))
                 }
             }
 
             // ── 裝備詳細資訊 ──────────────────────────
             Section(header: Text("Equipment")) {
-                DetailRow(icon: "suit.jacket.fill",    label: "Wetsuit",           value: dive.wetsuitThickness)
+                DetailRow(icon: "tshirt.fill",         label: "Wetsuit",           value: dive.wetsuitThickness)
                 DetailRow(icon: "scalemass.fill",      label: "Weight",            value: String(format: "%.1f kg", dive.weightTotal))
-                DetailRow(icon: "cylinder.split.1x2",  label: "Cylinder Material", value: cylinderMaterialDisplayName(dive.cylinderMaterial))
-                DetailRow(icon: "cylinder.split.1x2",  label: "Cylinder Size",     value: dive.cylinderSize)
+                DetailRow(icon: "waterbottle.fill",    label: "Cylinder Material", value: cylinderMaterialDisplayName(dive.cylinderMaterial))
+                DetailRow(icon: "waterbottle.fill",    label: "Cylinder Size",     value: dive.cylinderSize)
                 DetailRow(icon: "gauge",               label: "Start Pressure",    value: String(format: "%.0f bar", dive.cylinderStartPressure))
                 if let endPressure = dive.cylinderEndPressure {
                     DetailRow(icon: "gauge",           label: "End Pressure",      value: String(format: "%.0f bar", endPressure))
@@ -301,6 +302,7 @@ struct DiveLogDetailView: View {
 
     private func formatTime(_ date: Date) -> String {
         let formatter = DateFormatter()
+        formatter.dateStyle = .medium
         formatter.timeStyle = .short
         return formatter.string(from: date)
     }

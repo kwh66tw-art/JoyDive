@@ -20,17 +20,12 @@ struct DiveLogEditSheet: View {
     let mode: DiveEditMode
 
     // MARK: Form State
-    @State private var dateTime: Date
     @State private var location: String
     @State private var maxDepth: Double
     @State private var durationMinutes: Int     // 儲存為整數分鐘（精度足夠手動輸入）
     @State private var waterTemperature: Double
     @State private var environmentType: String
     @State private var notes: String
-
-    // Date helpers (iOS year/month dropdowns)
-    @State private var calendarYear:  Int
-    @State private var calendarMonth: Int
 
     // Gas mix
     private enum GasMixPickerType: String, CaseIterable, Identifiable {
@@ -74,10 +69,6 @@ struct DiveLogEditSheet: View {
         switch mode {
         case .new:
             let now = Date()
-            let cal = Calendar.current
-            _dateTime           = State(initialValue: now)
-            _calendarYear       = State(initialValue: cal.component(.year,  from: now))
-            _calendarMonth      = State(initialValue: cal.component(.month, from: now))
             _location           = State(initialValue: "")
             _maxDepth           = State(initialValue: 18.0)
             _durationMinutes    = State(initialValue: 45)
@@ -107,10 +98,6 @@ struct DiveLogEditSheet: View {
             _cylinderEndPressure    = State(initialValue: 50)
 
         case .edit(let dive):
-            let cal = Calendar.current
-            _dateTime           = State(initialValue: dive.dateTime)
-            _calendarYear       = State(initialValue: cal.component(.year,  from: dive.dateTime))
-            _calendarMonth      = State(initialValue: cal.component(.month, from: dive.dateTime))
             _location           = State(initialValue: dive.location)
             _maxDepth           = State(initialValue: dive.maxDepth)
             _durationMinutes    = State(initialValue: max(1, dive.diveTimeSeconds / 60))
@@ -159,44 +146,11 @@ struct DiveLogEditSheet: View {
         }
     }
 
-    // MARK: - Date Helpers (iOS)
-
-    /// 年份上限（今年 + 2）
-    private var maxCalendarYear: Int {
-        Calendar.current.component(.year, from: Date()) + 2
-    }
-
-    /// 各語系月份名稱（DateFormatter 依裝置語系自動本地化）
-    private static let monthSymbols: [String] = {
-        let fmt = DateFormatter()
-        fmt.locale = Locale.current
-        return fmt.monthSymbols
-    }()
-
-    /// 年月下拉變更後，把 dateTime 移到同一天（若新月沒有那一天則取末日）
-    private func syncDateToYearMonth() {
-        let cal    = Calendar.current
-        let day    = cal.component(.day,    from: dateTime)
-        let hour   = cal.component(.hour,   from: dateTime)
-        let minute = cal.component(.minute, from: dateTime)
-
-        // 計算新月天數，避免「2月31日」之類的無效日期
-        let firstOfMonth = cal.date(from: DateComponents(year: calendarYear, month: calendarMonth, day: 1)) ?? dateTime
-        let daysInMonth  = cal.range(of: .day, in: .month, for: firstOfMonth)?.count ?? 30
-        let clampedDay   = Swift.min(day, daysInMonth)
-
-        if let newDate = cal.date(from: DateComponents(
-            year: calendarYear, month: calendarMonth,
-            day: clampedDay, hour: hour, minute: minute
-        )) {
-            dateTime = newDate
-        }
-    }
-
     // MARK: - Helpers
 
     private func formatTime(_ date: Date) -> String {
         let formatter = DateFormatter()
+        formatter.dateStyle = .medium
         formatter.timeStyle = .short
         return formatter.string(from: date)
     }
@@ -220,56 +174,7 @@ struct DiveLogEditSheet: View {
         NavigationStack {
             Form {
                 // ═════════════════════════════════════════════════════════
-                // BLOCK 1: 基本資訊 (Basic Info with 12-grid month selector)
-                // ═════════════════════════════════════════════════════════
-                Section(header: Text("Basic Info")) {
-                    // ── 年份（iOS + macOS 共用）──────────────
-                    Picker(String(localized: "Year"), selection: $calendarYear) {
-                        ForEach(Array(1980...maxCalendarYear), id: \.self) { year in
-                            Text(verbatim: "\(year)").tag(year)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .onChange(of: calendarYear) { _, _ in syncDateToYearMonth() }
-
-                    // ── 12宮格月份選擇器（iOS + macOS 共用）──────────────────
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(String(localized: "Month"))
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
-                            ForEach(1...12, id: \.self) { month in
-                                Button(action: {
-                                    calendarMonth = month
-                                    syncDateToYearMonth()
-                                }) {
-                                    Text(Self.monthSymbols[month - 1])
-                                        .font(.subheadline)
-                                        .frame(maxWidth: .infinity)
-                                        .frame(height: 44)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .fill(calendarMonth == month ? Color.blue : Color(.systemGray5))
-                                        )
-                                        .foregroundStyle(calendarMonth == month ? .white : .primary)
-                                }
-                            }
-                        }
-                        .padding(.horizontal, -8)
-                        .padding(.vertical, 8)
-                    }
-                    .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
-
-                    // ── 潛水地點 ─────────────────────────────────
-                    TextField(String(localized: "Dive Site"), text: $location)
-                        .textContentType(.addressCity)
-                        .autocorrectionDisabled()
-                        .focused($focusedField, equals: .location)
-                }
-
-                // ═════════════════════════════════════════════════════════
-                // BLOCK 2: 潛水數據與時間 (Dive Data & Time)
+                // BLOCK 1: 潛水數據與時間 (Dive Data & Time)
                 // ═════════════════════════════════════════════════════════
                 Section(header: Text("Dive Data & Time")) {
                     // 潛水時間（分鐘）
@@ -294,11 +199,11 @@ struct DiveLogEditSheet: View {
                         String(format: String(localized: "Duration: %d minutes"), durationMinutes)
                     )
 
-                    // 入水時間（可編輯）
+                    // 入水時間（可編輯，日期 + 時間）
                     DatePicker(
                         String(localized: "Entry Time"),
                         selection: $entryTime,
-                        displayedComponents: [.hourAndMinute]
+                        displayedComponents: [.date, .hourAndMinute]
                     )
 
                     // 出水時間（自動計算，唯讀）
@@ -403,7 +308,7 @@ struct DiveLogEditSheet: View {
                 // ═════════════════════════════════════════════════════════
                 // BLOCK 3: 環境 (Environment)
                 // ═════════════════════════════════════════════════════════
-                Section(header: Text("Environment")) {
+                Section(header: Text("Conditions")) {
                     Picker(String(localized: "Water Type"), selection: $environmentType) {
                         Text("Seawater").tag("seawater")
                         Text("Freshwater").tag("freshwater")
@@ -584,7 +489,18 @@ struct DiveLogEditSheet: View {
                 }
 
                 // ═════════════════════════════════════════════════════════
-                // BLOCK 5: 潛水備註 (Dive Notes)
+                // BLOCK 5: 基本資訊 — 地點（對齊詳情頁：Location 置於 Equipment 後）
+                // ═════════════════════════════════════════════════════════
+                Section(header: Text("Basic Info")) {
+                    // 日期改由「入水時間」的 date+time picker 統一選取
+                    TextField(String(localized: "Dive Site"), text: $location)
+                        .textContentType(.addressCity)
+                        .autocorrectionDisabled()
+                        .focused($focusedField, equals: .location)
+                }
+
+                // ═════════════════════════════════════════════════════════
+                // BLOCK 6: 潛水備註 (Dive Notes)
                 // ═════════════════════════════════════════════════════════
                 Section(header: Text("Dive Notes")) {
                     TextEditor(text: $notes)
@@ -632,7 +548,7 @@ struct DiveLogEditSheet: View {
         switch mode {
         case .new:
             let dive = DiveLog(
-                dateTime:        dateTime,
+                dateTime:        entryTime,
                 location:        location.trimmingCharacters(in: .whitespaces),
                 maxDepth:        maxDepth,
                 diveTimeSeconds: totalSeconds,
@@ -665,7 +581,7 @@ struct DiveLogEditSheet: View {
             modelContext.insert(dive)
 
         case .edit(let dive):
-            dive.dateTime         = dateTime
+            dive.dateTime         = entryTime
             dive.location         = location.trimmingCharacters(in: .whitespaces)
             dive.maxDepth         = maxDepth
             dive.diveTimeSeconds  = totalSeconds
