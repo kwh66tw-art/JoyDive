@@ -187,7 +187,12 @@ private struct MacLogbookSplitView: View {
                             case .list:
                                 DiveLogListView(
                                     highlightedDiveID: highlightID,
-                                    onDiveTapped: { dive in selectedDive = dive }
+                                    onDiveTapped: { dive in selectedDive = dive },
+                                    onDiveDeleted: { deleted in
+                                        if selectedDive?.persistentModelID == deleted.persistentModelID {
+                                            selectedDive = nil
+                                        }
+                                    }
                                 )
                             case .calendar:
                                 DiveCalendarView(onDiveTapped: { dive in
@@ -225,7 +230,7 @@ private struct MacLogbookSplitView: View {
                     NavigationStack {
                         Group {
                             if let dive = selectedDive {
-                                DiveLogDetailView(dive: dive)
+                                DiveLogDetailView(dive: dive, onDeleted: { selectedDive = nil })
                             } else {
                                 ContentUnavailableView {
                                     Label("No Dive Selected", systemImage: viewMode == .list ? "list.bullet.below.rectangle" : "calendar")

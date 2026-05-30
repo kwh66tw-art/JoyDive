@@ -2,28 +2,35 @@
 // Week 9 — 單筆潛水詳情頁（唯讀，Week 11 加入編輯）
 
 import SwiftUI
+import SwiftData
 import Charts
 
 struct DiveLogDetailView: View {
     let dive: DiveLog
-    @State private var showEditSheet          = false
-    @State private var purchaseManager        = PurchaseManager.shared
-    @State private var showPremiumSheet       = false
-    @State private var showExportFormatPicker = false
-    @State private var exportItem: ExportItem?
+    /// macOS：刪除後通知容器清空右側詳情欄（iOS 用 dismiss 返回）
+    var onDeleted: (() -> Void)? = nil
+
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    @State private var showEditSheet     = false
+    @State private var showDeleteConfirm = false
 
     // MARK: - Computed
 
     private var durationFormatted: String {
-        let total = dive.diveTimeSeconds
-        let h = total / 3600
-        let m = (total % 3600) / 60
-        let s = total % 60
-        if h > 0 {
-            return String(format: "%dh %02dm %02ds", h, m, s)
-        } else {
-            return String(format: "%d min %02d sec", m, s)
-        }
+        // 一律以總分鐘顯示（捨棄時/秒），例如 1h15m → 75 min
+        let minutes = Int((Double(dive.diveTimeSeconds) / 60.0).rounded())
+        return "\(minutes) min"
+    }
+
+    /// 是否有任何裝備欄位有值（皆無則整個 Equipment 區塊隱藏）
+    private var hasEquipment: Bool {
+        (dive.wetsuitThickness?.isEmpty == false)
+            || dive.weightTotal != nil
+            || (dive.cylinderMaterial?.isEmpty == false)
+            || (dive.cylinderSize?.isEmpty == false)
+            || dive.cylinderStartPressure != nil
+            || dive.cylinderEndPressure != nil
     }
 
     private var environmentText: String {
@@ -114,15 +121,29 @@ struct DiveLogDetailView: View {
                 }
             }
 
-            // ── 裝備詳細資訊 ──────────────────────────
-            Section(header: Text("Equipment")) {
-                DetailRow(icon: "tshirt.fill",         label: "Wetsuit",           value: dive.wetsuitThickness)
-                DetailRow(icon: "scalemass.fill",      label: "Weight",            value: String(format: "%.1f kg", dive.weightTotal))
-                DetailRow(icon: "waterbottle.fill",    label: "Cylinder Material", value: cylinderMaterialDisplayName(dive.cylinderMaterial))
-                DetailRow(icon: "waterbottle.fill",    label: "Cylinder Size",     value: dive.cylinderSize)
-                DetailRow(icon: "gauge",               label: "Start Pressure",    value: String(format: "%.0f bar", dive.cylinderStartPressure))
-                if let endPressure = dive.cylinderEndPressure {
-                    DetailRow(icon: "gauge",           label: "End Pressure",      value: String(format: "%.0f bar", endPressure))
+            // ── 裝備詳細資訊（僅顯示有提供的欄位；匯入未提供者留空隱藏）──
+            if hasEquipment {
+                Section(header: Text("Equipment")) {
+                    if let w = dive.wetsuitThickness, !w.isEmpty {
+                        // 儲存值為純數字（如 "2.5"）；顯示時補回 mm 單位（舊資料若已含 mm 則不重複）
+                        DetailRow(icon: "tshirt.fill",         label: "Wetsuit",
+                                  value: w.lowercased().contains("mm") ? w : "\(w) mm")
+                    }
+                    if let weight = dive.weightTotal {
+                        DetailRow(icon: "scalemass.fill",      label: "Weight",            value: String(format: "%.1f kg", weight))
+                    }
+                    if let m = dive.cylinderMaterial, !m.isEmpty {
+                        DetailRow(icon: "waterbottle.fill",    label: "Cylinder Material", value: cylinderMaterialDisplayName(m))
+                    }
+                    if let s = dive.cylinderSize, !s.isEmpty {
+                        DetailRow(icon: "waterbottle.fill",    label: "Cylinder Size",     value: s)
+                    }
+                    if let sp = dive.cylinderStartPressure {
+                        DetailRow(icon: "gauge",               label: "Start Pressure",    value: String(format: "%.0f bar", sp))
+                    }
+                    if let ep = dive.cylinderEndPressure {
+                        DetailRow(icon: "gauge",               label: "End Pressure",      value: String(format: "%.0f bar", ep))
+                    }
                 }
             }
 
@@ -158,32 +179,14 @@ struct DiveLogDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         #endif
         .toolbar {
-            // ── Export 按鈕 ──────────────────────────────────
+            // ── Delete 按鈕 ──────────────────────────────────
             ToolbarItem(placement: .automatic) {
-                Button {
-                    if purchaseManager.isPremium {
-                        showExportFormatPicker = true
-                    } else {
-                        showPremiumSheet = true
-                    }
+                Button(role: .destructive) {
+                    showDeleteConfirm = true
                 } label: {
-                    // 非 Premium：圖示半透明 + 右下角小鎖頭
-                    ZStack(alignment: .bottomTrailing) {
-                        Image(systemName: "square.and.arrow.up")
-                            .opacity(purchaseManager.isPremium ? 1.0 : 0.4)
-                        if !purchaseManager.isPremium {
-                            Image(systemName: "lock.fill")
-                                .font(.system(size: 7, weight: .bold))
-                                .foregroundStyle(.secondary)
-                                .offset(x: 3, y: 3)
-                        }
-                    }
+                    Image(systemName: "trash")
                 }
-                .accessibilityLabel(
-                    purchaseManager.isPremium
-                        ? String(localized: "Export Dive")
-                        : String(localized: "Export Dive — Premium Required")
-                )
+                .accessibilityLabel(String(localized: "Delete Dive"))
             }
             // ── Edit 按鈕 ────────────────────────────────────
             ToolbarItem(placement: .primaryAction) {
@@ -195,23 +198,16 @@ struct DiveLogDetailView: View {
                 .accessibilityLabel(String(localized: "Edit Dive"))
             }
         }
-        // ── Format 選擇 ──────────────────────────────────────
+        // ── 刪除確認 ──────────────────────────────────────────
         .confirmationDialog(
-            String(localized: "Export Format"),
-            isPresented: $showExportFormatPicker,
+            String(localized: "Delete this dive log?"),
+            isPresented: $showDeleteConfirm,
             titleVisibility: .visible
         ) {
-            Button("UDDF (.uddf)") { triggerExport(format: .uddf) }
-            Button("CSV (.csv)")   { triggerExport(format: .csv)  }
+            Button(String(localized: "Delete"), role: .destructive) { deleteDive() }
             Button(String(localized: "Cancel"), role: .cancel) { }
-        }
-        // ── Share Sheet ──────────────────────────────────────
-        .sheet(item: $exportItem) { item in
-            ActivityView(url: item.url)
-        }
-        // ── Premium Upgrade ──────────────────────────────────
-        .sheet(isPresented: $showPremiumSheet) {
-            PremiumUpgradeSheet()
+        } message: {
+            Text("This action cannot be undone.")
         }
         // ── Edit Sheet ───────────────────────────────────────
         .sheet(isPresented: $showEditSheet) {
@@ -268,7 +264,7 @@ struct DiveLogDetailView: View {
             KeyStatCell(
                 value: durationFormatted,
                 unit: "",
-                label: "Duration",
+                label: "Dive Time",
                 icon: "timer",
                 color: .orange
             )
@@ -286,16 +282,14 @@ struct DiveLogDetailView: View {
         .padding(.vertical, 8)
     }
 
-    // MARK: - Export
+    // MARK: - Delete
 
-    private func triggerExport(format: ExportFormat) {
-        do {
-            let url = try DiveExporter.exportToTempFile([dive], as: format)
-            exportItem = ExportItem(url: url)
-        } catch {
-            // 生成失敗時靜默處理（儲存空間不足等極端情況）
-            print("[DiveLogDetailView] Export failed: \(error)")
-        }
+    private func deleteDive() {
+        modelContext.delete(dive)
+        try? modelContext.save()
+        // macOS：清空右側詳情欄；iOS：返回上一頁
+        onDeleted?()
+        dismiss()
     }
 
     // MARK: - Helpers

@@ -5,6 +5,7 @@ import SwiftUI
 import SwiftData
 
 struct DiveCalendarView: View {
+    @Environment(\.modelContext) private var modelContext
     @Query(sort: \DiveLog.dateTime, order: .reverse) var allDives: [DiveLog]
     @State private var displayedMonth: Date = Calendar.current.startOfMonth(for: Date())
     @State private var selectedDate: Date? = Date() // 初始化為今天
@@ -25,6 +26,14 @@ struct DiveCalendarView: View {
     private func selectDive(_ dive: DiveLog?) {
         selectedDiveID = dive?.persistentModelID
         onDiveTapped?(dive)
+    }
+
+    /// 刪除一筆潛水（若為當前選取則一併清空詳情欄）
+    private func deleteDive(_ dive: DiveLog) {
+        let wasSelected = selectedDiveID == dive.persistentModelID
+        modelContext.delete(dive)
+        try? modelContext.save()
+        if wasSelected { selectDive(nil) }
     }
 
     // MARK: - Month Navigation Helpers
@@ -100,6 +109,14 @@ struct DiveCalendarView: View {
     }
 
     #if !os(iOS)
+    /// macOS：進入清單時預選第一筆並取得鍵盤焦點，讓方向鍵第一次進來即可用
+    private func focusDayList() {
+        if selectedDiveID == nil, let first = selectedDives.first {
+            selectDive(first)
+        }
+        DispatchQueue.main.async { dayListFocused = true }
+    }
+
     /// macOS：以上下方向鍵在當日清單中移動選取
     private func moveSelection(_ direction: MoveCommandDirection) {
         guard !selectedDives.isEmpty else { return }
@@ -358,18 +375,38 @@ struct DiveCalendarView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 24)
                     } else {
-                        // 當日潛水列表
+                        #if os(iOS)
+                        // iOS：用 List 取得原生左滑刪除（與主列表一致）
+                        List {
+                            ForEach(selectedDives) { dive in
+                                NavigationLink(value: dive) {
+                                    DiveRowView(dive: dive,
+                                                isSelected: selectedDiveID == dive.persistentModelID)
+                                }
+                                .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                                .listRowSeparator(.hidden)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        deleteDive(dive)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                                .contextMenu {
+                                    Button(role: .destructive) {
+                                        deleteDive(dive)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                            }
+                        }
+                        .listStyle(.plain)
+                        #else
+                        // macOS：卡片清單 + 鍵盤焦點/方向鍵；右鍵選單開啟時先選取游標下那筆
                         ScrollView {
                             LazyVStack(spacing: 8) {
                                 ForEach(selectedDives) { dive in
-                                    #if os(iOS)
-                                    NavigationLink(value: dive) {
-                                        DiveRowView(dive: dive,
-                                                    isSelected: selectedDiveID == dive.persistentModelID)
-                                            .padding(.horizontal, 16)
-                                    }
-                                    .buttonStyle(.plain)
-                                    #else
                                     Button {
                                         selectDive(dive)
                                     } label: {
@@ -379,22 +416,28 @@ struct DiveCalendarView: View {
                                             .contentShape(Rectangle())
                                     }
                                     .buttonStyle(.plain)
-                                    #endif
+                                    .contextMenu {
+                                        Button(role: .destructive) {
+                                            deleteDive(dive)
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                        // 選單出現時把選取移到游標所在的這筆，避免誤刪聚焦中的另一筆
+                                        .onAppear { selectDive(dive) }
+                                    }
                                 }
                             }
                             .padding(.bottom, 12)
                         }
-                        #if !os(iOS)
-                        // macOS：可聚焦 + 上下方向鍵切換選取
                         .focusable()
                         .focused($dayListFocused)
                         .focusEffectDisabled()          // 移除整塊外圍 focus ring
                         .onMoveCommand { direction in
                             moveSelection(direction)
                         }
-                        // 進入清單時自動取得鍵盤焦點，方向鍵立即可用
-                        .onAppear { dayListFocused = true }
-                        .onChange(of: selectedDate) { _, _ in dayListFocused = true }
+                        // 進入清單即預選第一筆並取得鍵盤焦點（async 確保版面就緒後才聚焦），方向鍵立即可用
+                        .onAppear { focusDayList() }
+                        .onChange(of: selectedDate) { _, _ in focusDayList() }
                         #endif
                     }
                 }

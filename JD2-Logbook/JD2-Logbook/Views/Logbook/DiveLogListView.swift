@@ -5,6 +5,7 @@ import SwiftUI
 import SwiftData
 
 struct DiveLogListView: View {
+    @Environment(\.modelContext) private var modelContext
     @Query(sort: \DiveLog.dateTime, order: .reverse) var dives: [DiveLog]
     @State private var searchText = ""
 
@@ -21,6 +22,19 @@ struct DiveLogListView: View {
 
     /// macOS 專用：點擊 row 時的回調（macOS 不用 NavigationLink，用此 binding 更新詳情欄）
     var onDiveTapped: ((DiveLog) -> Void)? = nil
+
+    /// 刪除後通知容器（macOS 用以清空右側被刪的詳情）
+    var onDiveDeleted: ((DiveLog) -> Void)? = nil
+
+    private func deleteDive(_ dive: DiveLog) {
+        let id = dive.persistentModelID
+        modelContext.delete(dive)
+        try? modelContext.save()
+        #if !os(iOS)
+        if selectedID == id { selectedID = nil }
+        #endif
+        onDiveDeleted?(dive)
+    }
 
     var filteredDives: [DiveLog] {
         guard !searchText.isEmpty else { return dives }
@@ -83,6 +97,20 @@ struct DiveLogListView: View {
                                     ? Color.accentColor.opacity(0.15)
                                     : Color.clear
                             )
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    deleteDive(dive)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    deleteDive(dive)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                         }
                     }
                     .listStyle(.plain)
@@ -140,6 +168,18 @@ struct DiveLogListView: View {
                                             onDiveTapped?(dive)
                                             listFocused = true // 點選後取得鍵盤焦點，方向鍵可接續導覽
                                         }
+                                        .contextMenu {
+                                            Button(role: .destructive) {
+                                                deleteDive(dive)
+                                            } label: {
+                                                Label("Delete", systemImage: "trash")
+                                            }
+                                            // 選單出現時把選取移到游標所在的這筆，避免誤刪聚焦中的另一筆
+                                            .onAppear {
+                                                selectedID = dive.persistentModelID
+                                                onDiveTapped?(dive)
+                                            }
+                                        }
                                         .id(dive.persistentModelID)
                                     }
                                 }
@@ -180,8 +220,12 @@ struct StatsHeaderView: View {
 
     var totalDives: Int { dives.count }
 
-    var totalHours: Double {
-        Double(dives.reduce(0) { $0 + $1.diveTimeSeconds }) / 3600.0
+    /// 總時間以「Xh Ym」呈現（不足 1 小時只顯示 Ym），比小數點時數直覺
+    var totalTimeText: String {
+        let total = dives.reduce(0) { $0 + $1.diveTimeSeconds }
+        let h = total / 3600
+        let m = (total % 3600) / 60
+        return h > 0 ? "\(h)h \(m)m" : "\(m)m"
     }
 
     var deepestDive: Double {
@@ -200,7 +244,7 @@ struct StatsHeaderView: View {
                 .frame(height: 32)
 
             StatCell(
-                value: String(format: "%.1fh", totalHours),
+                value: totalTimeText,
                 label: "Total Time",
                 icon: "timer"
             )

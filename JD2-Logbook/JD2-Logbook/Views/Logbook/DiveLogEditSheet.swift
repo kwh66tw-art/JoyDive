@@ -49,10 +49,10 @@ struct DiveLogEditSheet: View {
 
     // MARK: - Equipment Details
     @State private var wetsuitThickness: String
-    @State private var weightTotal: Double
+    @State private var weightTotal: Double?
     @State private var cylinderMaterial: String
     @State private var cylinderSize: String
-    @State private var cylinderStartPressure: Double
+    @State private var cylinderStartPressure: Double?
     @State private var cylinderEndPressure: Double?
 
     // MARK: Keyboard Focus (Tab / Shift+Tab 導覽)
@@ -137,12 +137,12 @@ struct DiveLogEditSheet: View {
             _exitTime           = State(initialValue: dive.exitTime)
 
             // Equipment Details
-            _wetsuitThickness   = State(initialValue: dive.wetsuitThickness)
+            _wetsuitThickness   = State(initialValue: dive.wetsuitThickness ?? "")
             _weightTotal        = State(initialValue: dive.weightTotal)
-            _cylinderMaterial   = State(initialValue: dive.cylinderMaterial)
-            _cylinderSize       = State(initialValue: dive.cylinderSize)
+            _cylinderMaterial   = State(initialValue: dive.cylinderMaterial ?? "")
+            _cylinderSize       = State(initialValue: dive.cylinderSize ?? "")
             _cylinderStartPressure  = State(initialValue: dive.cylinderStartPressure)
-            _cylinderEndPressure    = State(initialValue: dive.cylinderEndPressure ?? 50)
+            _cylinderEndPressure    = State(initialValue: dive.cylinderEndPressure)
         }
     }
 
@@ -182,7 +182,7 @@ struct DiveLogEditSheet: View {
                         Text(String(localized: "Dive Time"))
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField("45", value: $durationMinutes,
+                        TextField(String("45"), value: $durationMinutes,
                                   format: .number)
                             .labelsHidden()
                             #if os(iOS)
@@ -220,7 +220,7 @@ struct DiveLogEditSheet: View {
                                 .monospacedDigit()
                                 .foregroundStyle(.secondary)
                         } else {
-                            Text("—")
+                            Text(verbatim: "—")
                                 .foregroundStyle(.tertiary)
                         }
                     }
@@ -230,7 +230,7 @@ struct DiveLogEditSheet: View {
                         Text("Max Depth")
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField("0.0", value: $maxDepth,
+                        TextField(String("0.0"), value: $maxDepth,
                                   format: .number.precision(.fractionLength(1)))
                             .labelsHidden()
                             #if os(iOS)
@@ -252,7 +252,7 @@ struct DiveLogEditSheet: View {
                         Text("Water Temp")
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField("0.0", value: $waterTemperature,
+                        TextField(String("0.0"), value: $waterTemperature,
                                   format: .number.precision(.fractionLength(1)))
                             .labelsHidden()
                             #if os(iOS)
@@ -328,7 +328,7 @@ struct DiveLogEditSheet: View {
                         Text(String(localized: "Air Temperature"))
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField("25", value: $airTemperature,
+                        TextField(String("25"), value: $airTemperature,
                                   format: .number.precision(.fractionLength(1)))
                             .labelsHidden()
                             #if os(iOS)
@@ -366,7 +366,7 @@ struct DiveLogEditSheet: View {
                         Text(String(localized: "Visibility"))
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField("12", value: $visibility,
+                        TextField(String("12"), value: $visibility,
                                   format: .number.precision(.fractionLength(1)))
                             .labelsHidden()
                             #if os(iOS)
@@ -392,7 +392,7 @@ struct DiveLogEditSheet: View {
                         Text(String(localized: "Wetsuit"))
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField("", text: $wetsuitThickness)
+                        TextField(String(""), text: $wetsuitThickness)
                             .labelsHidden()
                             #if os(iOS)
                             .keyboardType(.numberPad)
@@ -414,7 +414,7 @@ struct DiveLogEditSheet: View {
                         Text(String(localized: "Weight"))
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField("0", value: $weightTotal,
+                        TextField(String("0"), value: $weightTotal,
                                   format: .number.precision(.fractionLength(1)))
                             .labelsHidden()
                             #if os(iOS)
@@ -427,7 +427,7 @@ struct DiveLogEditSheet: View {
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: String(localized: "Weight: %.1f kilograms"), weightTotal)
+                        String(format: String(localized: "Weight: %.1f kilograms"), weightTotal ?? 0)
                     )
 
                     // 氣瓶材質
@@ -450,7 +450,7 @@ struct DiveLogEditSheet: View {
                         Text(String(localized: "Start Pressure"))
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField("200", value: $cylinderStartPressure,
+                        TextField(String("200"), value: $cylinderStartPressure,
                                   format: .number.precision(.fractionLength(0)))
                             .labelsHidden()
                             #if os(iOS)
@@ -463,7 +463,7 @@ struct DiveLogEditSheet: View {
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: String(localized: "Start Pressure: %.0f bar"), cylinderStartPressure)
+                        String(format: String(localized: "Start Pressure: %.0f bar"), cylinderStartPressure ?? 0)
                     )
 
                     // 氣瓶結束壓力（預設 50 bar）
@@ -471,7 +471,7 @@ struct DiveLogEditSheet: View {
                         Text(String(localized: "End Pressure"))
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField("50", value: $cylinderEndPressure,
+                        TextField(String("50"), value: $cylinderEndPressure,
                                   format: .number.precision(.fractionLength(0)))
                             .labelsHidden()
                             #if os(iOS)
@@ -571,10 +571,10 @@ struct DiveLogEditSheet: View {
             dive.exitTime = calculatedExitTime
 
             // Equipment Details
-            dive.wetsuitThickness = wetsuitThickness
+            dive.wetsuitThickness = wetsuitThickness.isEmpty ? nil : wetsuitThickness
             dive.weightTotal = weightTotal
-            dive.cylinderMaterial = cylinderMaterial
-            dive.cylinderSize = cylinderSize
+            dive.cylinderMaterial = cylinderMaterial.isEmpty ? nil : cylinderMaterial
+            dive.cylinderSize = cylinderSize.isEmpty ? nil : cylinderSize
             dive.cylinderStartPressure = cylinderStartPressure
             dive.cylinderEndPressure = cylinderEndPressure
 
@@ -602,10 +602,10 @@ struct DiveLogEditSheet: View {
             dive.exitTime = calculatedExitTime
 
             // Equipment Details
-            dive.wetsuitThickness = wetsuitThickness
+            dive.wetsuitThickness = wetsuitThickness.isEmpty ? nil : wetsuitThickness
             dive.weightTotal = weightTotal
-            dive.cylinderMaterial = cylinderMaterial
-            dive.cylinderSize = cylinderSize
+            dive.cylinderMaterial = cylinderMaterial.isEmpty ? nil : cylinderMaterial
+            dive.cylinderSize = cylinderSize.isEmpty ? nil : cylinderSize
             dive.cylinderStartPressure = cylinderStartPressure
             dive.cylinderEndPressure = cylinderEndPressure
 

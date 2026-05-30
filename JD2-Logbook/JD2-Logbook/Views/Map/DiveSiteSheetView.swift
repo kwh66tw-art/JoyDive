@@ -23,12 +23,9 @@ struct DiveSiteSheetView: View {
     }
 
     private var durationFormatted: String {
-        let total = dive.diveTimeSeconds
-        let h = total / 3600
-        let m = (total % 3600) / 60
-        return h > 0
-            ? String(format: "%dh %02dm", h, m)
-            : String(format: "%d min", m)
+        // 一律以總分鐘顯示（捨棄時/秒），例如 1h15m → 75 min
+        let minutes = Int((Double(dive.diveTimeSeconds) / 60.0).rounded())
+        return "\(minutes) min"
     }
 
     private var gasMixText: String {
@@ -147,7 +144,7 @@ struct DiveSiteSheetView: View {
             SheetStatCell(
                 value: durationFormatted,
                 unit:  "",
-                label: String(localized: "Duration"),
+                label: String(localized: "Dive Time"),
                 icon:  "timer",
                 color: .orange
             )

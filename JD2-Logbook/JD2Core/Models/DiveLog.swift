@@ -90,20 +90,20 @@ final class DiveLog {
 
     // MARK: - 裝備信息
 
-    /// 防寒衣厚度: "3mm", "5mm" 等
-    var wetsuitThickness: String = "3mm"
+    /// 防寒衣厚度: "3mm", "5mm" 等（nil = 未提供，例如 dive computer 匯入）
+    var wetsuitThickness: String?
 
-    /// 配重總重量（公斤）
-    var weightTotal: Double = 0
+    /// 配重總重量（公斤，nil = 未提供）
+    var weightTotal: Double?
 
-    /// 氣瓶材質: "aluminum", "steel"
-    var cylinderMaterial: String = "aluminum"
+    /// 氣瓶材質: "aluminum", "steel"（nil = 未提供）
+    var cylinderMaterial: String?
 
-    /// 氣瓶規格：例如 "S80(12L)", "S63(8.6L)"
-    var cylinderSize: String = "S80(12L)"
+    /// 氣瓶規格：例如 "S80(12L)", "S63(8.6L)"（nil = 未提供）
+    var cylinderSize: String?
 
-    /// 氣瓶起始壓力（bar）
-    var cylinderStartPressure: Double = 200
+    /// 氣瓶起始壓力（bar，nil = 未提供）
+    var cylinderStartPressure: Double?
 
     /// 氣瓶結束壓力（bar，可選）
     var cylinderEndPressure: Double?

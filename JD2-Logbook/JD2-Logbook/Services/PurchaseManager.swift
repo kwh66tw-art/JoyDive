@@ -1,9 +1,9 @@
 // PurchaseManager.swift — JD2-Logbook/Services/
-// Week 11 — StoreKit 2 IAP：$1.99 買斷，移除廣告 + 啟用 Export
+// Week 11 — StoreKit 2 IAP：$1.99 買斷，移除廣告
 //
 // Product ID:  com.jd2logbook.premium
 // 類型:        Non-Consumable（買斷）
-// 功能解鎖:    isPremium == true → 隱藏廣告、啟用 Export 按鈕
+// 功能解鎖:    isPremium == true → 隱藏廣告
 //
 // 架構說明：
 //   - 使用 Swift 5.9 @Observable（iOS 17+）取代 ObservableObject + @Published

@@ -6,14 +6,10 @@ import StoreKit
 import SwiftData
 
 struct SettingsView: View {
-    @Query(sort: \DiveLog.dateTime, order: .reverse) private var allDives: [DiveLog]
-
     @State private var purchaseManager        = PurchaseManager.shared
     @State private var showPremiumSheet       = false
     @State private var showRestoreAlert       = false
     @State private var restoreAlertMessage    = ""
-    @State private var showBulkExportPicker   = false
-    @State private var bulkExportItem: ExportItem?
 
     private var appVersion: String {
         let v = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
@@ -69,12 +65,12 @@ struct SettingsView: View {
                     header: Text("Premium"),
                     footer: Text(
                         purchaseManager.isPremium
-                            ? String(localized: "Premium unlocked — Ads removed, Export enabled.")
-                            : String(localized: "One-time purchase. No subscription.\nUnlock Premium to backup and export all your dives.")
+                            ? String(localized: "Premium unlocked — Ads removed.")
+                            : String(localized: "One-time purchase. No subscription.\nRemove all ads.")
                     )
                 ) {
                     if purchaseManager.isPremium {
-                        // ── 已購買：顯示狀態 + Export All 按鈕 ──────
+                        // ── 已購買：顯示狀態 ──────
                         HStack {
                             Label("Premium Unlocked", systemImage: "checkmark.seal.fill")
                                 .foregroundStyle(.green)
@@ -84,33 +80,13 @@ struct SettingsView: View {
                                 .font(.subheadline)
                         }
 
-                        Button {
-                            showBulkExportPicker = true
-                        } label: {
-                            HStack {
-                                Label("Export All Dives", systemImage: "square.and.arrow.up")
-                                Spacer()
-                                Text(allDives.isEmpty
-                                     ? String(localized: "No dives")
-                                     : String(format: String(localized: "%d dives"), allDives.count))
-                                    .foregroundStyle(.secondary)
-                                    .font(.subheadline)
-                            }
-                        }
-                        .foregroundStyle(.primary)
-                        .disabled(allDives.isEmpty)
-                        .accessibilityLabel(
-                            String(format: String(localized: "Export all %d dives"),
-                                   allDives.count)
-                        )
-
                     } else {
-                        // ── 未購買：購買按鈕 + 灰色 Export（disabled）──
+                        // ── 未購買：購買按鈕 + 回復購買 ──
                         Button {
                             showPremiumSheet = true
                         } label: {
                             HStack {
-                                Label("Remove Ads + Enable Export",
+                                Label("Remove Ads",
                                       systemImage: "star.fill")
                                 Spacer()
                                 Text(purchaseManager.premiumPriceString)
@@ -139,20 +115,6 @@ struct SettingsView: View {
                         }
                         .foregroundStyle(.primary)
                         .disabled(purchaseManager.isLoading)
-
-                        // Export All Dives（disabled，引導付費）
-                        HStack {
-                            Label("Export All Dives", systemImage: "square.and.arrow.up")
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Image(systemName: "lock.fill")
-                                .font(.caption)
-                                .foregroundStyle(.tertiary)
-                        }
-                        .accessibilityElement(children: .combine)
-                        .accessibilityLabel(
-                            String(localized: "Export All Dives — Premium Required")
-                        )
                     }
                 }
 
@@ -215,20 +177,6 @@ struct SettingsView: View {
             .formStyle(.grouped)        // macOS 下使用 Grouped 樣式更緊密精緻
             .padding(.top, -16)         // 負 margin 抵消系統隱藏導航列所造成的過度空白
             #endif
-            // ── Bulk Export：格式選擇 ────────────────────────
-            .confirmationDialog(
-                String(localized: "Export Format"),
-                isPresented: $showBulkExportPicker,
-                titleVisibility: .visible
-            ) {
-                Button("UDDF (.uddf)") { triggerBulkExport(format: .uddf) }
-                Button("CSV (.csv)")   { triggerBulkExport(format: .csv)  }
-                Button(String(localized: "Cancel"), role: .cancel) { }
-            }
-            // ── Bulk Export：Share Sheet ──────────────────────
-            .sheet(item: $bulkExportItem) { item in
-                ActivityView(url: item.url)
-            }
             // ── Premium Upgrade Sheet ─────────────────────────
             .sheet(isPresented: $showPremiumSheet) {
                 PremiumUpgradeSheet()
@@ -241,15 +189,6 @@ struct SettingsView: View {
     }
 
     // MARK: - Actions
-
-    private func triggerBulkExport(format: ExportFormat) {
-        do {
-            let url = try DiveExporter.exportToTempFile(allDives, as: format)
-            bulkExportItem = ExportItem(url: url)
-        } catch {
-            print("[SettingsView] Bulk export failed: \(error)")
-        }
-    }
 
     private func openAppLanguageSettings() {
         #if os(iOS)
@@ -347,12 +286,6 @@ struct PremiumUpgradeSheet: View {
                         color: .red,
                         title: String(localized: "Remove All Ads"),
                         subtitle: String(localized: "Enjoy an uninterrupted dive log experience.")
-                    )
-                    PremiumFeatureRow(
-                        icon: "square.and.arrow.up",
-                        color: .blue,
-                        title: String(localized: "Export Dive Logs"),
-                        subtitle: String(localized: "Export your dives as UDDF or CSV anytime.")
                     )
                 }
                 .padding(.horizontal, 24)
