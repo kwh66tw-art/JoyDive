@@ -221,7 +221,7 @@ struct DiveLogEditSheet: View {
                                 .foregroundStyle(.secondary)
                         } else {
                             Text(verbatim: "—")
-                                .foregroundStyle(.tertiary)
+                                .foregroundStyle(.secondary)
                         }
                     }
 

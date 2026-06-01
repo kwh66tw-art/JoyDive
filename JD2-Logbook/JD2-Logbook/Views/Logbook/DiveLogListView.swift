@@ -168,6 +168,12 @@ struct DiveLogListView: View {
                                             onDiveTapped?(dive)
                                             listFocused = true // 點選後取得鍵盤焦點，方向鍵可接續導覽
                                         }
+                                        // WCAG: onTapGesture 不會自動暴露 a11y 動作，明確補上
+                                        .accessibilityAddTraits(.isButton)
+                                        .accessibilityAction {
+                                            selectedID = dive.persistentModelID
+                                            onDiveTapped?(dive)
+                                        }
                                         .contextMenu {
                                             Button(role: .destructive) {
                                                 deleteDive(dive)
@@ -280,7 +286,7 @@ struct StatCell: View {
 
             Text(LocalizedStringKey(label))
                 .font(.caption2)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.accessibleSecondary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
         }

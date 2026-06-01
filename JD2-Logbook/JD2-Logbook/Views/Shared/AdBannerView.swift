@@ -138,6 +138,10 @@ let adBannerHeight: CGFloat = 50
 // ⚠️ 上線前將下方測試 ID 替換為 AdMob console 核發的正式 Ad Unit ID
 
 enum AdUnitID {
+    /// 日誌主畫面底部 banner（主要曝光版位；Google 公開測試 ID，上線前換成正式 ID）
+    static let logbook       = "ca-app-pub-3940256099942544/2934735716"
+    /// 設定頁底部 banner（Google 公開測試 ID，上線前換成正式 ID）
+    static let settings      = "ca-app-pub-3940256099942544/2934735716"
     /// Import 頁 banner（Google 公開測試 ID，上線前換成正式 ID）
     static let importBanner  = "ca-app-pub-3940256099942544/2934735716"
     /// 地圖空狀態 inline ad（Google 公開測試 ID，上線前換成正式 ID）

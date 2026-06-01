@@ -241,7 +241,7 @@ private struct LicensesView: View {
                     .foregroundStyle(.secondary)
                 Text(item.url)
                     .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(.secondary)
             }
             .padding(.vertical, 4)
             .accessibilityElement(children: .combine)

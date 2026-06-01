@@ -223,12 +223,14 @@ struct DiveLogDetailView: View {
             HStack {
                 Image(systemName: "location.fill")
                     .foregroundStyle(.tint)
+                    .accessibilityHidden(true)   // 裝飾性圖示，避免 VoiceOver 讀出無意義 label
                 Text(dive.location.isEmpty
                      ? String(localized: "Unknown Location")
                      : dive.location)
                     .font(.title3.bold())
                     .lineLimit(2)
             }
+            .accessibilityElement(children: .combine)
 
             // 日期時間
             Text(dive.dateTime, format: .dateTime
@@ -379,7 +381,7 @@ private struct KeyStatCell: View {
                 if !unit.isEmpty {
                     Text(unit)
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.accessibleSecondary)
                 }
             }
             .lineLimit(1)
@@ -387,7 +389,7 @@ private struct KeyStatCell: View {
 
             Text(LocalizedStringKey(label))
                 .font(.caption2)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.accessibleSecondary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
         }
@@ -411,7 +413,7 @@ private struct DetailRow: View {
                 .frame(width: 20)
 
             Text(LocalizedStringKey(label))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.accessibleSecondary)
 
             Spacer()
 

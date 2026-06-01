@@ -132,6 +132,22 @@ struct DiveCalendarView: View {
     }
     #endif
 
+    /// 點選日期格的共用邏輯（onTapGesture 與 a11y action 共用）
+    private func tapDay(_ date: Date) {
+        let newDate: Date? = isSameDay(date, selectedDate) ? nil : date
+        withAnimation(.easeInOut(duration: 0.15)) {
+            selectedDate = newDate
+        }
+        #if !os(iOS)
+        // macOS：點選日期時，自動同步右側詳情欄（支援清空）
+        if let d = newDate, let firstDive = divesByDay[dayKey(for: d)]?.first {
+            selectDive(firstDive)
+        } else {
+            selectDive(nil)
+        }
+        #endif
+    }
+
     // MARK: - Body
 
     var body: some View {
@@ -158,24 +174,10 @@ struct DiveCalendarView: View {
                         isToday: isSameDay(date, Date()),
                         hasDives: divesByDay[dayKey(for: date)] != nil
                     )
-                    .onTapGesture {
-                        let newDate: Date? = isSameDay(date, selectedDate) ? nil : date
-                        withAnimation(.easeInOut(duration: 0.15)) {
-                            selectedDate = newDate
-                        }
-                        // macOS：點選日期時，自動同步右側詳情欄（支援清空）
-                        #if !os(iOS)
-                        if let d = newDate {
-                            if let firstDive = divesByDay[dayKey(for: d)]?.first {
-                                selectDive(firstDive) // 有潛水，選取首筆
-                            } else {
-                                selectDive(nil)       // 無潛水，清空右側詳情
-                            }
-                        } else {
-                            selectDive(nil)           // 取消選取日期，清空右側詳情
-                        }
-                        #endif
-                    }
+                    .onTapGesture { tapDay(date) }
+                    // WCAG: onTapGesture 不會自動暴露 a11y 動作，明確補上
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityAction { tapDay(date) }
                 }
             }
             .padding(.horizontal, 4)
@@ -368,6 +370,7 @@ struct DiveCalendarView: View {
                             Image(systemName: "water.waves.slash")
                                 .font(.title2)
                                 .foregroundStyle(.tertiary)
+                                .accessibilityHidden(true)   // 裝飾性空狀態圖示
                             Text("No dives on this date.")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
@@ -447,6 +450,7 @@ struct DiveCalendarView: View {
                     Image(systemName: "calendar")
                         .font(.title2)
                         .foregroundStyle(.tertiary)
+                        .accessibilityHidden(true)   // 裝飾性空狀態圖示
                     Text("Select a date to see dives.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)

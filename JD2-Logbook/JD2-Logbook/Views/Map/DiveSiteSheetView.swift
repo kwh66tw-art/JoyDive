@@ -238,13 +238,13 @@ private struct SheetStatCell: View {
                 if !unit.isEmpty {
                     Text(unit)
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.accessibleSecondary)
                 }
             }
 
             Text(label)
                 .font(.caption2)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.accessibleSecondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 10)
@@ -267,7 +267,7 @@ private struct SheetDetailRow: View {
                 .frame(width: 20)
 
             Text(label)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.accessibleSecondary)
 
             Spacer()
 

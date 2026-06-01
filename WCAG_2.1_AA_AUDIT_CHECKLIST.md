@@ -542,3 +542,26 @@ _____________________________________________________________
 **審核完成日期**: 2026 年 8 月 9 日  
 **預計提審日期**: 2026 年 8 月 11 日  
 **預計上線日期**: 2026 年 8 月 18 日
+
+---
+
+## 附錄：Accessibility Inspector 實測結果與已知限制（2026-06-01）
+
+以 Xcode Accessibility Inspector 對 iOS / macOS 實機稽核，並完成下列修正。
+
+### 已修正
+- **Action 缺失（macOS）**：列表卡片、日曆日期格原以 `.onTapGesture` 互動，已補 `.accessibilityAddTraits(.isButton)` + `.accessibilityAction`（16 → ~0）。
+- **對比（iOS）**：資訊性 `.tertiary` 文字改 `.secondary`；空狀態裝飾圖示標 `.accessibilityHidden(true)`。failed 29 → 個位數、nearly 71 → ~30。
+- **新增 `Color.accessibleSecondary`（達標灰）**：取代 StatsHeader / KeyStatCell / DetailRow / SheetStatCell 的次要文字 `.secondary`，淺色 white 0.32、深色 white 0.75，與背景實際對比 ≥ 4.5:1（白卡上約 8:1）。
+- **匯入頁 FormatCard**：格式名稱改可換行（解大字級裁切）；整卡 `.accessibilityElement(.ignore)` + 以格式名稱為 label（解「`.csv` 被讀成『點 c s v』」非人類可讀）。
+- **裝飾性圖示**：詳情頁 hero header `location.fill` 等標 `.accessibilityHidden(true)`。
+
+### 已知限制（工具誤報 / 系統元件，不修）
+- **Dynamic Type「unsupported」**：SwiftUI Text 實際會隨系統字級縮放（已於 iOS 設定最大字級實測確認文字放大），Accessibility Inspector 對 SwiftUI 文字有已知誤報（它檢查 UIKit 的 `adjustsFontForContentSizeCategory`）。**App 實際符合 Dynamic Type**。
+- **Contrast failed 殘留於 `.accessibilityElement(children:.combine)` 節點**（DetailRow / StatsHeader / hero header）：標籤已用達標灰（白卡 ~8:1），Inspector 仍判 failed → 工具無法正確讀取 combine 合併節點內各段文字顏色，屬同類誤報。實際渲染對比達標。
+- **系統樣式元件**：Tab／側欄文字「設定/日誌…」、`ContentUnavailableView` 空狀態文字，由系統繪製，可調空間有限。
+- **框架雜訊（macOS）**：`NSHostingView`、`NavigationSplitCore`、`_SystemTextFieldCell`、視窗紅綠燈 `NSThemeWidgetZoomMenuRemoteView`、`AccessibilityLazyLayoutNode` 等為 SwiftUI/AppKit 宿主層，非 App 程式，無法修。
+- **固定尺寸元件**：Ad Banner（廣告尺寸必需）、步驟徽章圓圈內數字。
+
+### 建議驗收方式
+以「實機 VoiceOver 走查」+「真實渲染色的對比計算」為準，而非追 Accessibility Inspector 的絕對數字（含上述誤報）。

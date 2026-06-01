@@ -83,7 +83,7 @@ struct DiveRowView: View {
 
             Text(dive.dateTime, format: .dateTime.year())
                 .font(.caption2)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(.secondary)
         }
         .frame(width: 46)
     }

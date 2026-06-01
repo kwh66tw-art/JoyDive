@@ -65,7 +65,11 @@ struct MainTabView: View {
     #if os(iOS)
     private var iOSBody: some View {
         TabView(selection: $selectedTab) {
-            LogbookContainerView(highlightedDiveID: postImportHighlightID)
+            VStack(spacing: 0) {
+                LogbookContainerView(highlightedDiveID: postImportHighlightID)
+                // 主要廣告版位：日誌為預設且最高流量畫面（Premium 自動隱藏）
+                PremiumAwareAdBanner(adUnitID: AdUnitID.logbook)
+            }
                 .tabItem { Label("Logbook", systemImage: "list.bullet.below.rectangle") }
                 .tag(0)
 
@@ -82,7 +86,11 @@ struct MainTabView: View {
             .tabItem { Label("Import", systemImage: "square.and.arrow.down") }
             .tag(2)
 
-            SettingsView()
+            VStack(spacing: 0) {
+                SettingsView()
+                // 設定頁底部廣告版位（Premium 自動隱藏）
+                PremiumAwareAdBanner(adUnitID: AdUnitID.settings)
+            }
                 .tabItem { Label("Settings", systemImage: "gearshape") }
                 .tag(3)
         }

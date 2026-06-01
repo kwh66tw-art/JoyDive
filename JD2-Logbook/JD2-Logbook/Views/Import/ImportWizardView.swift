@@ -307,7 +307,7 @@ struct ImportWizardView: View {
                 if skipped > 0 {
                     Text("\(skipped) skipped (duplicates)")
                         .font(.caption)
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(.secondary)
                 }
             }
 
@@ -517,15 +517,17 @@ private struct FormatCard: View {
             Image(systemName: icon)
                 .font(.subheadline)
                 .foregroundStyle(.tint)
-                .frame(width: 22)
+                .frame(minWidth: 22)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(name)
                     .font(.caption.weight(.semibold))
-                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)   // 允許換行，大字級不裁切
                 Text(extensions)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             Spacer(minLength: 0)
@@ -534,6 +536,9 @@ private struct FormatCard: View {
         .padding(.vertical, 8)
         .background(Color.platformSecondaryGroupedBackground)
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        // WCAG: 合併為單一元素，並用格式名稱當 label（避免 VoiceOver 把 ".csv" 讀成「點 c s v」）
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(name)
     }
 }
 
