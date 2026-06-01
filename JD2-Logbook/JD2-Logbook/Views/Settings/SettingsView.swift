@@ -326,7 +326,7 @@ struct PremiumUpgradeSheet: View {
                 }
                 .padding(.bottom, 24)
             }
-            .navigationTitle("")
+            .navigationTitle(Text(verbatim: "")) // verbatim 避免被抽成空字串 key
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif

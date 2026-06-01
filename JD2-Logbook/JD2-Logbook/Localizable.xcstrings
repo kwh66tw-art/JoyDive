@@ -1304,12 +1304,8 @@
         }
       }
     },
-    "10L (Steel)" : {
-      "localizations" : {}
-    },
-    "12L (Steel)" : {
-      "localizations" : {}
-    },
+    "10L (Steel)" : {},
+    "12L (Steel)" : {},
     "About" : {
       "comment" : "Settings section header",
       "localizations" : {
@@ -1986,9 +1982,7 @@
         }
       }
     },
-    "AL100 (14L)" : {
-      "localizations" : {}
-    },
+    "AL100 (14L)" : {},
     "Altitude" : {
       "comment" : "Dive environment type",
       "localizations" : {
@@ -2553,9 +2547,7 @@
         }
       }
     },
-    "bar" : {
-      "localizations" : {}
-    },
+    "bar" : {},
     "Basic Info" : {
       "comment" : "Section header for basic dive information",
       "localizations" : {
@@ -9459,9 +9451,7 @@
         }
       }
     },
-    "kg" : {
-      "localizations" : {}
-    },
+    "kg" : {},
     "Language" : {
       "comment" : "Settings section header",
       "localizations" : {
@@ -10818,9 +10808,7 @@
         }
       }
     },
-    "mm" : {
-      "localizations" : {}
-    },
+    "mm" : {},
     "Moderate" : {
       "localizations" : {
         "de" : {
@@ -15800,12 +15788,8 @@
         }
       }
     },
-    "S63 (8.6L)" : {
-      "localizations" : {}
-    },
-    "S80 (12L)" : {
-      "localizations" : {}
-    },
+    "S63 (8.6L)" : {},
+    "S80 (12L)" : {},
     "Safety Stop" : {
       "extractionState" : "stale",
       "localizations" : {

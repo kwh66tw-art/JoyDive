@@ -252,7 +252,7 @@ private struct MacLogbookSplitView: View {
                             }
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .navigationTitle("") // 保持空標題，確保左右對齊線完全對齊，無多餘高度
+                        .navigationTitle(Text(verbatim: "")) // 空標題保持對齊；verbatim 避免被抽成空字串 key
                     }
                     .frame(minWidth: 300, maxWidth: .infinity, maxHeight: .infinity)
                 }
