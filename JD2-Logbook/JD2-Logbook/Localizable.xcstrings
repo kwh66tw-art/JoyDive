@@ -2601,7 +2601,7 @@
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Osnovne info"
+            "value" : "Osnovne informacije"
           }
         },
         "id" : {
@@ -2649,7 +2649,7 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ข้อมูล基礎"
+            "value" : "ข้อมูลพื้นฐาน"
           }
         },
         "vi" : {
@@ -4829,7 +4829,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Δεδομένα & ώρα κατάδυσης"
+            "value" : "Δεδομένα & Ώρα κατάδυσης"
           }
         },
         "en" : {
@@ -8079,13 +8079,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "气体混合"
+            "value" : "混合气体"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "氣體混合"
+            "value" : "混合氣體"
           }
         }
       }
@@ -11493,7 +11493,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "富氧空气"
+            "value" : "高氧"
           }
         },
         "zh-Hant" : {
@@ -11606,13 +11606,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "富氧空气 O₂：%d%%"
+            "value" : "高氧空气 O₂：%d%%"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "富氧空氣 O₂：%d%%"
+            "value" : "高氧空氣 O₂：%d%%"
           }
         }
       }
@@ -11780,7 +11780,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tidak Ada Penyelaman yang Dipilih"
+            "value" : "Tidak ada penyelaman yang dipilih"
           }
         },
         "it" : {
@@ -13363,7 +13363,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pembelian sekali. Tan情 langganan.\nHapus semua iklan."
+            "value" : "Pembelian sekali. Tanpa langganan.\nHapus semua iklan."
           }
         },
         "it" : {
@@ -14687,7 +14687,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Premium ξεκλειδώθηκε — Οι διαφημίσεις αφαιρέθηκαν."
+            "value" : "Το Premium ξεκλειδώθηκε — Οι διαφημίσεις αφαιρέθηκαν."
           }
         },
         "en" : {
@@ -14705,13 +14705,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Premium unlocked — Ads removed."
+            "value" : "Premium desbloqueado — Anuncios eliminados."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Premium déverrouillé — Publicités supprimées."
+            "value" : "Premium débloqué — Publicités supprimées."
           }
         },
         "hr" : {
@@ -14765,7 +14765,7 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ปลดล็อกพรีเมียมแล้ว — เอาโฆษณาออกแล้ว"
+            "value" : "ปลดล็อกพรีเมียมแล้ว — ไม่มีโฆษณา"
           }
         },
         "vi" : {
@@ -15163,7 +15163,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Supprimer les pubs"
+            "value" : "Supprimer les publicités"
           }
         },
         "hr" : {
@@ -15217,7 +15217,7 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เอาโฆษณาออก"
+            "value" : "ลบโฆษณา"
           }
         },
         "vi" : {
@@ -16948,13 +16948,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wählen Sie einen Tauchgang aus der Liste aus, um Details anzuzeigen."
+            "value" : "Wählen Sie einen Tauchgang aus der Liste, um Details anzuzeigen."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Επιλέξτε μια κατάδυση από τη lista για να δείτε λεπτομέρειες."
+            "value" : "Επιλέξτε μια κατάδυση από τη λίστα για να δείτε λεπτομέρειες."
           }
         },
         "en" : {
@@ -16972,7 +16972,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Selecciona una inmersión de la lista para ver los detalles."
+            "value" : "Seleccione una inmersión de la lista para ver los detalles."
           }
         },
         "fr" : {
@@ -17014,7 +17014,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pilih selam daripada senarai untuk melihat butiran."
+            "value" : "Pilih selam dari senarai untuk melihat butiran."
           }
         },
         "nl" : {
@@ -19946,7 +19946,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tindakan ini tidak boleh diundurkan."
+            "value" : "Tindakan ini tidak boleh dibatalkan."
           }
         },
         "nl" : {
@@ -19958,7 +19958,7 @@
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esta ação no se puede deshacer."
+            "value" : "Esta ação não pode ser desfeita."
           }
         },
         "th" : {
@@ -19970,7 +19970,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hành động này không thể được hoàn tác."
+            "value" : "Hành động này không thể hoàn tác."
           }
         },
         "zh-Hans" : {
@@ -20429,7 +20429,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "混合氣體"
+            "value" : "混合气体"
           }
         },
         "zh-Hant" : {
