@@ -129,29 +129,39 @@
 - [ ] 處理定位權限請求
 
 #### P0-5：修復 FitFileParser 包解析
-**狀態**：🔴 **阻塞編譯 - 需要用戶介入**
-**錯誤訊息**：「Missing package product 'FitFileParser'」
+**狀態**：🔴 **阻塞編譯 - 根本原因找到**
 **用途**：Garmin 潛水日誌 (.fit 格式) 解析（DiveLogImporter.swift 第 12 行）
 **倉庫**：https://github.com/roznet/FitFileParser
 
-**已嘗試的修復**：
-- ✅ 清除 ~/.swiftpm 緩存
-- ✅ 清除 ~/Library/Caches/com.apple.dt.Xcode/SourcePackages
-- ✅ 清除 DerivedData
-- ✅ 驗證 pbxproj 中的包配置正確
+**問題根本原因**：
+- ❌ GitHub 倉庫不是有效的 Swift Package（無 Package.swift）
+- ❌ Swift Package Manager 無法下載包內容
+- ❌ 包依賴在 Xcode 中顯示為**空的**（沒有可用產品）
 
-**仍需執行**（由用戶在 Xcode 中操作）：
-- [ ] 在 Xcode：**File → Packages → Reset Package Caches**
-- [ ] **Clean Build Folder** (Cmd+Shift+K)
-- [ ] **Build** (Cmd+B) 重新編譯
-- [ ] 如果仍失敗，嘗試：
-  - 移除 FitFileParser 包（在 Project → Package Dependencies）
-  - 通過 File → Add Packages 重新添加：https://github.com/roznet/FitFileParser
+**已完成的步驟**：
+- ✅ 清除 ~/.swiftpm、SourcePackages、DerivedData 緩存
+- ✅ 驗證 pbxproj 中的包配置（15 處引用完整）
+- ✅ 恢復 pbxproj 從 Week 12（包配置已恢復）
+- ✅ Clean Build Folder - 確認包被識別但為空
 
-**備選方案**（如果倉庫無法訪問）：
-- [ ] 檢查 GitHub 倉庫是否存在或已遷移
-- [ ] 尋找替代的 Garmin FIT 文件解析庫
-- [ ] 考慮暫時禁用 Garmin 匯入功能以解除編譯阻塞
+**解決方案（優先順序）**：
+
+1. **立即修復編譯（移除 FitFileParser）**
+   - [ ] 在 Xcode 中：Project → Package Dependencies → 右擊 FitFileParser → Remove Package
+   - [ ] 編輯 `DiveLogImporter.swift`：
+     - [ ] 第 12 行：註解掉 `import FitFileParser`
+     - [ ] 第 589+行：註解掉或移除 Garmin FIT 解析代碼（`FitFile()`、`fitFile.messages()`）
+   - [ ] Build - 應該編譯成功（但失去 Garmin 支援）
+
+2. **長期解決方案**
+   - [ ] 搜尋替代的 Garmin FIT 文件解析庫（Swift/iOS 相容）
+   - [ ] 評估：FitDataProtocol、其他 SPM 包、或自實作
+   - [ ] 一旦找到替代包，更新 DiveLogImporter.swift 和 pbxproj
+
+3. **暫時禁用 Garmin 功能**
+   - [ ] 如果短期內無法找到替代，可禁用 Garmin 匯入選項
+   - [ ] 在 DiveLogFormat enum 中移除 .garmin 分支
+   - [ ] 在 ImportWizardView 中隱藏 Garmin 格式選項
 
 ### 🟡 P1 - 高優先級（編譯成功後驗證）
 
