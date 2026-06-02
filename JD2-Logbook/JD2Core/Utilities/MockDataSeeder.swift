@@ -46,11 +46,6 @@ final class MockDataSeeder {
         ("Lake Tahoe, USA", 39.0968, -120.0324, "altitude")
     ]
     
-    private static let mockBuddies = [
-        "Alex Chen", "Emily Wong", "Michael Tanaka", "Jessica Miller", "David Smith",
-        "Sarah Jenkins", "Kenji Sato", "Sophia Carter", "Liam Davies", "Olivia Taylor"
-    ]
-    
     private static let mockNotes = [
         "看見了三隻綠蠵龜和一整群的梭魚，水下能見度非常棒，約有 20 米。",
         "流很強，下潛時要緊抓頂流繩。在斷崖邊看到灰真鯊在巡邏，十分震撼！",
@@ -133,7 +128,6 @@ final class MockDataSeeder {
             )
             
             // 其他細節
-            log.buddy = i % 4 == 0 ? nil : mockBuddies.randomElement()
             log.notes = mockNotes.randomElement() ?? ""
             log.sourceFormat = i % 5 == 0 ? "UDDF" : (i % 8 == 0 ? "FIT" : "manual")
             

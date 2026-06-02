@@ -234,7 +234,7 @@ private struct MacLogbookSplitView: View {
                     .frame(minWidth: 260, idealWidth: 320, maxWidth: 440)
                     .frame(maxHeight: .infinity)
 
-                    // ── 右欄 (右對稱導航)：獨立 Stack，確保 Edit/Export 100% 渲染穩定 ──
+                    // ── 右欄 (右對稱導航)：獨立 Stack，確保 Edit 100% 渲染穩定 ──
                     NavigationStack {
                         Group {
                             if let dive = selectedDive {

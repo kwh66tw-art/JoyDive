@@ -284,13 +284,13 @@ struct DiveLogEditSheet: View {
                     if gasMixType == .nitrox {
                         HStack(spacing: 12) {
                             Text("O₂")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.primary)
                             Slider(
                                 value: $nitroxO2Percent,
                                 in: 22...40,
                                 step: 1
                             ) {
-                                Text("O₂ %")
+                                EmptyView()
                             }
                             Text("\(Int(nitroxO2Percent))%")
                                 .monospacedDigit()

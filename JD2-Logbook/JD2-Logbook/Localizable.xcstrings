@@ -1304,8 +1304,12 @@
         }
       }
     },
-    "10L (Steel)" : {},
-    "12L (Steel)" : {},
+    "10L (Steel)" : {
+
+    },
+    "12L (Steel)" : {
+
+    },
     "About" : {
       "comment" : "Settings section header",
       "localizations" : {
@@ -1982,7 +1986,9 @@
         }
       }
     },
-    "AL100 (14L)" : {},
+    "AL100 (14L)" : {
+
+    },
     "Altitude" : {
       "comment" : "Dive environment type",
       "localizations" : {
@@ -2547,7 +2553,9 @@
         }
       }
     },
-    "bar" : {},
+    "bar" : {
+
+    },
     "Basic Info" : {
       "comment" : "Section header for basic dive information",
       "localizations" : {
@@ -2657,234 +2665,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "基本資訊"
-          }
-        }
-      }
-    },
-    "Buddy" : {
-      "comment" : "Dive detail field label",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buddy"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ζευγάρι"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buddy"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buddy"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compañero"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Binôme"
-          }
-        },
-        "hr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ronilački partner"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buddy"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compagno"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バディ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "버디"
-          }
-        },
-        "ms" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buddy"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buddy"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dupla"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "คู่ดำน้ำ"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bạn lặn"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "潜伴"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "潛伴"
-          }
-        }
-      }
-    },
-    "Buddy Name (optional)" : {
-      "comment" : "TextField placeholder",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Name des Buddys (optional)"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Όνομα ζευγαριού (προαιρετικό)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buddy Name (optional)"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buddy Name (optional)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nombre del compañero (opcional)"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nom du binôme (facultatif)"
-          }
-        },
-        "hr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ime partnera (opcionalno)"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nama Buddy (opsional)"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nome compagno (opzionale)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バディ名（任意）"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "버디 이름 (선택)"
-          }
-        },
-        "ms" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nama Buddy (pilihan)"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Naam buddy (optioneel)"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nome da dupla (opcional)"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ชื่อคู่ดำน้ำ (ไม่บังคับ)"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tên bạn lặn (tùy chọn)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "潜伴姓名（可选）"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "潛伴姓名（可選）"
           }
         }
       }
@@ -5599,6 +5379,7 @@
     },
     "Dive site map will be available in a future update." : {
       "comment" : "Map placeholder description",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8081,6 +7862,7 @@
     },
     "Hello, world!" : {
       "comment" : "A greeting message displayed in the main view.",
+      "extractionState" : "stale",
       "isCommentAutoGenerated" : true,
       "localizations" : {
         "de" : {
@@ -9451,7 +9233,9 @@
         }
       }
     },
-    "kg" : {},
+    "kg" : {
+
+    },
     "Language" : {
       "comment" : "Settings section header",
       "localizations" : {
@@ -9567,6 +9351,7 @@
     },
     "Language, appearance, and preferences will be available in a future update." : {
       "comment" : "Settings placeholder description",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10246,6 +10031,7 @@
     },
     "Map view coming soon" : {
       "comment" : "Map placeholder title",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10808,7 +10594,9 @@
         }
       }
     },
-    "mm" : {},
+    "mm" : {
+
+    },
     "Moderate" : {
       "localizations" : {
         "de" : {
@@ -11598,120 +11386,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "高氧空氣 O₂：%d%%"
-          }
-        }
-      }
-    },
-    "No buddy recorded." : {
-      "comment" : "Empty state for buddy field",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kein Buddy erfasst."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Δεν καταγράφηκε ζευγάρι."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No buddy recorded."
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No buddy recorded."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ningún compañero registrado."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucun binôme enregistré."
-          }
-        },
-        "hr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nije zabilježen partner."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tidak ada buddy yang dicatat."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nessun compagno registrato."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バディが記録されていません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기록된 버디가 없습니다."
-          }
-        },
-        "ms" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tiada buddy direkodkan."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geen buddy geregistreerd."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nenhum dupla registado."
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ไม่ได้บันทึกคู่ดำน้ำ"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Không có bạn lặn được ghi lại."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未记录潜伴。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未記錄潛伴。"
           }
         }
       }
@@ -12850,6 +12524,7 @@
     },
     "O₂ %" : {
       "comment" : "Oxygen % label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -15788,8 +15463,12 @@
         }
       }
     },
-    "S63 (8.6L)" : {},
-    "S80 (12L)" : {},
+    "S63 (8.6L)" : {
+
+    },
+    "S80 (12L)" : {
+
+    },
     "Safety Stop" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -17493,6 +17172,7 @@
     },
     "Settings coming soon" : {
       "comment" : "Settings placeholder title",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

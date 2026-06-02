@@ -113,9 +113,6 @@ final class DiveLog {
     /// 潛水備註
     var notes: String = ""
 
-    /// 潛伴名字（可選）
-    var buddy: String?
-
     /// 深度剖面樣本（JSON 編碼）
     /// 格式：[{"t":10.0,"d":4.07},...] t=秒數, d=深度(m)
     /// SwiftData lightweight migration：有預設值，舊記錄自動補 "[]"
