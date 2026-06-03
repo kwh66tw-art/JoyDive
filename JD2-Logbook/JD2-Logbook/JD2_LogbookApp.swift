@@ -7,9 +7,19 @@
 
 import SwiftUI
 import SwiftData
+#if canImport(GoogleMobileAds)
+import GoogleMobileAds
+#endif
 
 @main
 struct JD2_LogbookApp: App {
+
+    init() {
+        #if canImport(GoogleMobileAds)
+        MobileAds.shared.start { _ in }
+        #endif
+    }
+
     var body: some Scene {
         WindowGroup {
             MainTabView()

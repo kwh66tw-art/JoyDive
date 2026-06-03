@@ -29,20 +29,16 @@ import GoogleMobileAds
 struct AdBannerView: UIViewRepresentable {
     let adUnitID: String
 
-    func makeUIView(context: Context) -> GADBannerView {
-        let banner = GADBannerView(adSize: GADAdSizeBanner)
+    func makeUIView(context: Context) -> BannerView {
+        let banner = BannerView(adSize: AdSizeBanner)
         banner.adUnitID        = adUnitID
         banner.delegate        = context.coordinator
-        // rootViewController 設定移至 Coordinator.rootVC（lazy）
-        // makeUIView 時 window 可能尚未 active，不在此處賦值，
-        // 由 Coordinator.bannerViewWillPresentScreen(_:) 時已確保 window ready
         banner.rootViewController = context.coordinator.rootVC
-        banner.load(GADRequest())
+        banner.load(Request())
         return banner
     }
 
-    func updateUIView(_ uiView: GADBannerView, context: Context) {
-        // rootVC 可能在 makeUIView 時為 nil（window 尚未 active），在 update 補賦值
+    func updateUIView(_ uiView: BannerView, context: Context) {
         if uiView.rootViewController == nil {
             uiView.rootViewController = context.coordinator.rootVC
         }
@@ -50,19 +46,9 @@ struct AdBannerView: UIViewRepresentable {
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
-    // MARK: Coordinator
-    //
-    // @MainActor 修正：
-    //   UIApplication.shared 是 MainActor 隔離屬性。
-    //   未標註時 Swift 6 strict concurrency 會報 "main actor-isolated property
-    //   'shared' can not be referenced from a non-isolated context" 錯誤。
     @MainActor
-    final class Coordinator: NSObject, GADBannerViewDelegate {
+    final class Coordinator: NSObject, BannerViewDelegate {
 
-        // MARK: rootVC
-        //
-        // 修正 isKeyWindow（iOS 15 廢棄）→ 改用 UIWindowScene.keyWindow
-        // 同時篩選 foregroundActive scene，確保 window 已完全激活
         var rootVC: UIViewController? {
             UIApplication.shared.connectedScenes
                 .compactMap { $0 as? UIWindowScene }
@@ -71,29 +57,22 @@ struct AdBannerView: UIViewRepresentable {
                 .rootViewController
         }
 
-        // MARK: GADBannerViewDelegate — no-fill / 失敗處理
-        //
-        // 廣告載入失敗（包含 no-fill）時，將 banner 高度收為 0，
-        // 避免在 UI 中留下 50pt 的空白塊。
-        func bannerView(_ bannerView: GADBannerView,
+        func bannerView(_ bannerView: BannerView,
                         didFailToReceiveAdWithError error: Error) {
             print("[AdBanner] Failed: \(error.localizedDescription)")
-            // 收合高度：透過 intrinsicContentSize override 並非最佳，
-            // 此處用 frame 設為 0 並通知父層 SwiftUI 重新佈局
             bannerView.frame.size.height = 0
             bannerView.isHidden = true
         }
 
-        func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
-            // 確保廣告載入成功後高度恢復（例如從失敗狀態重試成功）
+        func bannerViewDidReceiveAd(_ bannerView: BannerView) {
             bannerView.isHidden = false
-            bannerView.frame.size.height = GADAdSizeBanner.size.height
+            bannerView.frame.size.height = AdSizeBanner.size.height
         }
     }
 }
 
-/// Standard banner 高度（GADAdSizeBanner = 50pt）
-let adBannerHeight: CGFloat = GADAdSizeBanner.size.height
+/// Standard banner 高度（AdSizeBanner = 50pt）
+let adBannerHeight: CGFloat = AdSizeBanner.size.height
 
 #endif // os(iOS)
 
@@ -138,14 +117,14 @@ let adBannerHeight: CGFloat = 50
 // ⚠️ 上線前將下方測試 ID 替換為 AdMob console 核發的正式 Ad Unit ID
 
 enum AdUnitID {
-    /// 日誌主畫面底部 banner（主要曝光版位；Google 公開測試 ID，上線前換成正式 ID）
-    static let logbook       = "ca-app-pub-3940256099942544/2934735716"
-    /// 設定頁底部 banner（Google 公開測試 ID，上線前換成正式 ID）
-    static let settings      = "ca-app-pub-3940256099942544/2934735716"
-    /// Import 頁 banner（Google 公開測試 ID，上線前換成正式 ID）
-    static let importBanner  = "ca-app-pub-3940256099942544/2934735716"
-    /// 地圖空狀態 inline ad（Google 公開測試 ID，上線前換成正式 ID）
-    static let mapEmptyState = "ca-app-pub-3940256099942544/2934735716"
+    /// 日誌主畫面底部 banner
+    static let logbook       = "ca-app-pub-9582822701117167/7912367341"
+    /// 設定頁底部 banner
+    static let settings      = "ca-app-pub-9582822701117167/1893753901"
+    /// Import 頁 banner
+    static let importBanner  = "ca-app-pub-9582822701117167/4782955369"
+    /// 地圖空狀態 inline ad
+    static let mapEmptyState = "ca-app-pub-9582822701117167/3449692393"
 }
 
 // MARK: - PremiumAwareAdBanner
@@ -164,6 +143,7 @@ struct PremiumAwareAdBanner: View {
         #if os(iOS)
         if !purchase.isPremium {
             AdBannerView(adUnitID: adUnitID)
+                .frame(height: adBannerHeight)  // 固定高度，防止 BannerView 壓縮上方內容
                 .accessibilityHidden(true)  // 廣告對 VoiceOver 不具意義
         }
         #endif
