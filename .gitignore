@@ -7,3 +7,7 @@ DerivedData/
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 .netrc
 品牌跨平台色彩系統計畫.md
+
+# 敏感設定文件
+Docs/ADMOB_IAP_SETUP.md
+Docs/SIGNING_AND_CERTS.md
