@@ -154,7 +154,7 @@ MainTabView (NavigationSplitView)
 ## 多語系
 
 - 使用 `Localizable.xcstrings`（String Catalog，Xcode 15+）
-- 三語言：繁體中文（`zh-Hant`）、簡體中文（`zh-Hans`）、英文（`en`）
+- 18 種語言：`zh-Hant`、`zh-Hans`、`en`、`en-GB`、`ja`、`ko`、`fr`、`de`、`es`、`it`、`nl`、`pt-PT`、`id`、`ms`、`vi`、`th`、`el`、`hr`
 - 語言切換：導向系統 iOS Settings（App Language）
 - 空字串問題根治：改用 `Text(verbatim: "")` 避免產生空 key
 

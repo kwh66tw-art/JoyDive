@@ -7,7 +7,7 @@
 - **日誌管理**：新增、編輯、刪除潛水記錄，含深度剖面、氣體混合、環境資料
 - **多格式匯入**：支援 UDDF、Subsurface XML/SSRF、Subsurface CSV、Suunto JSON、Garmin FIT（via FitFileParser）、Shearwater、Seabear CSV、Oceanic 等格式
 - **GPS 地圖**：CoreLocation 記錄潛點座標，MapKit 地圖顯示與聚類
-- **多語系**：繁體中文、簡體中文、英文（`Localizable.xcstrings`）
+- **多語系**：18 種語言（繁中、簡中、英文、日文、韓文、法文、德文、西班牙文、義大利文、荷蘭文、葡萄牙文、印尼文、馬來文、越南文、泰文、希臘文、克羅埃西亞文、英國英文）
 - **廣告 & Premium**：AdMob Banner 廣告，StoreKit IAP $1.99 移除廣告
 - **雙平台**：iOS/iPadOS TabView + macOS NavigationSplitView 共用大部分 View
 
@@ -51,7 +51,7 @@ JD2-Logbook/                        ← 本 repo 根目錄
 │   │   │   └── Shared/             ← 共用元件（AdBannerView、Color 擴展等）
 │   │   ├── Services/
 │   │   │   └── PurchaseManager.swift
-│   │   ├── Localizable.xcstrings   ← 繁中 / 簡中 / 英文三語言
+│   │   ├── Localizable.xcstrings   ← 18 種語言本地化
 │   │   └── JD2_LogbookApp.swift    ← App 進入點
 │   ├── JD2Core/                    ← 核心業務邏輯（解析器、模型、演算法）
 │   │   ├── Models/                 ← DiveLog、GasMix、DiveEnvironment（SwiftData）

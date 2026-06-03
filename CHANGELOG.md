@@ -16,7 +16,7 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - GPS 座標記錄 + MapKit 地圖顯示（潛點聚類）
 - AdMob Banner 廣告（Logbook / Import / Settings / Map 空狀態）
 - StoreKit IAP「Remove Ads $1.99」
-- 三語言本地化（繁體中文 / 簡體中文 / 英文）
+- 18 種語言本地化（繁中、簡中、英文、日文、韓文、法文、德文、西班牙文、義大利文、荷蘭文、葡萄牙文、印尼文、馬來文、越南文、泰文、希臘文、克羅埃西亞文、英國英文）
 - iOS + macOS 雙平台支援
 - Bühlmann ZHL-16C 減壓演算法
 - WCAG 2.1 AA 可達性合規
@@ -45,7 +45,7 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 新增 .gitignore
 
 ### 2026-05-xx — i18n 實裝（commit 84b7b47 / 682087c）
-- 匯入 V7.2 三語言校訂版
+- 匯入 V7.2 多語系校訂版
 - 中文用詞統一（繁中 / 簡中 區分）
 - 修正 navigationTitle("") 空字串 key 問題
 
