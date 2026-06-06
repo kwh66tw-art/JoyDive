@@ -41,6 +41,14 @@ final class SuuntoJSONParserTests: XCTestCase {
     private var nauticPath:  String { suuntoPath("suunto_nautic_sidemount.json") }
     private var oceanPath:   String { suuntoPath("suunto_ocean_air.json") }
 
+    /// 測試檔案不存在時優雅跳過（TestFiles 不在 repo 中時避免 CI 失敗）
+    private func skipIfMissing(_ path: String) throws {
+        try XCTSkipUnless(
+            FileManager.default.fileExists(atPath: path),
+            "測試檔案不存在，略過：\((path as NSString).lastPathComponent)"
+        )
+    }
+
     // MARK: - 測試 1：格式偵測 — 副檔名過濾
 
     func testRejectNonJSONExtension() {
@@ -74,6 +82,7 @@ final class SuuntoJSONParserTests: XCTestCase {
     // MARK: - 測試 3：canHandle — 真實檔案
 
     func testCanHandleRealNitroxFile() throws {
+        try skipIfMissing(nitroxPath)
         let parser = SuuntoJSONParser()
         XCTAssertTrue(parser.canHandle(filePath: nitroxPath),
                       "suunto_eon_core_nitrox.json 應被接受")
@@ -82,6 +91,7 @@ final class SuuntoJSONParserTests: XCTestCase {
     // MARK: - 測試 4：完整解析 — suunto_eon_core_nitrox.json
 
     func testParseNitroxFile() throws {
+        try skipIfMissing(nitroxPath)
         let data = try Data(contentsOf: URL(fileURLWithPath: nitroxPath))
         let dives = try SuuntoJSONParser.parseJSONData(data)
 
@@ -110,6 +120,7 @@ final class SuuntoJSONParserTests: XCTestCase {
     // MARK: - 測試 5：完整解析 — suunto_nautic_sidemount.json
 
     func testParseNauticSidemountFile() throws {
+        try skipIfMissing(nauticPath)
         let data = try Data(contentsOf: URL(fileURLWithPath: nauticPath))
         let dives = try SuuntoJSONParser.parseJSONData(data)
 
@@ -136,6 +147,7 @@ final class SuuntoJSONParserTests: XCTestCase {
     // MARK: - 測試 6：完整解析 — suunto_ocean_air.json
 
     func testParseOceanAirFile() throws {
+        try skipIfMissing(oceanPath)
         let data = try Data(contentsOf: URL(fileURLWithPath: oceanPath))
         let dives = try SuuntoJSONParser.parseJSONData(data)
 
@@ -190,6 +202,7 @@ final class SuuntoJSONParserTests: XCTestCase {
     // MARK: - 測試 8：DateTime 正確映射至 DiveLog
 
     func testNitroxFileDateTimeUTC() throws {
+        try skipIfMissing(nitroxPath)
         let data = try Data(contentsOf: URL(fileURLWithPath: nitroxPath))
         let dive = try SuuntoJSONParser.parseJSONData(data).first!
 
@@ -207,6 +220,7 @@ final class SuuntoJSONParserTests: XCTestCase {
     // MARK: - 測試 9：氣體 — Nitrox JSON 格式
 
     func testGasMixNitroxJSON() throws {
+        try skipIfMissing(nitroxPath)
         let data = try Data(contentsOf: URL(fileURLWithPath: nitroxPath))
         let dive = try SuuntoJSONParser.parseJSONData(data).first!
         // 確認 gasMixJSON 可被 JSONSerialization 解析並含正確 fO2
@@ -248,6 +262,7 @@ final class SuuntoJSONParserTests: XCTestCase {
     // MARK: - 測試 12：sourceFormat
 
     func testSourceFormatIsSuuntoJSON() throws {
+        try skipIfMissing(nitroxPath)
         let data = try Data(contentsOf: URL(fileURLWithPath: nitroxPath))
         let dive = try SuuntoJSONParser.parseJSONData(data).first!
         XCTAssertEqual(dive.sourceFormat, "suunto-json")
@@ -256,6 +271,7 @@ final class SuuntoJSONParserTests: XCTestCase {
     // MARK: - 測試 13：parse(from:) — 真實檔案路徑
 
     func testParseFromFilePathNitrox() throws {
+        try skipIfMissing(nitroxPath)
         let parser = SuuntoJSONParser()
         let dives = try parser.parse(from: nitroxPath)
         XCTAssertEqual(dives.count, 1)
@@ -334,7 +350,8 @@ final class SuuntoJSONParserTests: XCTestCase {
 
     // MARK: - 測試 20：工廠自動偵測
 
-    func testFactorySelectsSuuntoJSONParser() {
+    func testFactorySelectsSuuntoJSONParser() throws {
+        try skipIfMissing(nitroxPath)
         let parser = DiveLogImporterFactory.selectImporter(for: nitroxPath)
         XCTAssertNotNil(parser, "Factory 應能識別 .json Suunto 檔案")
         XCTAssertEqual(parser?.format, .suunto, "應選擇 suunto 解析器")
@@ -343,6 +360,8 @@ final class SuuntoJSONParserTests: XCTestCase {
     // MARK: - 測試 21：Duration 浮點四捨五入
 
     func testDurationFloatRounding() throws {
+        try skipIfMissing(nauticPath)
+        try skipIfMissing(oceanPath)
         // 2010.962 → 2011（nautic sidemount）
         let nautData = try Data(contentsOf: URL(fileURLWithPath: nauticPath))
         let nautDive = try SuuntoJSONParser.parseJSONData(nautData).first!

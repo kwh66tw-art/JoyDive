@@ -40,7 +40,7 @@ enum GasMix: Codable, Hashable, CustomStringConvertible {
         }
     }
 
-    var description: String { displayName }
+    nonisolated var description: String { displayName }
 
     // MARK: - MOD 計算
     /// 最大操作深度（m）
@@ -83,7 +83,7 @@ enum GasMix: Codable, Hashable, CustomStringConvertible {
         let fHe: Double
     }
 
-    init(from decoder: Decoder) throws {
+    nonisolated init(from decoder: Decoder) throws {
         // 優先嘗試 bare string（air 格式）
         if let str = try? decoder.singleValueContainer().decode(String.self) {
             guard str == "air" else {
@@ -110,7 +110,7 @@ enum GasMix: Codable, Hashable, CustomStringConvertible {
         }
     }
 
-    func encode(to encoder: Encoder) throws {
+    nonisolated func encode(to encoder: Encoder) throws {
         switch self {
         case .air:
             var c = encoder.singleValueContainer()

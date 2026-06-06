@@ -4,5 +4,12 @@
 <dict>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-9582822701117167~2224926394</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsArbitraryLoadsForMedia</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

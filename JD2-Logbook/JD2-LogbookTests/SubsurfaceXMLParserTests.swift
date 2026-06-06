@@ -261,10 +261,10 @@ final class SubsurfaceXMLParserTests: XCTestCase {
     }
 
     func testParseNoDiveSite_UsesUnknown() throws {
-        // 無 divesiteid → "Unknown Location"
+        // 無 divesiteid → 空字串（View 層顯示本地化「未知地點」）
         let logs = try SubsurfaceXMLParser.parseXMLData(
             minimalXML().data(using: .utf8)!)
-        XCTAssertEqual(logs[0].location, "Unknown Location")
+        XCTAssertEqual(logs[0].location, "")  // importer 輸出空字串，View 層負責顯示本地化「未知地點」
         XCTAssertNil(logs[0].latitude)
         XCTAssertNil(logs[0].longitude)
     }
@@ -404,7 +404,7 @@ final class SubsurfaceXMLParserTests: XCTestCase {
         XCTAssertEqual(log.waterTemperature, 29.1, accuracy: 0.1)
 
         // ── 地點（無 divesites）──
-        XCTAssertEqual(log.location, "Unknown Location")
+        XCTAssertEqual(log.location, "")  // importer 輸出空字串，View 層負責顯示本地化「未知地點」
         XCTAssertNil(log.latitude)
         XCTAssertNil(log.longitude)
 
@@ -487,7 +487,7 @@ final class SubsurfaceXMLParserTests: XCTestCase {
         XCTAssertEqual(log.waterTemperature, 28.95, accuracy: 0.05)
 
         // ── 地點（無 divesites）──
-        XCTAssertEqual(log.location, "Unknown Location")
+        XCTAssertEqual(log.location, "")  // importer 輸出空字串，View 層負責顯示本地化「未知地點」
 
         // ── 氣體  cylinder 無 o2 → Air ──
         XCTAssertEqual(log.gasMixJSON, "\"air\"")

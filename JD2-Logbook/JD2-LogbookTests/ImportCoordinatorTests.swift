@@ -244,15 +244,19 @@ final class ImportCoordinatorTests: XCTestCase {
         XCTAssertEqual(importer?.format, .uddf)
     }
 
-    func testFactorySelectsCSVParser() {
+    func testFactorySelectsCSVParser() throws {
         let path = testFilePath("CSV/test41.csv")
+        try XCTSkipUnless(FileManager.default.fileExists(atPath: path),
+                          "測試檔案不存在，略過：test41.csv")
         let importer = DiveLogImporterFactory.selectImporter(for: path)
         XCTAssertNotNil(importer, "應找到 CSV 解析器")
         XCTAssertEqual(importer?.format, .csv)
     }
 
-    func testFactorySelectsSuuntoJSONParser() {
+    func testFactorySelectsSuuntoJSONParser() throws {
         let path = testFilePath("Suunto/suunto_eon_core_nitrox.json")
+        try XCTSkipUnless(FileManager.default.fileExists(atPath: path),
+                          "測試檔案不存在，略過：suunto_eon_core_nitrox.json")
         let importer = DiveLogImporterFactory.selectImporter(for: path)
         XCTAssertNotNil(importer, "應找到 Suunto JSON 解析器")
         XCTAssertEqual(importer?.format, .suunto)

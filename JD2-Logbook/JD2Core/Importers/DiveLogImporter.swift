@@ -1496,14 +1496,15 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
             else { continue }
 
             // ── 地點解析 ─────────────────────────────────────
-            var locationName = "Unknown Location"
+            // 注意：找不到地點時保持空字串，讓 View 層透過 String(localized:) 顯示本地化文字
+            var locationName = ""
             var lat: Double?
             var lon: Double?
 
             // 優先：informationbeforedive 中的 link ref → 對應 sites 字典
             for ref in dive.siteRefs {
                 if let site = sites[ref] {
-                    locationName = site.name ?? site.geographyLocation ?? "Unknown Location"
+                    locationName = site.name ?? site.geographyLocation ?? ""
                     lat = site.latitude
                     lon = site.longitude
                     break
@@ -1511,9 +1512,9 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
             }
 
             // 備用：若無 link ref 且僅有一個 site，直接使用
-            if locationName == "Unknown Location", sites.count == 1,
+            if locationName.isEmpty, sites.count == 1,
                let sole = sites.values.first {
-                locationName = sole.name ?? sole.geographyLocation ?? "Unknown Location"
+                locationName = sole.name ?? sole.geographyLocation ?? ""
                 lat = sole.latitude
                 lon = sole.longitude
             }
@@ -1838,11 +1839,12 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
             let temp = dive.diveTemperature ?? dive.computerTemperature ?? 20.0
 
             // 地點與 GPS
-            var locationName = "Unknown Location"
+            // 注意：找不到地點時保持空字串，讓 View 層透過 String(localized:) 顯示本地化文字
+            var locationName = ""
             var lat: Double?
             var lon: Double?
             if let siteId = dive.diveSiteId, let site = sites[siteId] {
-                locationName = site.name ?? "Unknown Location"
+                locationName = site.name ?? ""
                 lat = site.latitude
                 lon = site.longitude
             }

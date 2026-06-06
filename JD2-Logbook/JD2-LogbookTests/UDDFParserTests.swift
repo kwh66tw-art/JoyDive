@@ -253,7 +253,7 @@ final class UDDFParserTests: XCTestCase {
         """
         let logs = try UDDFParser.parseXMLData(xml.data(using: .utf8)!)
         XCTAssertEqual(logs.count, 1)
-        XCTAssertEqual(logs[0].location, "Unknown Location")
+        XCTAssertEqual(logs[0].location, "")  // importer 輸出空字串，View 層負責顯示本地化「未知地點」
     }
 
     func testParseSingleSiteNoLinkRef_UsesOnlySite() throws {

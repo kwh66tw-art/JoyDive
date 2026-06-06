@@ -95,39 +95,40 @@ struct DiveRowView: View {
                 .font(.subheadline.weight(.medium))
                 .lineLimit(1)
 
-            // 主要數據：深度 + 時間（單行固定，避免窄欄時被擠成多行）
+            // 主要數據：深度 + 時間
+            // 注意：使用明確 HStack{Image+Text} 取代 Label()，
+            // 避免 Label 在 NavigationLink+List 環境下只渲染 icon 不渲染 title 的 SwiftUI 渲染問題
             HStack(spacing: 14) {
-                Label(
-                    String(format: "%.1f m", dive.maxDepth),
-                    systemImage: "arrow.down.to.line"
-                )
+                HStack(spacing: 4) {
+                    Image(systemName: "arrow.down.to.line")
+                    Text(String(format: "%.1f m", dive.maxDepth))
+                }
                 .font(.callout.bold())
                 .foregroundStyle(.tint)
                 .lineLimit(1)
-                .fixedSize(horizontal: true, vertical: false)
 
-                Label(durationText, systemImage: "timer")
-                    .font(.callout)
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
+                HStack(spacing: 4) {
+                    Image(systemName: "timer")
+                    Text(durationText)
+                }
+                .font(.callout)
+                .foregroundStyle(.primary)
+                .lineLimit(1)
             }
 
-            // 次要數據：水溫 + 氣體（單行固定）
+            // 次要數據：水溫 + 氣體
             HStack(spacing: 10) {
-                Label(
-                    String(format: "%.0f°C", dive.waterTemperature),
-                    systemImage: "thermometer.medium"
-                )
+                HStack(spacing: 4) {
+                    Image(systemName: "thermometer.medium")
+                    Text(String(format: "%.0f°C", dive.waterTemperature))
+                }
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
-                .fixedSize(horizontal: true, vertical: false)
 
                 Text(gasMixText)
                     .font(.caption.weight(.medium))
                     .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
                     .padding(.horizontal, 7)
                     .padding(.vertical, 2)
                     .background(Color.accentColor.opacity(0.15))
