@@ -466,7 +466,8 @@ struct SubsurfaceCSVParser: DiveLogImporter {
         let depthStr = row[4].trimmingCharacters(in: .whitespaces)
         guard let maxDepth = Double(depthStr), maxDepth >= 0 else { return nil }
 
-        // buddy（第 6 欄）、suit（第 7 欄）、notes（第 8 欄）
+        // avgdepth（第 5 欄）、buddy（第 6 欄）、suit（第 7 欄）、notes（第 8 欄）
+        let avgDepthStr = row.count > 5 ? row[5].trimmingCharacters(in: .whitespaces) : ""
         let buddy = row.count > 6 ? row[6].trimmingCharacters(in: .whitespaces) : ""
         let suit  = row.count > 7 ? row[7].trimmingCharacters(in: .whitespaces) : ""
         let notes = row.count > 8 ? row[8] : ""
@@ -488,8 +489,11 @@ struct SubsurfaceCSVParser: DiveLogImporter {
         // 備註（原始 notes + buddy 附加，有空行分隔並加「匯入資料」標頭）
         var noteParts: [String] = []
         if !notes.isEmpty { noteParts.append(notes) }
-        if !buddy.isEmpty {
-            noteParts.append("\n— Import data —\nBuddy: \(buddy)")
+        var extras: [String] = []
+        if !buddy.isEmpty { extras.append("Buddy: \(buddy)") }
+        if let avg = Double(avgDepthStr), avg > 0 { extras.append(String(format: "Avg depth: %.1f m", avg)) }
+        if !extras.isEmpty {
+            noteParts.append("\n— Import data —\n\(extras.joined(separator: " | "))")
         }
         dive.notes = noteParts.joined(separator: "\n")
 
@@ -664,6 +668,10 @@ struct GarminDescentParser: DiveLogImporter {
             // gasMixJSON：取第一個 dive_gas；無則預設 Air
             let gasMixJSON = buildGasMixJSON(from: diveGases.first)
 
+            // 平均深度：優先 dive_summary avg_depth，次選 session avg_depth
+            let avgDepth: Double? = summary?.interpretedField(key: "avg_depth")?.valueUnit?.value
+                ?? session.interpretedField(key: "avg_depth")?.valueUnit?.value
+
             // 水溫：優先 session avg_temperature；其次從 record messages 取平均值；最後預設 15.0°C
             let waterTemperature: Double
             if let temp = session.interpretedField(key: "avg_temperature")?.valueUnit?.value {
@@ -689,6 +697,11 @@ struct GarminDescentParser: DiveLogImporter {
                 waterTemperature: waterTemperature
             )
             dive.sourceFormat = "garmin"
+
+            // 匯入附加資料 → notes
+            if let avg = avgDepth {
+                dive.notes = "\n— Import data —\nAvg depth: \(String(format: "%.1f m", avg))"
+            }
 
             // 深度剖面樣本：從 record messages 取 depth + timestamp
             dive.profileSamplesJSON = buildProfileSamplesJSON(from: recordMessages, startDate: startDate)
@@ -1259,6 +1272,10 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
     private var inWaypoint      = false
     private var inNotes         = false
 
+    // 裝備（equipmentused divecomputer）
+    private var inEquipmentUsed     = false
+    private var inEquipmentDiveComp = false
+
     // waypoint 暫存（每個樣本點獨立收集後 append）
     private var waypointTime:  Double?
     private var waypointDepth: Double?
@@ -1303,12 +1320,14 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
             hadDiveElements = true
             currentDive     = UDDFParsedDive()
             // 重置所有潛水子狀態（避免前一次未正常關閉的殘留）
-            inInfoBefore = false
-            inInfoAfter  = false
-            inTankData   = false
-            inSamples    = false
-            inWaypoint   = false
-            inNotes      = false
+            inInfoBefore        = false
+            inInfoAfter         = false
+            inTankData          = false
+            inSamples           = false
+            inWaypoint          = false
+            inNotes             = false
+            inEquipmentUsed     = false
+            inEquipmentDiveComp = false
 
         case "informationbeforedive" where currentDive != nil:
             inInfoBefore = true
@@ -1327,6 +1346,12 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
 
         case "notes" where inInfoAfter:
             inNotes = true
+
+        case "equipmentused" where currentDive != nil:
+            inEquipmentUsed = true
+
+        case "divecomputer" where inEquipmentUsed:
+            inEquipmentDiveComp = true
 
         // ── 連結元素（自閉合）──────────────────────────────────
         case "link":
@@ -1396,6 +1421,25 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
             // 條件 !inGasDefs 防止 <gasdefinitions> 中氣體名稱污染（理論上不會同時為真，保險起見）
             if !text.isEmpty { currentSite.name = text }
 
+        case "name" where inEquipmentDiveComp:
+            // <equipmentused>/<divecomputer>/<name>：裝置型號
+            if currentDive?.deviceModel == nil, !text.isEmpty {
+                currentDive?.deviceModel = text
+            }
+
+        case "serialnumber" where inEquipmentDiveComp:
+            if !text.isEmpty { currentDive?.deviceSerial = text }
+
+        case "firmware" where inEquipmentDiveComp:
+            if !text.isEmpty { currentDive?.deviceFirmware = text }
+
+        case "equipmentused":
+            inEquipmentUsed     = false
+            inEquipmentDiveComp = false
+
+        case "divecomputer" where inEquipmentUsed:
+            inEquipmentDiveComp = false
+
         case "location" where inSiteGeo:
             // <geography>/<location>：地理描述（備用，優先使用 <name>）
             if currentSite.geographyLocation == nil, !text.isEmpty {
@@ -1433,13 +1477,15 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
             if let dive = currentDive {
                 parsedDives.append(dive)
             }
-            currentDive  = nil
-            inInfoBefore = false
-            inInfoAfter  = false
-            inTankData   = false
-            inSamples    = false
-            inWaypoint   = false
-            inNotes      = false
+            currentDive         = nil
+            inInfoBefore        = false
+            inInfoAfter         = false
+            inTankData          = false
+            inSamples           = false
+            inWaypoint          = false
+            inNotes             = false
+            inEquipmentUsed     = false
+            inEquipmentDiveComp = false
 
         case "informationbeforedive":
             inInfoBefore = false
@@ -1490,6 +1536,9 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
 
         case "greatestdepth" where inInfoAfter:
             currentDive?.greatestDepth = Double(text)
+
+        case "averagedepth" where inInfoAfter:
+            currentDive?.averageDepth = Double(text)
 
         case "diveduration" where inInfoAfter:
             // 值為秒數（可能帶小數，如 6240.0）
@@ -1697,6 +1746,13 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
             var extras: [String] = []
             if let b = dive.buddy,  !b.isEmpty { extras.append("Buddy: \(b)") }
             if let nr = dive.diveNumber        { extras.append("Dive #\(nr)") }
+            if let avg = dive.averageDepth     { extras.append(String(format: "Avg depth: %.1f m", avg)) }
+            if let model = dive.deviceModel {
+                var parts = [model]
+                if let sn = dive.deviceSerial   { parts.append("S/N:\(sn)") }
+                if let fw = dive.deviceFirmware { parts.append("FW:\(fw)") }
+                extras.append("Device: \(parts.joined(separator: " "))")
+            }
             if !extras.isEmpty {
                 noteParts.append("\n— Import data —\n\(extras.joined(separator: " | "))")
             }
@@ -1776,6 +1832,10 @@ private struct UDDFParsedDive {
     var buddy:                 String?         // informationbeforedive buddy firstname
     var notes:                 String?
     var samples: [(timeSeconds: Double, depthMeters: Double)] = []   // 深度剖面樣本
+    var averageDepth:          Double?         // informationafterdive averagedepth（公尺）
+    var deviceModel:           String?         // equipmentused divecomputer name
+    var deviceSerial:          String?         // equipmentused divecomputer serialnumber
+    var deviceFirmware:        String?         // equipmentused divecomputer firmware
 }
 
 // MARK: - Double 精確度輔助
@@ -1877,6 +1937,11 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
             if let t = attrs["tags"], !t.isEmpty {
                 dive.tags = t
             }
+            if let avgStr = attrs["avgdepth"] {
+                let cleaned = avgStr.replacingOccurrences(of: "m", with: "")
+                                    .trimmingCharacters(in: .whitespaces)
+                dive.avgDepth = Double(cleaned)
+            }
             currentDive       = dive
             firstCylinderDone = false
 
@@ -1905,6 +1970,9 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
             inDiveComputer = true
             if currentDive?.diveComputerModel == nil {
                 currentDive?.diveComputerModel = attrs["model"]
+            }
+            if currentDive?.diveComputerSerial == nil {
+                currentDive?.diveComputerSerial = attrs["deviceid"] ?? attrs["serial"]
             }
 
         case "depth" where inDiveComputer:
@@ -2073,6 +2141,12 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
             if let b  = dive.buddy,    !b.isEmpty  { extras.append("Buddy: \(b)") }
             if let tg = dive.tags,     !tg.isEmpty { extras.append("Tags: \(tg)") }
             if let nr = dive.diveNumber             { extras.append("Dive #\(nr)") }
+            if let avg = dive.avgDepth              { extras.append(String(format: "Avg depth: %.1f m", avg)) }
+            if let model = dive.diveComputerModel {
+                var parts = [model]
+                if let sn = dive.diveComputerSerial { parts.append("S/N:\(sn)") }
+                extras.append("Device: \(parts.joined(separator: " "))")
+            }
             if !extras.isEmpty {
                 noteParts.append("\n— Import data —\n\(extras.joined(separator: " | "))")
             }
@@ -2170,6 +2244,8 @@ private struct SubsurfaceParsedDive {
     var cylinderEndBar:      Double?   // <cylinder end='50.0 bar'>
     var cylinderSizeL:       Double?   // <cylinder size='12.0 l'>
     var diveComputerModel:   String?
+    var diveComputerSerial: String?   // deviceid or serial attribute on <divecomputer>
+    var avgDepth:            Double?   // avgdepth attribute on <dive>
     var wetsuitRaw:          String?   // <suit>wet, 3mm</suit>
     var weightKg:            Double?   // <weightsystem weight='4.5 kg'>
     var visibility:          Double?   // visibility attribute on <dive>
