@@ -111,7 +111,7 @@ We will update this policy as needed and reflect the change date above.
 
 ## Contact / 聯絡方式
 
-For privacy questions, contact: **[請填入專用聯絡信箱]**  
+For privacy questions, contact: **joydive.app@gmail.com**  
 隱私相關問題請聯絡：**[請填入專用聯絡信箱]**
 
 ---
