@@ -47,6 +47,25 @@
 - [ ] 地圖「回到我的位置」recenter 按鈕
 - [ ] 解析器測試覆蓋率 > 85% 正式驗證
 - [ ] Garmin Connect API JSON（補充 FIT 格式替代方案）
+- [ ] **importExtrasJSON passthrough 欄位**（詳見下方設計說明）
+
+### importExtrasJSON — 設計說明
+
+**背景**：各格式（UDDF、Subsurface XML 等）含有大量 app 沒有對應欄位的資料（如 rating、CNS/OTU、裝置序號、平均深度、減壓 ceiling 等）。v1.0 這些資料在匯入時全部丟棄，未來若實作 export 功能，原始資料無法還原。
+
+**設計方案**：在 `DiveLog` 加入一個欄位：
+```swift
+var importExtrasJSON: String = "{}"
+```
+
+- 匯入時，所有「沒有對應 model 欄位」的原始資料以 key-value 形式 dump 進此 JSON
+- Detail view 加一個可折疊的「原始資料」區塊（預設收合），顯示此 JSON 的內容
+- Export 功能可從此欄位還原完整原始資料
+- notes 欄位維持乾淨，不混入 import 結構化資料
+
+**影響範圍**：DiveLog.swift（+1 欄）、各 importer（新增 extras 寫入）、DiveLogDetailView（新增折疊區塊）
+
+**注意**：此改動需 SwiftData migration（現有用戶升級時自動補空 JSON `{}`，無需手動處理）。
 
 ---
 
