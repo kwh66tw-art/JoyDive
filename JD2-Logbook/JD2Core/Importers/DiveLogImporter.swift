@@ -453,7 +453,9 @@ struct SubsurfaceCSVParser: DiveLogImporter {
         let depthStr = row[4].trimmingCharacters(in: .whitespaces)
         guard let maxDepth = Double(depthStr), maxDepth >= 0 else { return nil }
 
-        // notes（第 8 欄，optional）
+        // buddy（第 6 欄）、suit（第 7 欄）、notes（第 8 欄）
+        let buddy = row.count > 6 ? row[6].trimmingCharacters(in: .whitespaces) : ""
+        let suit  = row.count > 7 ? row[7].trimmingCharacters(in: .whitespaces) : ""
         let notes = row.count > 8 ? row[8] : ""
 
         let dive = DiveLog(
@@ -463,9 +465,21 @@ struct SubsurfaceCSVParser: DiveLogImporter {
             diveTimeSeconds: durationSec
             // gasMixJSON 預設 "\"air\""，waterTemperature 預設 15.0
         )
-        if !notes.isEmpty {
-            dive.update(notes: notes)
+
+        // 防寒衣：從 "wet, 3mm" / "3mm" 提取數字
+        if !suit.isEmpty {
+            let digits = suit.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+            if !digits.isEmpty { dive.wetsuitThickness = digits }
         }
+
+        // 備註（原始 notes + buddy 附加，有空行分隔並加「匯入資料」標頭）
+        var noteParts: [String] = []
+        if !notes.isEmpty { noteParts.append(notes) }
+        if !buddy.isEmpty {
+            noteParts.append("\n— Import data —\nBuddy: \(buddy)")
+        }
+        dive.notes = noteParts.joined(separator: "\n")
+
         dive.sourceFormat = "csv"
         return dive
     }
@@ -1405,8 +1419,19 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
             if !text.isEmpty { currentDive?.dateTimeString = text }
 
         case "airtemperature" where inInfoBefore:
-            // 水面氣溫（Kelvin），作為無 watertemp 時的後備值
-            currentDive?.airTempKelvin = Double(text)
+            // UDDF 規格單位為 Kelvin，但部分廠商（如 ATMOS）直接輸出 Celsius
+            // 若值 < 100 → 視為 Celsius，統一換算回 Kelvin 再存入
+            if let raw = Double(text) {
+                currentDive?.airTempKelvin = raw < 100 ? raw + 273.15 : raw
+            }
+
+        case "firstname" where inInfoBefore:
+            // UDDF buddy 名字（<buddy><firstname>David</firstname>）
+            if let name = currentDive?.buddy {
+                currentDive?.buddy = "\(name) \(text)"  // 多位潛伴
+            } else {
+                currentDive?.buddy = text
+            }
 
         case "greatestdepth" where inInfoAfter:
             currentDive?.greatestDepth = Double(text)
@@ -1418,6 +1443,34 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
         case "lowesttemperature" where inInfoAfter:
             // UDDF 最低水溫（Kelvin）
             currentDive?.lowestTempKelvin = Double(text)
+
+        case "visibility" where inInfoAfter:
+            // UDDF visibility 單位：公尺（整數，如 10）
+            currentDive?.visibility = Double(text)
+
+        case "leadquantity" where inInfoBefore:
+            // 配重（kg）
+            currentDive?.leadQuantityKg = Double(text)
+
+        case "tankpressurebegin" where inTankData:
+            // UDDF 單位：Pascal。若值 > 1000 視為 Pa → 換算成 bar（÷100000）
+            // 值 ≤ 1000 視為廠商直接輸出 bar（非標準）
+            if currentDive?.tankPressureBegin == nil, let raw = Double(text) {
+                currentDive?.tankPressureBegin = raw > 1000 ? raw / 100_000.0 : raw
+            }
+
+        case "tankpressureend" where inTankData:
+            // 同上
+            if currentDive?.tankPressureEnd == nil, let raw = Double(text) {
+                currentDive?.tankPressureEnd = raw > 1000 ? raw / 100_000.0 : raw
+            }
+
+        case "tankvolume" where inTankData:
+            // UDDF 規格：公升（L）；但部分廠商（如 ATMOS）輸出 m³
+            // 值 < 1 視為 m³ → 換算成公升（× 1000）
+            if currentDive?.tankVolumeLitres == nil, let raw = Double(text) {
+                currentDive?.tankVolumeLitres = raw < 1 ? raw * 1000.0 : raw
+            }
 
         // ── 取樣點時間 / 深度（剖面）────────────────────────
         case "divetime" where inWaypoint:
@@ -1562,9 +1615,35 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
                 log.longitude = lon
             }
 
-            if let notes = dive.notes, !notes.isEmpty {
-                log.notes = notes
+            // ── 能見度 ────────────────────────────────────────
+            log.visibility = dive.visibility
+
+            // ── 氣溫（Kelvin → Celsius，僅當與水溫來源不同時才存）──
+            if dive.lowestTempKelvin == nil, dive.waypointMinTempKelvin == nil,
+               let k = dive.airTempKelvin {
+                // airTempKelvin 被用作水溫後備，此時不另存 airTemperature
+            } else if let k = dive.airTempKelvin {
+                log.airTemperature = (k - 273.15).rounded(toDecimalPlaces: 1)
             }
+
+            // ── 裝備 ──────────────────────────────────────────
+            log.weightTotal           = dive.leadQuantityKg
+            log.cylinderStartPressure = dive.tankPressureBegin
+            log.cylinderEndPressure   = dive.tankPressureEnd
+            if let vol = dive.tankVolumeLitres {
+                log.cylinderSize = String(format: "%.0fL", vol)
+            }
+
+            // ── 備註（原始 notes + 匯入附加資料，空行分隔）──────
+            var noteParts: [String] = []
+            if let n = dive.notes, !n.isEmpty { noteParts.append(n) }
+            var extras: [String] = []
+            if let b = dive.buddy,  !b.isEmpty { extras.append("Buddy: \(b)") }
+            if let nr = dive.diveNumber        { extras.append("Dive #\(nr)") }
+            if !extras.isEmpty {
+                noteParts.append("\n— Import data —\n\(extras.joined(separator: " | "))")
+            }
+            log.notes = noteParts.joined(separator: "\n")
 
             // ── 深度剖面 ─────────────────────────────────────
             if !dive.samples.isEmpty {
@@ -1630,8 +1709,14 @@ private struct UDDFParsedDive {
     var greatestDepth:         Double?         // informationafterdive greatestdepth（公尺）
     var diveDuration:          Double?         // informationafterdive diveduration（秒）
     var lowestTempKelvin:      Double?         // informationafterdive lowesttemperature
-    var airTempKelvin:         Double?         // informationbeforedive airtemperature
+    var airTempKelvin:         Double?         // informationbeforedive airtemperature（Kelvin）
     var waypointMinTempKelvin: Double?         // 取樣點最低溫（逐步 min 更新）
+    var visibility:            Double?         // informationafterdive visibility（公尺）
+    var leadQuantityKg:        Double?         // equipmentused leadquantity（配重 kg）
+    var tankPressureBegin:     Double?         // tankdata tankpressurebegin（bar）
+    var tankPressureEnd:       Double?         // tankdata tankpressureend（bar）
+    var tankVolumeLitres:      Double?         // tankdata tankvolume（公升）
+    var buddy:                 String?         // informationbeforedive buddy firstname
     var notes:                 String?
     var samples: [(timeSeconds: Double, depthMeters: Double)] = []   // 深度剖面樣本
 }
@@ -1725,6 +1810,16 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
             dive.timeString   = attrs["time"]
             dive.durationStr  = attrs["duration"]
             dive.diveSiteId   = attrs["divesiteid"]
+            // visibility 與 rating 是 dive 的屬性（整數）
+            if let visStr = attrs["visibility"], let v = Double(visStr) {
+                dive.visibility = v
+            }
+            if let numStr = attrs["number"], let n = Int(numStr) {
+                dive.diveNumber = n
+            }
+            if let t = attrs["tags"], !t.isEmpty {
+                dive.tags = t
+            }
             currentDive       = dive
             firstCylinderDone = false
 
@@ -1736,10 +1831,18 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
                                     .trimmingCharacters(in: .whitespaces)
                 currentDive?.cylinderFO2 = (Double(cleaned) ?? 21.0) / 100.0
             }
+            // 氣瓶規格與壓力
+            if let sizeStr = attrs["size"] { currentDive?.cylinderSizeL = parseMeters(sizeStr) }
+            if let startStr = attrs["start"] { currentDive?.cylinderStartBar = parseBar(startStr) }
+            if let endStr   = attrs["end"]   { currentDive?.cylinderEndBar   = parseBar(endStr) }
 
         // 潛水層級溫度（優先於電腦內溫度）
         case "divetemperature" where currentDive != nil:
             if let s = attrs["water"] { currentDive?.diveTemperature = parseTemp(s) }
+
+        // 水面氣壓（barometric，用於高海拔計算）
+        case "surface" where currentDive != nil:
+            if let s = attrs["pressure"] { currentDive?.airPressureBar = parseBar(s) }
 
         case "divecomputer" where currentDive != nil:
             inDiveComputer = true
@@ -1750,13 +1853,25 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
         case "depth" where inDiveComputer:
             if let s = attrs["max"] { currentDive?.maxDepth = parseMeters(s) }
 
-        // 電腦層級溫度（次要來源）
+        // 電腦層級溫度（次要來源）+ 氣溫
         case "temperature" where inDiveComputer:
             if let s = attrs["water"] { currentDive?.computerTemperature = parseTemp(s) }
+            if let s = attrs["air"]   { currentDive?.airTemperatureCelsius = parseTemp(s) }
+
+        // 配重
+        case "weightsystem" where currentDive != nil:
+            if let s = attrs["weight"] {
+                // "4.536 kg" → Double
+                let val = s.replacingOccurrences(of: "kg", with: "")
+                           .trimmingCharacters(in: .whitespaces)
+                if let kg = Double(val) {
+                    let existing = currentDive?.weightKg ?? 0
+                    currentDive?.weightKg = existing + kg
+                }
+            }
 
         case "sample" where currentDive != nil && inDiveComputer:
             // <sample time='0:10 min' depth='4.07 m' .../>
-            // 同一時間點出現兩次，buildDiveLogs 去重
             if let timeStr  = attrs["time"],
                let depthStr = attrs["depth"],
                let t = parseTimeToSeconds(timeStr),
@@ -1808,6 +1923,15 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
 
         case "divecomputer":
             inDiveComputer = false
+
+        case "suit" where currentDive != nil:
+            // <suit>wet, 3mm</suit> → 嘗試提取數字部分作為 wetsuitThickness
+            let raw = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !raw.isEmpty { currentDive?.wetsuitRaw = raw }
+
+        case "buddy" where currentDive != nil:
+            let raw = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !raw.isEmpty { currentDive?.buddy = raw }
 
         case "notes":
             currentDive?.notes = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1862,11 +1986,40 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
                 waterTemperature: temp
             )
             log.sourceFormat = "Subsurface"
-            log.notes        = dive.notes ?? ""
             if let lat, let lon {
                 log.latitude  = lat
                 log.longitude = lon
             }
+
+            // ── 環境資料 ──────────────────────────────────────
+            log.visibility      = dive.visibility
+            log.airTemperature  = dive.airTemperatureCelsius
+            if let p = dive.airPressureBar { log.surfacePressureBar = p }
+
+            // ── 裝備 ──────────────────────────────────────────
+            if let kg = dive.weightKg           { log.weightTotal           = kg }
+            if let sp = dive.cylinderStartBar   { log.cylinderStartPressure = sp }
+            if let ep = dive.cylinderEndBar     { log.cylinderEndPressure   = ep }
+            if let l  = dive.cylinderSizeL      { log.cylinderSize          = String(format: "%.0fL", l) }
+
+            // 防寒衣：從 "wet, 3mm" / "dry, 5mm" 提取數字
+            if let raw = dive.wetsuitRaw {
+                let digits = raw.components(separatedBy: CharacterSet.decimalDigits.inverted)
+                    .joined()
+                if !digits.isEmpty { log.wetsuitThickness = digits }
+            }
+
+            // ── 備註（原始 notes + 匯入附加資料，空行分隔）──────
+            var noteParts: [String] = []
+            if let n = dive.notes, !n.isEmpty { noteParts.append(n) }
+            var extras: [String] = []
+            if let b  = dive.buddy,    !b.isEmpty  { extras.append("Buddy: \(b)") }
+            if let tg = dive.tags,     !tg.isEmpty { extras.append("Tags: \(tg)") }
+            if let nr = dive.diveNumber             { extras.append("Dive #\(nr)") }
+            if !extras.isEmpty {
+                noteParts.append("\n— Import data —\n\(extras.joined(separator: " | "))")
+            }
+            log.notes = noteParts.joined(separator: "\n")
 
             // 剖面樣本：依時間去重（同一時間點出現兩次），排序後 JSON encode
             var seen = Set<Double>()
@@ -1891,6 +2044,11 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
     private func parseTemp(_ str: String) -> Double? {
         // "29.1 C" 或 "29.1C"
         Double(str.replacingOccurrences(of: "C", with: "").trimmingCharacters(in: .whitespaces))
+    }
+
+    private func parseBar(_ str: String) -> Double? {
+        // "1.031 bar" 或 "200.0 bar"
+        Double(str.replacingOccurrences(of: "bar", with: "").trimmingCharacters(in: .whitespaces))
     }
 
     private func parseMeters(_ str: String) -> Double? {
@@ -1949,8 +2107,19 @@ private struct SubsurfaceParsedDive {
     var maxDepth:            Double?
     var diveTemperature:     Double?   // <divetemperature> — 優先
     var computerTemperature: Double?   // <divecomputer>/<temperature> — 次要
+    var airTemperatureCelsius: Double? // <temperature air='X.X C'>
     var cylinderFO2:         Double?   // nil = air
+    var cylinderStartBar:    Double?   // <cylinder start='200.0 bar'>
+    var cylinderEndBar:      Double?   // <cylinder end='50.0 bar'>
+    var cylinderSizeL:       Double?   // <cylinder size='12.0 l'>
     var diveComputerModel:   String?
+    var wetsuitRaw:          String?   // <suit>wet, 3mm</suit>
+    var weightKg:            Double?   // <weightsystem weight='4.5 kg'>
+    var visibility:          Double?   // visibility attribute on <dive>
+    var airPressureBar:      Double?   // <surface pressure='1.031 bar'>
+    var buddy:               String?   // <buddy>
+    var diveNumber:          Int?      // number attribute on <dive>
+    var tags:                String?   // tags attribute on <dive>
     var notes:               String?
     /// 原始樣本（含重複時間點，buildDiveLogs 時去重）
     var samples:             [(timeSeconds: Double, depthMeters: Double)] = []

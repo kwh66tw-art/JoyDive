@@ -65,20 +65,20 @@ final class DiveLog {
 
     // MARK: - 環境與條件詳細資訊
 
-    /// 天氣狀況: "sunny", "cloudy", "rainy"
-    var weather: String = "clear"
+    /// 天氣狀況: "sunny", "cloudy", "rainy"（nil = 未記錄，匯入資料通常無此欄位）
+    var weather: String?
 
-    /// 氣溫（攝氏度）
-    var airTemperature: Double = 25.0
+    /// 氣溫（攝氏度，nil = 未記錄）
+    var airTemperature: Double?
 
-    /// 水面狀況: "calm", "slight", "moderate", "rough"
-    var surfaceCondition: String = "calm"
+    /// 水面狀況: "calm", "slight", "moderate", "rough"（nil = 未記錄）
+    var surfaceCondition: String?
 
-    /// 水流強度: "none", "slight", "moderate", "strong"
-    var waterflow: String = "none"
+    /// 水流強度: "none", "slight", "moderate", "strong"（nil = 未記錄）
+    var waterflow: String?
 
-    /// 能見度（公尺）
-    var visibility: Double = 12.0
+    /// 能見度（公尺，nil = 未記錄）
+    var visibility: Double?
 
     // MARK: - 時間詳細資訊
 

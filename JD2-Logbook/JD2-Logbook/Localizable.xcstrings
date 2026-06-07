@@ -1986,6 +1986,9 @@
         }
       }
     },
+    "Air Temperature: Not recorded" : {
+
+    },
     "AL100 (14L)" : {
 
     },
@@ -12295,6 +12298,9 @@
         }
       }
     },
+    "Not Recorded" : {
+
+    },
     "Notes" : {
       "comment" : "Dive detail section / field label",
       "localizations" : {
@@ -21002,6 +21008,9 @@
           }
         }
       }
+    },
+    "Visibility: Not recorded" : {
+
     },
     "Water Flow" : {
       "localizations" : {
