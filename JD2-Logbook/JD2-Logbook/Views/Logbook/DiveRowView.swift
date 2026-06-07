@@ -71,17 +71,38 @@ struct DiveRowView: View {
 
     // MARK: - Sub-views
 
+    /// 縮寫月份語系：
+    /// - CJK（中/日/韓）：年月日習慣，「3月」「3월」提供文化標記
+    /// - English：M/D/Y 與 D/M/Y 習慣混用，「Mar」消除數字歧義
+    /// - Thai：有自己月份縮寫（ม.ค. / ก.พ. 等），字短不折行，保留本地習慣
+    /// - 其餘（歐洲、越南等）：日/月/年習慣，純數字已足夠清楚
+    private var useAbbreviatedMonth: Bool {
+        let code = Locale.current.language.languageCode?.identifier ?? ""
+        return ["zh", "ja", "ko", "en", "th"].contains(code)
+    }
+
     private var dateBlock: some View {
         VStack(spacing: 1) {
-            Text(dive.dateTime, format: .dateTime.day())
+            // 純數字日期，避免 CJK「日」/「일」後綴在 46pt 框內折行
+            Text(String(Calendar.current.component(.day, from: dive.dateTime)))
                 .font(.title2.bold())
                 .monospacedDigit()
 
-            Text(dive.dateTime, format: .dateTime.month(.abbreviated))
-                .font(.caption.uppercaseSmallCaps())
-                .foregroundStyle(.secondary)
+            // CJK + 英文：縮寫月份；其他語系：純數字
+            if useAbbreviatedMonth {
+                Text(dive.dateTime, format: .dateTime.month(.abbreviated))
+                    .font(.caption.uppercaseSmallCaps())
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+            } else {
+                Text(String(Calendar.current.component(.month, from: dive.dateTime)))
+                    .font(.caption.uppercaseSmallCaps())
+                    .foregroundStyle(.secondary)
+            }
 
-            Text(dive.dateTime, format: .dateTime.year())
+            // 純數字年份，避免各語系「年」後綴折行
+            Text(String(Calendar.current.component(.year, from: dive.dateTime)))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }

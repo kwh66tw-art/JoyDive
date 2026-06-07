@@ -95,13 +95,27 @@ struct DiveLogDetailView: View {
                 DetailRow(icon: "doc.text",          label: "Source Format", value: sourceFormatDisplayName(dive.sourceFormat))
             }
 
-            // ── 環境詳細資訊 ──────────────────────────
-            Section(header: Text("Conditions")) {
-                DetailRow(icon: "sun.max.fill",        label: "Weather",           value: weatherDisplayName(dive.weather))
-                DetailRow(icon: "thermometer.medium",  label: "Air Temperature",   value: String(format: "%.0f°C", dive.airTemperature))
-                DetailRow(icon: "water.waves",         label: "Surface Condition", value: surfaceConditionDisplayName(dive.surfaceCondition))
-                DetailRow(icon: "wind",                label: "Water Flow",        value: waterFlowDisplayName(dive.waterflow))
-                DetailRow(icon: "eye.fill",            label: "Visibility",        value: String(format: "%.1f m", dive.visibility))
+            // ── 環境詳細資訊（僅顯示有來源資料的欄位；nil = 未記錄不顯示）──
+            let hasConditions = dive.weather != nil || dive.airTemperature != nil
+                || dive.surfaceCondition != nil || dive.waterflow != nil || dive.visibility != nil
+            if hasConditions {
+                Section(header: Text("Conditions")) {
+                    if let w = dive.weather {
+                        DetailRow(icon: "sun.max.fill",   label: "Weather",           value: weatherDisplayName(w))
+                    }
+                    if let t = dive.airTemperature {
+                        DetailRow(icon: "thermometer.medium", label: "Air Temperature", value: String(format: "%.0f°C", t))
+                    }
+                    if let sc = dive.surfaceCondition {
+                        DetailRow(icon: "water.waves",    label: "Surface Condition", value: surfaceConditionDisplayName(sc))
+                    }
+                    if let wf = dive.waterflow {
+                        DetailRow(icon: "wind",           label: "Water Flow",        value: waterFlowDisplayName(wf))
+                    }
+                    if let vis = dive.visibility {
+                        DetailRow(icon: "eye.fill",       label: "Visibility",        value: String(format: "%.1f m", vis))
+                    }
+                }
             }
 
             // ── 時間詳細資訊 ──────────────────────────
@@ -332,6 +346,11 @@ struct DiveLogDetailView: View {
         default:         return raw
         }
     }
+
+    // Optional overloads — 供上方 if let 模式呼叫
+    private func weatherDisplayName(_ raw: String?) -> String { raw.map { weatherDisplayName($0) } ?? "" }
+    private func surfaceConditionDisplayName(_ raw: String?) -> String { raw.map { surfaceConditionDisplayName($0) } ?? "" }
+    private func waterFlowDisplayName(_ raw: String?) -> String { raw.map { waterFlowDisplayName($0) } ?? "" }
 
     private func cylinderMaterialDisplayName(_ raw: String) -> String {
         switch raw.lowercased() {

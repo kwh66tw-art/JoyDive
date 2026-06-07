@@ -36,12 +36,12 @@ struct DiveLogEditSheet: View {
     @State private var gasMixType: GasMixPickerType
     @State private var nitroxO2Percent: Double  // 22–40
 
-    // MARK: - Environment Details
-    @State private var weather: String
-    @State private var airTemperature: Double
-    @State private var surfaceCondition: String
-    @State private var waterflow: String
-    @State private var visibility: Double
+    // MARK: - Environment Details（Optional：nil = 未記錄）
+    @State private var weather: String?
+    @State private var airTemperature: Double?
+    @State private var surfaceCondition: String?
+    @State private var waterflow: String?
+    @State private var visibility: Double?
 
     // MARK: - Time Details
     @State private var entryTime: Date       // 使用者可填入的入水時間（時:分）
@@ -78,12 +78,12 @@ struct DiveLogEditSheet: View {
             _gasMixType         = State(initialValue: .air)
             _nitroxO2Percent    = State(initialValue: 32.0)
 
-            // Environment Details
-            _weather            = State(initialValue: "clear")
-            _airTemperature     = State(initialValue: 25.0)
-            _surfaceCondition   = State(initialValue: "calm")
-            _waterflow          = State(initialValue: "none")
-            _visibility         = State(initialValue: 12.0)
+            // Environment Details（新增潛水：nil = 使用者尚未填入）
+            _weather            = State(initialValue: nil)
+            _airTemperature     = State(initialValue: nil)
+            _surfaceCondition   = State(initialValue: nil)
+            _waterflow          = State(initialValue: nil)
+            _visibility         = State(initialValue: nil)
 
             // Time Details
             _entryTime          = State(initialValue: now)
@@ -315,20 +315,22 @@ struct DiveLogEditSheet: View {
                         Text("Altitude").tag("altitude")
                     }
 
-                    // 天氣
+                    // 天氣（nil = 未記錄）
                     Picker(String(localized: "Weather"), selection: $weather) {
-                        Text(LocalizedStringKey("Sunny")).tag("sunny")
-                        Text(LocalizedStringKey("Cloudy")).tag("cloudy")
-                        Text(LocalizedStringKey("Rainy")).tag("rainy")
-                        Text(LocalizedStringKey("Clear")).tag("clear")
+                        Text(String(localized: "Not Recorded")).tag(String?.none)
+                        Text(LocalizedStringKey("Sunny")).tag(String?.some("sunny"))
+                        Text(LocalizedStringKey("Cloudy")).tag(String?.some("cloudy"))
+                        Text(LocalizedStringKey("Rainy")).tag(String?.some("rainy"))
+                        Text(LocalizedStringKey("Clear")).tag(String?.some("clear"))
                     }
 
-                    // 氣溫
+                    // 氣溫（nil = 未記錄）
                     HStack {
                         Text(String(localized: "Air Temperature"))
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField(String("25"), value: $airTemperature,
+                        TextField(String("–"),
+                                  value: $airTemperature,
                                   format: .number.precision(.fractionLength(1)))
                             .labelsHidden()
                             #if os(iOS)
@@ -336,37 +338,42 @@ struct DiveLogEditSheet: View {
                             #endif
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
+                            .foregroundStyle(airTemperature == nil ? .secondary : .primary)
                         Text("°C")
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: String(localized: "Air Temperature: %.1f degrees Celsius"),
-                               airTemperature)
+                        airTemperature.map {
+                            String(format: String(localized: "Air Temperature: %.1f degrees Celsius"), $0)
+                        } ?? String(localized: "Air Temperature: Not recorded")
                     )
 
-                    // 水面狀況
+                    // 水面狀況（nil = 未記錄）
                     Picker(String(localized: "Surface Condition"), selection: $surfaceCondition) {
-                        Text(LocalizedStringKey("Calm")).tag("calm")
-                        Text(LocalizedStringKey("Slight")).tag("slight")
-                        Text(LocalizedStringKey("Moderate")).tag("moderate")
-                        Text(LocalizedStringKey("Rough")).tag("rough")
+                        Text(String(localized: "Not Recorded")).tag(String?.none)
+                        Text(LocalizedStringKey("Calm")).tag(String?.some("calm"))
+                        Text(LocalizedStringKey("Slight")).tag(String?.some("slight"))
+                        Text(LocalizedStringKey("Moderate")).tag(String?.some("moderate"))
+                        Text(LocalizedStringKey("Rough")).tag(String?.some("rough"))
                     }
 
-                    // 水流
+                    // 水流（nil = 未記錄）
                     Picker(String(localized: "Water Flow"), selection: $waterflow) {
-                        Text(LocalizedStringKey("None")).tag("none")
-                        Text(LocalizedStringKey("Slight")).tag("slight")
-                        Text(LocalizedStringKey("Moderate")).tag("moderate")
-                        Text(LocalizedStringKey("Strong")).tag("strong")
+                        Text(String(localized: "Not Recorded")).tag(String?.none)
+                        Text(LocalizedStringKey("None")).tag(String?.some("none"))
+                        Text(LocalizedStringKey("Slight")).tag(String?.some("slight"))
+                        Text(LocalizedStringKey("Moderate")).tag(String?.some("moderate"))
+                        Text(LocalizedStringKey("Strong")).tag(String?.some("strong"))
                     }
 
-                    // 能見度
+                    // 能見度（nil = 未記錄）
                     HStack {
                         Text(String(localized: "Visibility"))
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField(String("12"), value: $visibility,
+                        TextField(String("–"),
+                                  value: $visibility,
                                   format: .number.precision(.fractionLength(1)))
                             .labelsHidden()
                             #if os(iOS)
@@ -374,12 +381,15 @@ struct DiveLogEditSheet: View {
                             #endif
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
+                            .foregroundStyle(visibility == nil ? .secondary : .primary)
                         Text("m")
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: String(localized: "Visibility: %.1f metres"), visibility)
+                        visibility.map {
+                            String(format: String(localized: "Visibility: %.1f metres"), $0)
+                        } ?? String(localized: "Visibility: Not recorded")
                     )
                 }
 
