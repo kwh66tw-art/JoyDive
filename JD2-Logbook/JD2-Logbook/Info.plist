@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDisplayName</key>
+	<string>JoyDive²</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-9582822701117167~2224926394</string>
 	<key>NSAppTransportSecurity</key>
