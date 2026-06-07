@@ -5,6 +5,19 @@
 // 定義所有格式解析器的統一介面
 // 支援: UDDF, SHEARWATER, Peregrine, Subsurface CSV, Seabear CSV, Garmin, Suunto JSON, Oceanic
 //
+// ──────────────────────────────────────────────────────────────────
+// 設計原則：Importer 只負責單位換算，不做值的正確性判斷
+//
+//   - 有資料就照實匯入，值的合理性由使用者自行確認
+//   - 不同來源格式的同一欄位可能使用不同單位（Pa vs bar、
+//     Kelvin vs Celsius、m³ vs L 等），importer 統一換算成
+//     JD2 的標準單位後存入模型
+//   - 閾值判斷（如 < 100、> 1000、< 1）是「偵測廠商使用哪種單位」
+//     的格式啟發式規則，不是「這個值合不合理」的驗證邏輯
+//   - 結構合法性檢查（duration > 0、maxDepth >= 0 等）僅用於
+//     判斷「能否建出有效的 DiveLog 物件」，不是資料品質過濾
+// ──────────────────────────────────────────────────────────────────
+//
 // SPM 依賴（PM 請透過 Xcode GUI 加入）：
 //   roznet/FitFileParser  https://github.com/roznet/FitFileParser
 //   （取代 FitDataProtocol —— 後者無 DiveSummaryMessage / DiveGasMessage）
@@ -680,7 +693,11 @@ struct GarminDescentParser: DiveLogImporter {
             // 深度剖面樣本：從 record messages 取 depth + timestamp
             dive.profileSamplesJSON = buildProfileSamplesJSON(from: recordMessages, startDate: startDate)
 
-            // 設定 GPS 座標（FIT semicircles → degrees 換算；已在 degrees 範圍則直接使用）
+            // 設定 GPS 座標
+            // 單位換算：FIT 規格存 semicircles（整數），FitFileParser 可能已換算成 degrees
+            //   abs > 360 → 尚未換算 → 乘以 semicircle scale
+            // 格式約束（非值過濾）：緯度必須在 ±90°、經度在 ±180° 內，
+            //   超出此範圍代表資料損壞或換算失敗，物理上不存在這樣的座標
             if let rawLat, let rawLon {
                 let semicircleScale = 180.0 / pow(2.0, 31.0)
                 let lat = abs(rawLat) > 360 ? rawLat * semicircleScale : rawLat
@@ -1456,8 +1473,9 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
             if !text.isEmpty { currentDive?.dateTimeString = text }
 
         case "airtemperature" where inInfoBefore:
-            // UDDF 規格單位為 Kelvin，但部分廠商（如 ATMOS）直接輸出 Celsius
-            // 若值 < 100 → 視為 Celsius，統一換算回 Kelvin 再存入
+            // 單位換算：UDDF 規格為 Kelvin；部分廠商（如 ATMOS）輸出 Celsius
+            // 啟發式格式偵測：值 < 100 → Celsius（正常氣溫不超過 99°C）→ 補回 Kelvin
+            // 值的正確性由使用者自行保證
             if let raw = Double(text) {
                 currentDive?.airTempKelvin = raw < 100 ? raw + 273.15 : raw
             }
@@ -1490,27 +1508,25 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
             currentDive?.leadQuantityKg = Double(text)
 
         case "tankpressurebegin" where inTankData:
-            // UDDF 單位：Pascal。若值 > 1000 視為 Pa → 換算成 bar（÷100000）
-            // 值 ≤ 1000 視為廠商直接輸出 bar（非標準）
+            // 單位換算：UDDF 規格為 Pascal；部分廠商直接輸出 bar（非標準）
+            // 啟發式格式偵測：值 > 1000 → Pa → 換算成 bar（÷ 100,000）
+            // 值的正確性由使用者自行保證
             if currentDive?.tankPressureBegin == nil, let raw = Double(text) {
                 currentDive?.tankPressureBegin = raw > 1000 ? raw / 100_000.0 : raw
             }
 
         case "tankpressureend" where inTankData:
-            // 同上
+            // 單位換算：同 tankpressurebegin
             if currentDive?.tankPressureEnd == nil, let raw = Double(text) {
                 currentDive?.tankPressureEnd = raw > 1000 ? raw / 100_000.0 : raw
             }
 
         case "tankvolume" where inTankData:
-            // UDDF 規格：公升（L）；但部分廠商（如 ATMOS）輸出 m³
-            // 值 < 1 視為 m³ → 換算成公升（× 1000）
-            // 換算後 > 40L 視為假預設值（如 ATMOS 0.11 m³ → 110L）→ 略過
+            // 單位換算：UDDF 規格為公升（L）；部分廠商（如 ATMOS）輸出 m³
+            // 啟發式格式偵測：值 < 1 → m³ → 換算成公升（× 1000）
+            // 值的正確性由使用者自行保證
             if currentDive?.tankVolumeLitres == nil, let raw = Double(text) {
-                let litres = raw < 1 ? raw * 1000.0 : raw
-                if litres <= 40.0 {
-                    currentDive?.tankVolumeLitres = litres
-                }
+                currentDive?.tankVolumeLitres = raw < 1 ? raw * 1000.0 : raw
             }
 
         // ── 取樣點時間 / 深度（剖面）────────────────────────
