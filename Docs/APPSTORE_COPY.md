@@ -1,67 +1,30 @@
-# App Store 文案 — JD2 Dive Logbook
-
-> 上架前請確認 App 名稱是否使用「JD2 Dive Logbook」或其他品牌名稱。
-> 以下文案以此名稱為範本，可直接替換。
+# App Store Copy — JoyDive²
 
 ---
 
-## App 名稱（30字以內）
+## App Name (30 characters max)
 
-| 語言 | 名稱 |
-|------|------|
-| 繁體中文 | JD2 潛水日誌 |
-| 英文 | JD2 Dive Logbook |
+JoyDive²
 
----
-
-## 副標題 Subtitle（30字以內）
-
-| 語言 | 副標題 |
-|------|--------|
-| 繁體中文 | 記錄每一次下水的故事 |
-| 英文 | Log Every Dive, Every Story |
+> Note: Decide whether to keep "JD2" or rebrand to "JoyDive²". Icon label on device shows the same name (truncated past ~13–15 chars on iOS). "JoyDive²" fits completely and reads more naturally.
 
 ---
 
-## 宣傳文字 Promotional Text（170字，可隨時更新不需重新審核）
+## Subtitle (30 characters max)
 
-**繁體中文**
-支援 UDDF、Garmin、Suunto、Subsurface 等多種格式匯入，自動整理你所有的潛水記錄。
+Log Every Dive, Every Story
 
-**English**
+---
+
+## Promotional Text (170 characters — can update without resubmission)
+
 Import from Garmin, Suunto, UDDF, Subsurface, and more. Your complete dive history, beautifully organized.
 
 ---
 
-## 描述 Description
+## Description (4000 characters max)
 
-### 繁體中文（4000字以內，建議 500–800字）
-
-JD2 潛水日誌，專為認真的潛水員設計的潛水記錄工具。
-
-**從各品牌電腦錶直接匯入**
-支援多種主流格式，包含 UDDF、Subsurface XML / SSRF / CSV、Suunto JSON、Garmin FIT、Shearwater、Seabear 等，讓你不管用哪款潛水電腦，都能輕鬆把記錄整合在一個地方。
-
-**完整的潛水資訊一目了然**
-每筆記錄保存深度剖面、最大深度、潛水時間、水溫、氣體混合（空氣 / Nitrox / Trimix）、GPS 座標與備註。清晰的列表與日曆視圖，讓你快速回顧過去的每一次下水。
-
-**潛點地圖**
-自動將 GPS 座標標記在地圖上，一眼看到你去過的每一個潛點。支援聚類顯示，不論累積多少筆記錄都清晰好用。
-
-**移除廣告，專心記錄**
-基礎功能完全免費。選擇一次性購買「移除廣告」（$1.99），即可永久享有無廣告的純淨體驗。
-
-**隱私優先**
-所有潛水資料僅儲存於你的裝置，從不上傳至伺服器。你的潛水記錄，只屬於你。
-
-**支援 18 種語言 · iOS 17+ · macOS 14+**
-繁體中文、簡體中文、英文、日文、韓文、法文、德文、西班牙文、義大利文、荷蘭文、葡萄牙文、印尼文、馬來文、越南文、泰文、希臘文、克羅埃西亞文、英國英文。
-
----
-
-### English（4000 characters or less）
-
-JD2 Dive Logbook is the dive logging app built for divers who take their logbook seriously.
+JoyDive² is the dive logging app built for divers who take their logbook seriously.
 
 **Import from Any Dive Computer**
 Supports UDDF, Subsurface XML / SSRF / CSV, Suunto JSON, Garmin FIT, Shearwater, Seabear, and more. No matter which dive computer you use, all your dives belong in one place.
@@ -83,15 +46,111 @@ Traditional Chinese, Simplified Chinese, English, Japanese, Korean, French, Germ
 
 ---
 
-## 關鍵字 Keywords（100字以內，逗號分隔，勿重複 App 名稱中已有的詞）
+## Keywords (100 characters, comma-separated, no words already in App Name)
 
-**建議（英文）**
 dive log, scuba, logbook, diving, underwater, UDDF, Garmin, Suunto, Subsurface, nitrox, dive computer, freediving, dive map, scuba diving
 
-**建議（繁中）**
-潛水,日誌,潛水記錄,水肺,自潛,潛水電腦,氣瓶,Nitrox,Garmin,Suunto
+> ⚠️ One keyword set per storefront. Use English for the broadest reach.
 
-> ⚠️ App Store 關鍵字每個地區只能填一組，建議用英文（覆蓋範圍最廣）。繁中市場若需額外優化可在地區設定分開填寫。
+---
+
+## What's New — v1.0
+
+Initial release of JoyDive² v1.0.
+
+---
+
+## App Store Connect Fields
+
+| Field | Value | Notes |
+|-------|-------|-------|
+| App Name | JoyDive² | English only |
+| Subtitle | Log Every Dive, Every Story | Optional |
+| Description | See above | |
+| Keywords | See above | 100 chars max |
+| Support URL | mailto:joydive.app@gmail.com | Required |
+| Marketing URL | (leave blank) | Optional |
+| Privacy Policy URL | https://[username].github.io/JD2-Logbook/PRIVACY_POLICY | Required — set up GitHub Pages first |
+| Age Rating | 4+ | All questions → No |
+| Contains Ads | ✅ Yes | AdMob is present |
+| Version | 1.0 | |
+
+---
+
+## Screenshot Sequence (iPhone 6.7" required)
+
+| # | Screen | Key message |
+|---|--------|-------------|
+| 1 | Dive list (multiple entries) | First impression — core function |
+| 2 | Dive detail page | Shows full log entry |
+| 3 | Map with multiple pins | Visual appeal |
+| 4 | Import screen | Multi-format import |
+| 5 | Calendar view | Alternative browse |
+
+> Capture in Xcode Simulator (iPhone 16 Pro Max) with ⌘S. Optional: add caption text in Figma or Canva.
+
+---
+---
+
+# App Store 文案 — JoyDive²
+
+---
+
+## App 名稱（30 字以內）
+
+JoyDive²
+
+> 注意：確認是否維持「JD2」或更名為「JoyDive²」。裝置 icon 下方顯示的名稱與 App Store 相同（iOS 超過約 13–15 字會截斷）。「JoyDive²」完整顯示且品牌感更強。
+
+---
+
+## 副標題（30 字以內）
+
+Log Every Dive, Every Story
+
+---
+
+## 宣傳文字（170 字，可隨時更新不需重新審核）
+
+支援 UDDF、Garmin、Suunto、Subsurface 等多種格式匯入，自動整理你所有的潛水記錄。
+
+---
+
+## 描述（4000 字以內）
+
+JoyDive²，專為認真的潛水員設計的潛水記錄工具。
+
+**從各品牌電腦錶直接匯入**
+支援多種主流格式，包含 UDDF、Subsurface XML / SSRF / CSV、Suunto JSON、Garmin FIT、Shearwater、Seabear 等，讓你不管用哪款潛水電腦，都能輕鬆把記錄整合在一個地方。
+
+**完整的潛水資訊一目了然**
+每筆記錄保存深度剖面、最大深度、潛水時間、水溫、氣體混合（空氣 / Nitrox / Trimix）、GPS 座標與備註。清晰的列表與日曆視圖，讓你快速回顧過去的每一次下水。
+
+**潛點地圖**
+自動將 GPS 座標標記在地圖上，一眼看到你去過的每一個潛點。支援聚類顯示，不論累積多少筆記錄都清晰好用。
+
+**移除廣告，專心記錄**
+基礎功能完全免費。選擇一次性購買「移除廣告」（$1.99 美元），即可永久享有無廣告的純淨體驗。
+
+**隱私優先**
+所有潛水資料僅儲存於你的裝置，從不上傳至伺服器。你的潛水記錄，只屬於你。
+
+**支援 18 種語言 · iOS 17+ · macOS 14+**
+繁體中文、簡體中文、英文、日文、韓文、法文、德文、西班牙文、義大利文、荷蘭文、葡萄牙文、印尼文、馬來文、越南文、泰文、希臘文、克羅埃西亞文、英國英文。
+
+---
+
+## 關鍵字（100 字以內，逗號分隔）
+
+dive log, scuba, logbook, diving, underwater, UDDF, Garmin, Suunto, Subsurface, nitrox, dive computer, freediving, dive map, scuba diving
+
+> ⚠️ 每個地區只能填一組關鍵字，建議用英文覆蓋最廣。
+
+---
+
+## 版本說明（What's New）— v1.0
+
+JoyDive² v1.0 正式發布。
 
 ---
 
@@ -105,31 +164,4 @@ dive log, scuba, logbook, diving, underwater, UDDF, Garmin, Suunto, Subsurface, 
 | 4 | 匯入畫面（選擇檔案） | 強調多格式匯入 |
 | 5 | 日曆視圖 | 展示另一種瀏覽方式 |
 
-> 截圖可在 Xcode 模擬器（iPhone 16 Pro Max）拍攝，`⌘S` 截圖後直接上傳。
-> 建議在截圖上加標語文字（可用 Figma 或 Canva），但非必須。
-
----
-
-## App Store Connect 填寫清單
-
-| 欄位 | 內容 | 備註 |
-|------|------|------|
-| App 名稱 | JD2 潛水日誌 / JD2 Dive Logbook | 依目標市場決定主名稱 |
-| 副標題 | 記錄每一次下水的故事 | 可選 |
-| 描述 | 見上方 | 繁中和英文各一份 |
-| 關鍵字 | 見上方 | 100字以內 |
-| 支援 URL | 你的聯絡頁面或 GitHub 頁面 | 必填 |
-| 行銷 URL | 可留空 | 選填 |
-| 隱私政策 URL | 需托管至公開 URL | **必填** |
-| 年齡分級 | 4+ | 問卷全選「否」 |
-| 廣告聲明 | 勾選「含廣告」 | 因有 AdMob |
-| 版本號 | 1.0 | |
-| 版本說明 | 見下方 | |
-
-### 版本說明（What's New）— v1.0
-
-**繁體中文**
-JD2 潛水日誌 v1.0 正式發布。
-
-**English**
-Initial release of JD2 Dive Logbook v1.0.
+> 在 Xcode 模擬器（iPhone 16 Pro Max）以 ⌘S 截圖後直接上傳。可選：用 Figma 或 Canva 加標語文字。
