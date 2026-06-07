@@ -607,6 +607,7 @@ struct GarminDescentParser: DiveLogImporter {
         let sessions:      [FitMessage] = fitFile.messages(forMessageType: .session)
         let diveSummaries: [FitMessage] = fitFile.messages(forMessageType: 268)  // dive_summary GMN 268
         let diveGases:     [FitMessage] = fitFile.messages(forMessageType: 269)  // dive_gas     GMN 269
+        let recordMessages:[FitMessage] = fitFile.messages(forMessageType: .record) // GMN 20
 
         guard !sessions.isEmpty else {
             throw DiveLogImportError.parsingFailed("FIT 檔案無 session 訊息（GMN 18 不存在）")
@@ -650,10 +651,12 @@ struct GarminDescentParser: DiveLogImporter {
             // gasMixJSON：取第一個 dive_gas；無則預設 Air
             let gasMixJSON = buildGasMixJSON(from: diveGases.first)
 
-            // 水溫：session avg_temperature；無則預設 15.0°C
+            // 水溫：優先 session avg_temperature；其次從 record messages 取平均值；最後預設 15.0°C
             let waterTemperature: Double
             if let temp = session.interpretedField(key: "avg_temperature")?.valueUnit?.value {
                 waterTemperature = temp
+            } else if let avg = extractAvgTemperature(from: recordMessages) {
+                waterTemperature = avg
             } else {
                 waterTemperature = 15.0
             }
@@ -673,6 +676,9 @@ struct GarminDescentParser: DiveLogImporter {
                 waterTemperature: waterTemperature
             )
             dive.sourceFormat = "garmin"
+
+            // 深度剖面樣本：從 record messages 取 depth + timestamp
+            dive.profileSamplesJSON = buildProfileSamplesJSON(from: recordMessages, startDate: startDate)
 
             // 設定 GPS 座標（FIT semicircles → degrees 換算；已在 degrees 範圍則直接使用）
             if let rawLat, let rawLon {
@@ -697,6 +703,37 @@ struct GarminDescentParser: DiveLogImporter {
     private func hasFITMagic(_ data: Data) -> Bool {
         data[8] == Self.magic0 && data[9]  == Self.magic1
             && data[10] == Self.magic2 && data[11] == Self.magic3
+    }
+
+    /// record messages 水溫平均值（Garmin Descent 裝置存於 record 而非 session）
+    private func extractAvgTemperature(from records: [FitMessage]) -> Double? {
+        let temps = records.compactMap {
+            $0.interpretedField(key: "temperature")?.valueUnit?.value
+        }
+        guard !temps.isEmpty else { return nil }
+        return temps.reduce(0, +) / Double(temps.count)
+    }
+
+    /// record messages → profileSamplesJSON
+    /// 最多取 300 點（間隔取樣），避免 JSON 過大
+    private func buildProfileSamplesJSON(from records: [FitMessage], startDate: Date) -> String {
+        var samples: [(t: Double, d: Double)] = []
+        for record in records {
+            guard let ts    = record.interpretedField(key: "timestamp")?.time,
+                  let depth = record.interpretedField(key: "depth")?.valueUnit?.value,
+                  depth >= 0 else { continue }
+            let t = ts.timeIntervalSince(startDate)
+            guard t >= 0 else { continue }
+            samples.append((t: t, d: depth))
+        }
+        guard !samples.isEmpty else { return "[]" }
+        // 間隔取樣：步長 = max(1, count / 300)
+        let step = max(1, samples.count / 300)
+        let chosen = stride(from: 0, to: samples.count, by: step).map { samples[$0] }
+        let json = "[" + chosen.map {
+            String(format: "{\"t\":%.1f,\"d\":%.3f}", $0.t, $0.d)
+        }.joined(separator: ",") + "]"
+        return json
     }
 
     /// 將 dive_gas 訊息轉換為 JD2 gasMixJSON 格式
@@ -1468,8 +1505,12 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
         case "tankvolume" where inTankData:
             // UDDF 規格：公升（L）；但部分廠商（如 ATMOS）輸出 m³
             // 值 < 1 視為 m³ → 換算成公升（× 1000）
+            // 換算後 > 40L 視為假預設值（如 ATMOS 0.11 m³ → 110L）→ 略過
             if currentDive?.tankVolumeLitres == nil, let raw = Double(text) {
-                currentDive?.tankVolumeLitres = raw < 1 ? raw * 1000.0 : raw
+                let litres = raw < 1 ? raw * 1000.0 : raw
+                if litres <= 40.0 {
+                    currentDive?.tankVolumeLitres = litres
+                }
             }
 
         // ── 取樣點時間 / 深度（剖面）────────────────────────
