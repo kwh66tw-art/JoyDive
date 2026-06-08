@@ -18,19 +18,22 @@ Log Every Dive, Every Story
 
 ## Promotional Text (170 characters — can update without resubmission)
 
-Import from Garmin, Suunto, UDDF, Subsurface, and more. Your complete dive history, beautifully organized.
+Start logging by hand from day one. Got a dive computer? Import everything in — UDDF, Garmin, Suunto, Subsurface, and more. One app, every dive.
 
 ---
 
 ## Description (4000 characters max)
 
-JoyDive² is the dive logging app built for divers who take their logbook seriously.
+JoyDive² is the dive log that grows with you — from your very first dive to advanced technical diving.
 
-**Import from Any Dive Computer**
-Supports UDDF, Subsurface XML / SSRF / CSV, Suunto JSON, Garmin FIT, Shearwater, Seabear, and more. No matter which dive computer you use, all your dives belong in one place.
+**No Dive Computer? No Problem.**
+Start logging right away. Enter depth, dive time, water temperature, gas mix, GPS coordinates, and notes by hand. JoyDive² is built for divers at every stage — you don't need a dive computer to keep a proper logbook.
+
+**Got a Dive Computer? Bring Everything In.**
+Supports UDDF, Subsurface XML / SSRF / CSV, Suunto JSON, Garmin FIT, Shearwater, Seabear, and more. Import your computer logs and they merge seamlessly alongside your manual entries — one complete, unified logbook.
 
 **Every Detail, At a Glance**
-Each entry stores your depth profile, max depth, dive time, water temperature, gas mix (Air / Nitrox / Trimix), GPS coordinates, and notes. A clean list view and calendar make it easy to browse your dive history.
+Each entry stores your depth profile, max depth, dive time, water temperature, gas mix (Air / Nitrox / Trimix), GPS coordinates, and notes. A clean list view and calendar make it easy to browse your full dive history.
 
 **Dive Site Map**
 GPS coordinates are automatically plotted on a map so you can see every dive site you've visited. Cluster display keeps the map readable no matter how many dives you've logged.
@@ -48,9 +51,10 @@ Traditional Chinese, Simplified Chinese, English, Japanese, Korean, French, Germ
 
 ## Keywords (100 characters, comma-separated, no words already in App Name)
 
-dive log, scuba, logbook, diving, underwater, UDDF, Garmin, Suunto, Subsurface, nitrox, dive computer, freediving, dive map, scuba diving
+dive log,scuba,logbook,underwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving
 
 > ⚠️ One keyword set per storefront. Use English for the broadest reach.
+> ⚠️ 95 characters (no spaces after commas). App Store limit is 100.
 
 ---
 
@@ -70,7 +74,7 @@ Initial release of JoyDive² v1.0.
 | Keywords | See above | 100 chars max |
 | Support URL | mailto:joydive.app@gmail.com | Required |
 | Marketing URL | (leave blank) | Optional |
-| Privacy Policy URL | https://[username].github.io/JD2-Logbook/PRIVACY_POLICY | Required — set up GitHub Pages first |
+| Privacy Policy URL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | Required |
 | Age Rating | 4+ | All questions → No |
 | Contains Ads | ✅ Yes | AdMob is present |
 | Version | 1.0 | |
@@ -112,19 +116,22 @@ Log Every Dive, Every Story
 
 ## 宣傳文字（170 字，可隨時更新不需重新審核）
 
-支援 UDDF、Garmin、Suunto、Subsurface 等多種格式匯入，自動整理你所有的潛水記錄。
+沒電腦錶也能從第一天開始手動記錄。有了電腦錶？UDDF、Garmin、Suunto、Subsurface 等格式直接匯入，與手動記錄無縫整合。
 
 ---
 
 ## 描述（4000 字以內）
 
-JoyDive²，專為認真的潛水員設計的潛水記錄工具。
+JoyDive²，陪你從第一次下水到進階技術潛水的潛水日誌。
 
-**從各品牌電腦錶直接匯入**
-支援多種主流格式，包含 UDDF、Subsurface XML / SSRF / CSV、Suunto JSON、Garmin FIT、Shearwater、Seabear 等，讓你不管用哪款潛水電腦，都能輕鬆把記錄整合在一個地方。
+**沒有電腦錶？一樣可以開始記錄。**
+直接手動建立潛水日誌。輸入深度、潛水時間、水溫、氣體混合、GPS 座標與備註，從第一次下水就開始累積你的潛水歷史。JoyDive² 適合每個階段的潛水員，不需要電腦錶也能擁有一本完整的潛水記錄。
+
+**有了電腦錶？把所有記錄都帶進來。**
+支援多種主流格式，包含 UDDF、Subsurface XML / SSRF / CSV、Suunto JSON、Garmin FIT、Shearwater、Seabear 等。電腦錶的記錄匯入後，會與你手動建立的日誌無縫整合——從初學到現在，一本完整的記錄，一個 App 管理。
 
 **完整的潛水資訊一目了然**
-每筆記錄保存深度剖面、最大深度、潛水時間、水溫、氣體混合（空氣 / Nitrox / Trimix）、GPS 座標與備註。清晰的列表與日曆視圖，讓你快速回顧過去的每一次下水。
+每筆記錄保存深度剖面、最大深度、潛水時間、水溫、氣體混合（空氣 / Nitrox / Trimix）、GPS 座標與備註。清晰的列表與日曆視圖，讓你快速回顧每一次下水。
 
 **潛點地圖**
 自動將 GPS 座標標記在地圖上，一眼看到你去過的每一個潛點。支援聚類顯示，不論累積多少筆記錄都清晰好用。
@@ -142,9 +149,10 @@ JoyDive²，專為認真的潛水員設計的潛水記錄工具。
 
 ## 關鍵字（100 字以內，逗號分隔）
 
-dive log, scuba, logbook, diving, underwater, UDDF, Garmin, Suunto, Subsurface, nitrox, dive computer, freediving, dive map, scuba diving
+dive log,scuba,logbook,underwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving
 
 > ⚠️ 每個地區只能填一組關鍵字，建議用英文覆蓋最廣。
+> ⚠️ 95 字元（逗號後無空格）。App Store 上限 100 字元。
 
 ---
 
