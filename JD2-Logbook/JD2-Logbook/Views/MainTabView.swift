@@ -106,7 +106,7 @@ struct MainTabView: View {
                     .tag(item)
             }
             .listStyle(.sidebar)
-            .navigationTitle("JD2 Logbook")
+            .navigationTitle("JoyDive²")
             .navigationSplitViewColumnWidth(min: 180, ideal: 210, max: 260)
         } detail: {
             switch sidebarSelection ?? .logbook {

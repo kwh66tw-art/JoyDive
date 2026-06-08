@@ -279,7 +279,7 @@ struct PremiumUpgradeSheet: View {
 
                 // 標題
                 VStack(spacing: 8) {
-                    Text("JD2 Logbook Premium")
+                    Text("JoyDive² Premium")
                         .font(.title2.bold())
                     Text("One-time purchase — no subscription.")
                         .font(.subheadline)
