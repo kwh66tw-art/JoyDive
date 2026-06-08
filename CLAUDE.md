@@ -9,7 +9,7 @@
 - **狀態**：可編譯可執行，AdMob 已接入，v1.0 待上線
 - **目標上線**：2026 年 8 月 18 日
 - **平台**：iOS 17.0+ / macOS 14.0+，Swift 6
-- **最新 commit**：`656a246` — feat(admob): 接入 GoogleMobileAds SDK v11 正式廣告
+- **最新 commit**：`4175638` — chore: remove PRIVACY_POLICY.md (consolidated into logbook/privacy.md)
 
 ---
 
@@ -21,7 +21,7 @@
 | `ARCHITECTURE.md` | 模組設計、SwiftData schema、解析器一覽 |
 | `CHANGELOG.md` | 版本異動紀錄 |
 | `V1_RELEASE_CHECKLIST.md` | **上線前驗證清單**（逐項確認） |
-| `PRIVACY_POLICY.md` | App Store 隱私政策正文 |
+| `logbook/privacy.md` | 隱私政策正文（EN / 繁中 / 日文），同時為 GitHub Pages 線上版本的唯一來源 |
 | `UI_UX_SPEC.md` | UI/UX 規格 |
 | `WCAG_2.1_AA_AUDIT_CHECKLIST.md` | 可達性合規查核表 |
 | `Docs/ADMOB_IAP_SETUP.md` | AdMob App ID / Ad Unit ID / IAP 設定 |
@@ -53,9 +53,11 @@ JD2-Logbook/JD2-Logbook/JD2-Logbook.xcodeproj
 
 ---
 
-## v1.0 待辦（截至 2026-06-03）
+## v1.0 待辦（截至 2026-06-08）
 
 詳見 `V1_RELEASE_CHECKLIST.md`。主要剩：
-- 真機測試廣告顯示
-- IAP 購買流程驗證（需 App Store Connect IAP 產品上架）
-- App Store Connect 提審準備（截圖、描述、隱私政策 URL）
+- App Store Connect 審核通過後建立 IAP 產品（Product ID：`com.jd2logbook.premium`）
+- 真機測試 AdMob 廣告顯示
+- IAP 購買流程真機驗證
+- App Store Connect 提審準備（截圖、填寫欄位）
+- 詳細 backlog 見 `V1_1_BACKLOG.md`
