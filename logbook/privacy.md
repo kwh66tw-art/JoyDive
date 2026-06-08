@@ -61,7 +61,7 @@ The App is rated 4+ and does not knowingly collect personal information from chi
 
 ## Data Retention
 
-All dive log data is stored on your device. You can delete all data at any time via **Settings → Developer Tools → Clear All Dives**, or by deleting the App.
+All dive log data is stored on your device. You can delete all data at any time by deleting the App.
 
 ---
 
@@ -155,7 +155,7 @@ JoyDive²（「本應用程式」）以保護您的隱私為設計核心。本�
 
 ## 資料保留
 
-所有潛水記錄儲存於您的裝置上。您可隨時透過「**設定 → 開發者工具 → 清除所有潛水記錄**」刪除全部資料，或直接刪除本應用程式。
+所有潛水記錄儲存於您的裝置上。您可隨時刪除本應用程式以移除所有資料。
 
 ---
 
