@@ -6,8 +6,6 @@
 
 JoyDive²
 
-> Note: Decide whether to keep "JD2" or rebrand to "JoyDive²". Icon label on device shows the same name (truncated past ~13–15 chars on iOS). "JoyDive²" fits completely and reads more naturally.
-
 ---
 
 ## Subtitle (30 characters max)
@@ -18,7 +16,7 @@ Log Every Dive, Every Story
 
 ## Promotional Text (170 characters — can update without resubmission)
 
-Start logging by hand from day one. Got a dive computer? Import everything in — UDDF, Garmin, Suunto, Subsurface, and more. One app, every dive.
+Start logging your dives by hand from day one. Got a dive computer? Import everything in — UDDF, Garmin, Suunto, Subsurface, and more. One app, every dive.
 
 ---
 
@@ -104,8 +102,6 @@ Initial release of JoyDive² v1.0.
 
 JoyDive²
 
-> 注意：確認是否維持「JD2」或更名為「JoyDive²」。裝置 icon 下方顯示的名稱與 App Store 相同（iOS 超過約 13–15 字會截斷）。「JoyDive²」完整顯示且品牌感更強。
-
 ---
 
 ## 副標題（30 字以內）
@@ -116,7 +112,7 @@ Log Every Dive, Every Story
 
 ## 宣傳文字（170 字，可隨時更新不需重新審核）
 
-沒電腦錶也能從第一天開始手動記錄。有了電腦錶？UDDF、Garmin、Suunto、Subsurface 等格式直接匯入，與手動記錄無縫整合。
+沒電腦錶也能從第一天開始手動記錄潛水。有了電腦錶？UDDF、Garmin、Suunto、Subsurface 等格式直接匯入，與手動記錄無縫整合。
 
 ---
 
@@ -173,3 +169,99 @@ JoyDive² v1.0 正式發布。
 | 5 | 日曆視圖 | 展示另一種瀏覽方式 |
 
 > 在 Xcode 模擬器（iPhone 16 Pro Max）以 ⌘S 截圖後直接上傳。可選：用 Figma 或 Canva 加標語文字。
+
+---
+---
+
+# App Store 掲載用テキスト — JoyDive²
+
+---
+
+## App名（最大30文字）
+
+JoyDive²
+
+---
+
+## 副題（最大30文字）
+
+Log Every Dive, Every Story
+
+---
+
+## プロモーション用テキスト（170文字以内 — アップデート不要で随時更新可能）
+
+ダイコンなしでも初日からダイブログを手動で記録できます。ダイコンをお持ちなら、UDDF、Garmin、Suunto、Subsurfaceなどをインポート。手動ログとシームレスに統合できます。
+
+---
+
+## 説明（最大4000文字）
+
+JoyDive²は、初めてのファンダイビングから進んだテクニカルダイビングまで、あなたの成長に寄り添うダイビングログブックアプリです。
+
+**ダイブコンピューターがなくても大丈夫**
+すぐにログの記録を始められます。水深、潜水時間、水温、ガスミックス、GPS座標、メモなどを手動で入力するだけ。JoyDive²はあらゆるステージのダイバー向けに設計されているため、ダイコンをお持ちでなくても本格的なログブックを作成できます。
+
+**ダイコンをお持ちなら、すべてのデータを集約**
+UDDF、Subsurface XML / SSRF / CSV、Suunto JSON、Garmin FIT、Shearwater、Seabearなど、主要なフォーマットを幅広くサポート。お手持ちのダイコンのログをインポートすれば、手動で作成したエントリーと美しく統合され、これまでのすべての記録を一つのアプリで一元管理できます。
+
+**充実のダイビング情報をひと目で確認**
+各ログには、水深プロファイル、最大水深、潜水時間、水温、ガスミックス（空気 / ナイトロックス / トライミックス）、GPS座標、メモを保存可能。洗練されたリスト表示とカレンダービューにより、過去のダイビング履歴をスムーズに振り返ることができます。
+
+**ダイブサイトマップ**
+GPS座標から地図上へ自動的にピンをドロップ。これまで訪れたすべてのダイブサイトを視覚的に確認できます。クラスタリング表示に対応しているため、ログの数が多くなっても地図がすっきりと見やすく保たれます。
+
+**広告を非表示にして、記録に集中**
+基本機能は完全に無料でご利用いただけます。一度の「広告非表示」購入（$1.99 USD）で、永久に広告のないクリーンな環境でアプリを使用できます。
+
+**プライバシー最優先**
+すべてのダイビングデータはユーザーのデバイス内にのみ保存され、サーバーへアップロードされることは一切ありません。あなたのログデータは、あなただけのものです。
+
+**18の言語に対応 · iOS 17+ · macOS 14+**
+日本語、英語、繁体字中国語、簡体字中国語、韓国語、フランス語、ドイツ語、スペイン語、イタリア語、オランダ語、ポルトガル語、インドネシア語、マレー語、ベトナム語、タイ語、ギリシャ語、クロアチア語、イギリス英語。
+
+---
+
+## キーワード（最大100文字、カンマ区切り、App名にある単語は除外）
+
+dive log,scuba,logbook,underwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving
+
+> ⚠️ キーワードはストアのロケールごとに1セットのみ登録可能です。最も広くカバーできるよう英語での登録を推奨します。
+> ⚠️ 計95文字（カンマの後にスペースを入れない）。App Storeの制限は100文字です。
+
+---
+
+## 新機能（What's New）— v1.0
+
+JoyDive² v1.0 をリリースしました。
+
+---
+
+## App Store Connect 入力項目
+
+| 項目 | 値 | 備考 |
+|------|----|----|
+| App名 | JoyDive² | 英語表記のみ |
+| 副題 | Log Every Dive, Every Story | オプション |
+| 説明 | 上記を参照 | |
+| キーワード | 上記を参照 | 最大100文字 |
+| サポートURL | mailto:joydive.app@gmail.com | 必須 |
+| マーケティングURL | （空欄のまま） | オプション |
+| プライバシーポリシーURL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | 必須 |
+| 年齢制限指定 | 4+ | すべての質問 → いいえ |
+| 広告を含む | ✅ はい | AdMob実装あり |
+| バージョン | 1.0 | |
+
+---
+
+## スクリーンショットの構成案（iPhone 6.7インチ必須）
+
+| 番号 | 画面 | 主な訴求メッセージ |
+|------|------|-----------------|
+| 1 | ダイブログリスト（複数データあり） | 第一印象 — コア機能の提示 |
+| 2 | ログ詳細ページ | 充実した記録内容の紹介 |
+| 3 | 複数ピンのあるマップ | マップ機能による視覚的アピール |
+| 4 | インポート画面 | 多彩なフォーマットへの対応 |
+| 5 | カレンダービュー | 別パターンのブラウズ機能の提示 |
+
+> Xcodeシミュレーター（iPhone 16 Pro Max）にて ⌘S でスクリーンショットを撮影。オプション：FigmaやCanvaで説明用のキャッチコピーを追加するのも効果的です。

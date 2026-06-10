@@ -25,7 +25,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0A37CEA02FB9E822004E01E9"
-               BuildableName = "JD2-Logbook.app"
+               BuildableName = "JoyDive&#xb2;.app"
                BlueprintName = "JD2-Logbook"
                ReferencedContainer = "container:JD2-Logbook.xcodeproj">
             </BuildableReference>
@@ -79,7 +79,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0A37CEA02FB9E822004E01E9"
-            BuildableName = "JD2-Logbook.app"
+            BuildableName = "JoyDive&#xb2;.app"
             BlueprintName = "JD2-Logbook"
             ReferencedContainer = "container:JD2-Logbook.xcodeproj">
          </BuildableReference>
@@ -96,7 +96,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0A37CEA02FB9E822004E01E9"
-            BuildableName = "JD2-Logbook.app"
+            BuildableName = "JoyDive&#xb2;.app"
             BlueprintName = "JD2-Logbook"
             ReferencedContainer = "container:JD2-Logbook.xcodeproj">
          </BuildableReference>
