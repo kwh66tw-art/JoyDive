@@ -8,6 +8,8 @@
 	<string>JoyDive²</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-9582822701117167~2224926394</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.sports-games</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
