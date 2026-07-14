@@ -1,6 +1,6 @@
 # 已知問題 & v1.1 規劃
 
-**最後更新**：2026-06-07
+**最後更新**：2026-07-13
 
 ---
 
@@ -38,6 +38,12 @@
 - `GADRequest` → `Request`
 - `GADBannerViewDelegate` → `BannerViewDelegate`
 - `GADMobileAds.sharedInstance()` → `MobileAds.shared`（property，非 function）
+
+### Supabase 專案（非本專案技術棧，勿誤認為有整合）
+- `AlgorithmConstants.swift` 有一個常數 `supabaseSampleIntervalSec`（取樣間隔用途），純屬巧合命名，**與 Supabase 服務無關**，全專案無任何 Supabase SDK / API 串接
+- 2026-07-13：收到 Supabase 通知，帳號下有一個閒置專案 `joydive`（ID `vumixtjvsyudmwnbpvyz`）暫停 85 天、即將永久凍結。查證程式碼確認無串接，判斷為早期評估階段殘留；PM 決定還原保留（非棄用），但**目前與未來都不計劃整合**
+- 確認 [JD2-ultra](../../JD2-ultra) 的同步架構也不需要 Supabase：companion ↔ Logbook 走 Apple **CloudKit**（container `iCloud.com.joydive.divelog`），watch ↔ companion 走 WatchConnectivity，兩專案皆與 Supabase 無關
+- 若未來要規劃雲端同步，請先查閱 `JD2-ultra/JD2-ultra_決策.md` §4.1.1 的 CloudKit 方案，避免重複造輪子或誤用閒置的 Supabase 專案
 
 ---
 

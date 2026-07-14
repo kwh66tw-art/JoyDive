@@ -1,0 +1,110 @@
+# JoyDive²（JD2-Logbook）— 專案文件登錄表 v1.3
+
+**專案代號：** JD2-Logbook
+**文件版本：** v1.3
+**建立日期：** 2026-07-04
+**維護人：** 開發負責人
+
+> 本登錄表列出本專案從前期規劃到上線所需的所有文件，作為進度追蹤與品質管控的唯一索引。
+> 每次新增或更新文件時，同步更新此表的版本號與狀態。
+
+---
+
+## 一、狀態說明
+
+| 狀態標籤 | 說明 |
+|---------|------|
+| ✅ 完成 | 文件已建立，內容可用 |
+| 🔄 進行中 | 文件已建立草稿，持續更新 |
+| 📋 待建 | 尚未建立 |
+| ⏸ 凍結 | 暫不需要（依里程碑）或已封存 |
+
+---
+
+## 二、核心專案文件
+
+| # | 文件名稱 | 狀態 | 最後更新 | 說明 |
+|---|---------|------|---------|------|
+| C-01 | `README.md` | ✅ 完成 | 2026-07-04 | 專案介紹、編譯方式、目錄結構、功能摘要 |
+| C-02 | `CLAUDE.md` | 🔄 進行中 | 2026-07-04 | Claude agent 工作指引；含 Bundle ID / Apple Team / 下次發布流程 / Export Compliance，隨進度持續更新 |
+| C-03 | `CHANGELOG.md` | 🔄 進行中 | 2026-06 | 版本異動紀錄；v1.0.0 正式上線後補上線日期定稿 |
+| C-04 | `JD2-Logbook_文件登錄表_v1.3.md` | ✅ 完成 | 2026-07-13 | 本文件 |
+
+---
+
+## 三、設計與規格文件
+
+| # | 文件名稱 | 狀態 | 最後更新 | 說明 |
+|---|---------|------|---------|------|
+| D-01 | `ARCHITECTURE.md` | ✅ 完成 | 2026-06-03 | 模組設計、SwiftData schema、8 種解析器一覽、UI 架構、SPM 依賴 |
+| D-02 | `UI_UX_SPEC.md` | ✅ 完成 | 2026-05-20 | UI/UX 完整規劃書 v1.0（Week 10 決策確認版） |
+
+---
+
+## 四、技術維護文件（Docs/）
+
+| # | 文件名稱 | 狀態 | 最後更新 | 說明 |
+|---|---------|------|---------|------|
+| T-01 | `Docs/ADMOB_IAP_SETUP.md` | ✅ 完成 | 2026-06 | AdMob App ID / 4 個 Ad Unit ID / IAP 設定紀錄。⚠️ 含真實 ID，勿上傳公開 repo |
+| T-02 | `Docs/LOCALIZATION_GUIDE.md` | ✅ 完成 | 2026-06 | 18 種語言維護流程、用詞規範（繁中/簡中區分） |
+| T-03 | `Docs/KNOWN_ISSUES.md` | 🔄 進行中 | 2026-07-13 | 已知問題、技術雷區（SwiftData migration、pbxproj、xcstrings 空 key、AdMob v11 API、Supabase 非整合澄清）、v1.1 設計說明 |
+| T-04 | `SwiftData Migration 指引` | 📋 待建 | — | v1.1 schema 變更（`avgDepth`、`importExtrasJSON`）前必建：`migrationPlan` 撰寫與驗證流程 |
+
+---
+
+## 五、上架與法規文件
+
+| # | 文件名稱 | 狀態 | 最後更新 | 說明 |
+|---|---------|------|---------|------|
+| L-01 | `logbook/privacy.md` | ✅ 完成 | 2026-06-07 | 隱私政策正文（EN / 繁中 / 日文）。**唯一來源**，同時作為 GitHub Pages 線上版本 |
+| L-02 | `Docs/APPSTORE_COPY.md` | ✅ 完成 | 2026-06 | App Store 上架文案：名稱、副標、描述、關鍵字 |
+
+---
+
+## 六、QA 與驗證文件
+
+| # | 文件名稱 | 狀態 | 最後更新 | 說明 |
+|---|---------|------|---------|------|
+| Q-01 | `V1_RELEASE_CHECKLIST.md` | 🔄 進行中 | 2026-06-03 | 上線前驗證清單（Block release / 建議完成 / 提審準備三級）；上線前逐項勾銷 |
+| Q-02 | `WCAG_2.1_AA_AUDIT_CHECKLIST.md` | 🔄 進行中 | 2026-05 | 可達性合規查核表；排定 2026-08-02 ~ 08-09（Week 12）執行最終審核 |
+| Q-03 | `真機驗證報告` | 📋 待建 | — | v1.0 上線後執行：AdMob 廣告（Logbook / Import / Settings）、IAP $1.99 購買流程、Restore Purchase 真機驗證結果 |
+
+---
+
+## 七、規劃與 Backlog
+
+| # | 文件名稱 | 狀態 | 最後更新 | 說明 |
+|---|---------|------|---------|------|
+| P-01 | `V1_1_BACKLOG.md` | 🔄 進行中 | 2026-06-08 | v1.1 待辦整合：3 項技術債 + 10 項功能擴充（互動剖面圖、組織艙飽和度、importExtrasJSON 等） |
+| P-02 | `V1_1_BACKLOG_解法參考_from_JD2-Ultra.md` | ✅ 完成 | 2026-07-13 | 姊妹專案 [JD2-ultra](../JD2-ultra) 單向提供的 backlog 解法參考（不回寫 Ultra）；含 BuhlmannCalculator 停用警告、DiveKit 取用建議。Ultra 端不再同步更新，對照版本 v0.2.8 |
+
+---
+
+## 八、交接與歷史文件
+
+| # | 文件名稱 | 狀態 | 最後更新 | 說明 |
+|---|---------|------|---------|------|
+| H-01 | `Archive/HANDOFF_JD2LB_15.md` | ⏸ 凍結 | 2026-06-07 | 交接文件；內容已由 `CLAUDE.md` 接手，2026-07-04 移入 `Archive/` |
+| H-02 | `Archive/HANDOVER_Cowork-ClaudeCode.md` | ⏸ 凍結 | 2026-07-04 | Cowork → Claude Code 交接文件；內容已核對與 `project.pbxproj` 一致，新增資訊（Bundle ID、Apple Team、下次發布流程、Export Compliance）已併入 `CLAUDE.md`，隨即移入 `Archive/` |
+| H-03 | `Archive/`（43 份，含 H-01、H-02） | ⏸ 凍結 | — | 開發過渡性文件封存：週交接（HANDOFF_WEEK2~13、JD2LB_10~15）、稽核報告（W3-W8/W9/解析器/FIT）、開發計劃（12 週計劃、Reality-Based Plan）、格式技術分析、色彩系統計畫、翻譯注意事項等。僅供追溯，不再更新 |
+
+---
+
+## 九、里程碑索引
+
+| 里程碑 | 相關文件 | 狀態 / 目標時間 |
+|--------|---------|---------------|
+| v1.0 提審 | Q-01、L-01、L-02、T-01 | ✅ 已完成（2026-06-17 提審；macOS 已過審，iOS 審核中） |
+| WCAG 最終審核 | Q-02 | 2026-08-02 ~ 08-09（Week 12） |
+| v1.0 上線 | C-03（補上線日期）、Q-01（全數勾銷） | 2026-08-18 |
+| 上線後驗證 | Q-03（真機驗證報告） | 上線後 1 週內 |
+| v1.1 開發啟動 | P-01、T-03、T-04（migration 指引） | v1.0 上線後排期 |
+
+---
+
+> **文件版本：** v1.3 | **建立日期：** 2026-07-04 | **最後更新：** 2026-07-13
+> **v1.0 變更：** 初版建立。盤點專案現有 14 份現役文件 + Archive 42 份歷史文件，新增 2 項待建文件（SwiftData Migration 指引、真機驗證報告）。同日執行盤點時發現的兩項整理：`HANDOFF_JD2LB_15.md` 移入 `Archive/`、README 專案結構圖修正（移除已刪除的 `PRIVACY_POLICY.md`，補上 `logbook/` 與本登錄表）。
+> **v1.1 變更：** 確認 `HANDOVER_Cowork-ClaudeCode.md`（2026-07-04 建立）為最新交接內容，逐項核對 `project.pbxproj` 一致（Bundle ID、Build 2、iPhone-only）；新增的維運細節（Apple Team、下次發布 5 步驟流程、Export Compliance 選項、Debug Developer Tools 說明）已併入 `CLAUDE.md`，該交接檔隨即移入 `Archive/`（登錄為 H-02），Archive 更新為 43 份。
+> **v1.2 變更：** 兩項查證與整理（2026-07-13）。① Supabase 帳號通知專案 `joydive` 即將凍結，查證程式碼與 [JD2-ultra-D4](../JD2-ultra-D4) 均無 Supabase 整合（兩專案同步架構皆為 Apple CloudKit），PM 決定還原保留、結果記錄於 `Docs/KNOWN_ISSUES.md` 新增段落「Supabase 專案（非本專案技術棧）」。② 姊妹專案資料夾由 `JD2-ultra` 更名為 `JD2-ultra-D4`，全文掃描確認本 repo 僅 `V1_1_BACKLOG_解法參考_from_JD2-Ultra.md` 引用該路徑且原本已用新名稱，無需修改；新登記該文件為 P-02。
+> **v1.3 變更：** 姊妹專案資料夾由 `JD2-ultra-D4` 改回 `JD2-ultra`（2026-07-13，同日二次更名）。全文掃描更新 3 處活動引用：`V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`（2 處路徑）、`Docs/KNOWN_ISSUES.md`（1 處連結 + 1 處路徑）、本表 P-02 說明欄；v1.2 版變更紀錄保留原文不回溯修改，僅供歷史對照。
+> 依里程碑推進時，逐步更新本表各文件的狀態。
