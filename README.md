@@ -67,7 +67,7 @@ JD2-Logbook/                        ← 本 repo 根目錄
 ├── README.md                       ← 本文件
 ├── ARCHITECTURE.md                 ← 架構設計說明
 ├── CHANGELOG.md                    ← 版本異動紀錄
-├── JD2-Logbook_文件登錄表_v1.3.md   ← 全專案文件唯一索引
+├── JD2-Logbook_文件登錄表_v1.4.md   ← 全專案文件唯一索引
 ├── V1_RELEASE_CHECKLIST.md         ← 上線前驗證清單
 ├── UI_UX_SPEC.md                   ← UI/UX 規格
 ├── WCAG_2.1_AA_AUDIT_CHECKLIST.md  ← WCAG 2.1 AA 合規清單

@@ -6,18 +6,22 @@
 
 ## 現況速覽
 
-- **狀態**：v1.0 已提審 App Store（iOS + macOS）
+- **狀態**：v1.0 已提審 App Store（iOS + macOS）；iOS 審核逾期未回覆，PM 決定不再等待，**2026-07-14 啟動 v1.1 開發**（詳見 `V1_1_BACKLOG.md`）
 - **目標上線**：2026 年 8 月 18 日
 - **平台**：iOS 17.0+ / macOS 14.0+，Swift 6
 - **Bundle ID**：`com.jd2logbook.JD2-Logbook`
 - **Apple Team**：HUA SHENG Huang（77UHM3NN7J）
-- **最新 commit**：`d54966b` — chore(release): iPhone-only build, bump build number to 2, add macOS LSApplicationCategoryType
+- **最新 commit**：`316984a` — docs: build v1.1 document registry, absorb latest handovers, reconcile Ultra backlog reference
 
-### 審核狀態（截至 2026-07-04）
+### 審核狀態（截至 2026-07-14）
 - **macOS App 1.0**：✅ 已通過審核
-- **iOS App 1.0**：⏳ Waiting for Review
+- **iOS App 1.0**：⏳ Waiting for Review（等待超過一個月無回應，不阻塞 v1.1 開發）
 - **Build**：iOS + macOS 均為 Build 2（`CURRENT_PROJECT_VERSION = 2`；下次發布需 +1 → 3）
 - **IAP**：`com.jd2logbook.premium`，Non-Consumable，$1.99，已隨版本送審
+
+### v1.1 開發中（2026-07-14 啟動）
+- 詳細待辦見 `V1_1_BACKLOG.md`（14 項，含技術債 3 項）；已定案 #4/#5 port Ultra `DiveKit`、新增 #14 Export/Import 備份功能與 #6 併做
+- 解法參考：`V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`（Ultra 單向提供，不會再更新）
 
 ---
 
@@ -25,7 +29,7 @@
 
 | 文件 | 用途 |
 |------|------|
-| `JD2-Logbook_文件登錄表_v1.3.md` | **全專案文件唯一索引**（狀態、版本、里程碑對照），新增/更新文件時同步維護 |
+| `JD2-Logbook_文件登錄表_v1.4.md` | **全專案文件唯一索引**（狀態、版本、里程碑對照），新增/更新文件時同步維護 |
 | `README.md` | 專案介紹、編譯方式、結構說明 |
 | `ARCHITECTURE.md` | 模組設計、SwiftData schema、解析器一覽 |
 | `CHANGELOG.md` | 版本異動紀錄 |

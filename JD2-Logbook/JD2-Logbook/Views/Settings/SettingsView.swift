@@ -266,6 +266,8 @@ private struct LicensesView: View {
 struct PremiumUpgradeSheet: View {
     @State private var purchaseManager = PurchaseManager.shared
     @Environment(\.dismiss) private var dismiss
+    @State private var showRestoreAlert    = false
+    @State private var restoreAlertMessage = ""
 
     var body: some View {
         NavigationStack {
@@ -323,9 +325,19 @@ struct PremiumUpgradeSheet: View {
 
                     Button(String(localized: "Restore Purchase")) {
                         Task {
-                            try? await AppStore.sync()
-                            await purchaseManager.refreshPurchaseStatus()
-                            if purchaseManager.isPremium { dismiss() }
+                            do {
+                                try await AppStore.sync()
+                                await purchaseManager.refreshPurchaseStatus()
+                                if purchaseManager.isPremium {
+                                    dismiss()
+                                } else {
+                                    restoreAlertMessage = String(localized: "No previous purchase found.")
+                                    showRestoreAlert = true
+                                }
+                            } catch {
+                                restoreAlertMessage = error.localizedDescription
+                                showRestoreAlert = true
+                            }
                         }
                     }
                     .font(.subheadline)
@@ -344,6 +356,11 @@ struct PremiumUpgradeSheet: View {
             }
             .onChange(of: purchaseManager.isPremium) { _, isPremium in
                 if isPremium { dismiss() }
+            }
+            .alert("Restore", isPresented: $showRestoreAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(restoreAlertMessage)
             }
         }
     }

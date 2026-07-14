@@ -1,7 +1,11 @@
 # JoyDive² v1.1 Backlog
 
 > 本文件整合所有 v1.0 之後待處理的問題與功能。  
-> 最後更新：2026-06-08
+> 最後更新：2026-07-14
+
+**已定案的實作方向**（PM 2026-07-14）：
+- #4/#5 **直接 port Ultra 的 `DiveKit`**，不修本地 `Buhlmann.swift`/`DiveEngine.swift`。原因：本地版本目前是死碼（無任何呼叫端），且對應 Ultra `JD2-ultra_決策.md` §4.2 稽核有 **9 項**已知安全級問題（原參考文件誤植為 8 項），一旦接上 UI 會全部從休眠變成活的。詳見 `V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`。
+- **Export/Import 備份功能與 #6 一起做**（見新增第 14 項）。
 
 ---
 
@@ -60,7 +64,8 @@
 
 **背景**：技術潛水者需要 CNS / OTU / ceiling / NDT 資訊（類 Suunto DM5 風格）。  
 **實作**：不匯入任何新欄位，從現有 `profileSamplesJSON`（深度時間序列）+ `gasMixJSON` 在 app 內重新計算。  
-**影響範圍**：新增 `BuhlmannCalculator` 模組（獨立，可單獨開發測試）、DiveLogDetailView 新增減壓分析頁籤。
+**⚠️ 已定案（2026-07-14）**：**不使用**本地 `Buhlmann.swift`/`DiveEngine.swift`（目前是死碼，且對應 Ultra 稽核有 9 項已知安全級問題，見上方「已定案的實作方向」）。改為整包移植 Ultra 的 `DiveKit`（`JD2-ultra/DiveKit/Sources/DiveKit/`，純 Swift、無 UI，iOS/macOS 皆可編），日誌重放參考 `DiveKit/Tests/DiveKitTests/RealDiveSimulationTests.swift` 的 `DiveEngine.tick(depth:now:)` 逐點餵法。  
+**影響範圍**：新增 DiveKit 依賴（SPM 本地套件或整包複製）、DiveLogDetailView 新增減壓分析頁籤。
 
 ---
 
@@ -119,7 +124,17 @@
 
 ---
 
+### 14. Export / Import 備份功能（新增，2026-07-14 排入）
+
+**背景**：稽核發現 `DiveLogDatabase.exportAsJSON()` / `importFromJSON()` 目前是寫死拋錯的 stub（"JSON 導出/導入功能待實現（需要 Codable 支援）"），App 現階段**完全沒有備份/還原資料的能力**。原本 #6（importExtrasJSON）欄位的設計動機就是「未來若實作 export 功能，原始資料無法還原」，兩者強關聯，這次一併做。  
+**需求**：完整 DiveLog（含 profileSamplesJSON、gasMix、importExtrasJSON 等）Codable 化，實作真正可用的 export/import round-trip。  
+**影響範圍**：`DiveLogDatabase.swift`（補實作）、`DiveLog` 系列 model 需 Codable 一致性檢查、Settings 或 Logbook 頁新增匯出/匯入 UI 入口。  
+**注意**：與 #6 同步規劃——`importExtrasJSON` 若晚於 export 功能定案，schema 可能要改兩次。
+
+---
+
 ## 備註
 
 - SwiftData schema 變更（avgDepth、importExtrasJSON）需要 `migrationPlan`，正式 App 升級才不會 crash。
 - 互動剖面圖 + 組織艙功能強烈建議同 sprint 規劃，共用 importer 改動。
+- #14（Export/Import）與 #6（importExtrasJSON）強關聯，建議合併規劃、避免 DiveLog Codable schema 改兩次。

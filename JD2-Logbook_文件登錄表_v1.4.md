@@ -1,7 +1,7 @@
-# JoyDive²（JD2-Logbook）— 專案文件登錄表 v1.3
+# JoyDive²（JD2-Logbook）— 專案文件登錄表 v1.4
 
 **專案代號：** JD2-Logbook
-**文件版本：** v1.3
+**文件版本：** v1.4
 **建立日期：** 2026-07-04
 **維護人：** 開發負責人
 
@@ -28,7 +28,7 @@
 | C-01 | `README.md` | ✅ 完成 | 2026-07-04 | 專案介紹、編譯方式、目錄結構、功能摘要 |
 | C-02 | `CLAUDE.md` | 🔄 進行中 | 2026-07-04 | Claude agent 工作指引；含 Bundle ID / Apple Team / 下次發布流程 / Export Compliance，隨進度持續更新 |
 | C-03 | `CHANGELOG.md` | 🔄 進行中 | 2026-06 | 版本異動紀錄；v1.0.0 正式上線後補上線日期定稿 |
-| C-04 | `JD2-Logbook_文件登錄表_v1.3.md` | ✅ 完成 | 2026-07-13 | 本文件 |
+| C-04 | `JD2-Logbook_文件登錄表_v1.4.md` | ✅ 完成 | 2026-07-14 | 本文件 |
 
 ---
 
@@ -47,7 +47,7 @@
 |---|---------|------|---------|------|
 | T-01 | `Docs/ADMOB_IAP_SETUP.md` | ✅ 完成 | 2026-06 | AdMob App ID / 4 個 Ad Unit ID / IAP 設定紀錄。⚠️ 含真實 ID，勿上傳公開 repo |
 | T-02 | `Docs/LOCALIZATION_GUIDE.md` | ✅ 完成 | 2026-06 | 18 種語言維護流程、用詞規範（繁中/簡中區分） |
-| T-03 | `Docs/KNOWN_ISSUES.md` | 🔄 進行中 | 2026-07-13 | 已知問題、技術雷區（SwiftData migration、pbxproj、xcstrings 空 key、AdMob v11 API、Supabase 非整合澄清）、v1.1 設計說明 |
+| T-03 | `Docs/KNOWN_ISSUES.md` | 🔄 進行中 | 2026-07-14 | 已知問題、技術雷區（SwiftData migration、pbxproj、xcstrings 空 key、AdMob v11 API、Supabase 非整合澄清）；v1.1 規劃改為精簡清單並指向 `V1_1_BACKLOG.md` 為單一權威來源 |
 | T-04 | `SwiftData Migration 指引` | 📋 待建 | — | v1.1 schema 變更（`avgDepth`、`importExtrasJSON`）前必建：`migrationPlan` 撰寫與驗證流程 |
 
 ---
@@ -75,7 +75,7 @@
 
 | # | 文件名稱 | 狀態 | 最後更新 | 說明 |
 |---|---------|------|---------|------|
-| P-01 | `V1_1_BACKLOG.md` | 🔄 進行中 | 2026-06-08 | v1.1 待辦整合：3 項技術債 + 10 項功能擴充（互動剖面圖、組織艙飽和度、importExtrasJSON 等） |
+| P-01 | `V1_1_BACKLOG.md` | 🔄 進行中 | 2026-07-14 | v1.1 待辦整合：3 項技術債 + 11 項功能擴充（互動剖面圖、組織艙飽和度、importExtrasJSON、**Export/Import 備份**等）；**單一權威來源**，KNOWN_ISSUES.md 只放精簡清單。已定案 #4/#5 port Ultra DiveKit、#14 備份功能與 #6 併做 |
 | P-02 | `V1_1_BACKLOG_解法參考_from_JD2-Ultra.md` | ✅ 完成 | 2026-07-13 | 姊妹專案 [JD2-ultra](../JD2-ultra) 單向提供的 backlog 解法參考（不回寫 Ultra）；含 BuhlmannCalculator 停用警告、DiveKit 取用建議。Ultra 端不再同步更新，對照版本 v0.2.8 |
 
 ---
@@ -98,13 +98,14 @@
 | WCAG 最終審核 | Q-02 | 2026-08-02 ~ 08-09（Week 12） |
 | v1.0 上線 | C-03（補上線日期）、Q-01（全數勾銷） | 2026-08-18 |
 | 上線後驗證 | Q-03（真機驗證報告） | 上線後 1 週內 |
-| v1.1 開發啟動 | P-01、T-03、T-04（migration 指引） | v1.0 上線後排期 |
+| v1.1 開發啟動 | P-01、P-02、T-03、T-04（migration 指引） | ✅ 已啟動（2026-07-14，iOS 審核逾期未回覆，PM 決定不等審核先行開工） |
 
 ---
 
-> **文件版本：** v1.3 | **建立日期：** 2026-07-04 | **最後更新：** 2026-07-13
+> **文件版本：** v1.4 | **建立日期：** 2026-07-04 | **最後更新：** 2026-07-14
 > **v1.0 變更：** 初版建立。盤點專案現有 14 份現役文件 + Archive 42 份歷史文件，新增 2 項待建文件（SwiftData Migration 指引、真機驗證報告）。同日執行盤點時發現的兩項整理：`HANDOFF_JD2LB_15.md` 移入 `Archive/`、README 專案結構圖修正（移除已刪除的 `PRIVACY_POLICY.md`，補上 `logbook/` 與本登錄表）。
 > **v1.1 變更：** 確認 `HANDOVER_Cowork-ClaudeCode.md`（2026-07-04 建立）為最新交接內容，逐項核對 `project.pbxproj` 一致（Bundle ID、Build 2、iPhone-only）；新增的維運細節（Apple Team、下次發布 5 步驟流程、Export Compliance 選項、Debug Developer Tools 說明）已併入 `CLAUDE.md`，該交接檔隨即移入 `Archive/`（登錄為 H-02），Archive 更新為 43 份。
 > **v1.2 變更：** 兩項查證與整理（2026-07-13）。① Supabase 帳號通知專案 `joydive` 即將凍結，查證程式碼與 [JD2-ultra-D4](../JD2-ultra-D4) 均無 Supabase 整合（兩專案同步架構皆為 Apple CloudKit），PM 決定還原保留、結果記錄於 `Docs/KNOWN_ISSUES.md` 新增段落「Supabase 專案（非本專案技術棧）」。② 姊妹專案資料夾由 `JD2-ultra` 更名為 `JD2-ultra-D4`，全文掃描確認本 repo 僅 `V1_1_BACKLOG_解法參考_from_JD2-Ultra.md` 引用該路徑且原本已用新名稱，無需修改；新登記該文件為 P-02。
 > **v1.3 變更：** 姊妹專案資料夾由 `JD2-ultra-D4` 改回 `JD2-ultra`（2026-07-13，同日二次更名）。全文掃描更新 3 處活動引用：`V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`（2 處路徑）、`Docs/KNOWN_ISSUES.md`（1 處連結 + 1 處路徑）、本表 P-02 說明欄；v1.2 版變更紀錄保留原文不回溯修改，僅供歷史對照。
+> **v1.4 變更（v1.1 開工，2026-07-14）：** iOS 審核逾期未回覆，PM 決定不再等待、直接啟動 v1.1 開發。開工前稽核 `V1_1_BACKLOG.md` 與 `Docs/KNOWN_ISSUES.md` 發現後者 v1.1 清單漏同步 3 項技術債（06-07 vs 06-08 的一天落差）；同時發現 #4/#5 依賴的本地 `Buhlmann.swift`/`DiveEngine.swift` 是死碼，對應 Ultra 稽核（`JD2-ultra_決策.md` §4.2）實際為 9 項已知安全問題（P-02 參考文件誤植 8 項）。PM 拍板兩項決策：① #4/#5 改為整包 port Ultra `DiveKit`，不修本地死碼；② 新增 #14 Export/Import 備份功能與 #6 一起做（稽核發現 `DiveLogDatabase.exportAsJSON/importFromJSON` 目前是拋錯 stub）。`V1_1_BACKLOG.md` 已更新為 14 項並記錄兩項決策；`Docs/KNOWN_ISSUES.md` 的 v1.1 規劃段落精簡為清單＋指向 `V1_1_BACKLOG.md`，避免雙處維護再度失同步。
 > 依里程碑推進時，逐步更新本表各文件的狀態。
