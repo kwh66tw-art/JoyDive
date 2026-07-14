@@ -13,6 +13,7 @@
 | 地圖 recenter 按鈕 | 地圖無「回到我的位置」按鈕 | 低，使用者仍可手動縮放 | v1.1 |
 | 解析器測試覆蓋率 | 未正式量測是否 > 85% | 中 | v1.1 |
 | 廣告在 macOS 無法顯示 | GoogleMobileAds SDK 不支援 macOS | 可接受，設計選擇 | 不排入 |
+| macOS 無 Premium／IAP 購買選項 | 2026-07-14 移除：macOS 本來就無廣告可移除，且未確認 iOS/macOS 是否為 Universal Purchase（同一 App Store Connect app 記錄），保留購買選項對 macOS-only 用戶形同賣一個沒有效果的商品。`SettingsView.swift` 的 Premium Section、`PremiumUpgradeSheet` 呼叫、`restorePurchases()` 均已 `#if os(iOS)` 包住，macOS 直接當免費版上架 | 已修復，macOS 現在是純免費版 | 已解決 |
 | ATMOS UDDF 假預設氣瓶資料 | ATMOS 匯出 UDDF 時，若無實際記錄，仍填入預設值（200/50 bar、110L）。JD2 只負責單位換算，值的正確性由使用者自行確認，匯入後可手動清除。 | 低，使用者知情即可 | 不排入（資料來源問題） |
 
 ---

@@ -27,7 +27,7 @@
 - [ ] 編輯潛水可儲存
 - [ ] 刪除潛水有確認 dialog
 
-### 廣告 & IAP
+### 廣告 & IAP（僅 iOS；macOS 無廣告、無 IAP，2026-07-14 起為純免費版）
 - [ ] AdMob 廣告在真機上正常載入顯示（Logbook / Import / Settings）
 - [ ] 廣告載入失敗時不留空白塊（自動收合）
 - [ ] Premium 用戶廣告自動隱藏

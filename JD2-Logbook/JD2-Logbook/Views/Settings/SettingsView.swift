@@ -7,9 +7,11 @@ import SwiftData
 
 struct SettingsView: View {
     @State private var purchaseManager        = PurchaseManager.shared
+    #if os(iOS)
     @State private var showPremiumSheet       = false
     @State private var showRestoreAlert       = false
     @State private var restoreAlertMessage    = ""
+    #endif
 
     private var appVersion: String {
         let v = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
@@ -60,7 +62,8 @@ struct SettingsView: View {
                     #endif
                 }
 
-                // ── Premium ────────────────────────────────
+                // ── Premium（僅 iOS：macOS 從無廣告，移除項目對 macOS-only 用戶無意義）──
+                #if os(iOS)
                 Section(
                     header: Text("Premium"),
                     footer: Text(
@@ -117,6 +120,7 @@ struct SettingsView: View {
                         .disabled(purchaseManager.isLoading)
                     }
                 }
+                #endif
 
                 // ── 關於 ───────────────────────────────────
                 Section(header: Text("About")) {
@@ -184,7 +188,8 @@ struct SettingsView: View {
             .formStyle(.grouped)        // macOS 下使用 Grouped 樣式更緊密精緻
             .padding(.top, -16)         // 負 margin 抵消系統隱藏導航列所造成的過度空白
             #endif
-            // ── Premium Upgrade Sheet ─────────────────────────
+            // ── Premium Upgrade Sheet（僅 iOS，見上方 Premium Section）─
+            #if os(iOS)
             .sheet(isPresented: $showPremiumSheet) {
                 PremiumUpgradeSheet()
             }
@@ -193,6 +198,7 @@ struct SettingsView: View {
             } message: {
                 Text(restoreAlertMessage)
             }
+            #endif
     }
 
     // MARK: - Actions
@@ -211,6 +217,7 @@ struct SettingsView: View {
         #endif
     }
 
+    #if os(iOS)
     private func restorePurchases() async {
         do {
             try await AppStore.sync()
@@ -225,6 +232,7 @@ struct SettingsView: View {
         }
         showRestoreAlert = true
     }
+    #endif
 }
 
 // MARK: - Licenses View
