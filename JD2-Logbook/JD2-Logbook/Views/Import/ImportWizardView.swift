@@ -19,6 +19,7 @@ enum ImportStep {
 // MARK: - Main View
 
 struct ImportWizardView: View {
+    @Environment(AppLanguageManager.self) private var languageManager
     @State private var step: ImportStep = .ready
     @State private var showFilePicker = false
     /// 顯示在 ready 頁的上次選擇摘要（"dive.uddf" 或 "3 files"）
@@ -62,7 +63,7 @@ struct ImportWizardView: View {
 
             PremiumAwareAdBanner(adUnitID: AdUnitID.importBanner)
         }
-        .navigationTitle("Import Dives")
+        .navigationTitle(Text(verbatim: languageManager.localized("Import Dives")))
         #if os(iOS)
         .navigationBarTitleDisplayMode(.large)
         #endif

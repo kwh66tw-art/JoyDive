@@ -41,6 +41,8 @@ private enum SidebarItem: Int, CaseIterable, Identifiable {
 
 struct MainTabView: View {
 
+    @Environment(AppLanguageManager.self) private var languageManager
+
     /// 匯入成功後要 highlight 的潛水 ID（iOS + macOS 共用）
     @State private var postImportHighlightID: PersistentIdentifier? = nil
 
@@ -70,11 +72,23 @@ struct MainTabView: View {
                 // 主要廣告版位：日誌為預設且最高流量畫面（Premium 自動隱藏）
                 PremiumAwareAdBanner(adUnitID: AdUnitID.logbook)
             }
-                .tabItem { Label("Logbook", systemImage: "list.bullet.below.rectangle") }
+                .tabItem {
+                    Label {
+                        Text(verbatim: languageManager.localized("Logbook"))
+                    } icon: {
+                        Image(systemName: "list.bullet.below.rectangle")
+                    }
+                }
                 .tag(0)
 
             MapView()
-                .tabItem { Label("Map", systemImage: "map") }
+                .tabItem {
+                    Label {
+                        Text(verbatim: languageManager.localized("Map"))
+                    } icon: {
+                        Image(systemName: "map")
+                    }
+                }
                 .tag(1)
 
             ImportWizardView(
@@ -83,7 +97,13 @@ struct MainTabView: View {
                     withAnimation { selectedTab = 0 }
                 }
             )
-            .tabItem { Label("Import", systemImage: "square.and.arrow.down") }
+            .tabItem {
+                Label {
+                    Text(verbatim: languageManager.localized("Import"))
+                } icon: {
+                    Image(systemName: "square.and.arrow.down")
+                }
+            }
             .tag(2)
 
             VStack(spacing: 0) {
@@ -91,7 +111,13 @@ struct MainTabView: View {
                 // 設定頁底部廣告版位（Premium 自動隱藏）
                 PremiumAwareAdBanner(adUnitID: AdUnitID.settings)
             }
-                .tabItem { Label("Settings", systemImage: "gearshape") }
+                .tabItem {
+                    Label {
+                        Text(verbatim: languageManager.localized("Settings"))
+                    } icon: {
+                        Image(systemName: "gearshape")
+                    }
+                }
                 .tag(3)
         }
     }
@@ -106,7 +132,7 @@ struct MainTabView: View {
                     .tag(item)
             }
             .listStyle(.sidebar)
-            .navigationTitle("JoyDive²")
+            .navigationTitle(Text(verbatim: languageManager.localized("JoyDive²")))
             .navigationSplitViewColumnWidth(min: 180, ideal: 210, max: 260)
         } detail: {
             switch sidebarSelection ?? .logbook {
@@ -154,6 +180,7 @@ struct MainTabView: View {
 
 #if !os(iOS)
 private struct MacLogbookSplitView: View {
+    @Environment(AppLanguageManager.self) private var languageManager
     var highlightID: PersistentIdentifier?
 
     @Query(sort: \DiveLog.dateTime, order: .reverse) private var dives: [DiveLog]
@@ -175,7 +202,7 @@ private struct MacLogbookSplitView: View {
                         }
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .navigationTitle("Dive Logbook")
+                    .navigationTitle(Text(verbatim: languageManager.localized("Dive Logbook")))
                     .toolbar {
                         ToolbarItem(placement: .primaryAction) {
                             Button { showNewDiveSheet = true } label: {
@@ -209,7 +236,7 @@ private struct MacLogbookSplitView: View {
                             }
                         }
                         .frame(maxHeight: .infinity)
-                        .navigationTitle("Dive Logbook")
+                        .navigationTitle(Text(verbatim: languageManager.localized("Dive Logbook")))
                         .toolbar {
                             ToolbarItemGroup(placement: .primaryAction) {
                                 Button {

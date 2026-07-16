@@ -4,9 +4,13 @@
 import SwiftUI
 import StoreKit
 import SwiftData
+import CoreLocation
 
 struct SettingsView: View {
+    @Environment(AppLanguageManager.self) private var languageManager
     @State private var purchaseManager        = PurchaseManager.shared
+    @State private var locationProvider       = UserLocationProvider()
+    @AppStorage(UserLocationProvider.isEnabledKey) private var gpsLocationEnabled = false
     #if os(iOS)
     @State private var showPremiumSheet       = false
     @State private var showRestoreAlert       = false
@@ -31,35 +35,61 @@ struct SettingsView: View {
     private var settingsForm: some View {
         Form {
 
-                // ── 語言 ───────────────────────────────────
-                Section(header: Text("Language")) {
-                    Button {
-                        openAppLanguageSettings()
-                    } label: {
-                        HStack {
-                            Label("App Language", systemImage: "globe")
-                            Spacer()
-                            #if os(iOS)
-                            Text("iOS Settings")
-                            #else
-                            Text("System Settings")
-                            #endif
-                            Image(systemName: "arrow.up.right.square")
-                                .font(.caption)
+                // ── 語言（App 內設定，即時生效，比照 JD2-ultra 四段式解法）──
+                Section(
+                    header: Text("Language"),
+                    footer: Text("Language changes take effect right away. Some system-provided panels may still use the device language until you reopen the app.")
+                ) {
+                    Picker(selection: Binding(
+                        get: { languageManager.appLanguage ?? "" },
+                        set: { languageManager.appLanguage = $0.isEmpty ? nil : $0 }
+                    )) {
+                        Text("Follow System").tag("")
+                        ForEach(AppLanguageManager.supportedLanguages, id: \.code) { lang in
+                            Text(verbatim: lang.nativeName).tag(lang.code)
                         }
-                        .foregroundStyle(.secondary)
-                        .font(.subheadline)
+                    } label: {
+                        Label("App Language", systemImage: "globe")
                     }
-                    .foregroundStyle(.primary)
-                    #if os(iOS)
-                    .accessibilityHint(
-                        String(localized: "Opens iOS Settings to change the app display language")
-                    )
-                    #else
-                    .accessibilityHint(
-                        String(localized: "Opens System Settings to change the app display language")
-                    )
-                    #endif
+                }
+
+                // ── GPS 定位（雙平台：地圖 recenter 按鈕的前置開關）──────
+                Section(
+                    header: Text("GPS Location"),
+                    footer: Text("Location data stays on your device and is only requested while enabled.")
+                ) {
+                    Toggle(isOn: $gpsLocationEnabled) {
+                        Label("Enable GPS Location", systemImage: "location.fill")
+                    }
+                    .onChange(of: gpsLocationEnabled) { _, isEnabled in
+                        if isEnabled {
+                            locationProvider.requestAuthorizationIfNeeded()
+                        }
+                    }
+
+                    if gpsLocationEnabled,
+                       locationProvider.authorizationStatus == .denied
+                        || locationProvider.authorizationStatus == .restricted {
+                        Button {
+                            openSystemLocationSettings()
+                        } label: {
+                            HStack {
+                                Label("Location Access Denied", systemImage: "exclamationmark.triangle.fill")
+                                    .foregroundStyle(.orange)
+                                Spacer()
+                                #if os(iOS)
+                                Text("iOS Settings")
+                                #else
+                                Text("System Settings")
+                                #endif
+                                Image(systemName: "arrow.up.right.square")
+                                    .font(.caption)
+                            }
+                            .foregroundStyle(.secondary)
+                            .font(.subheadline)
+                        }
+                        .foregroundStyle(.primary)
+                    }
                 }
 
                 // ── Premium（僅 iOS：macOS 從無廣告，移除項目對 macOS-only 用戶無意義）──
@@ -181,7 +211,7 @@ struct SettingsView: View {
                 #endif
 
             }
-            .navigationTitle("Settings")
+            .navigationTitle(Text(verbatim: languageManager.localized("Settings")))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
             #else
@@ -203,15 +233,14 @@ struct SettingsView: View {
 
     // MARK: - Actions
 
-    private func openAppLanguageSettings() {
+    private func openSystemLocationSettings() {
         #if os(iOS)
-        // iOS 16+：直接跳 App 語言設定頁（App-Specific Language Settings）
         if let url = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(url)
         }
         #else
-        // macOS：開啟系統設定的語言偏好
-        if let url = URL(string: "x-apple.systempreferences:com.apple.Localization-Settings.extension") {
+        // macOS：開啟系統設定的「定位服務」面板
+        if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_LocationServices") {
             NSWorkspace.shared.open(url)
         }
         #endif
@@ -238,6 +267,7 @@ struct SettingsView: View {
 // MARK: - Licenses View
 
 private struct LicensesView: View {
+    @Environment(AppLanguageManager.self) private var languageManager
     private let licenses: [(name: String, license: String, url: String)] = [
         (
             "FitFileParser",
@@ -262,7 +292,7 @@ private struct LicensesView: View {
             .accessibilityElement(children: .combine)
             .accessibilityLabel("\(item.name), \(item.license)")
         }
-        .navigationTitle("Open Source Licenses")
+        .navigationTitle(Text(verbatim: languageManager.localized("Open Source Licenses")))
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif

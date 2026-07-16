@@ -9,6 +9,7 @@ enum LogbookViewMode {
 }
 
 struct LogbookContainerView: View {
+    @Environment(AppLanguageManager.self) private var languageManager
     @State private var viewMode: LogbookViewMode = .list
     @State private var navigationPath = NavigationPath()
     @State private var showNewDiveSheet = false
@@ -26,7 +27,7 @@ struct LogbookContainerView: View {
                     DiveCalendarView()
                 }
             }
-            .navigationTitle("Dive Logbook")
+            .navigationTitle(Text(verbatim: languageManager.localized("Dive Logbook")))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
             #endif

@@ -14,6 +14,8 @@ import GoogleMobileAds
 @main
 struct JD2_LogbookApp: App {
 
+    @State private var languageManager = AppLanguageManager()
+
     init() {
         #if canImport(GoogleMobileAds)
         MobileAds.shared.start { _ in }
@@ -23,6 +25,8 @@ struct JD2_LogbookApp: App {
     var body: some Scene {
         WindowGroup {
             MainTabView()
+                .environment(languageManager)
+                .environment(\.locale, languageManager.locale)
         }
         .modelContainer(DiveLogDatabase.shared.modelContainer)
         #if os(macOS)

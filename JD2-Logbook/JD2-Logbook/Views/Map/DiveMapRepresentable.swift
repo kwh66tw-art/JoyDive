@@ -70,6 +70,10 @@ struct DiveMapRepresentable: UIViewRepresentable {
     @Binding var mapType: MKMapType
     /// 目前選取的潛點，用於大頭針選取狀態雙向同步 + 自動置中。
     var selectedDive: DiveLog?
+    /// 是否顯示系統藍點（僅在使用者於 Settings 開啟 GPS 定位且系統已授權時為 true）。
+    var showsUserLocation: Bool = false
+    /// v1.1 #11：recenter 按鈕觸發的目標座標；套用後由 _updateMapView 清空。
+    @Binding var recenterCoordinate: CLLocationCoordinate2D?
     var onAnnotationTapped: (DiveLog) -> Void
 
     func makeCoordinator() -> DiveMapCoordinator {
@@ -93,6 +97,10 @@ struct DiveMapRepresentable: NSViewRepresentable {
     @Binding var mapType: MKMapType
     /// 目前選取的潛點，用於大頭針選取狀態雙向同步 + 自動置中。
     var selectedDive: DiveLog?
+    /// 是否顯示系統藍點（僅在使用者於 Settings 開啟 GPS 定位且系統已授權時為 true）。
+    var showsUserLocation: Bool = false
+    /// v1.1 #11：recenter 按鈕觸發的目標座標；套用後由 _updateMapView 清空。
+    @Binding var recenterCoordinate: CLLocationCoordinate2D?
     var onAnnotationTapped: (DiveLog) -> Void
 
     func makeCoordinator() -> DiveMapCoordinator {
@@ -143,6 +151,24 @@ private extension DiveMapRepresentable {
         // ── Map type ─────────────────────────────────────────────────
         if mapView.mapType != mapType {
             mapView.mapType = mapType
+        }
+
+        // ── 使用者定位藍點（v1.1 #11）───────────────────────────────
+        if mapView.showsUserLocation != showsUserLocation {
+            mapView.showsUserLocation = showsUserLocation
+        }
+
+        // ── Recenter on my location（v1.1 #11）─────────────────────────
+        // 套用後立即清空 binding，避免同一個座標重複觸發置中。
+        if let coordinate = recenterCoordinate {
+            let region = MKCoordinateRegion(
+                center: coordinate,
+                span:   MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+            )
+            DispatchQueue.main.async {
+                mapView.setRegion(region, animated: true)
+                recenterCoordinate = nil
+            }
         }
 
         // ── Annotation diff ──────────────────────────────────────────

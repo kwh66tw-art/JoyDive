@@ -12,8 +12,11 @@
 import SwiftUI
 import SwiftData
 import MapKit
+import CoreLocation
 
 struct MapView: View {
+
+    @Environment(AppLanguageManager.self) private var languageManager
 
     // MARK: - Data
 
@@ -32,6 +35,15 @@ struct MapView: View {
     /// tapping a second pin while the sheet is open updates content without
     /// dismissing and re-presenting.
     @State private var isSheetPresented = false
+
+    // v1.1 #11：回到我的位置。開關本身在 Settings 頁，這裡只讀取。
+    @AppStorage(UserLocationProvider.isEnabledKey) private var gpsLocationEnabled = false
+    @State private var locationProvider = UserLocationProvider()
+    @State private var recenterCoordinate: CLLocationCoordinate2D?
+
+    private var showsUserLocationDot: Bool {
+        gpsLocationEnabled && locationProvider.authorizationStatus.isAuthorizedForRecenter
+    }
 
     // MARK: - Body
 
@@ -54,6 +66,8 @@ struct MapView: View {
                 dives:              mappableDives,
                 mapType:            $mapType,
                 selectedDive:       selectedDive,
+                showsUserLocation:  showsUserLocationDot,
+                recenterCoordinate: $recenterCoordinate,
                 onAnnotationTapped: { dive in
                     selectedDive = dive
                     #if os(iOS)
@@ -63,12 +77,17 @@ struct MapView: View {
             )
             .ignoresSafeArea(edges: .bottom)
 
-            // ── 懸浮控制按鈕（圖層切換 + 指北）─────────────────────
+            // ── 懸浮控制按鈕（圖層切換 + 指北 + 回到我的位置）───────
             controlButtons
                 .padding(.top, 8)
                 .padding(.trailing, 12)
         }
-        .navigationTitle(String(localized: "Map"))
+        .onAppear {
+            locationProvider.onLocationUpdate = { location in
+                recenterCoordinate = location.coordinate
+            }
+        }
+        .navigationTitle(Text(verbatim: languageManager.localized("Map")))
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
@@ -146,11 +165,15 @@ struct MapView: View {
     }
     #endif
 
-    // MARK: - Control Buttons（僅圖層切換；指北交由 MapKit 內建羅盤）
+    // MARK: - Control Buttons（圖層切換 + 回到我的位置；指北交由 MapKit 內建羅盤）
 
     private var controlButtons: some View {
         VStack(spacing: 8) {
             mapTypeToggleButton
+            // v1.1 #11：僅在 Settings 開啟 GPS 定位後才出現，關閉時整個按鈕不存在
+            if gpsLocationEnabled {
+                recenterButton
+            }
         }
     }
 
@@ -174,6 +197,44 @@ struct MapView: View {
                 ? String(localized: "Switch to Hybrid Map")
                 : String(localized: "Switch to Standard Map")
         )
+    }
+
+    /// v1.1 #11：授權中／已授權 → 一般樣式，按下觸發單次定位；
+    /// 被拒絕／受限 → 灰階樣式，按下改為導去系統設定（呼應 Settings 頁同款按鈕）。
+    private var recenterButton: some View {
+        let isDenied = locationProvider.authorizationStatus == .denied
+            || locationProvider.authorizationStatus == .restricted
+
+        return Button {
+            if isDenied {
+                openSystemLocationSettingsFromMap()
+            } else {
+                locationProvider.requestOneShotLocation()
+            }
+        } label: {
+            Image(systemName: isDenied ? "location.slash.fill" : "location.fill")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(isDenied ? .secondary : .primary)
+                .frame(width: 40, height: 40)
+                .background(.regularMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .shadow(color: .black.opacity(0.15), radius: 4, x: 0, y: 2)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(String(localized: "Recenter on My Location"))
+        .accessibilityHint(isDenied ? String(localized: "Location Access Denied") : "")
+    }
+
+    private func openSystemLocationSettingsFromMap() {
+        #if os(iOS)
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url)
+        }
+        #else
+        if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_LocationServices") {
+            NSWorkspace.shared.open(url)
+        }
+        #endif
     }
 
 

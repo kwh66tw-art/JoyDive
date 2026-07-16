@@ -10,6 +10,7 @@ struct DiveLogDetailView: View {
     /// macOS：刪除後通知容器清空右側詳情欄（iOS 用 dismiss 返回）
     var onDeleted: (() -> Void)? = nil
 
+    @Environment(AppLanguageManager.self) private var languageManager
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var showEditSheet     = false
@@ -188,7 +189,7 @@ struct DiveLogDetailView: View {
         #else
         .listStyle(.inset)
         #endif
-        .navigationTitle("Dive Details")
+        .navigationTitle(Text(verbatim: languageManager.localized("Dive Details")))
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif

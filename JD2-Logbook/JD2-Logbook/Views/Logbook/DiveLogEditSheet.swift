@@ -14,6 +14,7 @@ enum DiveEditMode {
 // MARK: - Sheet
 
 struct DiveLogEditSheet: View {
+    @Environment(AppLanguageManager.self) private var languageManager
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
@@ -163,8 +164,8 @@ struct DiveLogEditSheet: View {
 
     private var titleText: String {
         switch mode {
-        case .new:  return String(localized: "New Dive")
-        case .edit: return String(localized: "Edit Dive")
+        case .new:  return languageManager.localized("New Dive")
+        case .edit: return languageManager.localized("Edit Dive")
         }
     }
 
@@ -519,7 +520,7 @@ struct DiveLogEditSheet: View {
                         .focused($focusedField, equals: .notes)
                 }
             }
-            .navigationTitle(titleText)
+            .navigationTitle(Text(verbatim: titleText))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
