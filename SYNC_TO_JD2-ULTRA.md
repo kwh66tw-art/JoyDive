@@ -31,10 +31,10 @@
 
 | # | 日期 | 問題摘要 | JD2-Logbook 修復位置 | Ultra 對應位置（已查證） | 狀態 | 備註 |
 |---|------|---------|---------------------|------------------------|------|------|
-| 1 | 2026-07-17 | **Buhlmann chunking 迴圈 pRate 歸零 bug**：時間補償的 chunk 迴圈原本每一步都傳最終深度給 `buhlmann.update()`，導致 `Buhlmann` 內部 `prevDepth` 在第一個 chunk 後就等於最終深度，depthDelta 恆為 0、壓力變化率被誤判為 0，等同把補算期間全當恆深處理，破壞 Schreiner 方程式的均勻升降假設 | `JD2Core/Algorithm/DiveEngine.swift` `tick()` 補算迴圈 | `DiveKit/Sources/DiveKit/Algorithm/DiveEngine.swift:278-284`（逐行核對，邏輯與修復前的 Logbook 完全相同） | 🟡 已確認未修 | 修復手法：依已耗用時間比例在「tick 開始前深度」→「本次 tick 深度」間線性插值，每個 chunk 傳插值後的深度，最後才更新 tick 層級的 prevDepth。JD2-Logbook 端 `DiveReplayEngine.swift`（本 repo 較早修復）已用相同插值手法，可直接參考該檔案 |
+| 1 | 2026-07-17 | **Buhlmann chunking 迴圈 pRate 歸零 bug**：時間補償的 chunk 迴圈原本每一步都傳最終深度給 `buhlmann.update()`，導致 `Buhlmann` 內部 `prevDepth` 在第一個 chunk 後就等於最終深度，depthDelta 恆為 0、壓力變化率被誤判為 0，等同把補算期間全當恆深處理，破壞 Schreiner 方程式的均勻升降假設 | `JD2Core/Algorithm/DiveEngine.swift` `tick()` 補算迴圈 | `DiveKit/Sources/DiveKit/Algorithm/DiveEngine.swift:278-284`（逐行核對，邏輯與修復前的 Logbook 完全相同） | 🟢 已同步 | **2026-07-17 已修**：統一 DiveKit F2 合流 App-i 稽核修復 #1（同款線性內插，commit 72c1682，含回歸測試 CodeAuditFix20260713Tests）。原修復手法備考：依已耗用時間比例在「tick 開始前深度」→「本次 tick 深度」間線性插值，每個 chunk 傳插值後的深度，最後才更新 tick 層級的 prevDepth。JD2-Logbook 端 `DiveReplayEngine.swift`（本 repo 較早修復）已用相同插值手法，可直接參考該檔案 |
 | 2 | 2026-07-17 | **ImportCoordinator 批次匯入去重漏洞**：`deduplicateDives` 原本只比對資料庫既有記錄的靜態快照（`let existing = try database.fetchAllDives()` 後用 `.filter`），同一批次（甚至單一檔案）內部彼此重複的日誌，因當下都還沒寫入資料庫，會互相漏檢、全數通過並寫入 | `JD2Core/Importers/ImportCoordinator.swift` `deduplicateDives()` | `JD2UltraPhone/Import/ImportCoordinator.swift:231-241`（邏輯相同：`let existing = ...`＋`.filter`，未動態累積） | 🟡 已確認未修 | 修復手法：改為逐筆比對＋動態把每筆已確認非重複的日誌併入比對陣列（`existing.append(dive)`），與 `DiveLogDatabase.importFromJSON`（JD2-Logbook 既有正確實作，備份還原用）手法一致，可直接參考 |
 | 3 | 2026-07-17 | **匯入解析阻塞主執行緒**：`ImportCoordinator` 宣告為 `@MainActor`，但 Step 3 的 `importer.parse(from: filePath)` 是同步、CPU 密集操作，大檔案或批次匯入多檔時會讓 UI 卡住數秒甚至凍結掉幀，iOS/watchOS 上可能觸發 Watchdog 強制關閉 App | `JD2Core/Importers/ImportCoordinator.swift` `importFile()` Step 2+3 | `JD2UltraPhone/Import/ImportCoordinator.swift:81-89`（同樣同步呼叫 `importer.parse`，同樣 `@MainActor`） | 🟡 已確認未修 | ⚠️ **JD2-Logbook 本身的修復尚不完美**，套用前請先讀完下方「風險 #3 已知限制」章節，不要直接照搬 |
-| 4 | 2026-07-17 | **OTU 跨日未主動重置**：OTU（單日氧毒性累積）的重置邏輯原本只在 `beginDive()` 觸發時檢查「距上次出水是否已超過 24 小時」，若潛水員完成潛水後在水面停留超過 24 小時卻遲遲未開始下一次潛水，`beginDive()` 永遠不會被呼叫，UI/Widget 顯示的 OTU 會一直卡在舊值，造成生理安全數值上的顯示矛盾 | `JD2Core/Algorithm/DiveEngine.swift` 新增 `resetStaleOTUIfNeeded(now:)`，被 `beginDive()`／水面 `tick()`／`restore()` 三處共用 | `DiveKit/Sources/DiveKit/Algorithm/DiveEngine.swift:532`（同樣只在 `beginDive()` 內檢查一次） | 🟡 已確認未修 | Ultra 有 watchOS 常駐錶面顯示，比 JD2-Logbook（純 iOS/macOS app）更容易出現「App/錶面長時間開著、停留水面不下潛」的情境，實務影響可能比 Logbook 更明顯，建議優先評估 |
+| 4 | 2026-07-17 | **OTU 跨日未主動重置**：OTU（單日氧毒性累積）的重置邏輯原本只在 `beginDive()` 觸發時檢查「距上次出水是否已超過 24 小時」，若潛水員完成潛水後在水面停留超過 24 小時卻遲遲未開始下一次潛水，`beginDive()` 永遠不會被呼叫，UI/Widget 顯示的 OTU 會一直卡在舊值，造成生理安全數值上的顯示矛盾 | `JD2Core/Algorithm/DiveEngine.swift` 新增 `resetStaleOTUIfNeeded(now:)`，被 `beginDive()`／水面 `tick()`／`restore()` 三處共用 | `DiveKit/Sources/DiveKit/Algorithm/DiveEngine.swift:532`（同樣只在 `beginDive()` 內檢查一次） | 🟢 已同步 | **2026-07-17 已修**：上收至統一 DiveKit v1.1.1（resetStaleOTUIfNeeded 三處共用＋3 回歸測試）。 Ultra 有 watchOS 常駐錶面顯示，比 JD2-Logbook（純 iOS/macOS app）更容易出現「App/錶面長時間開著、停留水面不下潛」的情境，實務影響可能比 Logbook 更明顯，建議優先評估 |
 
 ---
 
@@ -63,4 +63,4 @@ JD2-Logbook 對風險 #3 的修復（用 `Task.detached` 包住 select+parse）�
 
 ---
 
-**文件版本：** v1.0 | **建立日期：** 2026-07-17 | **最後更新：** 2026-07-17
+**文件版本：** v1.0 | **建立日期：** 2026-07-17 | **最後更新：** 2026-07-17（#1/#4 已同步至統一 DiveKit——F2 合流與 v1.1.1 上收；#2/#3 屬 Ultra App 層，已登錄 JD2-ultra/PM_ACTION_ITEMS.md）
