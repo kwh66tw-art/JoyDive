@@ -79,15 +79,26 @@ final class ImportCoordinator {
             throw DiveLogImportError.fileNotFound(filePath)
         }
 
-        // Step 2: 自動選擇解析器
-        guard let importer = DiveLogImporterFactory.selectImporter(for: filePath) else {
-            throw DiveLogImportError.unsupportedFormat(filePath)
-        }
-
-        print("[Import] \(importer.format.displayName): \(filePath)")
-
-        // Step 3: 解析檔案
-        let dives = try importer.parse(from: filePath)
+        // Step 2+3：稽核修復 #3 — 選格式＋解析檔案是同步、CPU 密集的工作，原本直接
+        // 在 @MainActor 的 ImportCoordinator 內執行，大檔案或批次匯入多檔時會讓主
+        // 執行緒卡住數秒，UI 凍結掉幀，iOS/watchOS 上甚至可能觸發 Watchdog 強制關閉
+        // App。改到背景執行緒跑完整段選格式＋解析，只有結果回到主執行緒後才繼續寫
+        // 資料庫（Step 4 起）。
+        // ⚠️ 已知技術債：模組預設 @MainActor 隔離（-default-isolation=MainActor），
+        // DiveLogImporterFactory/parse() 未標記 nonisolated，DiveLog（SwiftData
+        // @Model）也非 Sendable，現行編譯設定（Swift 5 + 部分 upcoming features）
+        // 下僅產生 warning、明確標註「this is an error in the Swift 6 language
+        // mode」。要徹底消除需將 DiveLogImporter 協定三個方法＋全部 20 個解析器
+        // 實作＋Factory 標記 nonisolated，並處理 DiveLog 跨 actor 傳遞的 Sendable
+        // 問題（規模已超出本次稽核修復範圍，建議另開任務處理，屆時一併評估是否
+        // 遷移到完整 Swift 6 language mode）。
+        let dives = try await Task.detached(priority: .userInitiated) {
+            guard let importer = DiveLogImporterFactory.selectImporter(for: filePath) else {
+                throw DiveLogImportError.unsupportedFormat(filePath)
+            }
+            print("[Import] \(importer.format.displayName): \(filePath)")
+            return try importer.parse(from: filePath)
+        }.value
 
         guard !dives.isEmpty else {
             throw DiveLogImportError.emptyFile
@@ -234,16 +245,32 @@ final class ImportCoordinator {
     /// - Parameter dives: 候選日誌
     /// - Returns: 未重複的日誌
     /// - Note: 使用精確時間差比對（< 60s），避免同一天兩次相同深度的潛水被誤判重複。
+    // 稽核修復 #2：原本用 .filter 對照資料庫既有記錄，若同一批次（甚至單一檔案）
+    // 內部含有彼此重複的日誌，因為此時都尚未寫入資料庫，會互相漏檢、全數通過。
+    // 改為逐筆比對＋動態把已確認非重複的日誌併入比對陣列，與 DiveLogDatabase.
+    // importFromJSON 的既有正確做法一致（見該檔案備份還原邏輯）。
     func deduplicateDives(_ dives: [DiveLog]) async throws -> [DiveLog] {
         let existing = try database.fetchAllDives()
+        return Self.dedupe(dives, against: existing)
+    }
 
-        return dives.filter { dive in
-            !existing.contains { existing in
-                abs(existing.dateTime.timeIntervalSince(dive.dateTime)) < 60
-                    && existing.location == dive.location
-                    && existing.maxDepth == dive.maxDepth
+    /// 純邏輯版本，不碰資料庫，方便單元測試（與上面 deduplicateDives 共用）
+    static func dedupe(_ dives: [DiveLog], against existing: [DiveLog]) -> [DiveLog] {
+        var existing = existing
+        var newDives: [DiveLog] = []
+
+        for dive in dives {
+            let isDuplicate = existing.contains { ex in
+                abs(ex.dateTime.timeIntervalSince(dive.dateTime)) < 60
+                    && ex.location == dive.location
+                    && ex.maxDepth == dive.maxDepth
             }
+            guard !isDuplicate else { continue }
+            newDives.append(dive)
+            existing.append(dive)   // 避免同一批次內的重複條目互相漏檢
         }
+
+        return newDives
     }
 
     // MARK: - 統計與報告

@@ -35,13 +35,19 @@
 - **8 個格式確認目前無法安全實作**（Scubapro LogTRAK、Mares Dive Organizer、HW OSTC、Cressi、Ratio iDive、Cochran CAN、Aqualung i-Trak、APD LogViewer）：逐一查證後證實為專有二進位資料庫無公開規格、或研究樣本僅為文字佔位符無真實資料可驗證，非偷懶跳過，具體理由見 `format_inventory.md`「無法實作的格式」章節
 - 後續（同日）：Import tab「Supported Formats」改依品牌分組＋單欄列表列，Dive Profile 剖面圖的組織艙資訊列改為與 Ultra companion `DiveAnalysisView.calloutRow` 一致的五欄排版，詳見 `CHANGELOG.md` 同日第二條
 
+### 外部稽核報告修復（2026-07-17）
+- 外部稽核報告 `audit_report-0717.md` 提出 4 項風險，逐項核對程式碼後確認全數屬實並修復：`Buhlmann` chunking 迴圈 pRate 歸零 bug、匯入批次去重漏洞（同批次內部重複互相漏檢）、匯入解析阻塞 `@MainActor`（大檔案/批次匯入 UI 凍結）、OTU 跨日未主動重置。新增 `DiveEngineTests.swift` + `ImportCoordinatorTests.swift` 回歸測試，詳見 `CHANGELOG.md` 同日條目
+- ⚠️ 風險 #3（阻塞主執行緒）的修復目前僅為 `Task.detached` workaround，因專案 `-default-isolation=MainActor` 且 `DiveLogImporter`/`DiveLog` 非 `nonisolated`/`Sendable`，編譯僅產生 warning（明確標註 Swift 6 language mode 下會是 error），非徹底修復，細節見 `SYNC_TO_JD2-ULTRA.md`
+- 已核對 [JD2-ultra](../JD2-ultra) 對應程式碼，確認 4 項風險同樣存在、尚未修復（不同專案，僅評估未修改）；新增 `SYNC_TO_JD2-ULTRA.md` 追蹤文件（P-03，方向與 P-02 相反），供 Ultra 端未來參考同步
+
 ---
 
 ## 關鍵文件
 
 | 文件 | 用途 |
 |------|------|
-| `JD2-Logbook_文件登錄表_v1.5.md` | **全專案文件唯一索引**（狀態、版本、里程碑對照），新增/更新文件時同步維護 |
+| `JD2-Logbook_文件登錄表_v1.7.md` | **全專案文件唯一索引**（狀態、版本、里程碑對照），新增/更新文件時同步維護 |
+| `SYNC_TO_JD2-ULTRA.md` | **JD2-Logbook → Ultra 單向問題追蹤**：發現「程式碼可追溯到 Ultra」的問題就記一筆，供 Ultra 端參考同步 |
 | `README.md` | 專案介紹、編譯方式、結構說明 |
 | `ARCHITECTURE.md` | 模組設計、SwiftData schema、解析器一覽 |
 | `CHANGELOG.md` | 版本異動紀錄 |

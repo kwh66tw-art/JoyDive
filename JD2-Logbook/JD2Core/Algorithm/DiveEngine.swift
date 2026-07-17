@@ -242,6 +242,8 @@ public final class DiveEngine {
         oxygen = restored.oxygen
         surfaceStatus = restored.surface
         alerts.algorithmLocked = surfaceStatus.isAlgorithmLocked(now: now)
+        // 稽核修復 #4：App 關閉超過 24h 後重啟，還原當下就該歸零，不必等下次 tick
+        resetStaleOTUIfNeeded(now: now)
     }
 
     // MARK: - Lifecycle
@@ -278,10 +280,21 @@ public final class DiveEngine {
             let compensatedDeltaT = min(deltaT, AlgorithmConstants.maxCompensateTotalSec)
             let chunkSize = AlgorithmConstants.tickChunkSizeSec
             var remainingTime = compensatedDeltaT
+            var elapsed: Double = 0.0
+            // 稽核修復 #1：chunk 迴圈內每一步都須傳入該步「對應時刻」的深度，而非最終
+            // depth——buhlmann.update() 每次呼叫都會把內部 prevDepth 設為傳入的 depth，
+            // 若每個 chunk 都傳最終 depth，第一個 chunk 之後 depthDelta 恆為 0，pRate
+            // 被錯誤歸零，等同把補算期間全當作恆深。改為依已耗用時間比例，在
+            // prevDepth（本次 tick 開始前的深度）→ depth（本次 tick 最終深度）之間
+            // 線性插值，還原 Schreiner 方程式假設的均勻升降過程。
+            let startDepth = prevDepth
 
             while remainingTime > 0.001 {
                 let chunk = min(chunkSize, remainingTime)
-                buhlmann.update(depth: depth, gasMix: gasMix, deltaT: chunk)
+                elapsed += chunk
+                let fraction = compensatedDeltaT > 0 ? min(1.0, elapsed / compensatedDeltaT) : 1.0
+                let interpolatedDepth = startDepth + (depth - startDepth) * fraction
+                buhlmann.update(depth: interpolatedDepth, gasMix: gasMix, deltaT: chunk)
                 remainingTime -= chunk
             }
         }
@@ -365,6 +378,9 @@ public final class DiveEngine {
     private func determineState(depth: Double, deltaT: Double) {
         switch state {
         case .surface:
+            // 稽核修復 #4：只要留在水面就持續檢查，不必等到下一次 beginDive() 才歸零
+            resetStaleOTUIfNeeded(now: lastUpdateTime ?? Date())
+
             // Check if descent starts
             if depth >= AlgorithmConstants.diveStartDepth {
                 state = .diving
@@ -517,6 +533,18 @@ public final class DiveEngine {
 
     // MARK: - JD2-Ultra: 潛水開始/結束
 
+    /// JD2-Ultra(審計 Y5) + 稽核修復 #4：OTU 是單日概念（REPEX）——超過 24h 未潛水則歸零。
+    /// 原本只在 beginDive() 觸發時檢查，若潛水員完成潛水後在水面停留超過 24 小時
+    /// 卻遲遲未開始下一次潛水，beginDive() 永遠不會被呼叫，UI/Widget 顯示的 OTU
+    /// 會一直卡在舊值，造成生理安全數值上的顯示矛盾。改為抽成共用檢查，同時在
+    /// beginDive()、水面 tick、以及 restore()（App 重啟還原狀態）都會執行。
+    private func resetStaleOTUIfNeeded(now: Date) {
+        if let last = surfaceStatus.lastSurfacedAt,
+           now.timeIntervalSince(last) > 24 * 3600 {
+            oxygen.resetDailyOTU()
+        }
+    }
+
     private func beginDive() {
         diveTimeSeconds = 0
         accumulatedDiveTime = 0.0
@@ -525,12 +553,7 @@ public final class DiveEngine {
         firedDepthSlots.removeAll()        // 0.2.0(A3)
         variometerMark = 0
         buhlmann.firstCeilingBar = nil  // Reset GF baseline
-        // JD2-Ultra(審計 Y5): OTU 是單日概念（REPEX）——超過 24h 未潛水則歸零
-        if let last = surfaceStatus.lastSurfacedAt,
-           let now = lastUpdateTime,
-           now.timeIntervalSince(last) > 24 * 3600 {
-            oxygen.resetDailyOTU()
-        }
+        resetStaleOTUIfNeeded(now: lastUpdateTime ?? Date())
         // JD2-Ultra: 本次潛水的引導狀態歸零
         deepstopCompleted = false
         deepstopAccumulator = 0

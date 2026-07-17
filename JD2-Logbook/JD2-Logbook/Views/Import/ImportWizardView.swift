@@ -167,6 +167,10 @@ struct ImportWizardView: View {
 
     // MARK: - Step 1: Ready
 
+    // 按鈕移到清單上方（原本排在 16 種格式清單之後，每次都要先捲到底才看得到，
+    // 使用者回報體驗不佳）：header → 按鈕 → 上次選擇摘要 → 格式清單，常用操作
+    // 一開頁就在畫面內，格式清單當作「參考資訊」自然排在後面即可捲動查閱。
+
     private var readyView: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
@@ -180,8 +184,6 @@ struct ImportWizardView: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
-
-            supportedFormatsSection
 
             Button {
                 showFilePicker = true
@@ -216,6 +218,8 @@ struct ImportWizardView: View {
                 .padding(.horizontal, 24)
             }
 
+            supportedFormatsSection
+
             Spacer(minLength: 40)
         }
         .padding(.bottom, 20)
@@ -233,12 +237,32 @@ struct ImportWizardView: View {
                 .font(.subheadline.weight(.semibold))
                 .padding(.horizontal, 24)
 
+            #if os(macOS)
+            // macOS 視窗較寬，單欄清單得往下捲一大段才看完；拆兩欄並排（左：
+            // Universal＋Suunto＝8 列，右：Garmin＋Other Brands＝8 列，剛好平衡），
+            // 讓整份格式清單盡量在一頁內看完。
+            HStack(alignment: .top, spacing: 14) {
+                VStack(alignment: .leading, spacing: 14) {
+                    FormatGroupSection(title: supportedFormatGroups[0].title, formats: supportedFormatGroups[0].formats)
+                    FormatGroupSection(title: supportedFormatGroups[1].title, formats: supportedFormatGroups[1].formats)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                VStack(alignment: .leading, spacing: 14) {
+                    FormatGroupSection(title: supportedFormatGroups[2].title, formats: supportedFormatGroups[2].formats)
+                    FormatGroupSection(title: supportedFormatGroups[3].title, formats: supportedFormatGroups[3].formats)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.horizontal, 16)
+            #else
             VStack(alignment: .leading, spacing: 14) {
                 ForEach(supportedFormatGroups, id: \.title) { group in
                     FormatGroupSection(title: group.title, formats: group.formats)
                 }
             }
             .padding(.horizontal, 16)
+            #endif
         }
     }
 

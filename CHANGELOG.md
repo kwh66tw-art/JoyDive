@@ -31,6 +31,48 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-17 — 外部稽核報告修復（4 項風險）+ 建立 Ultra 同步追蹤文件
+
+外部稽核報告 `audit_report-0717.md` 針對核心演算法與匯入流程提出 4 項風險，
+逐項核對程式碼後確認全數屬實（非誤報），並全數修復：
+
+1. **`Buhlmann` chunking 迴圈 pRate 歸零 bug**（[DiveEngine.swift](JD2-Logbook/JD2Core/Algorithm/DiveEngine.swift)）
+   ：時間補償的 chunk 迴圈原本每一步都傳最終深度給 `buhlmann.update()`，導致
+   `Buhlmann` 內部 `prevDepth` 在第一個 chunk 後就等於最終深度，depthDelta 恆為
+   0、壓力變化率被誤判為 0，等同把補算期間全當恆深處理。改為依已耗用時間比例
+   在「tick 開始前深度」→「本次 tick 深度」間線性插值，與同一份程式碼庫內
+   `DiveReplayEngine.swift`（本 session 較早修復）已驗證過的手法一致。
+2. **匯入批次去重漏洞**（[ImportCoordinator.swift](JD2-Logbook/JD2Core/Importers/ImportCoordinator.swift)）
+   ：`deduplicateDives` 原本只比對資料庫既有記錄的靜態快照，同一批次（甚至單一
+   檔案）內部彼此重複的日誌會互相漏檢、全數寫入。改為逐筆比對＋動態把已確認
+   非重複的日誌併入比對陣列，抽成可獨立單元測試的 `Self.dedupe(_:against:)`，
+   與 `DiveLogDatabase.importFromJSON` 既有正確做法一致。
+3. **匯入解析阻塞主執行緒**：`ImportCoordinator` 為 `@MainActor`，`importer.parse()`
+   為同步 CPU 密集操作，大檔案/批次匯入會讓 UI 卡住甚至觸發 Watchdog 強制關閉。
+   改用 `Task.detached` 包住選格式＋解析。⚠️ 已知限制：專案預設
+   `-default-isolation=MainActor`、`DiveLogImporter`/`DiveLog` 皆非 `nonisolated`/
+   `Sendable`，此修復在目前編譯設定下僅為 warning（非 error），警告訊息明確標註
+   「this is an error in the Swift 6 language mode」；徹底解法需將協定三方法與
+   全部 20 個解析器實作標記 `nonisolated`＋處理 `DiveLog` 跨 actor 傳遞，規模較大，
+   本次未一併處理，已記錄於 `SYNC_TO_JD2-ULTRA.md`。
+4. **OTU 跨日未主動重置**（[DiveEngine.swift](JD2-Logbook/JD2Core/Algorithm/DiveEngine.swift)）
+   ：OTU 單日重置原本只在 `beginDive()` 觸發時檢查，若潛水員完成潛水後在水面
+   停留超過 24 小時卻未再下潛，UI/Widget 顯示的 OTU 會卡在舊值。抽成共用的
+   `resetStaleOTUIfNeeded(now:)`，同時掛在 `beginDive()`、水面 `tick()`、
+   `restore()`（App 重啟還原）三處呼叫。
+
+**測試**：新增 `DiveEngineTests.swift`（4 項，涵蓋風險 #1 的 chunking 插值正確性
+與風險 #4 的三種歸零情境）＋ `ImportCoordinatorTests.swift` 新增 4 項純邏輯去重
+測試（不碰資料庫）。全數通過，iOS/macOS 雙平台建置成功。
+
+**Ultra companion 風險評估**：逐一核對 [JD2-ultra](../JD2-ultra) 對應檔案
+（`DiveKit/Sources/DiveKit/Algorithm/DiveEngine.swift`、
+`JD2UltraPhone/Import/ImportCoordinator.swift`），確認 4 項風險**全數同樣存在、
+尚未修復**（DiveKit 演算法程式碼為早期整包 port 自 Ultra，ImportCoordinator 架構
+高度相似）。本次僅評估、未修改 Ultra 程式碼（不同專案，需另行決定是否同步）。
+新增 `SYNC_TO_JD2-ULTRA.md` 作為長期追蹤文件，記錄「JD2-Logbook 發現且可能同樣
+影響 Ultra」的問題，供 Ultra 端未來參考同步。
+
 ### 2026-07-17 — Import 格式清單重新規劃 + 剖面資訊列比照 Ultra companion
 
 **Import tab「Supported Formats」**：格式數擴充到 16 種後，原本無分類的 2 欄

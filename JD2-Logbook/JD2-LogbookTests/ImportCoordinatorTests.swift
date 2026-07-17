@@ -480,4 +480,61 @@ final class ImportCoordinatorTests: XCTestCase {
         XCTAssertFalse(ImportCoordinator.isFormatSupported("unknown-format"))
         XCTAssertFalse(ImportCoordinator.isFormatSupported(""))
     }
+
+    // MARK: - 稽核修復 #2：dedupe 同批次內部重複漏檢
+
+    /// 稽核報告風險 #2：原本的 .filter 只對照資料庫既有記錄，同一批次（甚至單一檔案）
+    /// 內部彼此重複的日誌會互相漏檢、全數通過。改用純邏輯版本 Self.dedupe 測試，
+    /// 不碰資料庫。
+    func testDedupeFiltersDuplicatesWithinSameBatch() {
+        let base = Date(timeIntervalSince1970: 1_700_000_000)
+        let dive1 = makeDive(depth: 20.0, location: "Reef A")
+        dive1.dateTime = base
+        let dive2 = makeDive(depth: 20.0, location: "Reef A")
+        dive2.dateTime = base.addingTimeInterval(10)   // 同批次內幾乎同一筆（10s 內、同地點同深度）
+
+        let result = ImportCoordinator.dedupe([dive1, dive2], against: [])
+
+        XCTAssertEqual(result.count, 1,
+            "同一批次內彼此重複的日誌應只保留一筆（修復前：existing 是靜態快照，兩筆都會通過）")
+    }
+
+    func testDedupeKeepsNonDuplicatesWithinSameBatch() {
+        let base = Date(timeIntervalSince1970: 1_700_000_000)
+        let dive1 = makeDive(depth: 20.0, location: "Reef A")
+        dive1.dateTime = base
+        let dive2 = makeDive(depth: 30.0, location: "Reef B")
+        dive2.dateTime = base.addingTimeInterval(3600)   // 明顯不同的一次潛水
+
+        let result = ImportCoordinator.dedupe([dive1, dive2], against: [])
+
+        XCTAssertEqual(result.count, 2, "不重複的日誌都應保留")
+    }
+
+    func testDedupeFiltersAgainstExistingDatabaseRecords() {
+        let base = Date(timeIntervalSince1970: 1_700_000_000)
+        let existingDive = makeDive(depth: 20.0, location: "Reef A")
+        existingDive.dateTime = base
+
+        let incoming = makeDive(depth: 20.0, location: "Reef A")
+        incoming.dateTime = base.addingTimeInterval(5)
+
+        let result = ImportCoordinator.dedupe([incoming], against: [existingDive])
+
+        XCTAssertEqual(result.count, 0, "與資料庫既有記錄重複的日誌應被過濾")
+    }
+
+    func testDedupeThreeIdenticalDivesInSameBatchKeepsOnlyOne() {
+        // 更貼近真實場景：同一個匯入檔案內因來源軟體匯出瑕疵，含 3 筆完全相同的日誌
+        let base = Date(timeIntervalSince1970: 1_700_000_000)
+        let dives = (0..<3).map { i -> DiveLog in
+            let d = makeDive(depth: 18.5, location: "Wreck Point")
+            d.dateTime = base.addingTimeInterval(Double(i))  // 彼此相差 0~2 秒
+            return d
+        }
+
+        let result = ImportCoordinator.dedupe(dives, against: [])
+
+        XCTAssertEqual(result.count, 1, "3 筆幾乎相同的日誌應只保留第一筆")
+    }
 }
