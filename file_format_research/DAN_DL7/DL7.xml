@@ -1,0 +1,18 @@
+<divelog program='subsurface' version='3'>
+<settings>
+</settings>
+<divesites>
+</divesites>
+<dives>
+<dive number='1' date='2018-01-01' time='10:10:00'>
+  <divecomputer model='Imported from CSV'>
+  <temperature air='27.0 C' water='25.0 C' />
+  </divecomputer>
+</dive>
+<dive number='2' date='2018-01-02' time='11:11:00'>
+  <divecomputer model='Imported from CSV'>
+  <temperature air='28.0 C' water='26.0 C' />
+  </divecomputer>
+</dive>
+</dives>
+</divelog>

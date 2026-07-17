@@ -1,0 +1,8 @@
+[AQUALUNG i-TRAK DB DATABASE STUB]
+File: mock_aqualung_itrak.db (非真機資料)
+[Aqualung Log Database Structure Placeholder]
+Tables:
+  - UserDives (DiveID, Date, Duration, MaxDepth, TempMin)
+  - DiveProfiles (DiveID, TimeSec, DepthM, TempC, PressureBar)
+  - DeviceSettings (DeviceName, SerialNo, FirmwareVersion)
+...

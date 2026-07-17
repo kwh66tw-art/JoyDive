@@ -1,0 +1,8 @@
+[MARES DIVE ORGANIZER SDF DATABASE STUB]
+File: mock_organizer.sdf (非真機資料)
+[SQL Server Compact Edition SDF Container Placeholder]
+Tables:
+  - Dives (Id, DateStart, MaxDepthM, DurationSec, MinTempC)
+  - ProfilePoints (DiveId, Seconds, Depth, Temp, GasIndex)
+  - Buddies (Id, Name, Email)
+...

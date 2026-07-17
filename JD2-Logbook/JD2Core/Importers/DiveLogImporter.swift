@@ -73,6 +73,19 @@ enum DiveLogFormat: String, CaseIterable {
     case garmin     = "Garmin"
     case suunto     = "Suunto"
     case oceanic    = "Oceanic"
+    // v1.1 格式擴充（file_format_research 18 格式盤點）
+    case suuntoDM5  = "Suunto DM5"      // DM4/DM5 桌面軟體 / D4i 等錶款直接匯出的 WCF XML
+    case suuntoSML  = "Suunto SML"      // Moveslink/Moveslink2 快取的 XML
+    case suuntoSDE  = "Suunto SDE"      // DM5 加密備份包（zip 內含 DM3 XML）
+    case danDL7     = "DAN DL7"         // Divers Alert Network 管線分隔文字格式
+    case divesoft   = "Divesoft DLF"    // Freedom/Liberty 專有二進位格式
+    case scubapro   = "Scubapro"        // LogTRAK SQLite / TravelTRAK .asd
+    case mares      = "Mares"           // Dive Organizer SQL Server Compact (.sdf)
+    case ostc       = "HW OSTC"         // Heinrichs Weikamp OSTC 記憶體 dump
+    case sensus     = "Reefnet Sensus"  // Sensus CSV 採樣格式
+    case divingLog  = "Diving Log"      // Diving Log 6.0 SQL 匯出
+    case cressi     = "Cressi"          // Cressi PC Interface 純文字/HTML 匯出
+    case deepblu    = "Deepblu"         // Deepblu COSMIQ+ 雲端 API JSON（格式假設，待真實樣本驗證）
 
     /// 支援的檔案副檔名
     var supportedExtensions: [String] {
@@ -86,6 +99,18 @@ enum DiveLogFormat: String, CaseIterable {
         case .garmin:     return ["fit", "json"]   // v1.1 #12：json = Garmin Connect 匯出（canHandle 內容區分）
         case .suunto:     return ["json"]
         case .oceanic:    return ["ocf", "xml"]
+        case .suuntoDM5:  return ["xml"]
+        case .suuntoSML:  return ["sml", "xml"]
+        case .suuntoSDE:  return ["sde", "zip"]
+        case .danDL7:     return ["dl7", "zxu", "zxl", "txt"]
+        case .divesoft:   return ["dlf"]
+        case .scubapro:   return ["db", "asd", "slg"]
+        case .mares:      return ["sdf"]
+        case .ostc:       return ["bin", "log"]
+        case .sensus:     return ["dat", "csv"]
+        case .divingLog:  return ["sql", "sqlite", "db"]   // 實際為 SQLite 資料庫，非文字 SQL/XML
+        case .cressi:     return ["txt", "html", "htm"]
+        case .deepblu:    return ["json"]
         }
     }
 
@@ -107,6 +132,19 @@ enum DiveLogFormat: String, CaseIterable {
         case .oceanic:    return 5
         case .seabear:    return 6   // 優先於通用 CSV（以內容簽名區分）
         case .peregrine:  return 7
+        // v1.1 格式擴充：皆以內容簽名區分，彼此互斥，數字大小僅為排序穩定性
+        case .suuntoDM5:  return 9
+        case .suuntoSML:  return 10
+        case .suuntoSDE:  return 11
+        case .danDL7:     return 12
+        case .divesoft:   return 13
+        case .scubapro:   return 14
+        case .mares:      return 15
+        case .ostc:       return 16
+        case .sensus:     return 17
+        case .divingLog:  return 18
+        case .cressi:     return 19   // 純文字啟發式偵測最弱，優先權最低（在 csv 之後）
+        case .deepblu:    return 20
         case .csv:        return 8
         }
     }
@@ -175,7 +213,16 @@ struct DiveLogImporterFactory {
         GarminDescentParser(),
         GarminConnectJSONParser(),   // v1.1 #12：FIT 的替代路線，內容簽名與 SuuntoJSONParser 互斥
         SuuntoJSONParser(),
-        OceanicParser()
+        OceanicParser(),
+        // v1.1 格式擴充（file_format_research 18 格式盤點）
+        SuuntoDM5XMLParser(),
+        SuuntoSMLParser(),
+        DANDL7Parser(),
+        DivesoftDLFParser(),
+        SuuntoSDEParser(),
+        ReefnetSensusParser(),
+        DivingLogSQLiteParser(),
+        DeepbluCOSMIQParser()
     ]
 
     /// 根據檔案路徑自動選擇解析器
@@ -247,7 +294,7 @@ struct UDDFParser: DiveLogImporter {
         // ZIP vs 純 XML
         let xmlData: Data
         if fileData.prefix(4).elementsEqual([0x50, 0x4B, 0x03, 0x04]) {
-            xmlData = try UDDFParser.extractXMLFromZIP(filePath: filePath)
+            xmlData = try UDDFParser.extractXMLFromZIP(fileData)
         } else {
             xmlData = fileData
         }
@@ -277,47 +324,37 @@ struct UDDFParser: DiveLogImporter {
         return delegate.buildDiveLogs()
     }
 
-    /// ZIP 解壓：macOS 使用系統 unzip；iOS 需整合 ZipFoundation
-    static func extractXMLFromZIP(filePath: String) throws -> Data {
-        #if os(macOS)
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
-        process.arguments = ["-p", filePath, "uddf.xml"]
-        let outPipe = Pipe()
-        process.standardOutput = outPipe
-        process.standardError = Pipe()
-        do { try process.run() } catch {
-            throw DiveLogImportError.parsingFailed("ZIP 解壓失敗: \(error.localizedDescription)")
+    /// ZIP 解壓：改用跨平台 MinimalZipReader（v1.1 修正 iOS 原本完全不支援
+    /// ZIP 包裝 UDDF 的缺口——原本用 Process 呼叫 macOS 系統 unzip，iOS 沙盒
+    /// 無法執行任意可執行檔）。優先找 uddf.xml，找不到則退回任何 .xml 條目。
+    static func extractXMLFromZIP(_ zipData: Data) throws -> Data {
+        do {
+            return try MinimalZipReader.extractFirstEntry(from: zipData) {
+                $0.lowercased() == "uddf.xml"
+            }
+        } catch {
+            return try MinimalZipReader.extractFirstEntry(from: zipData) {
+                $0.lowercased().hasSuffix(".xml")
+            }
         }
-        process.waitUntilExit()
-        let data = outPipe.fileHandleForReading.readDataToEndOfFile()
-        guard !data.isEmpty else {
-            throw DiveLogImportError.invalidFormat("ZIP 內未找到 uddf.xml (\(filePath))")
-        }
-        return data
-        #else
-        throw DiveLogImportError.unsupportedFormat(
-            "ZIP 包裝格式在 iOS 需要 ZipFoundation，目前僅支援純 XML UDDF"
-        )
-        #endif
     }
 }
 
 /// SHEARWATER 解析器 (XML format)
-struct SHEARWATERParser: DiveLogImporter {
-    let format = DiveLogFormat.shearwater
-
-    func parse(from filePath: String) throws -> [DiveLog] {
-        throw DiveLogImportError.unsupportedFormat("SHEARWATER 解析器待實現 (Week 4)")
-    }
-}
+// 真正實作見 ShearwaterXMLParser.swift（本檔案僅保留其餘格式的解析器）
 
 /// Peregrine 解析器 (新 Shearwater with ppO2)
 struct PeregrineParser: DiveLogImporter {
     let format = DiveLogFormat.peregrine
 
+    /// Peregrine 與 Perdix/Teric/NERD2 共用同一套 Shearwater Cloud XML 匯出格式，
+    /// 已由 SHEARWATERParser 完整涵蓋。此處必須明確覆寫為 false——
+    /// 若沿用預設實作（僅比對副檔名 .xml），會攔截「所有」.xml 檔案，
+    /// 誤判 Suunto DM5/SML 等其他 XML 格式（即最初 D4i XML 匯入失敗的根因）。
+    func canHandle(filePath: String) -> Bool { false }
+
     func parse(from filePath: String) throws -> [DiveLog] {
-        throw DiveLogImportError.unsupportedFormat("Peregrine 解析器待實現 (Week 4)")
+        throw DiveLogImportError.unsupportedFormat("Peregrine 匯出格式已由 SHEARWATERParser 涵蓋")
     }
 }
 
@@ -1227,8 +1264,12 @@ struct SuuntoJSONParser: DiveLogImporter {
 struct OceanicParser: DiveLogImporter {
     let format = DiveLogFormat.oceanic
 
+    /// 尚未實作解析邏輯：明確覆寫為 false，避免沿用預設實作（副檔名 .ocf/.xml
+    /// 皆比對為真）誤攔截其他真正支援的 .xml 格式（同 PeregrineParser 修法）。
+    func canHandle(filePath: String) -> Bool { false }
+
     func parse(from filePath: String) throws -> [DiveLog] {
-        throw DiveLogImportError.unsupportedFormat("Oceanic 解析器待實現 (Week 9+)")
+        throw DiveLogImportError.unsupportedFormat("Oceanic 解析器待實現")
     }
 }
 

@@ -424,6 +424,15 @@ struct DiveLogDetailView: View {
         case "garmin-json":    return "Garmin Connect"
         case "seabear",
              "seabear-csv":    return "Seabear CSV"
+        case "shearwater":     return "Shearwater XML"
+        case "suunto-dm5":     return "Suunto DM5"
+        case "suunto-sml":     return "Suunto SML"
+        case "dan-dl7":        return "DAN DL7"
+        case "divesoft-dlf":   return "Divesoft DLF"
+        case "suunto-sde":     return "Suunto SDE"
+        case "reefnet-sensus": return "Reefnet Sensus"
+        case "divinglog":      return "Diving Log 6.0"
+        case "deepblu-cosmiq": return "Deepblu COSMIQ+"
         case "manual":         return "Manual Entry"
         default:               return raw.isEmpty ? "—" : raw
         }

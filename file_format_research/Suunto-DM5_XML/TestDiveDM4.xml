@@ -1,0 +1,40 @@
+<divelog program='subsurface' version='3'>
+<settings>
+</settings>
+<divesites>
+</divesites>
+<dives>
+<dive number='1' otu='46' cns='15%' date='2013-02-02' time='16:14:08' duration='59:20 min'>
+  <notes>Notes are here</notes>
+  <cylinder workpressure='200.0 bar' o2='33.0%' start='205.11 bar' />
+  <divecomputer>
+  <depth max='22.44 m' mean='16.291 m' />
+  <temperature air='28.0 C' water='26.0 C' />
+  <event time='59:32 min' name='surface' />
+  <sample time='0:00 min' depth='1.39 m' temp='28.0 C' pressure0='206.52 bar' />
+  <sample time='0:20 min' depth='4.63 m' pressure0='205.11 bar' />
+  <sample time='0:40 min' depth='7.66 m' pressure0='203.6 bar' />
+  <sample time='1:00 min' depth='11.76 m' pressure0='201.95 bar' />
+  <sample time='1:20 min' depth='16.77 m' pressure0='200.03 bar' />
+  <sample time='1:40 min' depth='20.82 m' temp='27.0 C' pressure0='198.3 bar' />
+  <sample time='2:00 min' depth='21.21 m' pressure0='195.75 bar' />
+  <sample time='2:20 min' depth='21.89 m' pressure0='194.02 bar' />
+  <sample time='2:40 min' depth='21.67 m' pressure0='192.43 bar' />
+  <sample time='3:00 min' depth='21.7 m' pressure0='191.11 bar' />
+  <sample time='3:20 min' depth='22.05 m' temp='26.0 C' pressure0='189.73 bar' />
+  <sample time='3:40 min' depth='21.94 m' pressure0='188.5 bar' />
+  <sample time='4:00 min' depth='21.5 m' pressure0='187.16 bar' />
+  <sample time='4:20 min' depth='21.22 m' pressure0='186.05 bar' />
+  <sample time='4:40 min' depth='21.36 m' pressure0='185.17 bar' />
+  <sample time='5:00 min' depth='21.4 m' pressure0='184.02 bar' />
+  <sample time='5:20 min' depth='21.73 m' pressure0='182.64 bar' />
+  <sample time='5:40 min' depth='21.44 m' pressure0='181.76 bar' />
+  <sample time='6:00 min' depth='21.49 m' pressure0='180.84 bar' />
+  <sample time='6:20 min' depth='21.13 m' pressure0='179.67 bar' />
+  <sample time='6:40 min' depth='21.33 m' pressure0='178.53 bar' />
+  <sample time='7:00 min' depth='22.04 m' pressure0='178.31 bar' />
+  <sample time='7:20 min' depth='22.41 m' pressure0='177.35 bar' />
+  </divecomputer>
+</dive>
+</dives>
+</divelog>

@@ -31,6 +31,34 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-17 — 匯入格式全面擴充（10 個新解析器，8 個確認無法安全實作）
+
+PM 指示全面查證 `/file_format_research` 盤點的 18 種潛水電腦/軟體格式，不接受
+「叫使用者自己轉檔」的退讓方案。逐一重新驗證研究文件的假設（多處與真實樣本
+不符，例如 Suunto SDE 內部其實是舊版 DM3 格式而非 DM5、DAN DL7 的 ZDT 記錄
+語意與初版猜測相反），並在可能時搜尋開源參考實作交叉驗證byte-level正確性。
+
+**新增 10 個格式解析器**：
+- `SuuntoDM5XMLParser`：Suunto DM4/DM5 WCF XML（D4i 等錶款直傳），真實樣本逐欄位驗證
+- `SHEARWATERParser`：從空 stub 改為真實實作，同時修正原本用預設 canHandle 誤攔截所有 `.xml`（含 D4i 檔）的根因 bug
+- `SuuntoSMLParser`：Moveslink XML，含 Kelvin 水溫轉換
+- `DANDL7Parser`：業界標準交換格式，欄位對照依開源 PyDL7 校正（研究文件誤判 ZDT 為逐樣本剖面，實為 dive trailer）
+- `DivesoftDLFParser`：二進位格式，欄位偏移依開源 divesoft-parser 逐位元核對，並用真實樣本 3 個獨立欄位（start_time/max_depth/min_temperature）精確驗證吻合；v2 header（"DiVE" magic）明確拒絕而非臆測
+- `SuuntoSDEParser`：ZIP 包裝的舊版 DM3 XML（非原研究猜測的 DM5 格式），歐式逗號小數處理
+- `ReefnetSensusParser`：CSV，壓力→深度公式依 ReefNet 官方換算說明驗證；水溫欄位因無法可靠確認編碼，刻意不猜測轉換
+- `DivingLogSQLiteParser`：原生 SQLite3（無需第三方套件），RTF 備註欄位手寫剝除器（避免引入 UIKit 依賴破壞 JD2Core 跨平台界線）
+- `GarminConnectJSONParser`、`DeepbluCOSMIQParser`：格式假設（無公開 API 文件），待真實樣本驗證
+
+**新增 `MinimalZipReader.swift`**：純 Swift 跨平台 ZIP 讀取器（PKWARE 公開規格，
+支援 stored/deflate），取代原本只在 macOS 用 `/usr/bin/unzip` 的做法，順便修正
+UDDF 的 ZIP 包裝格式在 iOS 原本完全無法匯入的既有缺口。
+
+**確認 8 個格式目前無法安全實作**（Scubapro LogTRAK、Mares Dive Organizer、
+Heinrichs Weikamp OSTC、Cressi PC Interface、Ratio iDive、Cochran CAN、
+Aqualung i-Trak、APD LogViewer）：逐一檢查後證實為 Microsoft Access/SQL Server
+Compact 等專有二進位資料庫無公開規格、或研究樣本僅為文字佔位符（無真實資料
+可驗證），非偷懶跳過。具體理由見 `file_format_research/format_inventory.md`。
+
 ### 2026-07-17 — v1.1 backlog 完工（6/7 項，widget 決定不做）
 
 **功能**：

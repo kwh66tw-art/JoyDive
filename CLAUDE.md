@@ -27,6 +27,13 @@
 - **待決策**：macOS `LSApplicationCategoryType` 誤觸發遊戲模式，PM 決定延後到上架前拍板，見 `Docs/KNOWN_ISSUES.md`「待決策事項」
 - 解法參考：`V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`（Ultra 單向提供，不會再更新）
 
+### 匯入格式擴充（2026-07-17，`/file_format_research` 18 格式盤點）
+- PM 指示全面支援，不接受「叫使用者自己轉檔」的退讓方案；詳細紀錄見 `file_format_research/format_inventory.md`、`CHANGELOG.md` 2026-07-17 條目
+- 新增 10 個格式解析器（Suunto DM5/SML/SDE、Shearwater XML 真實實作、DAN DL7、Divesoft DLF、Reefnet Sensus、Diving Log 6.0、Garmin Connect JSON、Deepblu COSMIQ+），皆用真實樣本或開源參考實作交叉驗證，非憑空臆測
+- 新增 `MinimalZipReader.swift`（純 Swift 跨平台 ZIP 讀取器），順便修正 UDDF 的 ZIP 包裝格式原本在 iOS 完全無法匯入的既有缺口
+- 修正 `PeregrineParser`/`OceanicParser` 用預設 canHandle 誤攔截所有 `.xml` 的舊 bug
+- **8 個格式確認目前無法安全實作**（Scubapro LogTRAK、Mares Dive Organizer、HW OSTC、Cressi、Ratio iDive、Cochran CAN、Aqualung i-Trak、APD LogViewer）：逐一查證後證實為專有二進位資料庫無公開規格、或研究樣本僅為文字佔位符無真實資料可驗證，非偷懶跳過，具體理由見 `format_inventory.md`「無法實作的格式」章節
+
 ---
 
 ## 關鍵文件

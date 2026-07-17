@@ -76,7 +76,18 @@ struct ImportWizardView: View {
                 .xml,
                 .json,
                 .commaSeparatedText,
-                .folder
+                .folder,
+                // v1.1 格式擴充（file_format_research 18 格式盤點）
+                UTType(filenameExtension: "sml")  ?? .xml,     // Suunto SML
+                UTType(filenameExtension: "sde")  ?? .zip,     // Suunto SDE（ZIP 包裝）
+                UTType(filenameExtension: "dl7")  ?? .plainText,  // DAN DL7
+                UTType(filenameExtension: "zxu")  ?? .plainText,
+                UTType(filenameExtension: "zxl")  ?? .plainText,
+                UTType(filenameExtension: "dlf")  ?? .data,    // Divesoft DLF
+                UTType(filenameExtension: "dat")  ?? .plainText,  // Reefnet Sensus
+                UTType(filenameExtension: "sql")  ?? .database,   // Diving Log 6.0
+                UTType(filenameExtension: "sqlite") ?? .database,
+                .plainText   // .txt（DAN DL7 / Cressi 等文字格式的相容副檔名）
             ],
             allowsMultipleSelection: true
         ) { result in
