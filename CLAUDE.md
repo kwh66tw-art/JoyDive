@@ -4,6 +4,20 @@
 
 ---
 
+## 🏛️ 家族層（2026-07-17 起，必讀）
+
+> 艦隊憲法 `../CLAUDE.md` 的「JD2 家族鐵律」凌駕本檔。開場先讀 `../_JD2-family/`。
+
+- **JD2Core 演算法層凍結**（F4 決策，`../_JD2-family/decisions/2026-07-17_F4-JD2Core評估結論.md`）：
+  `JD2Core/Algorithm/` 與 DiveKit 同源的 Models/Constants 檔案不得單獨修演算法——
+  發現演算法 bug 的流程＝**先修統一 DiveKit（`../DiveKit`）→ 才 port 回 JD2Core
+  （方向只允許 DiveKit → JD2Core）→ 登錄 `SYNC_TO_JD2-ULTRA.md`**。只修自己不登錄＝違規。
+- Logbook 專屬層（SwiftData 模型、Importers、DiveReplayEngine、UI）不受凍結影響，正常開發。
+- F5（v1 上架後）：JD2Core 的 DiveKit-fork 換統一 DiveKit 引用；F6 候選：Importers 與
+  UltraPhone 合流為 ImportKit。排程見 `../_JD2-family/FAMILY_ROADMAP.md`。
+
+---
+
 ## 現況速覽
 
 - **狀態**：v1.0 已提審 App Store（iOS + macOS）；iOS 審核逾期未回覆，PM 決定不再等待，**2026-07-14 啟動 v1.1 開發，2026-07-17 完工 13/14 項**（詳見 `V1_1_BACKLOG.md`）
