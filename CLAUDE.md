@@ -33,6 +33,7 @@
 - 新增 `MinimalZipReader.swift`（純 Swift 跨平台 ZIP 讀取器），順便修正 UDDF 的 ZIP 包裝格式原本在 iOS 完全無法匯入的既有缺口
 - 修正 `PeregrineParser`/`OceanicParser` 用預設 canHandle 誤攔截所有 `.xml` 的舊 bug
 - **8 個格式確認目前無法安全實作**（Scubapro LogTRAK、Mares Dive Organizer、HW OSTC、Cressi、Ratio iDive、Cochran CAN、Aqualung i-Trak、APD LogViewer）：逐一查證後證實為專有二進位資料庫無公開規格、或研究樣本僅為文字佔位符無真實資料可驗證，非偷懶跳過，具體理由見 `format_inventory.md`「無法實作的格式」章節
+- 後續（同日）：Import tab「Supported Formats」改依品牌分組＋單欄列表列，Dive Profile 剖面圖的組織艙資訊列改為與 Ultra companion `DiveAnalysisView.calloutRow` 一致的五欄排版，詳見 `CHANGELOG.md` 同日第二條
 
 ---
 

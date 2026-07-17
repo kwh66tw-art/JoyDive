@@ -94,41 +94,75 @@ struct DiveAnalysisView: View {
     }
 
     // MARK: - 選取點資訊列
+    // port 自 JD2-Ultra companion DiveAnalysisView.calloutRow：Time/Depth/Temp/
+    // Ceiling/No Deco 五欄等寬排版，label 在上、數值在下；只有真的需要警示時
+    // （減壓中 / NDL 逼近）數值才用填色膠囊強調，其餘為一般深色文字。
 
     private func calloutRow(_ point: DiveReplayEngine.ReplayPoint) -> some View {
-        HStack(spacing: 14) {
-            calloutItem(icon: "arrow.down.to.line", text: String(format: "%.1f m", point.depthMeters))
+        HStack(spacing: 0) {
+            calloutCell(label: Text("Time"), value: timeLabel(point.timeSeconds))
+            calloutCell(label: Text("Depth"), value: String(format: "%.1f m", point.depthMeters))
             if let temp = point.waterTemp {
-                calloutItem(icon: "thermometer.medium", text: String(format: "%.0f°C", temp))
+                calloutCell(label: Text("Temp"), value: String(format: "%.0f°C", temp))
             }
-            if point.ceilingDepth > 0 {
-                calloutItem(icon: "arrow.up.to.line", text: String(format: "%@ %.0f m", String(localized: "Ceiling"), point.ceilingDepth))
-                    .foregroundStyle(.red)
-            } else if point.ndlSeconds < Buhlmann.ndlUnlimitedMarker {
-                calloutItem(icon: "timer", text: "NDL \(point.ndlSeconds / 60) min")
-            }
-            Spacer()
-            Text(timeLabel(point.timeSeconds))
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+            calloutCell(
+                label: Text("Ceiling"),
+                value: point.ceilingDepth > 0 ? String(format: "%.0f m", point.ceilingDepth) : "—",
+                accent: point.ceilingDepth > 0 ? .deco : .neutral
+            )
+            calloutCell(
+                label: Text("No Deco"),
+                value: ndlText(point.ndlSeconds),
+                accent: point.ndlSeconds < 10 * 60 ? .warning : .neutral
+            )
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
-    private func calloutItem(icon: String, text: String) -> some View {
-        HStack(spacing: 4) {
-            Image(systemName: icon).font(.caption2)
-            Text(text).font(.caption.monospacedDigit())
+    /// 數值強調樣式：一般狀態＝純深字、無膠囊；只有真的要警示時膠囊才亮起。
+    private enum CalloutAccent {
+        case neutral, warning, deco
+        var pillFill: Color? {
+            switch self {
+            case .neutral: return nil
+            case .warning: return .yellow
+            case .deco:    return .red
+            }
         }
+        var textColor: Color {
+            switch self {
+            case .neutral: return .primary
+            case .warning: return .black
+            case .deco:    return .white
+            }
+        }
+    }
+
+    private func calloutCell(label: Text, value: String, accent: CalloutAccent = .neutral) -> some View {
+        VStack(spacing: 3) {
+            label
+                .font(.caption2)
+                .foregroundStyle(Color.accessibleSecondary)
+            Text(verbatim: value)
+                .font(.subheadline.weight(.semibold).monospacedDigit())
+                .foregroundStyle(accent.textColor)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background {
+                    if let fill = accent.pillFill { Capsule().fill(fill) }
+                }
+        }
+        .frame(maxWidth: .infinity)
     }
 
     private func timeLabel(_ seconds: Double) -> String {
-        let m = Int(seconds) / 60
-        let s = Int(seconds) % 60
-        return String(format: "%d:%02d", m, s)
+        "\(Int(seconds) / 60)'\(String(format: "%02d", Int(seconds) % 60))\""
+    }
+
+    /// 與 Ultra companion PlanModel.ndlText 相同的顯示規則（99+ / 分鐘）
+    private func ndlText(_ seconds: Int) -> String {
+        seconds >= Buhlmann.ndlUnlimitedMarker ? "99+" : "\(seconds / 60)'"
     }
 }
 

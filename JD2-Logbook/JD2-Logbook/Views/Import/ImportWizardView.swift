@@ -221,32 +221,53 @@ struct ImportWizardView: View {
         .padding(.bottom, 20)
     }
 
+    // 16 種格式以品牌/來源分組＋單欄列表列呈現（取代舊版 2 欄卡片格線——格式數從
+    // v1.1 前的 6 種增至 16 種後，無分類的 2 欄格線難以掃視）。列的視覺語彙
+    // port 自 JD2-Ultra companion 的 ValueRow/NavRow 慣例（DiveComponents.swift）：
+    // 圖示＋標題置左、次要資訊置右，同分組共用一個 grouped 卡片背景＋列間 Divider，
+    // 對齊 iOS 原生 List(.insetGrouped) 的視覺語言。
+
     private var supportedFormatsSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 16) {
             Text(String(localized: "Supported Formats"))
                 .font(.subheadline.weight(.semibold))
                 .padding(.horizontal, 24)
 
-            LazyVGrid(
-                columns: [GridItem(.flexible()), GridItem(.flexible())],
-                spacing: 8
-            ) {
-                ForEach(supportedFormatCards, id: \.name) { card in
-                    FormatCard(name: card.name, extensions: card.ext, icon: card.icon)
+            VStack(alignment: .leading, spacing: 14) {
+                ForEach(supportedFormatGroups, id: \.title) { group in
+                    FormatGroupSection(title: group.title, formats: group.formats)
                 }
             }
             .padding(.horizontal, 16)
         }
     }
 
-    private var supportedFormatCards: [(name: String, ext: String, icon: String)] {
+    private var supportedFormatGroups: [(title: String, formats: [(name: String, ext: String, icon: String)])] {
         [
-            ("UDDF",                           ".uddf",        "doc.badge.gearshape"),
-            (String(localized: "Subsurface XML"), ".ssrf / .xml", "doc.richtext"),
-            (String(localized: "Subsurface CSV"), ".csv",         "tablecells"),
-            (String(localized: "Suunto JSON"),    ".json",        "curlybraces"),
-            (String(localized: "Garmin Descent"), ".fit",         "waveform.path.ecg"),
-            (String(localized: "Seabear CSV"),    ".csv",         "tablecells.fill")
+            (String(localized: "Universal"), [
+                ("UDDF",                              ".uddf, .zip",  "doc.badge.gearshape"),
+                (String(localized: "Subsurface XML"), ".ssrf / .xml", "doc.richtext"),
+                (String(localized: "Subsurface CSV"), ".csv",         "tablecells"),
+                (String(localized: "Seabear CSV"),    ".csv",         "tablecells.fill")
+            ]),
+            ("Suunto", [
+                ("Suunto DM4/DM5",                    ".xml",         "applewatch.watchface"),
+                ("Suunto SML",                        ".sml",         "applewatch.watchface"),
+                ("Suunto SDE",                        ".sde",         "applewatch.watchface"),
+                (String(localized: "Suunto JSON"),    ".json",        "curlybraces")
+            ]),
+            ("Garmin", [
+                (String(localized: "Garmin Descent"), ".fit",         "waveform.path.ecg"),
+                ("Garmin Connect",                    ".json",        "curlybraces")
+            ]),
+            (String(localized: "Other Brands"), [
+                ("Shearwater Cloud",                  ".xml",         "gauge.with.dots.needle.67percent"),
+                ("DAN DL7",                            ".dl7, .zxu, .zxl",   "doc.text"),
+                ("Divesoft DLF",                       ".dlf",               "doc.text"),
+                ("Reefnet Sensus",                     ".csv, .dat",         "tablecells.fill"),
+                ("Diving Log 6.0",                     ".sql, .sqlite, .db", "cylinder.split.1x2"),
+                ("Deepblu COSMIQ+",                    ".json",              "curlybraces")
+            ])
         ]
     }
 
@@ -446,7 +467,12 @@ struct ImportWizardView: View {
 
     /// 遞迴枚舉資料夾內支援格式的潛水日誌檔案，依檔名排序
     private func enumerateSupportedFiles(in folderURL: URL) -> [URL] {
-        let supported = Set(["uddf", "ssrf", "xml", "json", "csv", "fit"])
+        let supported = Set([
+            "uddf", "ssrf", "xml", "json", "csv", "fit", "zip",
+            // v1.1 格式擴充（file_format_research 18 格式盤點）
+            "sml", "sde", "dl7", "zxu", "zxl", "dlf", "dat",
+            "sql", "sqlite", "db", "txt"
+        ])
         guard let enumerator = FileManager.default.enumerator(
             at: folderURL,
             includingPropertiesForKeys: [.isRegularFileKey],
@@ -517,37 +543,64 @@ struct ImportWizardView: View {
     }
 }
 
-// MARK: - Format Card
+// MARK: - Format Group Section
+// port 自 JD2-Ultra companion DiveComponents.swift 的 SectionHeader／ValueRow 慣例：
+// 大寫小標籤分組標題＋單欄列，取代原本無分類、無法掃視的 2 欄卡片格線。
 
-private struct FormatCard: View {
+private struct FormatGroupSection: View {
+    let title: String
+    let formats: [(name: String, ext: String, icon: String)]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .textCase(.uppercase)
+                .tracking(0.6)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 12)
+
+            VStack(spacing: 0) {
+                ForEach(Array(formats.enumerated()), id: \.offset) { index, format in
+                    FormatRow(name: format.name, extensions: format.ext, icon: format.icon)
+                    if index < formats.count - 1 {
+                        Divider().padding(.leading, 40)
+                    }
+                }
+            }
+            .background(Color.platformSecondaryGroupedBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+    }
+}
+
+private struct FormatRow: View {
     let name: String
     let extensions: String
     let icon: String
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 10) {
             Image(systemName: icon)
                 .font(.subheadline)
                 .foregroundStyle(.tint)
-                .frame(minWidth: 22)
+                .frame(minWidth: 20)
                 .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: 1) {
-                Text(name)
-                    .font(.caption.weight(.semibold))
-                    .fixedSize(horizontal: false, vertical: true)   // 允許換行，大字級不裁切
-                Text(extensions)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            Text(name)
+                .font(.subheadline)
+                .lineLimit(1)
 
-            Spacer(minLength: 0)
+            Spacer(minLength: 8)
+
+            Text(extensions)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .background(Color.platformSecondaryGroupedBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
         // WCAG: 合併為單一元素，並用格式名稱當 label（避免 VoiceOver 把 ".csv" 讀成「點 c s v」）
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(name)

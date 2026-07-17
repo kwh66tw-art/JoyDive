@@ -31,6 +31,25 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-17 — Import 格式清單重新規劃 + 剖面資訊列比照 Ultra companion
+
+**Import tab「Supported Formats」**：格式數擴充到 16 種後，原本無分類的 2 欄
+卡片格線難以掃視，改為依品牌/來源分 4 組（Universal / Suunto / Garmin /
+Other Brands）＋單欄列表列。列的視覺語彙 port 自 JD2-Ultra companion
+`DiveComponents.swift` 的 `SectionHeader`／`ValueRow` 慣例（圖示＋標題置左、
+次要資訊置右，grouped 卡片背景＋列間 Divider），對齊 iOS 原生
+`List(.insetGrouped)` 視覺語言，而非沿用舊版無來源依據的卡片格線設計。
+
+**Dive Profile 互動剖面圖／組織艙負荷資訊列**：原本的圖示膠囊列（icon+text
+pill）改為與 JD2-Ultra companion `DiveAnalysisView.calloutRow` 完全一致的
+五欄等寬排版（Time / Depth / Temp / Ceiling / No Deco，label 在上、數值在
+下）；新增「安全語意數值才用填色膠囊強調」規則——一般狀態為純深色文字，
+只有真的減壓中（紅底白字）或免減壓時間逼近 10 分鐘（黃底黑字）時膠囊才
+亮起，其餘與 Ultra 邏輯（`PlanModel.ndlText`：99+ / 分鐘）一致。
+
+新增 4 個 xcstrings 翻譯 key（"Temp"／"No Deco"／"Universal"／"Other Brands"），
+18 種語言全數補齊，優先沿用 Ultra 既有翻譯值。
+
 ### 2026-07-17 — 匯入格式全面擴充（10 個新解析器，8 個確認無法安全實作）
 
 PM 指示全面查證 `/file_format_research` 盤點的 18 種潛水電腦/軟體格式，不接受
