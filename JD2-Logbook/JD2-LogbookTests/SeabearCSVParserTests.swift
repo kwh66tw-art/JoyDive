@@ -13,7 +13,7 @@
 //   - waterTemperature 取第一筆 Temperature 欄位值
 
 import XCTest
-@testable import JD2_Logbook
+@testable import JoyDive_
 
 final class SeabearCSVParserTests: XCTestCase {
 

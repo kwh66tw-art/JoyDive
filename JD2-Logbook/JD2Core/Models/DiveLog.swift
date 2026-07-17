@@ -10,14 +10,23 @@ import SwiftData
 // MARK: - 剖面樣本
 
 /// 單一深度剖面樣本點
-/// 使用短 CodingKey（t/d）節省 JSON 體積（一次潛水可能數百個樣本）
+/// 使用短 CodingKey（t/d/w）節省 JSON 體積（一次潛水可能數百個樣本）
 struct DiveProfileSample: Codable {
-    let timeSeconds: Double   // 距潛水開始的秒數
-    let depthMeters: Double   // 深度（公尺）
+    let timeSeconds: Double     // 距潛水開始的秒數
+    let depthMeters: Double     // 深度（公尺）
+    /// 水溫（攝氏度）。v1.1 #4：additive optional，舊資料 / 無此欄位的匯入器解碼為 nil，優雅降級
+    var waterTemp: Double?
 
     enum CodingKeys: String, CodingKey {
         case timeSeconds = "t"
         case depthMeters = "d"
+        case waterTemp   = "w"
+    }
+
+    init(timeSeconds: Double, depthMeters: Double, waterTemp: Double? = nil) {
+        self.timeSeconds = timeSeconds
+        self.depthMeters = depthMeters
+        self.waterTemp = waterTemp
     }
 }
 
@@ -121,6 +130,14 @@ final class DiveLog {
     /// 源檔案格式: "UDDF", "SHEARWATER", "Garmin" 等
     var sourceFormat: String = "manual"
 
+    /// 平均深度（公尺）。0 = 未記錄（匯入來源無此欄位）
+    /// v1.1 #8：additive 欄位，SwiftData lightweight migration 自動補 0
+    var avgDepth: Double = 0
+
+    /// 匯入時無對應欄位的原始資料（裝置序號/韌體/buddy/tags 等），key-value JSON dump
+    /// v1.1 #6/#7：additive 欄位，SwiftData lightweight migration 自動補 "{}"
+    var importExtrasJSON: String = "{}"
+
     /// 創建時間戳
     var createdAt: Date
 
@@ -200,6 +217,35 @@ final class DiveLog {
         // 簡化計算：假設潛水時間內均勻上升
         let timeInMinutes = Double(diveTimeSeconds) / 60.0
         return maxDepth / timeInMinutes
+    }
+
+    /// 解碼後的匯入原始資料（Detail view「原始資料」區塊用）
+    var importExtras: [String: String] {
+        guard let data = importExtrasJSON.data(using: .utf8),
+              let dict = try? JSONDecoder().decode([String: String].self, from: data)
+        else { return [:] }
+        return dict
+    }
+
+    /// 平均深度以樣本梯形近似重建（匯入來源無 avgDepth 但有剖面樣本時使用）
+    /// 注意結束 tick 邊界：最後一個樣本到潛水結束仍需計入積分，
+    /// 否則會低估（見 V1_1_BACKLOG_解法參考 avgDepth 章節）
+    func reconstructedAvgDepth() -> Double {
+        let samples = profileSamples
+        guard samples.count >= 2 else { return 0 }
+        var area = 0.0
+        for i in 1..<samples.count {
+            let dt = samples[i].timeSeconds - samples[i - 1].timeSeconds
+            guard dt > 0 else { continue }
+            area += (samples[i].depthMeters + samples[i - 1].depthMeters) / 2.0 * dt
+        }
+        // 補最後一段到潛水結束（避免尾段深度未入積分但時長已計）
+        let totalTime = Double(diveTimeSeconds)
+        if let last = samples.last, totalTime > last.timeSeconds {
+            area += last.depthMeters * (totalTime - last.timeSeconds)
+        }
+        guard totalTime > 0 else { return 0 }
+        return area / totalTime
     }
 
     // MARK: - 方法

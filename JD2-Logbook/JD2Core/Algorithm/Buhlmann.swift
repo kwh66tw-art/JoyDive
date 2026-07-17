@@ -1,48 +1,49 @@
-// Buhlmann.swift — JoyDiveCore/Algorithm/Buhlmann.swift
-// v11.0 FINAL 🔒 (COMPLETED: All 4 TODOs implemented)
+// Buhlmann.swift — DiveKit/Algorithm
+// 基底：JD2Core v11.0 FINAL 🔒 (COMPLETED: All 4 TODOs implemented)
+// JD2-Ultra 變更：
+//   - public API、tissue 快照（snapshot/restore）供持久化與 DecoCalculator 模擬使用
+//   - gfLow/gfHigh 可由 PersonalSetting 設定
 //
 // ⚠️ 非執行緒安全，所有呼叫在同一 @MainActor（Swift 6）
 // ⚠️ firstCeilingBar 責任在 DiveEngine：
-//    .ascent 開始 → firstCeilingBar = rawCeiling()（確認已實作再呼叫）
+//    .ascent 開始 → firstCeilingBar = rawCeiling()
 //    .postDive    → firstCeilingBar = nil
-// ⚠️ reset()：app 冷啟動，或 environment.didSet 自動呼叫
+// ⚠️ reset()：app 冷啟動（無持久化狀態時），或 environment.didSet 自動呼叫
 // ⚠️ DiveEngine.init() 必須呼叫 updateSurface() → hasReceivedUpdate = true
 
 import Foundation
 
-struct Compartment {
-    let halfTimeN2: Double
-    let aN2: Double
-    let bN2: Double
-    var pN2: Double
+public struct Compartment: Sendable {
+    public let halfTimeN2: Double
+    public let aN2: Double
+    public let bN2: Double
+    public var pN2: Double
 }
 
-final class Buhlmann {
+public final class Buhlmann {
 
     // ✅ 初始化後、第一次 update() 前切換環境是合法的（hasReceivedUpdate = false）
     // ⚠️ 潛水中途（hasReceivedUpdate = true 後）不得切換
-    //    切換時自動呼叫 reset()，確保 compartments.piN2 與新環境一致
-    //    DiveEngine 無需手動呼叫 reset()（責任內化於此）
-    var environment: DiveEnvironment = .seaLevel {
+    public var environment: DiveEnvironment = .seaLevel {
         didSet {
             assert(!hasReceivedUpdate, "[Buhlmann] 潛水中途不得切換 environment")
             reset()
         }
     }
 
-    var gfLow: Double  = 0.40
-    var gfHigh: Double = 0.85
-    var firstCeilingBar: Double? = nil
+    public var gfLow: Double  = 0.40
+    public var gfHigh: Double = 0.85
+    public var firstCeilingBar: Double? = nil
 
-    private(set) var compartments: [Compartment] = []
+    public private(set) var compartments: [Compartment] = []
     private var prevDepth: Double = 0.0
     private var hasReceivedUpdate: Bool = false
 
     /// NDL ≥ 99min 與 NDL=∞（passCount==0）統一顯示「99+」
     /// 已知合併：對潛水安全無影響（99min 以上不需關注精確值）
-    static let ndlUnlimitedMarker: Int = 99 * 60
+    public static let ndlUnlimitedMarker: Int = 99 * 60
 
-    private static let zhl16cTable: [(ht: Double, a: Double, b: Double)] = [
+    static let zhl16cTable: [(ht: Double, a: Double, b: Double)] = [
         ( 4.0,1.2599,0.5050),( 8.0,1.0000,0.6514),(12.5,0.8618,0.7222),
         (18.5,0.7562,0.7825),(27.0,0.6667,0.8126),(38.3,0.5600,0.8434),
         (54.3,0.4947,0.8693),(77.0,0.4500,0.8910),(109.0,0.4187,0.9092),
@@ -51,9 +52,15 @@ final class Buhlmann {
         (635.0,0.2327,0.9653),
     ]
 
-    init(environment: DiveEnvironment = .seaLevel) {
+    public init(environment: DiveEnvironment = .seaLevel) {
         self.environment = environment
         reset()
+    }
+
+    /// JD2-Ultra: 套用個人保守度檔位
+    public func apply(personal: PersonalSetting) {
+        gfLow = personal.gfLow
+        gfHigh = personal.gfHigh
     }
 
     // MARK: - Core Update
@@ -64,7 +71,7 @@ final class Buhlmann {
     //   用「上一秒深度」+「當前氣體」計算初始肺泡壓
     //   氣體切換視為「在時間區段開頭已完成」，Schreiner 基線不偏移
     //
-    func update(depth: Double, gasMix: GasMix, deltaT: Double) {
+    public func update(depth: Double, gasMix: GasMix, deltaT: Double) {
         hasReceivedUpdate = true
 
         // ① 時間轉換（傳入秒，必須第一行）
@@ -89,11 +96,11 @@ final class Buhlmann {
 
         // ⑤ 更新 16 隔室
         for i in 0..<16 {
-            compartments[i].pN2 = schreiner(Pi: compartments[i].pN2,
-                                            ht: compartments[i].halfTimeN2,
-                                            t_min: deltaT_min,
-                                            Palv_initial: Palv_initial,
-                                            Pr: Pr)
+            compartments[i].pN2 = TissueMath.schreiner(Pi: compartments[i].pN2,
+                                                       ht: compartments[i].halfTimeN2,
+                                                       t_min: deltaT_min,
+                                                       Palv_initial: Palv_initial,
+                                                       Pr: Pr)
         }
 
         // ⑥ 只更新 prevDepth（不儲存 prevPalvN2）
@@ -101,7 +108,7 @@ final class Buhlmann {
         prevDepth = depth
     }
 
-    func updateSurface(deltaT: Double) {
+    public func updateSurface(deltaT: Double) {
         // Palv_surface ≈ 0.74 bar（fN2=0.79）
         // 組織從 piN2=0.74065（fN2Air=0.7902 基準）緩慢脫飽和至 ~0.74
         // 差距 0.00048 bar，速度極慢，第一次潛水前影響可忽略，物理行為正確
@@ -115,16 +122,11 @@ final class Buhlmann {
     //   M-value（GF 調整後）= 組織最大允許分壓
     //
     //   條件一：c.pN2 >= M-value → 組織已超限，當前即需 Deco → return 0
-    //     注意：即使 pN2 接近 M-value，只要 Palv < M-value，
-    //     組織必然脫飽和（漸近線在 M-value 之下），NDL = ∞，不 return 0
-    //
     //   條件二：Palv < M-value → 漸近線安全 → 此隔室 NDL = ∞，skip（合法）
-    //     EANx32 @8m：全部 16 隔室 skip → NDL = ∞（生理事實，非演算法缺陷）
-    //     → 回傳 ndlUnlimitedMarker → UI 顯示綠色「99+」，不觸發任何警告
     //
     //   ⚠️ 呼叫時機：DiveEngine.tick() 每秒呼叫，NDL 隨深度即時更新
     //
-    func ndlSeconds(at depth: Double, gasMix: GasMix) -> Int {
+    public func ndlSeconds(at depth: Double, gasMix: GasMix) -> Int {
         if case .trimix = gasMix {
             assertionFailure("[Buhlmann] Trimix NDL 未實作（v2.0 項目）")
             return 0
@@ -154,7 +156,7 @@ final class Buhlmann {
     }
 
     // MARK: - Ceiling
-    func ceiling(at depth: Double) -> Double {
+    public func ceiling(at depth: Double) -> Double {
         let gf = currentGF(at: depth)
         var maxPceil = environment.surfacePressureBar
         for c in compartments {
@@ -165,11 +167,9 @@ final class Buhlmann {
         return max(0, (maxPceil - environment.surfacePressureBar) * environment.metersPerBar)
     }
 
-    func rawCeiling() -> Double {
-        // ✅ FIXED: GF = 1.0，回傳絕對壓力（Bar）供 DiveEngine.firstCeilingBar 鎖定 GF 基準
+    public func rawCeiling() -> Double {
+        // GF = 1.0，回傳絕對壓力（Bar）供 DiveEngine.firstCeilingBar 鎖定 GF 基準
         // ⚠️ 回傳值為 Bar（絕對壓力），不是深度（Meters）
-        //    用途：firstCeilingBar = rawCeiling()，接著在 currentGF() 以 Bar 做插值運算
-        //    ceil()  函式回傳深度（Meters），職責不同，勿混淆
         let gf = 1.0
         var maxPceil = environment.surfacePressureBar
         for c in compartments {
@@ -180,11 +180,31 @@ final class Buhlmann {
         return maxPceil  // 絕對壓力 Bar（無 deco 時 ≈ surfacePressureBar）
     }
 
+    // MARK: - JD2-Ultra: 快照與還原（持久化 / TTS 模擬）
+
+    /// 目前 16 隔室 N₂ 分壓
+    public var tissuePressures: [Double] { compartments.map(\.pN2) }
+
+    /// 由持久化狀態還原組織壓力。
+    /// ⚠️ 僅限 App 啟動時使用；count 必須為 16，否則忽略並保持 reset 後狀態。
+    public func restoreTissues(_ pN2: [Double], firstCeilingBar: Double? = nil) {
+        guard pN2.count == 16 else {
+            assertionFailure("[Buhlmann] restoreTissues 需要 16 個隔室值")
+            return
+        }
+        for i in 0..<16 {
+            compartments[i].pN2 = pN2[i]
+        }
+        self.firstCeilingBar = firstCeilingBar
+        hasReceivedUpdate = true
+        prevDepth = 0.0
+    }
+
     // MARK: - Reset
     // 自動呼叫：environment.didSet（切換環境時）
-    // 手動呼叫：app 冷啟動
+    // 手動呼叫：app 冷啟動（無持久化狀態時）
     // ⚠️ 不在潛水結束時呼叫（組織狀態需保留用於連潛計算）
-    func reset() {
+    public func reset() {
         let piN2 = environment.initialTissuePN2  // fN2Air=0.7902，職責分離
         compartments = Self.zhl16cTable.map { row in
             Compartment(halfTimeN2: row.ht, aN2: row.a, bN2: row.b, pN2: piN2)
@@ -195,7 +215,7 @@ final class Buhlmann {
     }
 
     // MARK: - Private Helpers
-    private func currentGF(at depth: Double) -> Double {
+    func currentGF(at depth: Double) -> Double {
         guard let firstCeil = firstCeilingBar else { return gfHigh }
         let currentP = environment.absolutePressure(at: depth)
         let denom = environment.surfacePressureBar - firstCeil
@@ -204,14 +224,18 @@ final class Buhlmann {
             gfLow + (gfHigh - gfLow) * (currentP - firstCeil) / denom))
     }
 
-    private func alvPN2(at depth: Double, fN2: Double) -> Double {
+    func alvPN2(at depth: Double, fN2: Double) -> Double {
         return (environment.absolutePressure(at: depth)
                 - environment.waterVaporPressureBar) * fN2
     }
+}
 
-    private func schreiner(Pi: Double, ht: Double, t_min: Double,
-                            Palv_initial: Double, Pr: Double) -> Double {
-        // ✅ COMPLETED: Schreiner exponential equation
+// MARK: - JD2-Ultra: 共用組織數學（Buhlmann 與 DecoCalculator 共用同一實作，避免公式分歧）
+
+enum TissueMath {
+    /// Schreiner exponential equation（與 JD2Core v11.0 完全相同的公式）
+    static func schreiner(Pi: Double, ht: Double, t_min: Double,
+                          Palv_initial: Double, Pr: Double) -> Double {
         let k = log(2.0) / ht
         return Palv_initial + Pr * (t_min - 1.0 / k)
                - (Palv_initial - Pi - Pr / k) * exp(-k * t_min)

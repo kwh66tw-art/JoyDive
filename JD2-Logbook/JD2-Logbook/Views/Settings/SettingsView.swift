@@ -5,6 +5,7 @@ import SwiftUI
 import StoreKit
 import SwiftData
 import CoreLocation
+import UniformTypeIdentifiers
 
 struct SettingsView: View {
     @Environment(AppLanguageManager.self) private var languageManager
@@ -16,6 +17,19 @@ struct SettingsView: View {
     @State private var showRestoreAlert       = false
     @State private var restoreAlertMessage    = ""
     #endif
+
+    // v1.1 #14：備份匯出/匯入
+    @State private var showBackupExporter    = false
+    @State private var backupExportDocument: BackupJSONDocument?
+    @State private var showBackupImporter    = false
+    @State private var showBackupResultAlert = false
+    @State private var backupResultMessage   = ""
+
+    private var backupExportFilename: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return "JoyDive2-Backup-\(formatter.string(from: Date()))"
+    }
 
     private var appVersion: String {
         let v = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
@@ -152,6 +166,30 @@ struct SettingsView: View {
                 }
                 #endif
 
+                // ── 備份（v1.1 #14：Export/Import round-trip）───────
+                Section(
+                    header: Text("Backup"),
+                    footer: Text("Export all dives to a JSON file, or restore from a previously exported file.")
+                ) {
+                    Button {
+                        exportBackup()
+                    } label: {
+                        Label("Export Backup", systemImage: "square.and.arrow.up")
+                    }
+                    #if os(macOS)
+                    .buttonStyle(.borderless)
+                    #endif
+
+                    Button {
+                        showBackupImporter = true
+                    } label: {
+                        Label("Import Backup", systemImage: "square.and.arrow.down")
+                    }
+                    #if os(macOS)
+                    .buttonStyle(.borderless)
+                    #endif
+                }
+
                 // ── 關於 ───────────────────────────────────
                 Section(header: Text("About")) {
                     HStack {
@@ -229,9 +267,68 @@ struct SettingsView: View {
                 Text(restoreAlertMessage)
             }
             #endif
+            // ── 備份 Export/Import（v1.1 #14）───────────────────
+            .fileExporter(
+                isPresented: $showBackupExporter,
+                document: backupExportDocument,
+                contentType: .json,
+                defaultFilename: backupExportFilename
+            ) { result in
+                if case .failure(let error) = result {
+                    backupResultMessage = error.localizedDescription
+                    showBackupResultAlert = true
+                }
+            }
+            .fileImporter(
+                isPresented: $showBackupImporter,
+                allowedContentTypes: [.json]
+            ) { result in
+                importBackup(from: result)
+            }
+            .alert("Backup", isPresented: $showBackupResultAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(backupResultMessage)
+            }
     }
 
     // MARK: - Actions
+
+    private func exportBackup() {
+        do {
+            let data = try DiveLogDatabase.shared.exportAsJSON()
+            backupExportDocument = BackupJSONDocument(data: data)
+            showBackupExporter = true
+        } catch {
+            backupResultMessage = error.localizedDescription
+            showBackupResultAlert = true
+        }
+    }
+
+    private func importBackup(from result: Result<URL, Error>) {
+        switch result {
+        case .failure(let error):
+            backupResultMessage = error.localizedDescription
+            showBackupResultAlert = true
+
+        case .success(let url):
+            do {
+                guard url.startAccessingSecurityScopedResource() else {
+                    throw DiveLogImportError.fileNotFound(url.path)
+                }
+                defer { url.stopAccessingSecurityScopedResource() }
+                let data = try Data(contentsOf: url)
+                let (imported, skipped) = try DiveLogDatabase.shared.importFromJSON(data)
+                backupResultMessage = String(
+                    format: String(localized: "Imported %d dives, skipped %d duplicates."),
+                    imported, skipped
+                )
+            } catch {
+                backupResultMessage = error.localizedDescription
+            }
+            showBackupResultAlert = true
+        }
+    }
 
     private func openSystemLocationSettings() {
         #if os(iOS)
@@ -433,6 +530,30 @@ private struct PremiumFeatureRow: View {
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(title). \(subtitle)")
+    }
+}
+
+// MARK: - Backup JSON Document (v1.1 #14)
+
+/// fileExporter 用的最小 FileDocument 包裝，資料已由 DiveLogDatabase.exportAsJSON() 產生
+struct BackupJSONDocument: FileDocument {
+    static var readableContentTypes: [UTType] { [.json] }
+
+    var data: Data
+
+    init(data: Data) {
+        self.data = data
+    }
+
+    init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        self.data = data
+    }
+
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: data)
     }
 }
 

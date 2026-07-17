@@ -13,7 +13,7 @@
 
 import XCTest
 import Foundation
-@testable import JD2_Logbook
+@testable import JoyDive_
 
 final class SubsurfaceXMLParserTests: XCTestCase {
 

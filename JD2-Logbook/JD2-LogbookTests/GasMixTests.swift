@@ -10,7 +10,7 @@
 //   - 邊界值與無效輸入處理
 
 import XCTest
-@testable import JD2_Logbook
+@testable import JoyDive_
 
 final class GasMixTests: XCTestCase {
 

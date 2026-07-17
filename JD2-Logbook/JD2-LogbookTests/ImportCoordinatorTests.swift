@@ -18,7 +18,7 @@
 //   Suunto/suunto_ocean_air.json
 
 import XCTest
-@testable import JD2_Logbook
+@testable import JoyDive_
 
 @MainActor
 final class ImportCoordinatorTests: XCTestCase {

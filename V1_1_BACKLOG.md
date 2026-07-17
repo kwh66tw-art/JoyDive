@@ -1,7 +1,11 @@
 # JoyDive² v1.1 Backlog
 
 > 本文件整合所有 v1.0 之後待處理的問題與功能。  
-> 最後更新：2026-07-14
+> 最後更新：2026-07-17
+
+**狀態（2026-07-17）：13/14 項完工。** #1–8、#11–14 全數完成並通過 iOS+macOS build 與測試；
+#9/#10（iOS 18 Widget）PM 確認不需要、終止規劃（見下方對應章節）。
+詳細完工紀錄見 `CHANGELOG.md` 2026-07-17 條目。
 
 **已定案的實作方向**（PM 2026-07-14）：
 - #4/#5 **直接 port Ultra 的 `DiveKit`**，不修本地 `Buhlmann.swift`/`DiveEngine.swift`。原因：本地版本目前是死碼（無任何呼叫端），且對應 Ultra `JD2-ultra_決策.md` §4.2 稽核有 **9 項**已知安全級問題（原參考文件誤植為 8 項），一旦接上 UI 會全部從休眠變成活的。詳見 `V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`。
@@ -94,15 +98,15 @@
 
 ---
 
-### 9. iOS 18 Control Center 擴展
+### 9. iOS 18 Control Center 擴展 — ❌ 決定不做（PM 2026-07-17）
 
-快速存取最近潛水記錄。
+快速存取最近潛水記錄。**PM 確認 JD2-Logbook 不需要 widget**，本項目終止規劃，不排入後續版本。
 
 ---
 
-### 10. iOS 18 Lock Screen Widget
+### 10. iOS 18 Lock Screen Widget — ❌ 決定不做（PM 2026-07-17）
 
-顯示最近潛水或下次潛水倒計時。
+顯示最近潛水或下次潛水倒計時。**PM 確認 JD2-Logbook 不需要 widget**，本項目終止規劃，不排入後續版本。
 
 ---
 

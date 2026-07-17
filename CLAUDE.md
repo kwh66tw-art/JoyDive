@@ -6,12 +6,12 @@
 
 ## 現況速覽
 
-- **狀態**：v1.0 已提審 App Store（iOS + macOS）；iOS 審核逾期未回覆，PM 決定不再等待，**2026-07-14 啟動 v1.1 開發**（詳見 `V1_1_BACKLOG.md`）
+- **狀態**：v1.0 已提審 App Store（iOS + macOS）；iOS 審核逾期未回覆，PM 決定不再等待，**2026-07-14 啟動 v1.1 開發，2026-07-17 完工 13/14 項**（詳見 `V1_1_BACKLOG.md`）
 - **目標上線**：2026 年 8 月 18 日
 - **平台**：iOS 17.0+ / macOS 14.0+，Swift 6
 - **Bundle ID**：`com.jd2logbook.JD2-Logbook`
 - **Apple Team**：HUA SHENG Huang（77UHM3NN7J）
-- **最新 commit**：`316984a` — docs: build v1.1 document registry, absorb latest handovers, reconcile Ultra backlog reference
+- **最新 commit**：（本次 v1.1 完工 commit，見 `git log`）
 
 ### 審核狀態（截至 2026-07-14）
 - **macOS App 1.0**：✅ 已通過審核
@@ -19,8 +19,12 @@
 - **Build**：iOS + macOS 均為 Build 2（`CURRENT_PROJECT_VERSION = 2`；下次發布需 +1 → 3）
 - **IAP**：`com.jd2logbook.premium`，Non-Consumable，$1.99，已隨版本送審
 
-### v1.1 開發中（2026-07-14 啟動）
-- 詳細待辦見 `V1_1_BACKLOG.md`（14 項，含技術債 3 項）；已定案 #4/#5 port Ultra `DiveKit`、新增 #14 Export/Import 備份功能與 #6 併做
+### v1.1 開發（2026-07-14 啟動，2026-07-17 完工 13/14 項）
+- 詳細紀錄見 `V1_1_BACKLOG.md`、`CHANGELOG.md` 2026-07-17 條目
+- 已完成：#1–8、#11–14（技術債 3 項 + importExtrasJSON/avgDepth/裝置欄位 + DiveKit 互動剖面圖/組織艙飽和度 + Garmin Connect JSON + 測試覆蓋率 89.1% + Export/Import 備份 + 地圖 recenter + 語言切換）
+- **#9/#10（iOS 18 Widget）PM 確認不需要，終止規劃**，不會排入後續版本
+- **重要架構變更**：本地 `JD2Core/Algorithm/{Buhlmann,DiveEngine}.swift`、`Constants/AlgorithmConstants.swift`、`Models/{GasMix,DiveEnvironment}.swift` 已整包替換為 Ultra 的 `DiveKit` 版本（原本是零呼叫端的死碼，含 9 項已知安全問題）；`JD2Core/Algorithm/` 新增 `DecoCalculator`/`DivePlanner`/`FreeDive`/`GuidanceBanner`/`OxygenToxicity`/`DiveReplayEngine`，`JD2Core/State/` 為新資料夾（`DiveComputerState`/`LogSummary`/`SurfaceStatus`）
+- **待決策**：macOS `LSApplicationCategoryType` 誤觸發遊戲模式，PM 決定延後到上架前拍板，見 `Docs/KNOWN_ISSUES.md`「待決策事項」
 - 解法參考：`V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`（Ultra 單向提供，不會再更新）
 
 ---
@@ -29,7 +33,7 @@
 
 | 文件 | 用途 |
 |------|------|
-| `JD2-Logbook_文件登錄表_v1.4.md` | **全專案文件唯一索引**（狀態、版本、里程碑對照），新增/更新文件時同步維護 |
+| `JD2-Logbook_文件登錄表_v1.5.md` | **全專案文件唯一索引**（狀態、版本、里程碑對照），新增/更新文件時同步維護 |
 | `README.md` | 專案介紹、編譯方式、結構說明 |
 | `ARCHITECTURE.md` | 模組設計、SwiftData schema、解析器一覽 |
 | `CHANGELOG.md` | 版本異動紀錄 |

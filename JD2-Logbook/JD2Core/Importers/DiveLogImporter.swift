@@ -52,6 +52,16 @@ enum DiveLogImportError: Error, LocalizedError {
     }
 }
 
+/// v1.1 #6/#7：將匯入時無對應欄位的原始資料（buddy/裝置序號/韌體/tags 等）
+/// 編碼為 importExtrasJSON，取代舊有「dump 進 notes 文字」作法
+func buildImportExtrasJSON(_ pairs: [(String, String)]) -> String {
+    guard !pairs.isEmpty else { return "{}" }
+    let dict = Dictionary(uniqueKeysWithValues: pairs)
+    guard let data = try? JSONSerialization.data(withJSONObject: dict, options: [.sortedKeys]),
+          let str  = String(data: data, encoding: .utf8) else { return "{}" }
+    return str
+}
+
 /// 匯入格式列舉
 enum DiveLogFormat: String, CaseIterable {
     case uddf       = "UDDF"
@@ -73,7 +83,7 @@ enum DiveLogFormat: String, CaseIterable {
         case .peregrine:  return ["xml"]
         case .csv:        return ["csv"]
         case .seabear:    return ["csv"]            // .csv（canHandle 以內容區分）
-        case .garmin:     return ["fit"]
+        case .garmin:     return ["fit", "json"]   // v1.1 #12：json = Garmin Connect 匯出（canHandle 內容區分）
         case .suunto:     return ["json"]
         case .oceanic:    return ["ocf", "xml"]
         }
@@ -163,6 +173,7 @@ struct DiveLogImporterFactory {
         SeabearCSVParser(),      // 優先於通用 SubsurfaceCSVParser（內容簽名區分）
         SubsurfaceCSVParser(),
         GarminDescentParser(),
+        GarminConnectJSONParser(),   // v1.1 #12：FIT 的替代路線，內容簽名與 SuuntoJSONParser 互斥
         SuuntoJSONParser(),
         OceanicParser()
     ]
@@ -486,16 +497,12 @@ struct SubsurfaceCSVParser: DiveLogImporter {
             if !digits.isEmpty { dive.wetsuitThickness = digits }
         }
 
-        // 備註（原始 notes + buddy 附加，有空行分隔並加「匯入資料」標頭）
-        var noteParts: [String] = []
-        if !notes.isEmpty { noteParts.append(notes) }
-        var extras: [String] = []
-        if !buddy.isEmpty { extras.append("Buddy: \(buddy)") }
-        if let avg = Double(avgDepthStr), avg > 0 { extras.append(String(format: "Avg depth: %.1f m", avg)) }
-        if !extras.isEmpty {
-            noteParts.append("\n— Import data —\n\(extras.joined(separator: " | "))")
-        }
-        dive.notes = noteParts.joined(separator: "\n")
+        dive.notes = notes
+
+        if let avg = Double(avgDepthStr), avg > 0 { dive.avgDepth = avg }
+        var extras: [(String, String)] = []
+        if !buddy.isEmpty { extras.append(("buddy", buddy)) }
+        dive.importExtrasJSON = buildImportExtrasJSON(extras)
 
         dive.sourceFormat = "csv"
         return dive
@@ -698,10 +705,7 @@ struct GarminDescentParser: DiveLogImporter {
             )
             dive.sourceFormat = "garmin"
 
-            // 匯入附加資料 → notes
-            if let avg = avgDepth {
-                dive.notes = "\n— Import data —\nAvg depth: \(String(format: "%.1f m", avg))"
-            }
+            if let avg = avgDepth { dive.avgDepth = avg }
 
             // 深度剖面樣本：從 record messages 取 depth + timestamp
             dive.profileSamplesJSON = buildProfileSamplesJSON(from: recordMessages, startDate: startDate)
@@ -746,22 +750,27 @@ struct GarminDescentParser: DiveLogImporter {
 
     /// record messages → profileSamplesJSON
     /// 最多取 300 點（間隔取樣），避免 JSON 過大
+    /// v1.1 #4：record 有 temperature 欄位時一併寫入 w（水溫），無則省略（optional additive）
     private func buildProfileSamplesJSON(from records: [FitMessage], startDate: Date) -> String {
-        var samples: [(t: Double, d: Double)] = []
+        var samples: [(t: Double, d: Double, w: Double?)] = []
         for record in records {
             guard let ts    = record.interpretedField(key: "timestamp")?.time,
                   let depth = record.interpretedField(key: "depth")?.valueUnit?.value,
                   depth >= 0 else { continue }
             let t = ts.timeIntervalSince(startDate)
             guard t >= 0 else { continue }
-            samples.append((t: t, d: depth))
+            let temp = record.interpretedField(key: "temperature")?.valueUnit?.value
+            samples.append((t: t, d: depth, w: temp))
         }
         guard !samples.isEmpty else { return "[]" }
         // 間隔取樣：步長 = max(1, count / 300)
         let step = max(1, samples.count / 300)
         let chosen = stride(from: 0, to: samples.count, by: step).map { samples[$0] }
-        let json = "[" + chosen.map {
-            String(format: "{\"t\":%.1f,\"d\":%.3f}", $0.t, $0.d)
+        let json = "[" + chosen.map { s -> String in
+            if let w = s.w {
+                return String(format: "{\"t\":%.1f,\"d\":%.3f,\"w\":%.1f}", s.t, s.d, w)
+            }
+            return String(format: "{\"t\":%.1f,\"d\":%.3f}", s.t, s.d)
         }.joined(separator: ",") + "]"
         return json
     }
@@ -784,6 +793,192 @@ struct GarminDescentParser: DiveLogImporter {
         } else {
             return "{\"nitrox\":{\"fO2\":\(String(format: "%.2f", o2Pct / 100.0))}}"
         }
+    }
+}
+
+/// Garmin Connect JSON 解析器 — v1.1 #12：FIT 二進位格式的替代路線
+///
+/// ⚠️ 格式假設（待真實匯出樣本回驗，port 自 JD2-Ultra 的驗證過參考實作）：
+/// 依 Garmin Connect 網站/API 潛水活動匯出（activity JSON）的公開結構解析：
+///   根 = 單一 activity 物件，或 activity 物件陣列
+///   activity.activityId                     — 偵測特徵之一
+///   activity.activityName                   — 地點/名稱 → location
+///   activity.summaryDTO                     — 偵測特徵之一，欄位：
+///     .startTimeGMT / .startTimeLocal       — ISO 8601
+///     .duration                             — 秒（Double）
+///     .maxDepth                             — 公尺
+///     .averageDepth（可選）                 — 公尺 → avgDepth
+///     .minTemperature / .waterTemperature   — °C（可選；缺失 → 15.0）
+///     .startLatitude / .startLongitude      — degrees（可選）
+///   activity.description（可選）            — 備註
+///   activity.samples（可選，[{"t":秒,"d":公尺}]）— 深度剖面
+///
+/// 氣體：Connect 匯出 summary 無氣體資訊 → 一律預設 Air（使用者可事後編輯）。
+/// 內容偵測含 "summaryDTO" 或 "activityId" 特徵，明確排除 "DeviceLog"，不會誤吞 Suunto JSON。
+struct GarminConnectJSONParser: DiveLogImporter {
+
+    let format = DiveLogFormat.garmin
+
+    // MARK: - DiveLogImporter 協議
+
+    /// 格式偵測：.json 副檔名 + 內容前 512 bytes 含 Garmin Connect 特徵
+    func canHandle(filePath: String) -> Bool {
+        let ext = (filePath as NSString).pathExtension.lowercased()
+        guard ext == "json" else { return false }
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath),
+                                   options: .mappedIfSafe) else { return false }
+        return validateContent(data)
+    }
+
+    func validateContent(_ data: Data) -> Bool {
+        guard let head = String(data: data.prefix(512), encoding: .utf8) else { return false }
+        // 不吞 Suunto：DeviceLog 特徵直接排除
+        guard !head.contains("DeviceLog") else { return false }
+        return head.contains("summaryDTO") || head.contains("activityId")
+    }
+
+    func parse(from filePath: String) throws -> [DiveLog] {
+        guard FileManager.default.fileExists(atPath: filePath) else {
+            throw DiveLogImportError.fileNotFound(filePath)
+        }
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath),
+                                   options: .mappedIfSafe) else {
+            throw DiveLogImportError.corruptedData("無法讀取: \(filePath)")
+        }
+        guard !data.isEmpty else { throw DiveLogImportError.emptyFile }
+        return try Self.parseJSONData(data)
+    }
+
+    // MARK: - 靜態輔助（供單元測試直接呼叫）
+
+    static func parseJSONData(_ data: Data) throws -> [DiveLog] {
+        let json: Any
+        do {
+            json = try JSONSerialization.jsonObject(with: data)
+        } catch {
+            throw DiveLogImportError.parsingFailed("JSON 解析失敗", underlyingError: error)
+        }
+
+        // 根可為單一 activity 或陣列
+        let activities: [[String: Any]]
+        if let single = json as? [String: Any] {
+            activities = [single]
+        } else if let array = json as? [[String: Any]] {
+            activities = array
+        } else {
+            throw DiveLogImportError.invalidFormat("非 Garmin Connect activity JSON 結構")
+        }
+
+        var results: [DiveLog] = []
+        for activity in activities {
+            if let dive = try buildDive(from: activity) {
+                results.append(dive)
+            }
+        }
+        guard !results.isEmpty else {
+            throw DiveLogImportError.parsingFailed("找不到有效的潛水活動（缺 summaryDTO 或必要欄位）")
+        }
+        return results
+    }
+
+    // MARK: - 單筆組裝
+
+    private static func buildDive(from activity: [String: Any]) throws -> DiveLog? {
+        // summaryDTO 或活動本體皆可承載欄位（防禦：兩層都查）
+        let summary = (activity["summaryDTO"] as? [String: Any]) ?? activity
+
+        // ── 開始時間（GMT 優先；local 次之）─────────────────────
+        let timeStr = (summary["startTimeGMT"] as? String)
+            ?? (summary["startTimeLocal"] as? String)
+            ?? (activity["startTimeGMT"] as? String)
+        guard let timeStr, let dateTime = parseGarminDate(timeStr) else { return nil }
+
+        // ── 時長（秒）────────────────────────────────────────────
+        guard let durationNum = summary["duration"] as? NSNumber else { return nil }
+        let durationSec = Int(durationNum.doubleValue.rounded())
+        guard durationSec > 0 else { return nil }
+
+        // ── 最大深度（公尺）──────────────────────────────────────
+        guard let depthNum = summary["maxDepth"] as? NSNumber else { return nil }
+        let maxDepth = depthNum.doubleValue
+        guard maxDepth >= 0 else { return nil }
+
+        // ── 水溫（°C；缺失 → 15.0，同 FIT 路線預設）──────────────
+        let waterTemp = (summary["minTemperature"] as? NSNumber)?.doubleValue
+            ?? (summary["waterTemperature"] as? NSNumber)?.doubleValue
+            ?? 15.0
+
+        let dive = DiveLog(
+            dateTime:         dateTime,
+            location:         (activity["activityName"] as? String) ?? "",
+            maxDepth:         maxDepth,
+            diveTimeSeconds:  durationSec,
+            gasMixJSON:       "\"air\"",     // Connect 匯出無氣體資訊
+            waterTemperature: waterTemp
+        )
+        dive.sourceFormat = "garmin-json"
+
+        // 平均深度（可選，v1.1 #8）
+        if let avg = (summary["averageDepth"] as? NSNumber)?.doubleValue {
+            dive.avgDepth = avg
+        }
+
+        // 備註（可選）
+        if let desc = activity["description"] as? String, !desc.isEmpty {
+            dive.notes = desc
+        }
+
+        // GPS（可選；格式約束：緯 ±90°、經 ±180°）
+        if let lat = (summary["startLatitude"] as? NSNumber)?.doubleValue,
+           let lon = (summary["startLongitude"] as? NSNumber)?.doubleValue,
+           abs(lat) <= 90, abs(lon) <= 180 {
+            dive.latitude  = lat
+            dive.longitude = lon
+        }
+
+        // 深度剖面（可選，自家擴充鍵 samples: [{"t":秒,"d":公尺}]）
+        if let samples = activity["samples"] as? [[String: Any]] {
+            var profile: [DiveProfileSample] = []
+            for s in samples {
+                if let t = (s["t"] as? NSNumber)?.doubleValue,
+                   let d = (s["d"] as? NSNumber)?.doubleValue,
+                   t >= 0, d >= 0 {
+                    profile.append(DiveProfileSample(timeSeconds: t, depthMeters: d))
+                }
+            }
+            profile.sort { $0.timeSeconds < $1.timeSeconds }
+            if !profile.isEmpty,
+               let jsonData = try? JSONEncoder().encode(profile),
+               let jsonStr  = String(data: jsonData, encoding: .utf8) {
+                dive.profileSamplesJSON = jsonStr
+            }
+        }
+
+        return dive
+    }
+
+    // MARK: - 日期解析
+
+    /// Garmin Connect 時間格式："2023-08-17T08:51:59.0"（無時區＝GMT）、
+    /// 或標準 ISO 8601（含 Z / 毫秒）
+    static func parseGarminDate(_ str: String) -> Date? {
+        // 標準 ISO 8601（含/不含毫秒）
+        let fracFmt = ISO8601DateFormatter()
+        fracFmt.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let d = fracFmt.date(from: str) { return d }
+        let stdFmt = ISO8601DateFormatter()
+        stdFmt.formatOptions = [.withInternetDateTime]
+        if let d = stdFmt.date(from: str) { return d }
+        // Connect 無時區格式（視為 GMT）
+        let fmt = DateFormatter()
+        fmt.locale = Locale(identifier: "en_US_POSIX")
+        fmt.timeZone = TimeZone(identifier: "GMT")
+        fmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.S"
+        if let d = fmt.date(from: str) { return d }
+        fmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        if let d = fmt.date(from: str) { return d }
+        fmt.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        return fmt.date(from: str)
     }
 }
 
@@ -964,15 +1159,16 @@ struct SuuntoJSONParser: DiveLogImporter {
             if let minK = kelvins.min() {
                 waterTemp = (minK - 273.15).rounded(toDecimalPlaces: 2)
             }
-            // 剖面：Depth（公尺）+ Time（秒）
+            // 剖面：Depth（公尺）+ Time（秒）+ Temperature（v1.1 #4：Kelvin → Celsius，optional）
             for s in samples {
                 if let depthNum = s["Depth"] as? NSNumber,
                    let timeNum  = s["Time"]  as? NSNumber {
                     let d = depthNum.doubleValue
                     let t = timeNum.doubleValue
+                    let w = (s["Temperature"] as? NSNumber).map { $0.doubleValue - 273.15 }
                     if t >= 0, d >= 0 {
                         profileSamples.append(
-                            DiveProfileSample(timeSeconds: t, depthMeters: d)
+                            DiveProfileSample(timeSeconds: t, depthMeters: d, waterTemp: w)
                         )
                     }
                 }
@@ -1740,23 +1936,16 @@ private final class UDDFXMLDelegate: NSObject, XMLParserDelegate {
                 log.cylinderSize = String(format: "%.0fL", vol)
             }
 
-            // ── 備註（原始 notes + 匯入附加資料，空行分隔）──────
-            var noteParts: [String] = []
-            if let n = dive.notes, !n.isEmpty { noteParts.append(n) }
-            var extras: [String] = []
-            if let b = dive.buddy,  !b.isEmpty { extras.append("Buddy: \(b)") }
-            if let nr = dive.diveNumber        { extras.append("Dive #\(nr)") }
-            if let avg = dive.averageDepth     { extras.append(String(format: "Avg depth: %.1f m", avg)) }
-            if let model = dive.deviceModel {
-                var parts = [model]
-                if let sn = dive.deviceSerial   { parts.append("S/N:\(sn)") }
-                if let fw = dive.deviceFirmware { parts.append("FW:\(fw)") }
-                extras.append("Device: \(parts.joined(separator: " "))")
-            }
-            if !extras.isEmpty {
-                noteParts.append("\n— Import data —\n\(extras.joined(separator: " | "))")
-            }
-            log.notes = noteParts.joined(separator: "\n")
+            log.notes = dive.notes ?? ""
+
+            if let avg = dive.averageDepth { log.avgDepth = avg }
+            var extras: [(String, String)] = []
+            if let b = dive.buddy, !b.isEmpty { extras.append(("buddy", b)) }
+            if let nr = dive.diveNumber { extras.append(("diveNumber", String(nr))) }
+            if let model = dive.deviceModel { extras.append(("deviceModel", model)) }
+            if let sn = dive.deviceSerial { extras.append(("deviceSerial", sn)) }
+            if let fw = dive.deviceFirmware { extras.append(("deviceFirmware", fw)) }
+            log.importExtrasJSON = buildImportExtrasJSON(extras)
 
             // ── 深度剖面 ─────────────────────────────────────
             if !dive.samples.isEmpty {
@@ -2134,23 +2323,16 @@ private final class SubsurfaceXMLDelegate: NSObject, XMLParserDelegate {
                 if !digits.isEmpty { log.wetsuitThickness = digits }
             }
 
-            // ── 備註（原始 notes + 匯入附加資料，空行分隔）──────
-            var noteParts: [String] = []
-            if let n = dive.notes, !n.isEmpty { noteParts.append(n) }
-            var extras: [String] = []
-            if let b  = dive.buddy,    !b.isEmpty  { extras.append("Buddy: \(b)") }
-            if let tg = dive.tags,     !tg.isEmpty { extras.append("Tags: \(tg)") }
-            if let nr = dive.diveNumber             { extras.append("Dive #\(nr)") }
-            if let avg = dive.avgDepth              { extras.append(String(format: "Avg depth: %.1f m", avg)) }
-            if let model = dive.diveComputerModel {
-                var parts = [model]
-                if let sn = dive.diveComputerSerial { parts.append("S/N:\(sn)") }
-                extras.append("Device: \(parts.joined(separator: " "))")
-            }
-            if !extras.isEmpty {
-                noteParts.append("\n— Import data —\n\(extras.joined(separator: " | "))")
-            }
-            log.notes = noteParts.joined(separator: "\n")
+            log.notes = dive.notes ?? ""
+
+            if let avg = dive.avgDepth { log.avgDepth = avg }
+            var extras: [(String, String)] = []
+            if let b  = dive.buddy, !b.isEmpty  { extras.append(("buddy", b)) }
+            if let tg = dive.tags,  !tg.isEmpty { extras.append(("tags", tg)) }
+            if let nr = dive.diveNumber { extras.append(("diveNumber", String(nr))) }
+            if let model = dive.diveComputerModel { extras.append(("deviceModel", model)) }
+            if let sn = dive.diveComputerSerial { extras.append(("deviceSerial", sn)) }
+            log.importExtrasJSON = buildImportExtrasJSON(extras)
 
             // 剖面樣本：依時間去重（同一時間點出現兩次），排序後 JSON encode
             var seen = Set<Double>()

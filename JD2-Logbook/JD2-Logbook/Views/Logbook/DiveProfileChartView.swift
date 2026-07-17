@@ -4,6 +4,10 @@
 // 資料來源：DiveLog.profileSamples（SubsurfaceXML 解析後填入）
 // Y 軸反轉：數值越大 = 越深 = 畫面越低（使用負值 + 自訂 label）
 // 只在有樣本時渲染，空資料由 DiveLogDetailView 過濾
+//
+// v1.1 #4：純呈現圖表，不持有任何互動/選取狀態（比對 JD2-Ultra companion 版本對齊）。
+// 選取查點的垂直參考線由 DiveAnalysisView 透過 .chartOverlay 疊加繪製，
+// 不在此檔案內部處理，兩者職責分離。
 
 import SwiftUI
 import Charts

@@ -1,16 +1,22 @@
 # JD2-Logbook v1.0 上線前檢查清單
 
 **目標上線日**：2026 年 8 月 18 日  
-**最後更新**：2026-06-03
+**最後更新**：2026-07-17
+
+---
+
+## ⚠️ 待決策（上架前必須拍板，見 `Docs/KNOWN_ISSUES.md`）
+
+- [ ] macOS `Info.plist` 的 `LSApplicationCategoryType`：目前值 `public.app-category.sports-games` 會誤觸發系統遊戲模式，需改為 `public.app-category.sports` 或 `public.app-category.healthcare-fitness`，並對齊 App Store Connect 分類
 
 ---
 
 ## 🔴 必須完成（Block release）
 
 ### 編譯 & 測試
-- [ ] 所有 target 編譯無誤（iOS + macOS）
-- [ ] 解析器單元測試全部通過（`⌘U`）
-- [ ] 解析器測試覆蓋率 > 85%
+- [x] 所有 target 編譯無誤（iOS + macOS）— 2026-07-17 驗證
+- [x] 解析器單元測試全部通過（`xcodebuild test`）— 2026-07-17 驗證
+- [x] 解析器測試覆蓋率 > 85% — `DiveLogImporter.swift` 89.1%（2026-07-17）
 
 ### 匯入功能
 - [ ] UDDF 匯入成功（測試 3+ 檔案）

@@ -17,7 +17,7 @@
 // AI-generated (Claude)
 
 import XCTest
-@testable import JD2_Logbook
+@testable import JoyDive_
 
 final class SubsurfaceCSVParserTests: XCTestCase {
 

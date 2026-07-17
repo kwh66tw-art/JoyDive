@@ -1,9 +1,10 @@
-// GasMix.swift — JoyDiveCore/Models/GasMix.swift
-// v6.1 — 加入自訂 Codable（修正 air bare-string 格式）
+// GasMix.swift — DiveKit/Models
+// 基底：JD2Core v6.1（加入自訂 Codable，修正 air bare-string 格式）
+// JD2-Ultra: 加上 public、O₂% 範圍對齊 業界標準（Nitrox 21–50%，下限保護仍為 0.16）
 
 import Foundation
 
-enum GasMix: Codable, Hashable, CustomStringConvertible {
+public enum GasMix: Codable, Hashable, CustomStringConvertible, Sendable {
 
     case air
     case nitrox(fO2: Double)
@@ -14,7 +15,7 @@ enum GasMix: Codable, Hashable, CustomStringConvertible {
     //    initialTissuePN2 使用 AlgorithmConstants.fN2Air = 0.7902（職責分離）
     //    DO NOT UNIFY
 
-    var fO2: Double {
+    public var fO2: Double {
         switch self {
         case .air:                  return 0.21
         case .nitrox(let f):        return min(max(f, 0.16), 1.0)
@@ -22,47 +23,50 @@ enum GasMix: Codable, Hashable, CustomStringConvertible {
         }
     }
 
-    var fHe: Double {
+    public var fHe: Double {
         switch self {
         case .trimix(_, let h):     return h
         default:                    return 0.0
         }
     }
 
-    var fN2: Double { 1.0 - fO2 - fHe }   // air: 0.79，加總 = 1.00 ✅
+    public var fN2: Double { 1.0 - fO2 - fHe }   // air: 0.79，加總 = 1.00 ✅
 
     // MARK: - 顯示名稱
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .air:                  return "Air"
-        case .nitrox(let f):        return String(format: "EANx%d", Int(f * 100))
+        case .nitrox(let f):        return String(format: "EANx%d", Int((f * 100).rounded()))
         case .trimix(let o, let h): return String(format: "Tx%.0f/%.0f", o*100, h*100)
         }
     }
 
-    nonisolated var description: String { displayName }
+    public var description: String { displayName }
 
     // MARK: - MOD 計算
     /// 最大操作深度（m）
     /// - Parameters:
     ///   - maxPO2: 最大允許 PO₂（bar），預設 1.4
     ///   - surfacePressure: 海平面氣壓（bar），預設 1.0
-    func mod(maxPO2: Double = 1.4, surfacePressure: Double = 1.0) -> Double {
+    ///   - metersPerBar: 深度換算係數（審計 G2：高度檔淡水 10.2，不再寫死 10.0）
+    public func mod(maxPO2: Double = 1.4,
+                    surfacePressure: Double = 1.0,
+                    metersPerBar: Double = 10.0) -> Double {
         guard fO2 > 0 else { return Double.infinity }
         // depth = (P_abs - P_surface) × metersPerBar
         // P_abs_max = maxPO2 / fO2（忽略水蒸氣，MOD 計算慣例）
-        return (maxPO2 / fO2 - surfacePressure) * 10.0
+        return (maxPO2 / fO2 - surfacePressure) * metersPerBar
     }
 
     // MARK: - Trimix 執行期保護（MVP 不支援）
-    var isTrimix: Bool {
+    public var isTrimix: Bool {
         if case .trimix = self { return true }
         return false
     }
 
     // MARK: - 自訂 Codable
     //
-    // 全站 JSON 格式（DiveLogEditSheet / DiveLogImporter 均依此規範）：
+    // 全站 JSON 格式（與 JD2-Logbook DiveLogEditSheet / DiveLogImporter 一致）：
     //   air    → "air"                              (bare JSON string)
     //   nitrox → {"nitrox":{"fO2":0.32}}
     //   trimix → {"trimix":{"fO2":0.21,"fHe":0.35}}
@@ -83,7 +87,7 @@ enum GasMix: Codable, Hashable, CustomStringConvertible {
         let fHe: Double
     }
 
-    nonisolated init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         // 優先嘗試 bare string（air 格式）
         if let str = try? decoder.singleValueContainer().decode(String.self) {
             guard str == "air" else {
@@ -110,7 +114,7 @@ enum GasMix: Codable, Hashable, CustomStringConvertible {
         }
     }
 
-    nonisolated func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         switch self {
         case .air:
             var c = encoder.singleValueContainer()

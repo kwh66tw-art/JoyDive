@@ -159,14 +159,57 @@ final class DiveLogDatabase {
     }
 
     /// 導出所有潛水日誌為 JSON（用於備份）
-    /// - TODO: DiveLog 需要實作 Codable 後才能啟用（Week 9 備份功能）
+    /// v1.1 #14：DiveLogBackupEntry DTO 承載完整欄位（含 profileSamplesJSON / importExtrasJSON）
     func exportAsJSON() throws -> Data {
-        throw DiveLogImportError.unsupportedFormat("JSON 導出功能待實現（需要 Codable 支援）")
+        let dives = try fetchAllDives()
+        let entries = dives.map(DiveLogBackupEntry.init(from:))
+        let appVersion = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "unknown"
+        let backup = DiveLogBackup(appVersion: appVersion, dives: entries)
+
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        return try encoder.encode(backup)
     }
 
-    /// 導入潛水日誌從 JSON
-    /// - TODO: DiveLog 需要實作 Codable 後才能啟用（Week 9 備份功能）
-    func importFromJSON(_ data: Data) throws {
-        throw DiveLogImportError.unsupportedFormat("JSON 導入功能待實現（需要 Codable 支援）")
+    /// 導入潛水日誌從 JSON（備份還原）
+    /// - 去重規則與 ImportCoordinator 一致：同地點、同深度、時間差 < 60 秒視為重複
+    /// - Returns: (imported, skipped) 筆數
+    @discardableResult
+    func importFromJSON(_ data: Data) throws -> (imported: Int, skipped: Int) {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let backup: DiveLogBackup
+        do {
+            backup = try decoder.decode(DiveLogBackup.self, from: data)
+        } catch {
+            throw DiveLogImportError.parsingFailed("備份檔案格式錯誤", underlyingError: error)
+        }
+        guard !backup.dives.isEmpty else { throw DiveLogImportError.emptyFile }
+
+        var existing = try fetchAllDives()
+        var imported = 0
+        var skipped = 0
+
+        for entry in backup.dives {
+            let isDuplicate = existing.contains { ex in
+                abs(ex.dateTime.timeIntervalSince(entry.dateTime)) < 60
+                    && ex.location == entry.location
+                    && ex.maxDepth == entry.maxDepth
+            }
+            guard !isDuplicate else {
+                skipped += 1
+                continue
+            }
+            let dive = entry.makeDiveLog()
+            context.insert(dive)
+            existing.append(dive)   // 避免同一份備份內的重複條目互相漏檢
+            imported += 1
+        }
+
+        if imported > 0 {
+            try context.save()
+        }
+        return (imported, skipped)
     }
 }

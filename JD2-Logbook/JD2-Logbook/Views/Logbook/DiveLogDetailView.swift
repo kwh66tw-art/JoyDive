@@ -64,6 +64,14 @@ struct DiveLogDetailView: View {
         return String(format: "%.5f°, %.5f°", lat, lon)
     }
 
+    /// v1.1 #4/#5：解碼氣體配置供 DiveAnalysisView 重放使用
+    private var diveGasMix: GasMix {
+        guard let data = dive.gasMixJSON.data(using: .utf8),
+              let decoded = try? JSONDecoder().decode(GasMix.self, from: data)
+        else { return .air }
+        return decoded
+    }
+
     // MARK: - Body
 
     var body: some View {
@@ -75,12 +83,25 @@ struct DiveLogDetailView: View {
             .listRowInsets(EdgeInsets())
             .listRowBackground(Color.clear)
 
-            // ── 深度剖面圖（有樣本才顯示）──────────────────
+            // ── 深度剖面圖 + 組織艙飽和度（v1.1 #4/#5：合併為單一互動單元）──
+            // 拖曳剖面任一點才顯示組織艙長條（省視覺空間，比照 JD2-Ultra companion）；
+            // ≥2 個樣本才有意義的重放結果，否則退回純剖面圖（無互動查點）。
             let profileSamples = dive.profileSamples
             if !profileSamples.isEmpty {
-                Section(header: Text("Dive Profile")) {
-                    DiveProfileChartView(samples: profileSamples)
-                        .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
+                Section(
+                    header: Text("Dive Profile"),
+                    footer: profileSamples.count >= 2
+                        ? Text("Estimated using Bühlmann ZHL-16C from the imported profile only. Not a substitute for your dive computer or certified decompression software.")
+                        : nil
+                ) {
+                    if profileSamples.count >= 2 {
+                        DiveAnalysisView(samples: profileSamples, gasMix: diveGasMix)
+                            .id(dive.persistentModelID)   // 換一筆 dive 時強制重建，選取狀態不跨潛水殘留
+                            .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
+                    } else {
+                        DiveProfileChartView(samples: profileSamples)
+                            .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
+                    }
                 }
             }
 
@@ -93,6 +114,9 @@ struct DiveLogDetailView: View {
             Section(header: Text("Dive Info")) {
                 DetailRow(icon: "bubbles.and.sparkles.fill", label: "Gas",      value: gasMixText)
                 DetailRow(icon: "water.waves",       label: "Environment",   value: environmentText)
+                if dive.avgDepth > 0 {
+                    DetailRow(icon: "water.waves",   label: "Avg Depth",     value: String(format: "%.1f m", dive.avgDepth))
+                }
                 DetailRow(icon: "doc.text",          label: "Source Format", value: sourceFormatDisplayName(dive.sourceFormat))
             }
 
@@ -181,6 +205,18 @@ struct DiveLogDetailView: View {
                 } else {
                     Text(dive.notes)
                         .font(.subheadline)
+                }
+            }
+
+            // ── 原始資料（v1.1 #6/#7：匯入來源無對應欄位的原始資料，可折疊）──
+            let extras = dive.importExtras
+            if !extras.isEmpty {
+                Section {
+                    DisclosureGroup(String(localized: "Raw Import Data")) {
+                        ForEach(extras.keys.sorted(), id: \.self) { key in
+                            DetailRow(icon: "shippingbox", label: importExtraKeyLabel(key), value: extras[key] ?? "")
+                        }
+                    }
                 }
             }
         }
@@ -361,6 +397,19 @@ struct DiveLogDetailView: View {
         }
     }
 
+    /// importExtrasJSON 的 key（英文，見 DiveLogImporter.swift 各 parser）→ 顯示用標籤
+    private func importExtraKeyLabel(_ key: String) -> String {
+        switch key {
+        case "buddy":          return String(localized: "Buddy")
+        case "tags":           return String(localized: "Tags")
+        case "diveNumber":     return String(localized: "Dive Number")
+        case "deviceModel":    return String(localized: "Device Model")
+        case "deviceSerial":   return String(localized: "Device Serial")
+        case "deviceFirmware": return String(localized: "Device Firmware")
+        default:               return key
+        }
+    }
+
     private func sourceFormatDisplayName(_ raw: String) -> String {
         switch raw.lowercased() {
         case "uddf":            return "UDDF"
@@ -372,6 +421,7 @@ struct DiveLogDetailView: View {
              "suunto-json":    return "Suunto JSON"
         case "garmin",
              "garmin-fit":     return "Garmin Descent"
+        case "garmin-json":    return "Garmin Connect"
         case "seabear",
              "seabear-csv":    return "Seabear CSV"
         case "manual":         return "Manual Entry"

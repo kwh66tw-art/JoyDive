@@ -212,6 +212,11 @@ final class ImportCoordinator {
                 return false
             }
 
+            // v1.1 #8：來源格式無 avgDepth 但有剖面樣本時，梯形近似重建
+            if dive.avgDepth <= 0 {
+                dive.avgDepth = dive.reconstructedAvgDepth()
+            }
+
             // 警告（但不略過）
             if dive.maxDepth > 40 {
                 importErrors.append("[warn] depth > 40m (\(dive.location) - \(dive.maxDepth)m)")
