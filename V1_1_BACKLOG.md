@@ -8,7 +8,7 @@
 詳細完工紀錄見 `CHANGELOG.md` 2026-07-17 條目。
 
 **已定案的實作方向**（PM 2026-07-14）：
-- #4/#5 **直接 port Ultra 的 `DiveKit`**，不修本地 `Buhlmann.swift`/`DiveEngine.swift`。原因：本地版本目前是死碼（無任何呼叫端），且對應 Ultra `JD2-ultra_決策.md` §4.2 稽核有 **9 項**已知安全級問題（原參考文件誤植為 8 項），一旦接上 UI 會全部從休眠變成活的。詳見 `V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`。
+- #4/#5 **直接 port Ultra 的 `DiveKit`**，不修本地 `Buhlmann.swift`/`DiveEngine.swift`。原因：本地版本目前是死碼（無任何呼叫端），且對應 Ultra `JD2-ultra_決策.md` §4.2 稽核有 **9 項**已知安全級問題（原參考文件誤植為 8 項），一旦接上 UI 會全部從休眠變成活的。詳見 `Docs/reports/V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`（2026-07-18 歸檔）。
 - **Export/Import 備份功能與 #6 一起做**（見新增第 14 項）。
 
 ---

@@ -3,7 +3,7 @@
 **方向：** JD2-Logbook → JD2-Ultra（單向記錄，本專案不會主動修改 [JD2-ultra](../JD2-ultra) 的程式碼）
 **建立日期：** 2026-07-17
 
-> 本文件與 `V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`（Ultra → Logbook，已停止更新）
+> 本文件與 `Docs/reports/V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`（Ultra → Logbook，已停止更新，2026-07-18 歸檔）
 > 方向相反、獨立維護。那份是 Ultra 單向提供給 Logbook 的解法參考；這份是
 > Logbook 這一側持續新增，記錄「在 JD2-Logbook 發現、且程式碼源頭可追溯到
 > Ultra（DiveKit port 或架構高度相似）的問題」，供 Ultra 端開發者（或未來接手

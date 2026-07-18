@@ -33,7 +33,7 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ### 2026-07-17 — 外部稽核報告修復（4 項風險）+ 建立 Ultra 同步追蹤文件
 
-外部稽核報告 `audit_report-0717.md` 針對核心演算法與匯入流程提出 4 項風險，
+外部稽核報告 `Docs/reports/R-2026-07-17-audit_report.md`（原 `audit_report-0717.md`，2026-07-18 歸檔更名）針對核心演算法與匯入流程提出 4 項風險，
 逐項核對程式碼後確認全數屬實（非誤報），並全數修復：
 
 1. **`Buhlmann` chunking 迴圈 pRate 歸零 bug**（[DiveEngine.swift](JD2-Logbook/JD2Core/Algorithm/DiveEngine.swift)）
