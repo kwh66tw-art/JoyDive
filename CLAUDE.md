@@ -38,8 +38,8 @@
 - 已完成：#1–8、#11–14（技術債 3 項 + importExtrasJSON/avgDepth/裝置欄位 + DiveKit 互動剖面圖/組織艙飽和度 + Garmin Connect JSON + 測試覆蓋率 89.1% + Export/Import 備份 + 地圖 recenter + 語言切換）
 - **#9/#10（iOS 18 Widget）PM 確認不需要，終止規劃**，不會排入後續版本
 - **重要架構變更**：本地 `JD2Core/Algorithm/{Buhlmann,DiveEngine}.swift`、`Constants/AlgorithmConstants.swift`、`Models/{GasMix,DiveEnvironment}.swift` 已整包替換為 Ultra 的 `DiveKit` 版本（原本是零呼叫端的死碼，含 9 項已知安全問題）；`JD2Core/Algorithm/` 新增 `DecoCalculator`/`DivePlanner`/`FreeDive`/`GuidanceBanner`/`OxygenToxicity`/`DiveReplayEngine`，`JD2Core/State/` 為新資料夾（`DiveComputerState`/`LogSummary`/`SurfaceStatus`）
-- **待決策**：macOS `LSApplicationCategoryType` 誤觸發遊戲模式，PM 決定延後到上架前拍板，見 `Docs/KNOWN_ISSUES.md`「待決策事項」
-- 解法參考：`Docs/reports/V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`（Ultra 單向提供，不會再更新，2026-07-18 歸檔）
+- **待決策**：macOS `LSApplicationCategoryType` 誤觸發遊戲模式，PM 決定延後到上架前拍板，見 `docs/KNOWN_ISSUES.md`「待決策事項」
+- 解法參考：`docs/reports/V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`（Ultra 單向提供，不會再更新，2026-07-18 歸檔）
 
 ### 匯入格式擴充（2026-07-17，`/file_format_research` 18 格式盤點）
 - PM 指示全面支援，不接受「叫使用者自己轉檔」的退讓方案；詳細紀錄見 `file_format_research/format_inventory.md`、`CHANGELOG.md` 2026-07-17 條目
@@ -50,7 +50,7 @@
 - 後續（同日）：Import tab「Supported Formats」改依品牌分組＋單欄列表列，Dive Profile 剖面圖的組織艙資訊列改為與 Ultra companion `DiveAnalysisView.calloutRow` 一致的五欄排版，詳見 `CHANGELOG.md` 同日第二條
 
 ### 外部稽核報告修復（2026-07-17）
-- 外部稽核報告 `Docs/reports/R-2026-07-17-audit_report.md`（原根目錄 `audit_report-0717.md`）提出 4 項風險，逐項核對程式碼後確認全數屬實並修復：`Buhlmann` chunking 迴圈 pRate 歸零 bug、匯入批次去重漏洞（同批次內部重複互相漏檢）、匯入解析阻塞 `@MainActor`（大檔案/批次匯入 UI 凍結）、OTU 跨日未主動重置。新增 `DiveEngineTests.swift` + `ImportCoordinatorTests.swift` 回歸測試，詳見 `CHANGELOG.md` 同日條目
+- 外部稽核報告 `docs/reports/R-2026-07-17-audit_report.md`（原根目錄 `audit_report-0717.md`）提出 4 項風險，逐項核對程式碼後確認全數屬實並修復：`Buhlmann` chunking 迴圈 pRate 歸零 bug、匯入批次去重漏洞（同批次內部重複互相漏檢）、匯入解析阻塞 `@MainActor`（大檔案/批次匯入 UI 凍結）、OTU 跨日未主動重置。新增 `DiveEngineTests.swift` + `ImportCoordinatorTests.swift` 回歸測試，詳見 `CHANGELOG.md` 同日條目
 - ⚠️ 風險 #3（阻塞主執行緒）的修復目前僅為 `Task.detached` workaround，因專案 `-default-isolation=MainActor` 且 `DiveLogImporter`/`DiveLog` 非 `nonisolated`/`Sendable`，編譯僅產生 warning（明確標註 Swift 6 language mode 下會是 error），非徹底修復，細節見 `SYNC_TO_JD2-ULTRA.md`
 - 已核對 [JD2-ultra](../JD2-ultra) 對應程式碼，確認 4 項風險同樣存在、尚未修復（不同專案，僅評估未修改）；新增 `SYNC_TO_JD2-ULTRA.md` 追蹤文件（P-03，方向與 P-02 相反），供 Ultra 端未來參考同步
 
@@ -69,9 +69,9 @@
 | `logbook/privacy.md` | 隱私政策正文（EN / 繁中 / 日文），同時為 GitHub Pages 線上版本的唯一來源 |
 | `UI_UX_SPEC.md` | UI/UX 規格 |
 | `WCAG_2.1_AA_AUDIT_CHECKLIST.md` | 可達性合規查核表 |
-| `Docs/ADMOB_IAP_SETUP.md` | AdMob App ID / Ad Unit ID / IAP 設定 |
-| `Docs/LOCALIZATION_GUIDE.md` | 多語系維護流程、用詞規範 |
-| `Docs/KNOWN_ISSUES.md` | 已知問題、技術雷區、v1.1 規劃 |
+| `docs/ADMOB_IAP_SETUP.md` | AdMob App ID / Ad Unit ID / IAP 設定 |
+| `docs/LOCALIZATION_GUIDE.md` | 多語系維護流程、用詞規範 |
+| `docs/KNOWN_ISSUES.md` | 已知問題、技術雷區、v1.1 規劃 |
 
 ---
 

@@ -27,7 +27,7 @@ final class SubsurfaceXMLParserTests: XCTestCase {
             .deletingLastPathComponent()   // JD2-LogbookTests/
             .deletingLastPathComponent()   // JD2-Logbook/
             .deletingLastPathComponent()   // project root
-            .appendingPathComponent("TestFiles/Suunto")
+            .appendingPathComponent("../_JD2-family/dive-log-samples/Suunto")
     }
 
     private var eonCoreURL:  URL { testFilesDir.appendingPathComponent("suunto_eon_core_nitrox.xml") }

@@ -13,7 +13,7 @@ final class DANDL7ParserTests: XCTestCase {
         let here       = (#filePath as NSString).deletingLastPathComponent
         let moduleRoot = (here as NSString).deletingLastPathComponent
         let repoRoot   = (moduleRoot as NSString).deletingLastPathComponent
-        return (repoRoot as NSString).appendingPathComponent("TestFiles/DAN")
+        return (repoRoot as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/DAN")
     }
 
     private func skipIfMissing(_ path: String) throws {

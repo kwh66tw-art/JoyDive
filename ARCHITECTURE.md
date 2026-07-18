@@ -1,6 +1,6 @@
 # JD2-Logbook 架構設計
 
-**最後更新**：2026-06-03
+**最後更新**：2026-07-18（反映 v1.1：JD2Core 整包替換、State/ 新資料夾、10 個新格式解析器、ImportCoordinator/MinimalZipReader）
 
 ---
 
@@ -14,10 +14,11 @@
                    │ @Query / @Environment
 ┌──────────────────▼──────────────────────┐
 │              JD2Core                    │
-│  ┌─────────┐ ┌──────────┐ ┌──────────┐ │
-│  │ Models  │ │Importers │ │Algorithm │ │
-│  │SwiftData│ │Parsers   │ │Bühlmann  │ │
-│  └─────────┘ └──────────┘ └──────────┘ │
+│ ┌────────┐┌─────────┐┌────────┐┌───────┐│
+│ │ Models ││Importers││Algorithm││ State ││
+│ │SwiftData││Parsers ││(部分死碼)││(快照) ││
+│ └────────┘└─────────┘└────────┘└───────┘│
+│              Utilities                   │
 └──────────────────┬──────────────────────┘
                    │
 ┌──────────────────▼──────────────────────┐
@@ -34,15 +35,26 @@
 | 檔案 | 說明 |
 |------|------|
 | `DiveLog.swift` | 主要 SwiftData 模型，包含潛水所有欄位（深度、時間、氣體、GPS 等）。`DiveProfileSample` 使用短 CodingKey (`t`/`d`) 節省 JSON 儲存體積。 |
+| `DiveLogBackup.swift` | Export/Import 備份格式（v1.1 新增），供裝置間搬移/還原完整資料庫。 |
 | `DiveLogDatabase.swift` | ModelContainer 單例，`DiveLogDatabase.shared.modelContainer` 提供全 App 存取。 |
+| `DiveSettings.swift` | 使用者偏好設定模型（v1.1 新增）。 |
 | `GasMix.swift` | 氣體混合（空氣、EAN、Trimix、純氧），含 O₂ / He / N₂ 百分比。 |
 | `DiveEnvironment.swift` | 潛水環境枚舉（海水、淡水、高鹽）。 |
+| `SimulatedDiveProfile.swift` | 匯入時若來源無逐秒剖面樣本，用於合成模擬剖面（v1.1 新增）。 |
 
-### JD2Core/Importers
+### JD2Core/State（v1.1 新增資料夾）
+
+| 檔案 | 說明 |
+|------|------|
+| `DiveComputerState.swift` | 潛水電腦運算狀態快照（與 DiveKit 同源檔，見下方「與 DiveKit 的關係」）。 |
+| `SurfaceStatus.swift` | 水面狀態（禁飛、系列潛水）快照。 |
+| `LogSummary.swift` | 日誌摘要持久化。 |
+
+> 這三個檔案是 DiveKit 演算法核心的資料模型層，隨 Algorithm/ 一併凍結（見下）。
+
+### JD2Core/Importers（v1.1 大幅擴充：新增 10 個格式解析器）
 
 #### DiveLogImporter Protocol
-
-所有解析器遵循統一 protocol：
 
 ```swift
 protocol DiveLogImporter {
@@ -52,31 +64,67 @@ protocol DiveLogImporter {
 }
 ```
 
-#### 支援格式一覽
+#### 格式支援現況（`DiveLogFormat` enum，22 格式宣告）
 
-| 解析器 | 支援格式 | 副檔名 | 備註 |
-|--------|---------|--------|------|
-| `UDDFParser` | UDDF | `.uddf` | XML，多品牌通用 |
-| `SubsurfaceXMLParser` | Subsurface XML | `.ssrf`, `.xml` | 涵蓋 Suunto / Shearwater / Cressi / Mares / Garmin |
-| `SubsurfaceCSVParser` | Subsurface CSV | `.csv` | RFC 4180，支援多行 notes、引號轉義 |
-| `SuuntoJSONParser` | Suunto JSON | `.json` | DeviceLog → DiveLog 映射 |
-| `GarminDescentParser` | Garmin FIT（二進位） | `.fit` | via `FitFileParser` SPM 套件 |
-| `ShearwaterParser` | Shearwater | `.xml` | XML 格式 |
-| `SeabearCSVParser` | Seabear CSV | `.csv` | 格式偵測與 SubsurfaceCSV 區分 |
-| `OceanicParser` | Oceanic | `.xml` | OCF+XML 混合 |
+**舊架構遺留**——9 個解析器以 struct 內嵌在單一巨檔 `DiveLogImporter.swift`（2,482 行）：
+UDDF、Peregrine、Subsurface CSV、Garmin FIT（Descent）、Garmin Connect JSON、Subsurface XML、
+Suunto JSON、Oceanic、Seabear CSV。
 
-#### ImportCoordinator
+**v1.1 新增**——9 個解析器獨立成檔（`file_format_research` 18 格式盤點的產出）：
 
-自動偵測格式、分派至對應解析器，提供統一批量匯入介面：
+| 解析器 | 格式 | 副檔名 | 備註 |
+|---|---|---|---|
+| `SuuntoDM5XMLParser` | Suunto DM5 | `.xml` | DM4/DM5 桌面軟體、D4i 錶款匯出 WCF XML |
+| `SuuntoSMLParser` | Suunto SML | `.xml` | Moveslink/Moveslink2 快取 |
+| `SuuntoSDEParser` | Suunto SDE | `.zip` 內含 | DM5 加密備份包，需 `MinimalZipReader` 解壓 |
+| `DANDL7Parser` | DAN DL7 | 純文字 | Divers Alert Network 管線分隔格式 |
+| `DivesoftDLFParser` | Divesoft DLF | 二進位 | Freedom/Liberty 專有格式 |
+| `ReefnetSensusParser` | Reefnet Sensus | `.csv`/`.dat` | Sensus 採樣格式 |
+| `DivingLogSQLiteParser` | Diving Log 6.0 | `.sql`/`.sqlite`/`.db` | 實際為 SQLite 資料庫 |
+| `DeepbluCOSMIQParser` | Deepblu COSMIQ+ | `.json` | 雲端 API JSON（格式假設，已對真實樣本驗證） |
+| `ShearwaterXMLParser` | Shearwater | `.xml` | 取代舊版內嵌解析器 |
 
-```swift
-ImportCoordinator.shared.importFiles([URL]) async throws -> ImportResult
+**已宣告未實作**（`DiveLogFormat` 有 case、副檔名、優先權，但無對應 parser struct）：
+Scubapro（LogTRAK）、Mares（Dive Organizer）、HW OSTC、Cressi（PC Interface）——
+研究樣本在 `_JD2-family/dive-log-samples/_未實作格式研究樣本/`，供未來實作參考。
+
+#### 支援工具（v1.1 新增）
+
+| 檔案 | 說明 |
+|---|---|
+| `MinimalZipReader.swift` | 純 Swift 跨平台 ZIP 讀取器（僅讀單一具名條目）。取代原本 UDDF 靠 `Process` 呼叫系統 `unzip` 的作法——iOS 沙盒無法執行任意可執行檔，此為 iOS 平台的關鍵缺口修復，Suunto SDE 亦共用此能力。 |
+| `ImportCoordinator.swift` | 統一匯入流程協調器：檔案驗證、格式自動偵測、解析、資料庫儲存的完整流程；批次匯入的去重邏輯所在（SYNC #2 已修復同批次互相漏檢問題）。 |
+
+#### 測試樣本統一管理（2026-07-18）
+
+原本分散在本 repo 的 `TestFiles/`（測試 fixture）與 `file_format_research/`（格式研究樣本）
+已集中至家族共用目錄 `_JD2-family/dive-log-samples/`（供 ultra 等其他專案未來重用），
+測試檔的 fixture 路徑已同步更新。詳見 `_JD2-family/F-00-文件登錄表.md`。
+
+### JD2Core/Algorithm ⚠️ 部分死碼，勿修改
+
+```
+Buhlmann.swift / DiveEngine.swift / DecoCalculator.swift / DivePlanner.swift /
+FreeDive.swift / GuidanceBanner.swift / OxygenToxicity.swift
 ```
 
-### JD2Core/Algorithm
+這些檔案與 `AppProject/DiveKit`（家族統一演算法核心）同源，但**目前無任何呼叫端引用，
+是休眠死碼**，且對應 Ultra 側稽核已知 **9 項安全級問題尚未修復**（見 `V1_1_BACKLOG.md`
+#4/#5）。一旦被 UI 接上會全部從休眠變成活的風險程式碼。
 
-- `Bühlmann.swift` — Bühlmann ZHL-16C 減壓演算法（計算組織飽和度、NDL）
-- `DiveEngine.swift` — 演算法驅動層，接受 DiveProfileSample 陣列輸入
+**F5 里程碑**（Logbook v1.1 送審後）會把這整組檔案換成 SPM 引用 `../DiveKit`，
+詳見 `_JD2-family/F-01-FAMILY_ROADMAP.md`。**在 F5 之前，這些檔案凍結、不得修改**
+（家族決策 `_JD2-family/decisions/2026-07-17_F4-JD2Core評估結論.md`）。
+
+`DiveReplayEngine.swift` 是例外——它是本 repo**現行使用**的日誌回放引擎（匯入後計算
+NDL/減壓狀態摘要），語意與即時電腦不同，**不隨 F5 遷移**，繼續留在 JD2Core。
+
+### JD2Core/Utilities
+
+| 檔案 | 說明 |
+|---|---|
+| `Extensions.swift` | 共用型別擴充。 |
+| `MockDataSeeder.swift` | 開發/測試用假資料產生器。 |
 
 ### Services
 
@@ -86,7 +134,8 @@ ImportCoordinator.shared.importFiles([URL]) async throws -> ImportResult
 
 ## SwiftData Schema
 
-目前版本（v1.0）欄位：
+目前版本（v1.1）欄位（節錄；完整定義見 `DiveLog.swift`，v1.1 additive 新增數個欄位＋預設值，
+lightweight migration 即足夠，無需額外 migration 指引）：
 
 ```
 DiveLog
@@ -94,7 +143,7 @@ DiveLog
 ├── dateTime: Date
 ├── duration: TimeInterval        (秒)
 ├── maxDepth: Double              (公尺)
-├── avgDepth: Double?
+├── avgDepth: Double?             (v1.1 新增)
 ├── waterTemperature: Double?     (攝氏)
 ├── airTemperature: Double?
 ├── location: String?
@@ -103,6 +152,8 @@ DiveLog
 ├── gasMix: GasMix               (embedded)
 ├── diveEnvironment: DiveEnvironment
 ├── notes: String?
+├── importExtrasJSON: String?     (v1.1 新增：非標準欄位保留，供匯入格式擴充)
+├── sourceDevice: String?         (v1.1 新增：裝置欄位)
 └── profileSamples: Data?        (JSON 編碼的 [DiveProfileSample])
 ```
 
@@ -122,7 +173,7 @@ MainTabView (TabView)
 │   ├── DiveCalendarView
 │   └── DiveLogDetailView
 ├── Tab 1: MapView (MapKit)
-├── Tab 2: ImportWizardView (3 步驟精靈)
+├── Tab 2: ImportWizardView (3 步驟精靈；v1.1 改版格式清單以匹配新解析器)
 └── Tab 3: SettingsView
 ```
 
@@ -166,6 +217,16 @@ MainTabView (NavigationSplitView)
 |------|-----|------|
 | `FitFileParser` | https://github.com/roznet/FitFileParser | Garmin FIT 二進位格式解析 |
 | `GoogleMobileAds` | https://github.com/googleads/swift-package-manager-google-mobile-ads | AdMob SDK v11 |
+| `GoogleUserMessagingPlatform` | https://github.com/googleads/swift-package-manager-google-user-messaging-platform.git | AdMob 同意框架（UMP） |
+
+---
+
+## 與 DiveKit／家族的關係
+
+本專案是 JD2 家族三個 App 之一。共用演算法核心事實來源是 `AppProject/DiveKit`
+（ultra／immersion 已引用，見 `_JD2-family/F-02-COMPAT_MATRIX.md`）。Logbook 的
+`JD2Core/Algorithm/`＋`JD2Core/State/` 是**尚未遷移的凍結 fork**——詳見上方
+「JD2Core/Algorithm ⚠️」一節與 `_JD2-family/decisions/2026-07-17_F4-JD2Core評估結論.md`。
 
 ---
 

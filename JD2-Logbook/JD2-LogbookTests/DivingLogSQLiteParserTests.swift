@@ -10,7 +10,7 @@ final class DivingLogSQLiteParserTests: XCTestCase {
         let here       = (#filePath as NSString).deletingLastPathComponent
         let moduleRoot = (here as NSString).deletingLastPathComponent
         let repoRoot   = (moduleRoot as NSString).deletingLastPathComponent
-        return (repoRoot as NSString).appendingPathComponent("TestFiles/DivingLog/TestDivingLog4.1.1.sql")
+        return (repoRoot as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/DivingLog/TestDivingLog4.1.1.sql")
     }
 
     private func skipIfMissing(_ path: String) throws {

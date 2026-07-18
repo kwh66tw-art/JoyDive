@@ -61,7 +61,7 @@ JD2-Logbook/                        ← 本 repo 根目錄
 │   ├── JD2-LogbookTests/           ← XCTest 解析器單元測試
 │   └── JD2-LogbookUITests/         ← UI 測試
 ├── TestFiles/                      ← 各品牌測試樣本檔（Suunto、Garmin、UDDF 等）
-├── Docs/                           ← 技術維護文件
+├── docs/                           ← 技術維護文件
 ├── Archive/                        ← 開發過渡性文件（HANDOFF、計劃文件等）
 ├── logbook/                        ← 隱私政策（privacy.md，GitHub Pages 線上版唯一來源）
 ├── README.md                       ← 本文件
@@ -81,8 +81,8 @@ JD2-Logbook/                        ← 本 repo 根目錄
 - [ARCHITECTURE.md](ARCHITECTURE.md) — 架構設計與模組說明
 - [CHANGELOG.md](CHANGELOG.md) — 版本紀錄
 - [V1_RELEASE_CHECKLIST.md](V1_RELEASE_CHECKLIST.md) — 上線前驗證清單
-- [Docs/KNOWN_ISSUES.md](Docs/KNOWN_ISSUES.md) — 已知問題與 v1.1 規劃
-- [Docs/ADMOB_IAP_SETUP.md](Docs/ADMOB_IAP_SETUP.md) — 廣告與 IAP 設定紀錄
+- [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) — 已知問題與 v1.1 規劃
+- [docs/ADMOB_IAP_SETUP.md](docs/ADMOB_IAP_SETUP.md) — 廣告與 IAP 設定紀錄
 - [WCAG_2.1_AA_AUDIT_CHECKLIST.md](WCAG_2.1_AA_AUDIT_CHECKLIST.md) — 可達性合規
 
 ---

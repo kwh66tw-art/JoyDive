@@ -10,7 +10,7 @@ final class ReefnetSensusParserTests: XCTestCase {
         let here       = (#filePath as NSString).deletingLastPathComponent
         let moduleRoot = (here as NSString).deletingLastPathComponent
         let repoRoot   = (moduleRoot as NSString).deletingLastPathComponent
-        return (repoRoot as NSString).appendingPathComponent("TestFiles/Sensus/TestSensusSingle.csv")
+        return (repoRoot as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/Sensus/TestSensusSingle.csv")
     }
 
     private func skipIfMissing(_ path: String) throws {

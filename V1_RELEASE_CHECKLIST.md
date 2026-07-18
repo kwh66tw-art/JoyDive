@@ -5,7 +5,7 @@
 
 ---
 
-## ⚠️ 待決策（上架前必須拍板，見 `Docs/KNOWN_ISSUES.md`）
+## ⚠️ 待決策（上架前必須拍板，見 `docs/KNOWN_ISSUES.md`）
 
 - [ ] macOS `Info.plist` 的 `LSApplicationCategoryType`：目前值 `public.app-category.sports-games` 會誤觸發系統遊戲模式，需改為 `public.app-category.sports` 或 `public.app-category.healthcare-fitness`，並對齊 App Store Connect 分類
 

@@ -33,7 +33,7 @@ final class GarminFITParserTests: XCTestCase {
         let here       = (#filePath as NSString).deletingLastPathComponent   // …/JD2-LogbookTests
         let moduleRoot = (here as NSString).deletingLastPathComponent        // …/JD2-Logbook
         let repoRoot   = (moduleRoot as NSString).deletingLastPathComponent  // …/JD2-Logbook (repo)
-        return (repoRoot as NSString).appendingPathComponent("TestFiles/Garmin")
+        return (repoRoot as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/Garmin")
     }
 
     private func garminPath(_ filename: String) -> String {

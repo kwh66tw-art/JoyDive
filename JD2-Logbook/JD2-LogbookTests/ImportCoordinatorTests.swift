@@ -33,7 +33,7 @@ final class ImportCoordinatorTests: XCTestCase {
     }
 
     private func testFilePath(_ relativePath: String) -> String {
-        (repoRoot as NSString).appendingPathComponent("TestFiles/\(relativePath)")
+        (repoRoot as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/\(relativePath)")
     }
 
     // MARK: - 輔助：建立最小合法 DiveLog
@@ -277,7 +277,7 @@ final class ImportCoordinatorTests: XCTestCase {
     func testUDDFParserProducesDives() throws {
         let path = testFilePath("UDDF/test42.uddf")
         guard FileManager.default.fileExists(atPath: path) else {
-            throw XCTSkip("TestFiles/UDDF/test42.uddf 不存在")
+            throw XCTSkip("../_JD2-family/dive-log-samples/UDDF/test42.uddf 不存在")
         }
         let parser = UDDFParser()
         let dives = try parser.parse(from: path)
@@ -292,7 +292,7 @@ final class ImportCoordinatorTests: XCTestCase {
     func testCSVParserProducesDivesWithEmptyLocation() throws {
         let path = testFilePath("CSV/test41.csv")
         guard FileManager.default.fileExists(atPath: path) else {
-            throw XCTSkip("TestFiles/CSV/test41.csv 不存在")
+            throw XCTSkip("../_JD2-family/dive-log-samples/CSV/test41.csv 不存在")
         }
         // SubsurfaceCSVParser 為 DiveLogImporter（透過工廠取得）
         guard let parser = DiveLogImporterFactory.selectImporter(for: path) else {
@@ -312,7 +312,7 @@ final class ImportCoordinatorTests: XCTestCase {
     func testSuuntoJSONParserProducesDivesWithEmptyLocation() throws {
         let path = testFilePath("Suunto/suunto_ocean_air.json")
         guard FileManager.default.fileExists(atPath: path) else {
-            throw XCTSkip("TestFiles/Suunto/suunto_ocean_air.json 不存在")
+            throw XCTSkip("../_JD2-family/dive-log-samples/Suunto/suunto_ocean_air.json 不存在")
         }
         let dives = try SuuntoJSONParser.parseJSONData(Data(contentsOf: URL(fileURLWithPath: path)))
         XCTAssertFalse(dives.isEmpty, "Suunto JSON 解析應產生至少一筆日誌")
@@ -409,7 +409,7 @@ final class ImportCoordinatorTests: XCTestCase {
     func testPerformance_SuuntoJSON_Repeated() throws {
         let path = testFilePath("Suunto/suunto_eon_core_nitrox.json")
         guard FileManager.default.fileExists(atPath: path) else {
-            throw XCTSkip("TestFiles/Suunto/suunto_eon_core_nitrox.json 不存在")
+            throw XCTSkip("../_JD2-family/dive-log-samples/Suunto/suunto_eon_core_nitrox.json 不存在")
         }
         let parser = SuuntoJSONParser()
         let iterations = 50

@@ -10,7 +10,7 @@ final class SuuntoDM5XMLParserTests: XCTestCase {
         let here       = (#filePath as NSString).deletingLastPathComponent
         let moduleRoot = (here as NSString).deletingLastPathComponent
         let repoRoot   = (moduleRoot as NSString).deletingLastPathComponent
-        return (repoRoot as NSString).appendingPathComponent("TestFiles/Suunto/DM5")
+        return (repoRoot as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/Suunto/DM5")
     }
 
     private func dm5Path(_ filename: String) -> String {

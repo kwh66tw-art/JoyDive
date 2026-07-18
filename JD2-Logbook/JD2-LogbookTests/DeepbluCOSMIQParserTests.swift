@@ -14,7 +14,7 @@ final class DeepbluCOSMIQParserTests: XCTestCase {
         let here       = (#filePath as NSString).deletingLastPathComponent
         let moduleRoot = (here as NSString).deletingLastPathComponent
         let repoRoot   = (moduleRoot as NSString).deletingLastPathComponent
-        return (repoRoot as NSString).appendingPathComponent("TestFiles/Deepblu/deepblu_cosmiq.json")
+        return (repoRoot as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/Deepblu/deepblu_cosmiq.json")
     }
 
     private func skipIfMissing(_ path: String) throws {

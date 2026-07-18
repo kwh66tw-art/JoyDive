@@ -1,8 +1,0 @@
-[APD DIVE LOG BINARY PROFILE STUB]
-File: mock_dive.apd (非真機資料)
-[APD CCR Log Viewer File Structure Placeholder]
-00000000: 41 50 44 20 4c 4f 47 20 56 49 45 57 45 52 20 56  APD LOG VIEWER V
-00000010: 31 2e 30 20 42 49 4e 41 52 59 20 44 41 54 41 20  1.0 BINARY DATA 
-00000020: 5b 70 70 4f 32 20 53 65 6e 73 6f 72 20 42 6c 6f  [ppO2 Sensor Blo
-00000030: 62 5d 20 20 20 20 20 20 20 20 20 20 20 20 20 20  b]              
-...

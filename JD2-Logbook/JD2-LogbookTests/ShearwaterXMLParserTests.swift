@@ -10,7 +10,7 @@ final class ShearwaterXMLParserTests: XCTestCase {
         let here       = (#filePath as NSString).deletingLastPathComponent
         let moduleRoot = (here as NSString).deletingLastPathComponent
         let repoRoot   = (moduleRoot as NSString).deletingLastPathComponent
-        return (repoRoot as NSString).appendingPathComponent("TestFiles/SHEARWATER")
+        return (repoRoot as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/SHEARWATER")
     }
 
     private func skipIfMissing(_ path: String) throws {

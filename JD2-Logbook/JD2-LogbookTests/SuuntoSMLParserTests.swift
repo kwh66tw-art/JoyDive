@@ -10,7 +10,7 @@ final class SuuntoSMLParserTests: XCTestCase {
         let here       = (#filePath as NSString).deletingLastPathComponent
         let moduleRoot = (here as NSString).deletingLastPathComponent
         let repoRoot   = (moduleRoot as NSString).deletingLastPathComponent
-        return (repoRoot as NSString).appendingPathComponent("TestFiles/Suunto/SML")
+        return (repoRoot as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/Suunto/SML")
     }
 
     private func skipIfMissing(_ path: String) throws {

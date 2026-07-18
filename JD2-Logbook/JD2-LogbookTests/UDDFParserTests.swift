@@ -40,7 +40,7 @@ final class UDDFParserTests: XCTestCase {
             .deletingLastPathComponent()   // JD2-LogbookTests/
             .deletingLastPathComponent()   // JD2-Logbook/
             .deletingLastPathComponent()   // JD2-Logbook/ (project root)
-            .appendingPathComponent("TestFiles/UDDF")
+            .appendingPathComponent("../_JD2-family/dive-log-samples/UDDF")
     }
 
     private var test42URL: URL { testFilesDir.appendingPathComponent("test42.uddf") }

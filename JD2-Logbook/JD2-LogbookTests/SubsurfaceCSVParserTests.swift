@@ -28,7 +28,7 @@ final class SubsurfaceCSVParserTests: XCTestCase {
         let here = (#filePath as NSString).deletingLastPathComponent  // …/JD2-LogbookTests
         let projectRoot = (here as NSString).deletingLastPathComponent // …/JD2-Logbook
         let root = (projectRoot as NSString).deletingLastPathComponent // …/JD2-Logbook (repo)
-        return (root as NSString).appendingPathComponent("TestFiles/CSV")
+        return (root as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/CSV")
     }
 
     private var test41Path: String {

@@ -30,7 +30,7 @@ final class SuuntoJSONParserTests: XCTestCase {
         let here        = (#filePath as NSString).deletingLastPathComponent  // …/JD2-LogbookTests
         let moduleRoot  = (here as NSString).deletingLastPathComponent       // …/JD2-Logbook
         let repoRoot    = (moduleRoot as NSString).deletingLastPathComponent // …/JD2-Logbook (repo)
-        return (repoRoot as NSString).appendingPathComponent("TestFiles/Suunto")
+        return (repoRoot as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/Suunto")
     }
 
     private func suuntoPath(_ filename: String) -> String {
