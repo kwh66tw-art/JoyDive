@@ -22,7 +22,7 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
         let here = (#filePath as NSString).deletingLastPathComponent
         let repoRoot = (((here as NSString).deletingLastPathComponent) as NSString).deletingLastPathComponent
         return (((repoRoot as NSString).deletingLastPathComponent) as NSString)
-            .appendingPathComponent("00_Import_samples/UDDF")
+            .appendingPathComponent("_JD2-family/00_Import_samples/UDDF")
     }
 
     private var trimixSamplePath: String {
@@ -33,7 +33,7 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
     /// 重放走 trimix 短路路徑，不觸發 DiveKit 的 assertionFailure。
     func testRealTrimixSample_ImportsAndSkipsUnsupportedDecoCalc() throws {
         try XCTSkipUnless(FileManager.default.fileExists(atPath: trimixSamplePath),
-                          "00_Import_samples/UDDF/dive_2026-06-20.uddf 不存在")
+                          "_JD2-family/00_Import_samples/UDDF/dive_2026-06-20.uddf 不存在")
 
         guard let importer = DiveLogImporterFactory.selectImporter(for: trimixSamplePath) else {
             XCTFail("Factory 未能為真實 UDDF 樣本選出解析器"); return
