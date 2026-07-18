@@ -5,6 +5,7 @@
 // ⚠️ Requirements integrated: #9 (font blooming), #10 (jittering), #11 (RTL), #12 (AOD)
 
 import SwiftUI
+import DiveKit
 
 // MARK: - String Formatting for Dive Data
 

@@ -4,6 +4,7 @@
 import SwiftUI
 import SwiftData
 import Charts
+import DiveKit
 
 struct DiveLogDetailView: View {
     let dive: DiveLog

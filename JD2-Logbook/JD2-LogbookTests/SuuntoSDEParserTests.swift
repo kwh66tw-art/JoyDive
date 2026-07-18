@@ -2,6 +2,7 @@
 // v1.1 格式擴充：Suunto SDE（ZIP 包裝的 DM3 XML）解析器測試
 
 import XCTest
+import DiveKit
 @testable import JoyDive_
 
 final class SuuntoSDEParserTests: XCTestCase {

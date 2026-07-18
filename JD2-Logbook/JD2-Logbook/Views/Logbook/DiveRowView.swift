@@ -2,6 +2,7 @@
 // Week 9 — 潛水日誌列表卡片元件
 
 import SwiftUI
+import DiveKit
 
 struct DiveRowView: View {
     let dive: DiveLog

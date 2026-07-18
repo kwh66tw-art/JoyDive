@@ -3,6 +3,7 @@
 
 import SwiftUI
 import SwiftData
+import DiveKit
 
 // MARK: - 編輯模式
 

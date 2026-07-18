@@ -17,6 +17,7 @@
 
 import SwiftUI
 import Charts
+import DiveKit
 
 struct DiveAnalysisView: View {
     let samples: [DiveProfileSample]
@@ -34,7 +35,13 @@ struct DiveAnalysisView: View {
         VStack(alignment: .leading, spacing: 8) {
             interactiveChart
 
-            if let point = selectedPoint {
+            if replay.decoDataUnavailable {
+                // F5：trimix 潛水——DiveKit 尚未支援氦氣組織負荷計算，只給深度/時間/溫度。
+                Text("Decompression analysis is not yet available for trimix dives.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else if let point = selectedPoint {
                 calloutRow(point)
                 TissueBarsView(loadPercents: DiveReplayEngine.tissueLoadPercent(pN2: point.tissuePressures))
             } else {

@@ -2,6 +2,7 @@
 // v1.1 #4/#5/#13：DiveReplayEngine（DiveKit 重放）單元測試
 
 import XCTest
+import DiveKit
 @testable import JoyDive_
 
 @MainActor

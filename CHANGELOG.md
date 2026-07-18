@@ -31,6 +31,31 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-18 — F5：改用家族統一 DiveKit（取代 JD2Core 演算法 fork）
+
+三個 JD2 家族 App 中 ultra／immersion 已於 F3a/F3b 改用統一 `DiveKit`（SPM 引用），
+本次 Logbook 跟進，家族「共用演算法只有一份」目標達成。分支
+`feature/F5-divekit-migration`，三個 commit：
+
+1. **`project.pbxproj` 新增 `../DiveKit` local package**（主 target + Tests target）。
+2. **刪除 JD2Core 12 個死碼/重複檔**（Algorithm 7 檔＋Constants 1 檔＋State 3 檔＋
+   Models 4 檔），改吃 DiveKit 對應型別；`DiveReplayEngine.swift`（Logbook 專屬回放
+   引擎，語意不同不遷移）與 21 個消費檔補 `import DiveKit`。刪除
+   `DiveEngineTests.swift`（測試已刪除的死碼，其回歸場景已在 DiveKit 自己的測試
+   套件覆蓋）。**根因排查**：`DiveReplayEngineTests` 先前的 malloc 崩潰證實是被
+   `DiveEngineTests` 汙染共享測試行程，刪除後單獨執行 4/4 全過、無崩潰。
+3. **發現並繞過 DiveKit 已知缺口**：`Buhlmann` 只追蹤氮氣（`Compartment` 無 `pHe`
+   欄位），trimix 的 `ndlSeconds()` 會 `assertionFailure`（v2.0 項目，尚未實作）；
+   用真實 trimix 樣本（`00_Import_samples/`）走完整匯入→剖面分析流程時首次踩到。
+   PM 決策：F5 繞過（不動 DiveKit 演算法本體），`DiveReplayEngine.replay()` 偵測
+   trimix 即跳過生理計算、只給深度/時間/溫度剖面（`decoDataUnavailable`），
+   `DiveAnalysisView` 對應隱藏 Ceiling/NDL/組織艙 UI。真正的 trimix 氦氣支援
+   另排（家族層追蹤）。
+
+新增 `F5DiveKitMigrationE2ETests.swift`：真實 trimix 樣本驗證短路路徑正確、合成
+空氣潛水驗證完整 DiveKit 重放路徑正常。驗證：iOS+macOS build 成功；測試套件
+（排除既有已知崩潰的 `ImportCoordinatorTests`，與本次無關）0 failures。
+
 ### 2026-07-17 — 外部稽核報告修復（4 項風險）+ 建立 Ultra 同步追蹤文件
 
 外部稽核報告 `docs/reports/R-2026-07-17-audit_report.md`（原 `audit_report-0717.md`，2026-07-18 歸檔更名）針對核心演算法與匯入流程提出 4 項風險，

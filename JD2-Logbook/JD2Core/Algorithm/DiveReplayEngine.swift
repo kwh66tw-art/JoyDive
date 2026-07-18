@@ -17,6 +17,7 @@
 //    僅供資訊參考，不能取代潛水電腦或正式減壓軟體。
 
 import Foundation
+import DiveKit
 
 enum DiveReplayEngine {
 
@@ -32,6 +33,9 @@ enum DiveReplayEngine {
 
     struct ReplayResult {
         var points: [ReplayPoint] = []
+        /// F5（2026-07-18）：trimix 潛水不提供減壓生理數據（見下方 replay() 說明）。
+        /// true 時 UI 應隱藏 Ceiling／No-Deco／組織艙，只顯示深度/時間/溫度剖面。
+        var decoDataUnavailable: Bool = false
 
         var maxCeiling: Double { points.map(\.ceilingDepth).max() ?? 0 }
         var enteredDeco: Bool { maxCeiling > 0 }
@@ -39,6 +43,12 @@ enum DiveReplayEngine {
     }
 
     /// 重放整條剖面；樣本間線性內插、步長 ≤10s，與 Ultra 驗證過的取樣尺度一致。
+    ///
+    /// ⚠️ F5（2026-07-18）：DiveKit 的 `Buhlmann` 目前只追蹤氮氣分壓（`Compartment.pN2`），
+    /// 氦氣完全未計入組織負荷計算，`ndlSeconds(at:gasMix:)` 對 trimix 直接
+    /// `assertionFailure`（v2.0 項目，尚未實作）。故 trimix 潛水**不跑減壓生理重放**，
+    /// 只回傳深度/時間/溫度供剖面圖顯示，`decoDataUnavailable = true`。
+    /// 真正的 trimix 支援待 DiveKit 補齊氦氣隔室後再開放（家族決策待補）。
     @MainActor
     static func replay(
         samples: [DiveProfileSample],
@@ -47,6 +57,15 @@ enum DiveReplayEngine {
     ) -> ReplayResult {
         guard samples.count >= 2 else { return ReplayResult() }
         let sorted = samples.sorted { $0.timeSeconds < $1.timeSeconds }
+
+        if gasMix.isTrimix {
+            let points = sorted.map { s in
+                ReplayPoint(timeSeconds: s.timeSeconds, depthMeters: s.depthMeters,
+                           waterTemp: s.waterTemp, ceilingDepth: 0, ndlSeconds: 0,
+                           tissuePressures: [])
+            }
+            return ReplayResult(points: points, decoDataUnavailable: true)
+        }
 
         let buhlmann = Buhlmann(environment: environment)
         buhlmann.updateSurface(deltaT: 1.0)   // DiveKit 慣例：update() 前先水面初始化
