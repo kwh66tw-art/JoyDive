@@ -24,6 +24,7 @@
 
 import Foundation
 import FitFileParser   // roznet/FitFileParser — 封裝 Garmin 官方 C SDK FitSDK 21.115
+import DiveKit
 
 /// 匯入錯誤類型定義
 enum DiveLogImportError: Error, LocalizedError {

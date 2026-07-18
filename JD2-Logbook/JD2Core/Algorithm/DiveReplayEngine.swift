@@ -17,6 +17,7 @@
 //    僅供資訊參考，不能取代潛水電腦或正式減壓軟體。
 
 import Foundation
+import DiveKit
 
 enum DiveReplayEngine {
 

@@ -2,6 +2,7 @@
 // v1.1 格式擴充：Diving Log 6.0 SQLite 解析器測試（真實樣本資料庫）
 
 import XCTest
+import DiveKit
 @testable import JoyDive_
 
 final class DivingLogSQLiteParserTests: XCTestCase {

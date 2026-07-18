@@ -17,6 +17,7 @@
 
 import SwiftUI
 import Charts
+import DiveKit
 
 struct DiveAnalysisView: View {
     let samples: [DiveProfileSample]

@@ -2,6 +2,7 @@
 // v1.1 格式擴充：Shearwater Cloud/Desktop XML 解析器測試
 
 import XCTest
+import DiveKit
 @testable import JoyDive_
 
 final class ShearwaterXMLParserTests: XCTestCase {

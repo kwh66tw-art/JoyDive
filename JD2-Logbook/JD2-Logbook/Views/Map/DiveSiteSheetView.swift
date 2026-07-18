@@ -9,6 +9,7 @@
 // All helper structs are file-private to keep the surface area minimal.
 
 import SwiftUI
+import DiveKit
 
 struct DiveSiteSheetView: View {
 

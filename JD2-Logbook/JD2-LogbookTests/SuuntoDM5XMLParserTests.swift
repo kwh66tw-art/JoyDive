@@ -2,6 +2,7 @@
 // v1.1 格式擴充：Suunto DM4/DM5 WCF XML 解析器測試（真實 D4i 匯出樣本）
 
 import XCTest
+import DiveKit
 @testable import JoyDive_
 
 final class SuuntoDM5XMLParserTests: XCTestCase {

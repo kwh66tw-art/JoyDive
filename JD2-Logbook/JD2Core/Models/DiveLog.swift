@@ -6,6 +6,7 @@
 
 import Foundation
 import SwiftData
+import DiveKit
 
 // MARK: - 剖面樣本
 

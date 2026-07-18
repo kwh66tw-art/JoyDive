@@ -10,6 +10,7 @@
 //   - 邊界值與無效輸入處理
 
 import XCTest
+import DiveKit
 @testable import JoyDive_
 
 final class GasMixTests: XCTestCase {
