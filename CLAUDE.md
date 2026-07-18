@@ -14,7 +14,7 @@
   （方向只允許 DiveKit → JD2Core）→ 登錄 `SYNC_TO_JD2-ULTRA.md`**。只修自己不登錄＝違規。
 - Logbook 專屬層（SwiftData 模型、Importers、DiveReplayEngine、UI）不受凍結影響，正常開發。
 - F5（v1 上架後）：JD2Core 的 DiveKit-fork 換統一 DiveKit 引用；F6 候選：Importers 與
-  UltraPhone 合流為 ImportKit。排程見 `../_JD2-family/FAMILY_ROADMAP.md`。
+  UltraPhone 合流為 ImportKit。排程見 `../_JD2-family/F-01-FAMILY_ROADMAP.md`。
 
 ---
 
