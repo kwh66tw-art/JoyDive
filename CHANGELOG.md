@@ -31,6 +31,42 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-19 — F6 階段一：改用家族共用匯入解析器套件 DiveImportKit
+
+家族 F6（Importers 合流）第一步：Logbook 端採用新建的 `../DiveImportKit`
+（獨立 git repo，v0.1.0，130 tests 全綠），5 個已抽取的格式解析器
+（UDDF／Subsurface XML／Subsurface CSV／Shearwater／Seabear CSV）改為
+Kit 引用＋App 端薄包裝，App 內對應實作刪除。分支
+`feature/F6-shared-import-kit`，三個 commit（總指揮驗收後 merge）：
+
+1. **`project.pbxproj` 新增 `../DiveImportKit` local package**（主 target +
+   Tests target，比照 F5 DiveKit 手法；plutil -lint ＋ resolvePackageDependencies
+   兩道驗證通過）。
+2. **新增 `JD2Core/Importers/DiveImportKitAdapter.swift`**——全 App 唯一
+   `import DiveImportKit` 的檔案（Kit 與本地型別同名，只在 adapter 內以
+   `DiveImportKit.` 前綴限定，避免全面歧義）：
+   - `ParsedDiveLog → DiveLog` 逐欄位對映；`profileSamples` 陣列編回
+     `profileSamplesJSON`（短鍵 t/d/w）、`importExtras` 陣列走既有
+     `buildImportExtrasJSON` 編回 `importExtrasJSON`，SwiftData schema 零變動。
+   - **Kit 錯誤 → 本地 `DiveLogImportError` 逐 case 轉換**（ImportWizardView
+     以本地 case 逐一 catch，不轉換 UI 錯誤提示會劣化）。
+   - 5 個薄包裝 struct 沿用原名（`UDDFParser` 等），`DiveLogImporterFactory`
+     清單與 priority 順序、既有測試（F5 E2E 等）零改動。
+   - `MinimalZipReader` 本地薄轉發 enum（`SuuntoSDEParser` 仍在用；因專案啟用
+     `MemberImportVisibility`，typealias 再匯出行不通，Ultra 端採用時同樣要注意）。
+   刪除已搬遷實作：monolith 內 4 個解析器＋私有 delegate/資料結構
+   （`DiveLogImporter.swift` 2483→911 行）、`ShearwaterXMLParser.swift`、
+   `MinimalZipReader.swift` 整檔。保留：protocol／`DiveLogFormat`／
+   `DiveLogImportError`／Factory／Peregrine·Oceanic 本地 stub／其餘 Logbook
+   專屬解析器／`ImportCoordinator`（去重/並發邏輯不動，SYNC #2/#3 另案）。
+3. **測試調整**：刪除 5 個已搬遷解析器的測試檔（邏輯已在 Kit 測過），新增
+   `DiveImportKitAdapterTests`（test42.uddf 走 factory→包裝→DiveLog 全流程，
+   關鍵欄位斷言與搬遷前期望值一致）。
+
+驗證：iOS＋macOS build 成功；iOS 模擬器與 macOS 本機均實際啟動；測試套件
+（排除既有已知崩潰的 `ImportCoordinatorTests`）0 failures（SuuntoJSON 樣本
+缺檔 skip 為既有現象）。UI 完全未動，匯入流程仍走原 factory 入口。
+
 ### 2026-07-18 — F5：改用家族統一 DiveKit（取代 JD2Core 演算法 fork）
 
 三個 JD2 家族 App 中 ultra／immersion 已於 F3a/F3b 改用統一 `DiveKit`（SPM 引用），
