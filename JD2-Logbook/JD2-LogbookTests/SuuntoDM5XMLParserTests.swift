@@ -147,6 +147,33 @@ final class SuuntoDM5XMLParserTests: XCTestCase {
         }
     }
 
+    func testParseRealSample_2026_06_04_0819() throws {
+        // 這筆是 F-07 待辦裡另一個「確認遺失」的檔案，2026-07-19 使用者補上傳補齊，
+        // F-07 待辦 6 全數銷項
+        let path = dm5Path("Dive_2026-06-04-0819.xml")
+        try skipIfMissing(path)
+        let data = try Data(contentsOf: URL(fileURLWithPath: path))
+        let dives = try SuuntoDM5XMLParser.parseXMLData(data)
+        XCTAssertEqual(dives.count, 1)
+        let dive = dives[0]
+
+        XCTAssertEqual(dive.maxDepth, 25.6, accuracy: 0.001)
+        XCTAssertEqual(dive.diveTimeSeconds, 2105)
+        XCTAssertEqual(dive.avgDepth, 17.85, accuracy: 0.001)
+        XCTAssertEqual(dive.waterTemperature, 28, accuracy: 0.001)
+
+        guard let gasData = dive.gasMixJSON.data(using: .utf8),
+              let gas = try? JSONDecoder().decode(GasMix.self, from: gasData) else {
+            XCTFail("gasMixJSON 應可解碼")
+            return
+        }
+        if case .nitrox(let fO2) = gas {
+            XCTAssertEqual(fO2, 0.30, accuracy: 0.001)
+        } else {
+            XCTFail("應為 Nitrox 30%，實際: \(gas)")
+        }
+    }
+
     // MARK: - 合成資料錯誤處理
 
     func testParseMissingRequiredFieldsThrows() {
