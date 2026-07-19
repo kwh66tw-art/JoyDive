@@ -35,33 +35,72 @@ final class DANDL7ParserTests: XCTestCase {
         XCTAssertFalse(parser.validateContent(data))
     }
 
-    // MARK: - 真實樣本解析（含一組完整 ZDH/ZDT 配對 + 一個沒有 ZDT 的截斷 ZDH）
-
+    // MARK: - 真實樣本解析（Subsurface 官方測試檔完整版，3 組 ZDH/ZDT + 1 組 ZDP{} 剖面區塊）
+    //
+    // 2026-07-19 校正：`DL7.zxu` 已從截斷版換成 Subsurface 官方 GitHub 測試目錄的完整版
+    // （逐字元核對前 5 行與遠端一致），內容為 3 組 ZDH/ZDT：
+    //   1) ZDH|1|1|...20180101101000  / ZDT|1|1|10.0|20180101102000|25   → 正常配對
+    //   2) ZDH|2|2|...20180102101000  / ZDP{ 區塊 } / ZDT|1|2|10.0|20180102110000|25
+    //      → ZDH 的 dive sequence 是 "2"（field[1]），但配對的 ZDT 卻是 "1"，兩者不對稱。
+    //        `DANDL7Parser.parseText` 目前用 field[1] 當 pending 字典的 key 做配對，
+    //        seq "1" 已在第 1) 組用掉並移除，所以這組 ZDT 找不到 pending["1"]，
+    //        guard 失敗直接跳過——這組潛水（含 ZDP 剖面）因此被**靜默捨棄**，
+    //        不會出現在 dives 陣列裡。這是真實資料首次曝露此配對規則的邊界案例，
+    //        照實記錄，不在測試裡假裝它有被解析出來。
+    //        另外 `ZDP{` / `|...|` / `ZDP}` 這種多行區塊語法，switch 只精確比對
+    //        recordType == "ZDP"，並不比對 "ZDP{"／""／"ZDP}"，所以即使配對邏輯
+    //        沒有這個問題，這個區塊格式的剖面樣本目前也**完全不會被解析**——
+    //        parser 檔頭註解裡「若真實檔案有 ZDP 則一併支援」目前只涵蓋單行
+    //        `ZDP|time|depth|...` 格式（見 testParseMultipleDivesWithProfile），
+    //        不涵蓋這種區塊格式。此為已知落差，回報總指揮，未在此修解析器本體。
+    //   3) ZDH|1|3|...20180103101000  / ZDT|1|3|10.0|20180103102000|26   → 正常配對
+    //        （seq "1" 在第 2) 組結束時已釋出，這裡重新使用不衝突）
+    //
+    // 淨結果：dives.count == 2（第 1、3 組），profileSamples 兩筆皆為空陣列。
     func testParseRealSample() throws {
         let path = (danDir as NSString).appendingPathComponent("DL7.zxu")
         try skipIfMissing(path)
         let text = try String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
         let dives = try DANDL7Parser.parseText(text)
 
-        // 檔案含 2 個 ZDH 但只有 1 個 ZDT，第二個 dive 沒有配對應被捨棄
-        XCTAssertEqual(dives.count, 1, "沒有 ZDT 配對的 ZDH 應被捨棄，不臆造資料")
-        let dive = dives[0]
-
-        // ZDH: leave_surface_time = 20180101101000
-        // ZDT: max_depth=10.0, reach_surface_time=20180101102000（10 分鐘後）, min_water_temp=25
-        XCTAssertEqual(dive.maxDepth, 10.0, accuracy: 0.001)
-        XCTAssertEqual(dive.diveTimeSeconds, 600, "10:00:00 → 10:10:00，時長應為 600 秒")
-        XCTAssertEqual(dive.waterTemperature, 25.0, accuracy: 0.001)
-        XCTAssertEqual(dive.sourceFormat, "dan-dl7")
+        // 中間那組 ZDH(seq=2)/ZDT(seq=1) 因 sequence 不對稱配對失敗被捨棄，
+        // 只剩頭尾兩組正常配對的潛水。
+        XCTAssertEqual(dives.count, 2, "中間那組 ZDH/ZDT sequence 不對稱應配對失敗被捨棄，僅存頭尾兩組")
 
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(secondsFromGMT: 0)!
-        let comps = cal.dateComponents([.year, .month, .day, .hour, .minute, .second], from: dive.dateTime)
-        XCTAssertEqual(comps.year, 2018)
-        XCTAssertEqual(comps.month, 1)
-        XCTAssertEqual(comps.day, 1)
-        XCTAssertEqual(comps.hour, 10)
-        XCTAssertEqual(comps.minute, 10)
+
+        // 第一組：ZDH leave_surface_time=20180101101000／ZDT max_depth=10.0,
+        // reach_surface_time=20180101102000（10 分鐘後）, min_water_temp=25
+        let dive1 = dives[0]
+        XCTAssertEqual(dive1.maxDepth, 10.0, accuracy: 0.001)
+        XCTAssertEqual(dive1.diveTimeSeconds, 600, "10:10:00 → 10:20:00，時長應為 600 秒")
+        XCTAssertEqual(dive1.waterTemperature, 25.0, accuracy: 0.001)
+        XCTAssertEqual(dive1.sourceFormat, "dan-dl7")
+        XCTAssertTrue(dive1.profileSamples.isEmpty, "此組未含 ZDP 資料")
+        let comps1 = cal.dateComponents([.year, .month, .day, .hour, .minute, .second], from: dive1.dateTime)
+        XCTAssertEqual(comps1.year, 2018)
+        XCTAssertEqual(comps1.month, 1)
+        XCTAssertEqual(comps1.day, 1)
+        XCTAssertEqual(comps1.hour, 10)
+        XCTAssertEqual(comps1.minute, 10)
+
+        // 第三組：ZDH leave_surface_time=20180103101000／ZDT max_depth=10.0,
+        // reach_surface_time=20180103102000（10 分鐘後）, min_water_temp=26
+        let dive2 = dives[1]
+        XCTAssertEqual(dive2.maxDepth, 10.0, accuracy: 0.001)
+        XCTAssertEqual(dive2.diveTimeSeconds, 600, "10:10:00 → 10:20:00，時長應為 600 秒")
+        XCTAssertEqual(dive2.waterTemperature, 26.0, accuracy: 0.001)
+        XCTAssertEqual(dive2.sourceFormat, "dan-dl7")
+        // 中間那組（含 ZDP{} 剖面區塊）配對失敗被整組捨棄，不會有任何殘留樣本
+        // 混進這一筆；同時也再次確認區塊格式本身目前不會產出 profileSamples。
+        XCTAssertTrue(dive2.profileSamples.isEmpty, "區塊格式 ZDP{} 目前不被解析，且此組本身也未含 ZDP 資料")
+        let comps2 = cal.dateComponents([.year, .month, .day, .hour, .minute, .second], from: dive2.dateTime)
+        XCTAssertEqual(comps2.year, 2018)
+        XCTAssertEqual(comps2.month, 1)
+        XCTAssertEqual(comps2.day, 3)
+        XCTAssertEqual(comps2.hour, 10)
+        XCTAssertEqual(comps2.minute, 10)
     }
 
     // MARK: - 多筆潛水 + ZDP 剖面樣本（合成資料）
