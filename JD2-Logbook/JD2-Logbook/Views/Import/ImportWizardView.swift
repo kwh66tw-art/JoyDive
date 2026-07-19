@@ -12,8 +12,15 @@ enum ImportStep {
     case ready
     /// total == 0 → 掃描/準備階段（不確定進度）；total > 0 → 逐檔匯入
     case importing(current: Int, total: Int, fileName: String)
-    case success(count: Int, skipped: Int)
+    case success(count: Int, skipped: Int, failures: [ImportFailure] = [])
     case failure(message: String)
+}
+
+/// 批次匯入中單一檔案失敗的紀錄（檔名 + 原因），供 Result 頁面逐筆列出
+struct ImportFailure: Identifiable {
+    let id = UUID()
+    let fileName: String
+    let reason: String
 }
 
 // MARK: - Main View
@@ -54,8 +61,8 @@ struct ImportWizardView: View {
                     readyView
                 case .importing(let current, let total, let fileName):
                     importingView(current: current, total: total, fileName: fileName)
-                case .success(let count, let skipped):
-                    successView(count: count, skipped: skipped)
+                case .success(let count, let skipped, let failures):
+                    successView(count: count, skipped: skipped, failures: failures)
                 case .failure(let message):
                     failureView(message: message)
                 }
@@ -346,32 +353,45 @@ struct ImportWizardView: View {
 
     // MARK: - Step 3: Success
 
-    private func successView(count: Int, skipped: Int) -> some View {
-        VStack(spacing: 20) {
+    private func successView(count: Int, skipped: Int, failures: [ImportFailure]) -> some View {
+        let hasFailures = !failures.isEmpty
+        let allFailed = count == 0 && hasFailures
+
+        return VStack(spacing: 20) {
             Spacer(minLength: 40)
 
-            Image(systemName: "checkmark.circle.fill")
+            Image(systemName: allFailed
+                  ? "xmark.circle.fill"
+                  : (hasFailures ? "exclamationmark.triangle.fill" : "checkmark.circle.fill"))
                 .font(.system(size: 64))
-                .foregroundStyle(.green)
+                .foregroundStyle(allFailed ? .red : (hasFailures ? .orange : .green))
 
-            Text(String(localized: "Import Successful"))
+            Text(String(localized: allFailed
+                        ? "Import Failed"
+                        : (hasFailures ? "Import Completed with Issues" : "Import Successful")))
                 .font(.title2.bold())
 
-            VStack(spacing: 6) {
-                Text("\(count) dive\(count == 1 ? "" : "s") imported")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                if skipped > 0 {
-                    Text("\(skipped) skipped (duplicates)")
-                        .font(.caption)
+            if !allFailed {
+                VStack(spacing: 6) {
+                    Text("\(count) dive\(count == 1 ? "" : "s") imported")
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
+                    if skipped > 0 {
+                        Text("\(skipped) skipped (duplicates)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
+            }
+
+            if hasFailures {
+                importFailuresList(failures)
             }
 
             Button {
                 resetToReady()
             } label: {
-                Text("Done")
+                Text(allFailed ? "Try Again" : "Done")
                     .font(.headline)
                     #if os(iOS)
                     .frame(maxWidth: .infinity)
@@ -387,6 +407,42 @@ struct ImportWizardView: View {
             Spacer()
         }
         .frame(minHeight: 360)
+    }
+
+    /// 批次匯入失敗清單：分組卡片背景 + Divider 分隔行，樣式比照 FormatGroupSection
+    private func importFailuresList(_ failures: [ImportFailure]) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(String(localized: "Failed Files"))
+                .font(.caption.weight(.semibold))
+                .textCase(.uppercase)
+                .tracking(0.6)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 12)
+
+            VStack(spacing: 0) {
+                ForEach(Array(failures.enumerated()), id: \.element.id) { index, failure in
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(failure.fileName)
+                            .font(.subheadline.weight(.medium))
+                            .lineLimit(1)
+                        Text(failure.reason)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(3)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+
+                    if index < failures.count - 1 {
+                        Divider().padding(.leading, 12)
+                    }
+                }
+            }
+            .background(Color.platformSecondaryGroupedBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .padding(.horizontal, 24)
     }
 
     // MARK: - Step 3: Failure
@@ -518,44 +574,29 @@ struct ImportWizardView: View {
     private func runBatchImport(tempFiles: [(name: String, url: URL)]) async {
         let total = tempFiles.count
         var allImported: [DiveLog] = []
-        var firstError: String? = nil
+        var totalSkipped = 0
+        var failures: [ImportFailure] = []
 
         for (index, file) in tempFiles.enumerated() {
             step = .importing(current: index + 1, total: total, fileName: file.name)
 
             do {
-                let imported = try await coordinator.importFile(file.url.path)
-                allImported.append(contentsOf: imported)
-            } catch DiveLogImportError.emptyFile {
-                // 空檔案：跳過，不中斷批次
-            } catch DiveLogImportError.fileNotFound(let path) {
-                if firstError == nil { firstError = "File not found: \(path)" }
-            } catch DiveLogImportError.unsupportedFormat(let fmt) {
-                if firstError == nil { firstError = "\(file.name): unsupported format (\(fmt))" }
-            } catch DiveLogImportError.parsingFailed(let msg, _) {
-                if firstError == nil { firstError = "\(file.name): \(msg)" }
-            } catch DiveLogImportError.invalidFormat(let fmt) {
-                if firstError == nil { firstError = "\(file.name): invalid format (\(fmt))" }
-            } catch DiveLogImportError.corruptedData(let detail) {
-                if firstError == nil { firstError = "\(file.name): corrupted (\(detail))" }
+                let result = try await coordinator.importFile(file.url.path)
+                allImported.append(contentsOf: result.dives)
+                totalSkipped += result.skippedDuplicates
             } catch {
-                if firstError == nil { firstError = "\(file.name): \(error.localizedDescription)" }
+                failures.append(ImportFailure(fileName: file.name, reason: error.localizedDescription))
             }
 
             // 清理 temp 檔案
             try? FileManager.default.removeItem(at: file.url)
         }
 
-        // 決定最終狀態：只要有匯入成功就算成功，firstError 僅在全部失敗時顯示
-        if allImported.isEmpty, let error = firstError {
-            step = .failure(message: error)
-        } else {
-            // 暫存 ID，等用戶按 Done 再切換 Tab（讓用戶看到完成頁）
-            pendingHighlightID = allImported
-                .sorted { $0.dateTime > $1.dateTime }
-                .first?.persistentModelID
-            step = .success(count: allImported.count, skipped: 0)
-        }
+        // 暫存 ID，等用戶按 Done 再切換 Tab（讓用戶看到完成頁）
+        pendingHighlightID = allImported
+            .sorted { $0.dateTime > $1.dateTime }
+            .first?.persistentModelID
+        step = .success(count: allImported.count, skipped: totalSkipped, failures: failures)
     }
 
     private func resetToReady() {
