@@ -296,8 +296,7 @@ struct ImportWizardView: View {
                 ("DAN DL7",                            ".dl7, .zxu, .zxl",   "doc.text"),
                 ("Divesoft DLF",                       ".dlf",               "doc.text"),
                 ("Reefnet Sensus",                     ".csv, .dat",         "tablecells.fill"),
-                ("Diving Log 6.0",                     ".sql, .sqlite, .db", "cylinder.split.1x2"),
-                ("Deepblu COSMIQ+",                    ".json",              "curlybraces")
+                ("Diving Log 6.0",                     ".sql, .sqlite, .db", "cylinder.split.1x2")
             ])
         ]
     }

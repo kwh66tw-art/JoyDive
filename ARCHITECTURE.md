@@ -81,7 +81,6 @@ Suunto JSON、Oceanic、Seabear CSV。
 | `DivesoftDLFParser` | Divesoft DLF | 二進位 | Freedom/Liberty 專有格式 |
 | `ReefnetSensusParser` | Reefnet Sensus | `.csv`/`.dat` | Sensus 採樣格式 |
 | `DivingLogSQLiteParser` | Diving Log 6.0 | `.sql`/`.sqlite`/`.db` | 實際為 SQLite 資料庫 |
-| `DeepbluCOSMIQParser` | Deepblu COSMIQ+ | `.json` | 雲端 API JSON（格式假設，已對真實樣本驗證） |
 | `ShearwaterXMLParser` | Shearwater | `.xml` | 取代舊版內嵌解析器 |
 
 **已宣告未實作**（`DiveLogFormat` 有 case、副檔名、優先權，但無對應 parser struct）：

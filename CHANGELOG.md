@@ -31,6 +31,21 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-19 — 移除 Deepblu COSMIQ+ 匯入格式支援
+
+Deepblu 公司已停業，官方 App 從未支援直接匯出 `.json`/`.csv`（2026-07-19 網路
+查證確認），唯一取得結構化資料的路徑是社群第三方工具 `deepblu-tools`，但需要
+使用者自己的 Deepblu 帳號——確認沒有帳號，此路徑不可行。加上現有樣本自建立
+以來就是模擬資料，`DeepbluCOSMIQParser` 從未被真實資料驗證過，PM 決定直接
+移除格式支援，不再長期掛著一個無法驗證、公司已消失的格式。
+
+移除範圍：`DiveLogFormat.deepblu` case（含 `supportedExtensions`／`priority`）、
+`DeepbluCOSMIQParser.swift`、`DeepbluCOSMIQParserTests.swift`、匯入畫面選單裡
+的「Deepblu COSMIQ+」項目、`DiveLogDetailView` 的 `sourceFormat` 顯示標籤。
+`ARCHITECTURE.md` 同步移除對應解析器列（該列原本宣稱「已對真實樣本驗證」，
+本來就是錯的）。`JD2-LogbookTests` 全套件 205 通過／15 略過／0 失敗。詳見
+`_JD2-family/decisions/2026-07-19_移除Deepblu支援.md`。
+
 ### 2026-07-19 — 補齊 Suunto DM5 最後一個遺失檔案 `Dive_2026-06-04-0819.xml`
 
 F-07 待辦 6 原本列了 2 個確認遺失的 D4i 檔案（`0948`／`0819`），`0948` 已於同日

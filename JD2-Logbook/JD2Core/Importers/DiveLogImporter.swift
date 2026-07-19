@@ -86,7 +86,6 @@ enum DiveLogFormat: String, CaseIterable {
     case sensus     = "Reefnet Sensus"  // Sensus CSV 採樣格式
     case divingLog  = "Diving Log"      // Diving Log 6.0 SQL 匯出
     case cressi     = "Cressi"          // Cressi PC Interface 純文字/HTML 匯出
-    case deepblu    = "Deepblu"         // Deepblu COSMIQ+ 雲端 API JSON（格式假設，待真實樣本驗證）
 
     /// 支援的檔案副檔名
     var supportedExtensions: [String] {
@@ -111,7 +110,6 @@ enum DiveLogFormat: String, CaseIterable {
         case .sensus:     return ["dat", "csv"]
         case .divingLog:  return ["sql", "sqlite", "db"]   // 實際為 SQLite 資料庫，非文字 SQL/XML
         case .cressi:     return ["txt", "html", "htm"]
-        case .deepblu:    return ["json"]
         }
     }
 
@@ -145,7 +143,6 @@ enum DiveLogFormat: String, CaseIterable {
         case .sensus:     return 17
         case .divingLog:  return 18
         case .cressi:     return 19   // 純文字啟發式偵測最弱，優先權最低（在 csv 之後）
-        case .deepblu:    return 20
         case .csv:        return 8
         }
     }
@@ -222,8 +219,7 @@ struct DiveLogImporterFactory {
         DivesoftDLFParser(),
         SuuntoSDEParser(),
         ReefnetSensusParser(),
-        DivingLogSQLiteParser(),
-        DeepbluCOSMIQParser()
+        DivingLogSQLiteParser()
     ]
 
     /// 根據檔案路徑自動選擇解析器

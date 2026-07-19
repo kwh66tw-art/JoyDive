@@ -433,7 +433,6 @@ struct DiveLogDetailView: View {
         case "suunto-sde":     return "Suunto SDE"
         case "reefnet-sensus": return "Reefnet Sensus"
         case "divinglog":      return "Diving Log 6.0"
-        case "deepblu-cosmiq": return "Deepblu COSMIQ+"
         case "manual":         return "Manual Entry"
         default:               return raw.isEmpty ? "—" : raw
         }
