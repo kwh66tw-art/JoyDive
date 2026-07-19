@@ -1,33 +1,23 @@
 // DiveImportKitAdapter.swift — JD2Core/Importers/
 // F6 階段一（2026-07-19）：改用家族共用匯入解析器套件 DiveImportKit。
+// 家族層 import 共用第二階段（2026-07-19）：新增 10 個格式的薄包裝（DAN DL7／
+// Divesoft DLF／Reefnet Sensus／Diving Log／Suunto DM5／SML／SDE／JSON／
+// Garmin Connect JSON／Garmin FIT），原本地實作全數刪除，改由 Kit 提供。
 //
 // 本檔是「全 App 唯一」import DiveImportKit 的檔案——Kit 的型別名
 // （DiveLogImporter / DiveLogFormat / DiveLogImportError）與本 repo 同名，
 // 其他檔案一律不 import Kit，避免全面歧義；本檔內以 DiveImportKit. 前綴
 // 明確限定 Kit 型別，未加前綴的名稱依 Swift 同模組遮蔽規則解析為本地型別。
 //
-// 已搬遷至 Kit 的 5 個真解析器（UDDF / Subsurface XML / Subsurface CSV /
-// Shearwater / Seabear CSV）在此以薄包裝 struct 重新掛回本地
-// DiveLogImporter protocol：struct 名稱與原本地實作相同，
-// DiveLogImporterFactory 與既有測試（F5DiveKitMigrationE2ETests 等）不需改動。
+// 已搬遷至 Kit 的解析器在此以薄包裝 struct 重新掛回本地 DiveLogImporter
+// protocol：struct 名稱與原本地實作相同，DiveLogImporterFactory 與既有測試
+// （F5DiveKitMigrationE2ETests 等）不需改動。
 //
-// MinimalZipReader 亦已搬遷至 Kit，本檔以 typealias 轉出供
-// SuuntoSDEParser（Logbook 專屬解析器）與既有測試繼續使用。
+// MinimalZipReader 已完全搬遷至 Kit（原本地轉發用途僅供 SuuntoSDEParser，
+// 該解析器現也改為 Kit 薄包裝，本地轉發已無消費端，一併移除）。
 
 import Foundation
 import DiveImportKit
-
-// MARK: - MinimalZipReader 轉出（原 Importers/MinimalZipReader.swift 已搬遷至 Kit）
-
-/// 本地薄轉發（不能用 typealias：專案啟用 MemberImportVisibility，
-/// 未直接 import DiveImportKit 的檔案無法呼叫別名型別的成員）。
-/// 供 SuuntoSDEParser（Logbook 專屬解析器）與既有 MinimalZipReaderTests 使用。
-enum MinimalZipReader {
-    static func extractFirstEntry(from data: Data,
-                                  matching predicate: (String) -> Bool) throws -> Data {
-        try DiveImportKit.MinimalZipReader.extractFirstEntry(from: data, matching: predicate)
-    }
-}
 
 // MARK: - ParsedDiveLog → DiveLog 轉換
 
@@ -119,6 +109,41 @@ func mapImportKitError(_ error: Error) -> Error {
     }
 }
 
+// MARK: - 背景安全批次處理（家族層 import 共用第二階段，2026-07-19）
+//
+// 給 ImportCoordinator 在背景 Task 內呼叫：選格式＋解析＋驗證全程只碰
+// Kit 的 Sendable DTO（ParsedDiveLog），沒有本地 DiveLogImporter 協定回傳
+// SwiftData DiveLog 那種跨 actor 邊界的 Sendable 問題，不需要 Task.detached
+// 補丁也能安全在背景執行緒跑（修復 SYNC #3）。呼叫端拿到結果後才呼叫下面的
+// `makeDiveLog(from:)` 轉換回 SwiftData（輕量、非 CPU 密集，MainActor 上做無妨）。
+
+/// 選格式＋解析＋基本驗證（maxDepth >= 0、diveTimeSeconds > 0）。
+/// - Throws: 對應 App 本地 `DiveLogImportError`（已透過 `mapImportKitError` 轉換）。
+func parseAndValidateForBackground(filePath: String) throws -> [DiveImportKit.ParsedDiveLog] {
+    do {
+        return try DiveImportKit.ImportBatchProcessor.parseAndValidate(filePath: filePath)
+    } catch {
+        throw mapImportKitError(error)
+    }
+}
+
+/// 去重：候選記錄 vs 資料庫既有記錄（修復 SYNC #2，邏輯與 Kit 內建測試一致，
+/// 兩邊 App 共用同一份，不再各自維護容易走鐘的版本）。
+func dedupeAgainstExisting(
+    _ dives: [DiveImportKit.ParsedDiveLog],
+    existing: [DiveLog]
+) -> (kept: [DiveImportKit.ParsedDiveLog], skippedCount: Int) {
+    let fingerprints = existing.map {
+        DiveImportKit.DiveFingerprint(dateTime: $0.dateTime, location: $0.location, maxDepth: $0.maxDepth)
+    }
+    return DiveImportKit.ImportBatchProcessor.dedupe(dives, against: fingerprints)
+}
+
+/// 格式顯示名稱（供 log 訊息用，不需要讓呼叫端知道 Kit 的 DiveLogFormat 型別存在）。
+func formatDisplayName(for filePath: String) -> String? {
+    DiveImportKit.DiveLogImporterFactory.selectImporter(for: filePath)?.format.displayName
+}
+
 // MARK: - Kit 解析器薄包裝（實作本地 DiveLogImporter protocol）
 
 /// UDDF 解析器（ISO 12639:2015）——實作已搬遷至 DiveImportKit
@@ -202,6 +227,203 @@ struct SeabearCSVParser: DiveLogImporter {
     private let kit = DiveImportKit.SeabearCSVParser()
 
     let format = DiveLogFormat.seabear
+    var name: String { kit.name }
+
+    func canHandle(filePath: String) -> Bool { kit.canHandle(filePath: filePath) }
+    func validateContent(_ data: Data) -> Bool { kit.validateContent(data) }
+
+    func parse(from filePath: String) throws -> [DiveLog] {
+        do {
+            return try kit.parse(from: filePath).map(makeDiveLog(from:))
+        } catch {
+            throw mapImportKitError(error)
+        }
+    }
+}
+
+// MARK: - 家族層 import 共用第二階段（2026-07-19）新增的 10 個薄包裝
+
+/// DAN DL7 / ZXU 解析器——實作已搬遷至 DiveImportKit
+struct DANDL7Parser: DiveLogImporter {
+    private let kit = DiveImportKit.DANDL7Parser()
+
+    let format = DiveLogFormat.danDL7
+    var name: String { kit.name }
+
+    func canHandle(filePath: String) -> Bool { kit.canHandle(filePath: filePath) }
+    func validateContent(_ data: Data) -> Bool { kit.validateContent(data) }
+
+    func parse(from filePath: String) throws -> [DiveLog] {
+        do {
+            return try kit.parse(from: filePath).map(makeDiveLog(from:))
+        } catch {
+            throw mapImportKitError(error)
+        }
+    }
+}
+
+/// Divesoft Freedom/Liberty DLF 解析器——實作已搬遷至 DiveImportKit
+struct DivesoftDLFParser: DiveLogImporter {
+    private let kit = DiveImportKit.DivesoftDLFParser()
+
+    let format = DiveLogFormat.divesoft
+    var name: String { kit.name }
+
+    func canHandle(filePath: String) -> Bool { kit.canHandle(filePath: filePath) }
+    func validateContent(_ data: Data) -> Bool { kit.validateContent(data) }
+
+    func parse(from filePath: String) throws -> [DiveLog] {
+        do {
+            return try kit.parse(from: filePath).map(makeDiveLog(from:))
+        } catch {
+            throw mapImportKitError(error)
+        }
+    }
+}
+
+/// Reefnet Sensus CSV 解析器——實作已搬遷至 DiveImportKit
+struct ReefnetSensusParser: DiveLogImporter {
+    private let kit = DiveImportKit.ReefnetSensusParser()
+
+    let format = DiveLogFormat.sensus
+    var name: String { kit.name }
+
+    func canHandle(filePath: String) -> Bool { kit.canHandle(filePath: filePath) }
+    func validateContent(_ data: Data) -> Bool { kit.validateContent(data) }
+
+    func parse(from filePath: String) throws -> [DiveLog] {
+        do {
+            return try kit.parse(from: filePath).map(makeDiveLog(from:))
+        } catch {
+            throw mapImportKitError(error)
+        }
+    }
+}
+
+/// Diving Log 6.0 SQLite 解析器——實作已搬遷至 DiveImportKit
+struct DivingLogSQLiteParser: DiveLogImporter {
+    private let kit = DiveImportKit.DivingLogSQLiteParser()
+
+    let format = DiveLogFormat.divingLog
+    var name: String { kit.name }
+
+    func canHandle(filePath: String) -> Bool { kit.canHandle(filePath: filePath) }
+    func validateContent(_ data: Data) -> Bool { kit.validateContent(data) }
+
+    func parse(from filePath: String) throws -> [DiveLog] {
+        do {
+            return try kit.parse(from: filePath).map(makeDiveLog(from:))
+        } catch {
+            throw mapImportKitError(error)
+        }
+    }
+}
+
+/// Suunto DM4/DM5 WCF XML 解析器——實作已搬遷至 DiveImportKit
+struct SuuntoDM5XMLParser: DiveLogImporter {
+    private let kit = DiveImportKit.SuuntoDM5XMLParser()
+
+    let format = DiveLogFormat.suuntoDM5
+    var name: String { kit.name }
+
+    func canHandle(filePath: String) -> Bool { kit.canHandle(filePath: filePath) }
+    func validateContent(_ data: Data) -> Bool { kit.validateContent(data) }
+
+    func parse(from filePath: String) throws -> [DiveLog] {
+        do {
+            return try kit.parse(from: filePath).map(makeDiveLog(from:))
+        } catch {
+            throw mapImportKitError(error)
+        }
+    }
+}
+
+/// Suunto SML（Moveslink）解析器——實作已搬遷至 DiveImportKit
+struct SuuntoSMLParser: DiveLogImporter {
+    private let kit = DiveImportKit.SuuntoSMLParser()
+
+    let format = DiveLogFormat.suuntoSML
+    var name: String { kit.name }
+
+    func canHandle(filePath: String) -> Bool { kit.canHandle(filePath: filePath) }
+    func validateContent(_ data: Data) -> Bool { kit.validateContent(data) }
+
+    func parse(from filePath: String) throws -> [DiveLog] {
+        do {
+            return try kit.parse(from: filePath).map(makeDiveLog(from:))
+        } catch {
+            throw mapImportKitError(error)
+        }
+    }
+}
+
+/// Suunto SDE（ZIP 包裝 DM3 XML）解析器——實作已搬遷至 DiveImportKit
+struct SuuntoSDEParser: DiveLogImporter {
+    private let kit = DiveImportKit.SuuntoSDEParser()
+
+    let format = DiveLogFormat.suuntoSDE
+    var name: String { kit.name }
+
+    func canHandle(filePath: String) -> Bool { kit.canHandle(filePath: filePath) }
+    func validateContent(_ data: Data) -> Bool { kit.validateContent(data) }
+
+    func parse(from filePath: String) throws -> [DiveLog] {
+        do {
+            return try kit.parse(from: filePath).map(makeDiveLog(from:))
+        } catch {
+            throw mapImportKitError(error)
+        }
+    }
+}
+
+/// Suunto App DeviceLog JSON 解析器——實作已搬遷至 DiveImportKit
+/// （2026-07-19 家族層共用：與 App-u 原本各自維護的重複實作合併，以 App-lb
+/// 修復後版本為準，含 TimeISO8601 fallback 真實 bug 修復）
+struct SuuntoJSONParser: DiveLogImporter {
+    private let kit = DiveImportKit.SuuntoJSONParser()
+
+    let format = DiveLogFormat.suunto
+    var name: String { kit.name }
+
+    func canHandle(filePath: String) -> Bool { kit.canHandle(filePath: filePath) }
+    func validateContent(_ data: Data) -> Bool { kit.validateContent(data) }
+
+    func parse(from filePath: String) throws -> [DiveLog] {
+        do {
+            return try kit.parse(from: filePath).map(makeDiveLog(from:))
+        } catch {
+            throw mapImportKitError(error)
+        }
+    }
+}
+
+/// Garmin Connect activity JSON 解析器——實作已搬遷至 DiveImportKit
+/// （2026-07-19 家族層共用：與 App-u 原本各自維護的重複實作合併）
+struct GarminConnectJSONParser: DiveLogImporter {
+    private let kit = DiveImportKit.GarminConnectJSONParser()
+
+    let format = DiveLogFormat.garmin
+    var name: String { kit.name }
+
+    func canHandle(filePath: String) -> Bool { kit.canHandle(filePath: filePath) }
+    func validateContent(_ data: Data) -> Bool { kit.validateContent(data) }
+
+    func parse(from filePath: String) throws -> [DiveLog] {
+        do {
+            return try kit.parse(from: filePath).map(makeDiveLog(from:))
+        } catch {
+            throw mapImportKitError(error)
+        }
+    }
+}
+
+/// Garmin Descent ANT+ FIT 解析器——實作已搬遷至 DiveImportKit
+/// （2026-07-19 含跨廠牌誤判防護修復：非 Garmin 廠牌的 .fit 檔案明確拒絕，
+/// 避免 gasMixJSON 靜默退回錯誤的預設值）
+struct GarminDescentParser: DiveLogImporter {
+    private let kit = DiveImportKit.GarminDescentParser()
+
+    let format = DiveLogFormat.garmin
     var name: String { kit.name }
 
     func canHandle(filePath: String) -> Bool { kit.canHandle(filePath: filePath) }

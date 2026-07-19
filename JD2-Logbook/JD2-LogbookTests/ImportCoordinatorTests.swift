@@ -314,7 +314,14 @@ final class ImportCoordinatorTests: XCTestCase {
         guard FileManager.default.fileExists(atPath: path) else {
             throw XCTSkip("../_JD2-family/dive-log-samples/Suunto/suunto_ocean_air.json 不存在")
         }
-        let dives = try SuuntoJSONParser.parseJSONData(Data(contentsOf: URL(fileURLWithPath: path)))
+        // 2026-07-19 家族層 import 共用第二階段：SuuntoJSONParser 實作已搬遷至
+        // DiveImportKit，本地薄包裝只透過 DiveLogImporter 協定的 parse(from:) 存取，
+        // 不再提供 static parseJSONData 靜態輔助。
+        guard let parser = DiveLogImporterFactory.selectImporter(for: path) else {
+            XCTFail("找不到 Suunto JSON 解析器")
+            return
+        }
+        let dives = try parser.parse(from: path)
         XCTAssertFalse(dives.isEmpty, "Suunto JSON 解析應產生至少一筆日誌")
         XCTAssertEqual(dives.first?.sourceFormat, "suunto-json")
         // Suunto JSON location 為空字串，validateDives 不應過濾

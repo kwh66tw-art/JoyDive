@@ -56,7 +56,8 @@ final class ImportCoordinator {
     /// 當前匯入狀態
     private(set) var isImporting: Bool = false
 
-    /// 錯誤紀錄
+    /// 錯誤紀錄（`validateDives(_: [DiveLog])` 系列本地方法使用，供直接以
+    /// SwiftData 型別測試驗證邏輯；實際匯入流程走下方 Kit 背景安全路徑，不經過這裡）
     private var importErrors: [String] = []
 
     // MARK: - 初始化
@@ -88,42 +89,35 @@ final class ImportCoordinator {
             throw DiveLogImportError.fileNotFound(filePath)
         }
 
-        // Step 2+3：稽核修復 #3 — 選格式＋解析檔案是同步、CPU 密集的工作，原本直接
-        // 在 @MainActor 的 ImportCoordinator 內執行，大檔案或批次匯入多檔時會讓主
-        // 執行緒卡住數秒，UI 凍結掉幀，iOS/watchOS 上甚至可能觸發 Watchdog 強制關閉
-        // App。改到背景執行緒跑完整段選格式＋解析，只有結果回到主執行緒後才繼續寫
-        // 資料庫（Step 4 起）。
-        // ⚠️ 已知技術債：模組預設 @MainActor 隔離（-default-isolation=MainActor），
-        // DiveLogImporterFactory/parse() 未標記 nonisolated，DiveLog（SwiftData
-        // @Model）也非 Sendable，現行編譯設定（Swift 5 + 部分 upcoming features）
-        // 下僅產生 warning、明確標註「this is an error in the Swift 6 language
-        // mode」。要徹底消除需將 DiveLogImporter 協定三個方法＋全部 20 個解析器
-        // 實作＋Factory 標記 nonisolated，並處理 DiveLog 跨 actor 傳遞的 Sendable
-        // 問題（規模已超出本次稽核修復範圍，建議另開任務處理，屆時一併評估是否
-        // 遷移到完整 Swift 6 language mode）。
-        let dives = try await Task.detached(priority: .userInitiated) {
-            guard let importer = DiveLogImporterFactory.selectImporter(for: filePath) else {
-                throw DiveLogImportError.unsupportedFormat(filePath)
+        // Step 2+3：家族層 import 共用第二階段（2026-07-19）修復 SYNC #3——選格式＋
+        // 解析＋驗證改呼叫 DiveImportKit（透過 DiveImportKitAdapter 的背景安全
+        // 包裝函式），操作的是 Sendable 的 ParsedDiveLog，天生可以安全跑在背景
+        // Task，不像本地 DiveLogImporter 協定回傳 SwiftData DiveLog 那樣有跨
+        // actor 邊界的 Sendable 問題（先前用 Task.detached 硬包一層只能消掉
+        // warning，Swift 6 語言模式下仍是編譯器明確標註的未解決問題）。
+        let parsedDives = try await Task.detached(priority: .userInitiated) {
+            if let name = formatDisplayName(for: filePath) {
+                print("[Import] \(name): \(filePath)")
             }
-            print("[Import] \(importer.format.displayName): \(filePath)")
-            return try importer.parse(from: filePath)
+            return try parseAndValidateForBackground(filePath: filePath)
         }.value
 
-        guard !dives.isEmpty else {
-            throw DiveLogImportError.emptyFile
-        }
-
-        // Step 4: 驗證與預處理
-        let validatedDives = validateDives(dives)
-
-        // Step 4.5: 去重（對照資料庫現有記錄，避免重複匯入）
-        let newDives = try await deduplicateDives(validatedDives)
-        let skippedCount = validatedDives.count - newDives.count
+        // Step 4：去重（對照資料庫現有記錄；修復 SYNC #2，邏輯與 Kit 共用，
+        // 不再各自維護容易走鐘的版本）
+        let existing = try database.fetchAllDives()
+        let (keptParsed, skippedCount) = dedupeAgainstExisting(parsedDives, existing: existing)
         if skippedCount > 0 {
             print("[Import] dedup: skipped \(skippedCount) duplicate(s)")
         }
 
-        // Step 5: 批次儲存到資料庫（單次 save，避免 N+1 效能問題）
+        // Step 5：轉換回 SwiftData DiveLog（輕量、MainActor 上做無妨）＋
+        // v1.1 #8：來源格式無 avgDepth 但有剖面樣本時，梯形近似重建
+        let newDives = keptParsed.map(makeDiveLog(from:))
+        for dive in newDives where dive.avgDepth <= 0 {
+            dive.avgDepth = dive.reconstructedAvgDepth()
+        }
+
+        // Step 6：批次儲存到資料庫（單次 save，避免 N+1 效能問題）
         if !newDives.isEmpty {
             try database.addBatch(newDives)
         }
