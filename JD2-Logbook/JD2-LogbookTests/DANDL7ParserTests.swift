@@ -37,35 +37,29 @@ final class DANDL7ParserTests: XCTestCase {
 
     // MARK: - 真實樣本解析（Subsurface 官方測試檔完整版，3 組 ZDH/ZDT + 1 組 ZDP{} 剖面區塊）
     //
-    // 2026-07-19 校正：`DL7.zxu` 已從截斷版換成 Subsurface 官方 GitHub 測試目錄的完整版
-    // （逐字元核對前 5 行與遠端一致），內容為 3 組 ZDH/ZDT：
-    //   1) ZDH|1|1|...20180101101000  / ZDT|1|1|10.0|20180101102000|25   → 正常配對
-    //   2) ZDH|2|2|...20180102101000  / ZDP{ 區塊 } / ZDT|1|2|10.0|20180102110000|25
-    //      → ZDH 的 dive sequence 是 "2"（field[1]），但配對的 ZDT 卻是 "1"，兩者不對稱。
-    //        `DANDL7Parser.parseText` 目前用 field[1] 當 pending 字典的 key 做配對，
-    //        seq "1" 已在第 1) 組用掉並移除，所以這組 ZDT 找不到 pending["1"]，
-    //        guard 失敗直接跳過——這組潛水（含 ZDP 剖面）因此被**靜默捨棄**，
-    //        不會出現在 dives 陣列裡。這是真實資料首次曝露此配對規則的邊界案例，
-    //        照實記錄，不在測試裡假裝它有被解析出來。
-    //        另外 `ZDP{` / `|...|` / `ZDP}` 這種多行區塊語法，switch 只精確比對
-    //        recordType == "ZDP"，並不比對 "ZDP{"／""／"ZDP}"，所以即使配對邏輯
-    //        沒有這個問題，這個區塊格式的剖面樣本目前也**完全不會被解析**——
-    //        parser 檔頭註解裡「若真實檔案有 ZDP 則一併支援」目前只涵蓋單行
-    //        `ZDP|time|depth|...` 格式（見 testParseMultipleDivesWithProfile），
-    //        不涵蓋這種區塊格式。此為已知落差，回報總指揮，未在此修解析器本體。
-    //   3) ZDH|1|3|...20180103101000  / ZDT|1|3|10.0|20180103102000|26   → 正常配對
-    //        （seq "1" 在第 2) 組結束時已釋出，這裡重新使用不衝突）
+    // 2026-07-19 二度校正：修好 DANDL7Parser 的兩個配對/解析 bug 後重新驗證。
+    // 依 PyDL7（divelog/dl7/__init__.py）原始碼核對，ZDH／ZDT 用來配對的 dive
+    // sequence number 是 raw field[2]（PyDL7 稱 internal sequence／
+    // dive.sequence_number），不是 field[1]（那只是 export_sequence，檔案內
+    // 流水號，兩個 ZDH 可以有不同 export_sequence 但相同/不同 sequence_number，
+    // 之前誤用 field[1] 當 key 才會在第二組「配對失敗」）。內容為 3 組 ZDH/ZDT：
+    //   1) ZDH|1|1|...20180101101000  / ZDT|1|1|10.0|20180101102000|25
+    //      → field[2] 兩邊都是 "1"，正常配對。
+    //   2) ZDH|2|2|...20180102101000  / ZDP{ 區塊，4 個樣本點 } /
+    //      ZDT|1|2|10.0|20180102110000|25
+    //      → field[2] 兩邊都是 "2"，正常配對；區塊內剖面樣本現在也會被解析
+    //        （見下方欄位語意，同樣依 PyDL7 __parse_dive_profile 核對）。
+    //   3) ZDH|1|3|...20180103101000  / ZDT|1|3|10.0|20180103102000|26
+    //      → field[2] 兩邊都是 "3"，正常配對。
     //
-    // 淨結果：dives.count == 2（第 1、3 組），profileSamples 兩筆皆為空陣列。
+    // 淨結果：dives.count == 3，中間那筆（Jan 2）帶 4 筆 profileSamples。
     func testParseRealSample() throws {
         let path = (danDir as NSString).appendingPathComponent("DL7.zxu")
         try skipIfMissing(path)
         let text = try String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
         let dives = try DANDL7Parser.parseText(text)
 
-        // 中間那組 ZDH(seq=2)/ZDT(seq=1) 因 sequence 不對稱配對失敗被捨棄，
-        // 只剩頭尾兩組正常配對的潛水。
-        XCTAssertEqual(dives.count, 2, "中間那組 ZDH/ZDT sequence 不對稱應配對失敗被捨棄，僅存頭尾兩組")
+        XCTAssertEqual(dives.count, 3, "field[2] 配對修好後，3 組 ZDH/ZDT 應全部配對成功")
 
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(secondsFromGMT: 0)!
@@ -85,22 +79,82 @@ final class DANDL7ParserTests: XCTestCase {
         XCTAssertEqual(comps1.hour, 10)
         XCTAssertEqual(comps1.minute, 10)
 
-        // 第三組：ZDH leave_surface_time=20180103101000／ZDT max_depth=10.0,
-        // reach_surface_time=20180103102000（10 分鐘後）, min_water_temp=26
+        // 第二組（中間）：ZDH leave_surface_time=20180102101000／ZDT max_depth=10.0,
+        // reach_surface_time=20180102110000（50 分鐘後）, min_water_temp=25，
+        // 含 ZDP{...ZDP} 區塊剖面：|0|1|1||||／|60|10|||||／|3300|10|||||／|3600|0|||||
+        // → (timeSeconds, depthMeters) = (0,1) (60,10) (3300,10) (3600,0)，
+        //   waterTemp 皆為 nil（每行欄位數不足以取到 field[8]）。
+        // 注意：最後一個樣本點 timeSeconds=3600 略超過 ZDT 算出的 diveTimeSeconds=3000，
+        // 這是真實樣本本身的資料不一致（剖面記錄與 ZDT 摘要時長對不齊），profileSamples
+        // 只是原樣保留讀到的資料，不做校正或臆造。
         let dive2 = dives[1]
         XCTAssertEqual(dive2.maxDepth, 10.0, accuracy: 0.001)
-        XCTAssertEqual(dive2.diveTimeSeconds, 600, "10:10:00 → 10:20:00，時長應為 600 秒")
-        XCTAssertEqual(dive2.waterTemperature, 26.0, accuracy: 0.001)
+        XCTAssertEqual(dive2.diveTimeSeconds, 3000, "10:10:00 → 11:00:00，時長應為 3000 秒")
+        XCTAssertEqual(dive2.waterTemperature, 25.0, accuracy: 0.001)
         XCTAssertEqual(dive2.sourceFormat, "dan-dl7")
-        // 中間那組（含 ZDP{} 剖面區塊）配對失敗被整組捨棄，不會有任何殘留樣本
-        // 混進這一筆；同時也再次確認區塊格式本身目前不會產出 profileSamples。
-        XCTAssertTrue(dive2.profileSamples.isEmpty, "區塊格式 ZDP{} 目前不被解析，且此組本身也未含 ZDP 資料")
+        XCTAssertEqual(dive2.profileSamples.count, 4, "ZDP{...ZDP} 區塊應解析出 4 個樣本點")
+        let expectedSamples: [(time: Double, depth: Double)] = [(0, 1), (60, 10), (3300, 10), (3600, 0)]
+        for (index, expected) in expectedSamples.enumerated() {
+            XCTAssertEqual(dive2.profileSamples[index].timeSeconds, expected.time, accuracy: 0.001,
+                            "第 \(index) 個樣本點時間偏移不符")
+            XCTAssertEqual(dive2.profileSamples[index].depthMeters, expected.depth, accuracy: 0.001,
+                            "第 \(index) 個樣本點深度不符")
+            XCTAssertNil(dive2.profileSamples[index].waterTemp, "區塊行欄位數不足，water_temp 應為 nil")
+        }
         let comps2 = cal.dateComponents([.year, .month, .day, .hour, .minute, .second], from: dive2.dateTime)
         XCTAssertEqual(comps2.year, 2018)
         XCTAssertEqual(comps2.month, 1)
-        XCTAssertEqual(comps2.day, 3)
+        XCTAssertEqual(comps2.day, 2)
         XCTAssertEqual(comps2.hour, 10)
         XCTAssertEqual(comps2.minute, 10)
+
+        // 第三組：ZDH leave_surface_time=20180103101000／ZDT max_depth=10.0,
+        // reach_surface_time=20180103102000（10 分鐘後）, min_water_temp=26
+        let dive3 = dives[2]
+        XCTAssertEqual(dive3.maxDepth, 10.0, accuracy: 0.001)
+        XCTAssertEqual(dive3.diveTimeSeconds, 600, "10:10:00 → 10:20:00，時長應為 600 秒")
+        XCTAssertEqual(dive3.waterTemperature, 26.0, accuracy: 0.001)
+        XCTAssertEqual(dive3.sourceFormat, "dan-dl7")
+        XCTAssertTrue(dive3.profileSamples.isEmpty, "此組未含 ZDP 資料")
+        let comps3 = cal.dateComponents([.year, .month, .day, .hour, .minute, .second], from: dive3.dateTime)
+        XCTAssertEqual(comps3.year, 2018)
+        XCTAssertEqual(comps3.month, 1)
+        XCTAssertEqual(comps3.day, 3)
+        XCTAssertEqual(comps3.hour, 10)
+        XCTAssertEqual(comps3.minute, 10)
+    }
+
+    // MARK: - ZDP{...ZDP} 多行區塊語法邊界情況
+
+    func testParseZDPBlockEdgeCases() throws {
+        let text = """
+        FSH|^~\\&{}|TEST|ZXU|20240101000000+00:00|
+        ZRH|^~\\&{}|||MFWG|ThM|C|bar|L|
+        ZDH|1|1|I|QS|20240101100000|27|11|FO2|||
+        ZDP{
+        ZDP}
+        ZDT|1|1|20.0|20240101103000|24||
+        ZDH|2|2|I|QS|20240102100000|27|11|FO2|||
+        ZDP{
+        |0|2.0|||||
+        |notanumber|5.0|||||
+        |120|8.0|||||
+        ZDP}
+        ZDT|2|2|15.0|20240102101500|23||
+        """
+        let dives = try DANDL7Parser.parseText(text)
+        XCTAssertEqual(dives.count, 2)
+
+        // 第一筆：空區塊（ZDP{ 緊接 ZDP}），不應產生任何樣本，也不應影響配對。
+        XCTAssertTrue(dives[0].profileSamples.isEmpty, "空的 ZDP{}區塊不應產生樣本")
+
+        // 第二筆：區塊內有一行格式錯誤（elapsed 非數字），應被靜默略過，
+        // 其餘合法行仍應正常解析，不因單一壞行中斷整個區塊。
+        XCTAssertEqual(dives[1].profileSamples.count, 2, "格式錯誤的行應被略過，其餘 2 筆合法樣本仍應解析成功")
+        XCTAssertEqual(dives[1].profileSamples[0].timeSeconds, 0, accuracy: 0.001)
+        XCTAssertEqual(dives[1].profileSamples[0].depthMeters, 2.0, accuracy: 0.001)
+        XCTAssertEqual(dives[1].profileSamples[1].timeSeconds, 120, accuracy: 0.001)
+        XCTAssertEqual(dives[1].profileSamples[1].depthMeters, 8.0, accuracy: 0.001)
     }
 
     // MARK: - 多筆潛水 + ZDP 剖面樣本（合成資料）
@@ -128,5 +182,58 @@ final class DANDL7ParserTests: XCTestCase {
     func testParseNoValidDivesThrows() {
         let text = "FSH|^~\\&{}|TEST|ZXU|20240101000000+00:00|\nZRH|^~\\&{}|||MFWG|ThM|C|bar|L|"
         XCTAssertThrowsError(try DANDL7Parser.parseText(text))
+    }
+
+    // MARK: - Import 樣本驗證（00_Import_samples/DAN_DL7，供 App 匯入流程用的樣本檔）
+    //
+    // 結構與 `DL7.zxu`（Subsurface 官方測試檔）完全相同，僅日期改到 2026-06-01/02/03，
+    // 用來確認匯入樣本目錄裡的檔案也能被修好的解析器正確處理（3 筆潛水，中間一筆
+    // 含 ZDP{...ZDP} 區塊剖面）。
+    func testParseImportSampleFile() throws {
+        let here       = (#filePath as NSString).deletingLastPathComponent
+        let moduleRoot = (here as NSString).deletingLastPathComponent
+        let repoRoot   = (moduleRoot as NSString).deletingLastPathComponent
+        let path = (repoRoot as NSString)
+            .appendingPathComponent("../_JD2-family/00_Import_samples/DAN_DL7/dive_2026-06-01.zxu")
+        try skipIfMissing(path)
+        let text = try String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
+        let dives = try DANDL7Parser.parseText(text)
+
+        XCTAssertEqual(dives.count, 3, "dive_2026-06-01.zxu 應解析出 3 筆潛水")
+
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(secondsFromGMT: 0)!
+
+        let dive1 = dives[0]
+        XCTAssertEqual(dive1.maxDepth, 10.0, accuracy: 0.001)
+        XCTAssertEqual(dive1.diveTimeSeconds, 600)
+        XCTAssertTrue(dive1.profileSamples.isEmpty)
+        let comps1 = cal.dateComponents([.year, .month, .day], from: dive1.dateTime)
+        XCTAssertEqual(comps1.year, 2026)
+        XCTAssertEqual(comps1.month, 6)
+        XCTAssertEqual(comps1.day, 1)
+
+        let dive2 = dives[1]
+        XCTAssertEqual(dive2.maxDepth, 10.0, accuracy: 0.001)
+        XCTAssertEqual(dive2.diveTimeSeconds, 3000)
+        XCTAssertEqual(dive2.profileSamples.count, 4, "中間那筆應解析出 ZDP{} 區塊的 4 個樣本點")
+        let expectedSamples: [(time: Double, depth: Double)] = [(0, 1), (60, 10), (3300, 10), (3600, 0)]
+        for (index, expected) in expectedSamples.enumerated() {
+            XCTAssertEqual(dive2.profileSamples[index].timeSeconds, expected.time, accuracy: 0.001)
+            XCTAssertEqual(dive2.profileSamples[index].depthMeters, expected.depth, accuracy: 0.001)
+        }
+        let comps2 = cal.dateComponents([.year, .month, .day], from: dive2.dateTime)
+        XCTAssertEqual(comps2.year, 2026)
+        XCTAssertEqual(comps2.month, 6)
+        XCTAssertEqual(comps2.day, 2)
+
+        let dive3 = dives[2]
+        XCTAssertEqual(dive3.maxDepth, 10.0, accuracy: 0.001)
+        XCTAssertEqual(dive3.diveTimeSeconds, 600)
+        XCTAssertTrue(dive3.profileSamples.isEmpty)
+        let comps3 = cal.dateComponents([.year, .month, .day], from: dive3.dateTime)
+        XCTAssertEqual(comps3.year, 2026)
+        XCTAssertEqual(comps3.month, 6)
+        XCTAssertEqual(comps3.day, 3)
     }
 }
