@@ -413,4 +413,78 @@ final class SuuntoJSONParserTests: XCTestCase {
         XCTAssertEqual(comps.hour,   0)
         XCTAssertEqual(comps.minute, 30)
     }
+
+    // MARK: - 真實 Suunto App 匯出（2026-07-19 使用者提供，首次有真實資料驗證此格式）
+    //
+    // 這個格式先前是全家族驗證狀態最差者：解析器與上面的測試都聲稱驗證用了
+    // suunto_eon_core_nitrox.json 等 3 個檔案，但那些檔案從未存在過（見
+    // _JD2-family/F-07-IMPORT_FORMAT_COVERAGE.md），上面 3 個 testParse*File
+    // 測試從建立以來全數靜默跳過。這兩筆才是第一次有真實資料跑過這條路徑。
+    //
+    // 驗證時發現真實 bug：真機樣本點只有 TimeISO8601（絕對時間戳），從未出現
+    // 相對秒數的 "Time" 欄位——解析器原本只認 "Time"，導致 profileSamples 永遠是
+    // 空陣列（dive 匯入成功但深度剖面圖是空的，不會報錯，是靜默資料遺失）。
+    // 已修復：改用 TimeISO8601 與 Header.DateTime 的差反推相對秒數。
+
+    private var realDir: String {
+        let here       = (#filePath as NSString).deletingLastPathComponent
+        let moduleRoot = (here as NSString).deletingLastPathComponent
+        let repoRoot   = (moduleRoot as NSString).deletingLastPathComponent
+        return (repoRoot as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/Suunto")
+    }
+
+    func testParseRealSample_0948() throws {
+        let path = (realDir as NSString).appendingPathComponent("6a5ccfc7393493432c953691.json")
+        try skipIfMissing(path)
+        let data = try Data(contentsOf: URL(fileURLWithPath: path))
+        let dives = try SuuntoJSONParser.parseJSONData(data)
+        XCTAssertEqual(dives.count, 1)
+        let dive = try XCTUnwrap(dives.first)
+
+        XCTAssertEqual(dive.diveTimeSeconds, 2119)
+        XCTAssertEqual(dive.maxDepth, 29.59, accuracy: 0.001)
+        XCTAssertEqual(dive.gasMixJSON, "{\"nitrox\":{\"fO2\":0.3}}")
+        XCTAssertEqual(dive.waterTemperature, 28.0, accuracy: 0.01)
+        XCTAssertEqual(dive.sourceFormat, "suunto-json")
+
+        // 迴歸驗證：TimeISO8601 fallback 必須真的產出剖面樣本，不能是空陣列
+        XCTAssertFalse(dive.profileSamples.isEmpty, "應從 TimeISO8601 反推出剖面樣本")
+        XCTAssertEqual(dive.profileSamples.first?.timeSeconds ?? -1, 0, accuracy: 0.5)
+    }
+
+    func testParseRealSample_0821() throws {
+        let path = (realDir as NSString).appendingPathComponent("6a5ccfc7baa3dc6d2f4fd9cf.json")
+        try skipIfMissing(path)
+        let data = try Data(contentsOf: URL(fileURLWithPath: path))
+        let dives = try SuuntoJSONParser.parseJSONData(data)
+        XCTAssertEqual(dives.count, 1)
+        let dive = try XCTUnwrap(dives.first)
+
+        XCTAssertEqual(dive.diveTimeSeconds, 2269)
+        XCTAssertEqual(dive.maxDepth, 23.88, accuracy: 0.001)
+        XCTAssertEqual(dive.gasMixJSON, "{\"nitrox\":{\"fO2\":0.3}}")
+        XCTAssertEqual(dive.waterTemperature, 28.0, accuracy: 0.01)
+        XCTAssertFalse(dive.profileSamples.isEmpty)
+    }
+
+    func testTimeISO8601FallbackWhenTimeFieldAbsent() throws {
+        // 迴歸測試：合成資料重現真機的樣本結構（只有 TimeISO8601，無 Time）
+        let json = """
+        {"DeviceLog":{"Header":{
+          "DateTime":"2026-01-01T10:00:00.000+08:00",
+          "Duration":60,
+          "Depth":{"Max":5.0},
+          "Diving":{"Gases":[{"Oxygen":0.21}]}
+        },"Samples":[
+          {"Depth":1.0,"Temperature":300.0,"TimeISO8601":"2026-01-01T10:00:00.000+08:00"},
+          {"Depth":2.0,"Temperature":300.0,"TimeISO8601":"2026-01-01T10:00:10.000+08:00"},
+          {"Depth":3.0,"Temperature":300.0,"TimeISO8601":"2026-01-01T10:00:20.000+08:00"}
+        ]}}
+        """
+        let dives = try SuuntoJSONParser.parseJSONData(json.data(using: .utf8)!)
+        let dive = try XCTUnwrap(dives.first)
+        XCTAssertEqual(dive.profileSamples.count, 3)
+        XCTAssertEqual(dive.profileSamples.map(\.timeSeconds), [0, 10, 20])
+        XCTAssertEqual(dive.profileSamples.map(\.depthMeters), [1.0, 2.0, 3.0])
+    }
 }

@@ -31,6 +31,54 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-19 — 使用者提供同批 4 次潛水的完整 Suunto 多格式匯出，修復 3 個真實 bug
+
+使用者提供同一支錶（序號 99723006）4 次潛水的多格式匯出：4 個 SML、3 個新
+DM5 XML（其中 `Dive_2026-06-03-0948.xml` 正是先前 F-07 確認遺失、待辦要 PM
+重新匯出的那個檔案，本次補齊）、2 個真實 Suunto App JSON、2 個 Suunto FIT；
+4 個 `.sde` 匯出皆為 0 bytes 空檔，未歸檔（待使用者確認匯出流程問題）。三方
+（SML／DM5 XML／JSON）交叉核對同一批潛水的深度/時長/氣體數值一致。
+
+**修復 1：`SuuntoJSONParser` 樣本剖面靜默遺失**——真機的 Suunto App JSON 匯出
+樣本點只有絕對時間戳 `TimeISO8601`，從未出現解析器原本唯一支援的相對秒數
+`Time` 欄位，導致 `profileSamples` 永遠是空陣列（dive 匯入成功但深度剖面圖是
+空的，不報錯）。已修復：改用 `TimeISO8601 - Header.DateTime` 反推相對秒數，
+`Time` 欄位保留作 fallback。**這也是本次順便補齊的最急迫格式缺口**——Suunto
+JSON 先前連假資料都沒有，是全格式中驗證狀態最差者，`SuuntoJSONParserTests`
+新增 3 個測試（2 真實樣本＋1 迴歸測試）全綠。
+
+**修復 2：`GarminDescentParser` 誤接受非 Garmin 廠牌的 FIT 檔案**——用 2 個真實
+Suunto FIT 匯出驗證時發現，`canHandle` 原本只驗證 FIT magic bytes（通用容器
+格式），會誤判非 Garmin 廠牌的 `.fit` 為可解析；解析時因缺少 Garmin 專屬的
+`dive_gas`（GMN 269）訊息，`gasMixJSON` 靜默退回預設值 `"air"`，但深度/時長
+（來自通用的 `session` GMN 18）看起來完全正常、不會報錯——實測兩筆皆為
+Nitrox 30%，被誤判成 Air，是最危險的一種靜默資料錯誤。已修復：新增
+`file_id.manufacturer` 檢查，非 Garmin 廠牌在 `canHandle`／`validateContent`
+階段明確拒絕，`parse` 拋出寫明實際廠牌的 `unsupportedFormat` 錯誤。
+`GarminFITParserTests` 新增 2 個迴歸測試全綠。Suunto FIT 樣本已歸檔為負向
+測試 fixture，不會被任何解析器誤用。
+
+真實樣本已歸檔至 `_JD2-family/dive-log-samples/Suunto/`（原始檔，SML/DM5/JSON/
+FIT 各自子目錄）與 `_JD2-family/00_Import_samples/`（Suunto_SML 更新、
+Suunto_DM5 新增第 3 筆、**新增 `Suunto_JSON/` 首次涵蓋此格式**）。
+`JD2-LogbookTests` 全套件 209 通過／15 略過／0 失敗。詳見
+`_JD2-family/F-07-IMPORT_FORMAT_COVERAGE.md` Suunto 各行。
+
+### 2026-07-19 — 修復 Suunto SML 解析器真實 bug（使用者提供真實裝置匯出後發現）
+
+使用者提供 2 個真實 Moveslink 裝置匯出（序號 99723006，2021-09-01／2021-09-04，
+共 141／156 筆採樣），取代先前 F-07 稽核確認的模擬樣本。實測發現
+`SuuntoSMLParser.parseISO8601` 對真機常見的無時區 `DateTime`（如
+`2021-09-01T15:14:26`，不含 `Z`／offset）一律回傳 `nil`，導致整筆解析失敗——
+舊的模擬樣本因誤植了 `Z` 後綴而長期未曝光此問題。已修復（加無時區格式
+fallback，與 `ShearwaterXMLParser`／`UDDFParser` 既有慣例一致）；另外發現真機
+Header 其實有 `<Depth><Max>` 欄位（舊文件誤記「Header 沒有 MaxDepth」），已更正
+檔頭註解，解析行為本身不變（仍從樣本點推算 maxDepth，較穩健）。
+`SuuntoSMLParserTests` 新增 3 個測試（2 個真實樣本斷言＋1 個無時區迴歸測試）
+全綠。真實樣本已歸檔至 `_JD2-family/dive-log-samples/Suunto/SML/`（原始檔）與
+`_JD2-family/00_Import_samples/Suunto_SML/`（改日期版，取代原模擬樣本）。詳見
+`_JD2-family/F-07-IMPORT_FORMAT_COVERAGE.md` Suunto 表格。
+
 ### 2026-07-19 — 修復 DAN DL7 解析器兩個真實 bug
 
 家族樣本庫 `DL7.zxu` 從截斷版（誤植，只有 1 筆採樣點）補回 Subsurface 官方完整

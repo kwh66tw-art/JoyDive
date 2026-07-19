@@ -311,12 +311,32 @@ struct GarminDescentParser: DiveLogImporter {
         guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath),
                                    options: .mappedIfSafe),
               data.count >= 12 else { return false }
-        return hasFITMagic(data)
+        guard hasFITMagic(data) else { return false }
+        return Self.nonGarminManufacturer(in: data) == nil
     }
 
     func validateContent(_ data: Data) -> Bool {
         guard data.count >= 12 else { return false }
-        return hasFITMagic(data)
+        guard hasFITMagic(data) else { return false }
+        return Self.nonGarminManufacturer(in: data) == nil
+    }
+
+    /// file_id（GMN 0）的 manufacturer 欄位若明確存在且不是 garmin，回傳該廠牌名稱；
+    /// 缺欄位或本來就是 garmin 時回傳 nil（維持既有寬鬆行為，不誤擋欄位不全的合法檔）。
+    ///
+    /// 2026-07-19 用真實 Suunto D4i 匯出的 .fit 發現：FIT 是共通容器格式，非 Garmin
+    /// 裝置的匯出檔一樣會通過 magic bytes 驗證與 session（GMN 18）解析（start_time／
+    /// total_elapsed_time 是通用欄位），但沒有 Garmin 專屬的 dive_gas（GMN 269）訊息，
+    /// 導致 gasMixJSON 靜默退回預設值 "air"——深度/時長看起來正確，氣體卻是錯的，
+    /// 不會拋錯，是最危險的一種靜默資料錯誤（可能誤導下游減壓計算）。加此檢查後，
+    /// 非 Garmin 廠牌一律在 canHandle 階段就被拒絕，交給 factory 標記為不支援格式。
+    private static func nonGarminManufacturer(in data: Data) -> String? {
+        let fitFile = FitFile(data: data, parsingType: .generic)
+        guard let fileId = fitFile.messages(forMessageType: .file_id).first,
+              let manufacturer = fileId.interpretedField(key: "manufacturer")?.name,
+              !manufacturer.lowercased().contains("garmin")
+        else { return nil }
+        return manufacturer
     }
 
     func parse(from filePath: String) throws -> [DiveLog] {
@@ -340,6 +360,15 @@ struct GarminDescentParser: DiveLogImporter {
         // ── 3. Magic bytes 驗證（Data 下標，非 pointer arithmetic）───────
         guard hasFITMagic(rawData) else {
             throw DiveLogImportError.invalidFormat("非標準 FIT 格式（magic bytes 不符）")
+        }
+
+        // ── 3b. 廠牌驗證：非 Garmin 的 FIT 檔案會缺少 dive_gas/dive_summary
+        // 訊息，硬解析會得到錯誤但不報錯的氣體資料，故明確拒絕 ───────────
+        if let otherBrand = Self.nonGarminManufacturer(in: rawData) {
+            throw DiveLogImportError.unsupportedFormat(
+                "此 FIT 檔案由 \(otherBrand) 裝置產生，非 Garmin 格式，缺少 Garmin 專屬的" +
+                "氣體/潛水摘要訊息，目前不支援解析（避免產生錯誤的氣體混合資料）"
+            )
         }
 
         // ── 4. FitFileParser 解析（.generic 模式解析所有 mesg_num，含 268/269）─
@@ -715,6 +744,11 @@ struct GarminConnectJSONParser: DiveLogImporter {
 ///   - Header.Diving.Gases[0].Oxygen：O2 分率（0.21≈Air, 0.32=Nitrox 32%）；缺失 → Air
 ///   - Header.Notes：備註字串（可選）
 ///   - Samples[].Temperature：水溫（Kelvin）；min - 273.15 = 最低水溫（°C）
+///   - Samples[].Time：**真機 Suunto App 匯出實際只有 `TimeISO8601`（絕對時間戳），
+///     從未出現相對秒數的 `Time` 欄位**（2026-07-19 用真實裝置匯出驗證發現；先前
+///     此欄位純屬臆測，從未有真實或模擬資料驗證過）。剖面樣本時間改以
+///     `TimeISO8601 - Header.DateTime` 反推相對秒數，`Time` 僅作為 fallback 保留
+///     （若未來遇到真的帶 `Time` 欄位的匯出，仍可運作）。
 ///
 /// 測試驗證：
 ///   - suunto_eon_core_nitrox.json  (Nitrox 32%, Duration=3970s, MaxDepth=22.65m, Temp=29.10°C)
@@ -819,19 +853,24 @@ struct SuuntoJSONParser: DiveLogImporter {
             if let minK = kelvins.min() {
                 waterTemp = (minK - 273.15).rounded(toDecimalPlaces: 2)
             }
-            // 剖面：Depth（公尺）+ Time（秒）+ Temperature（v1.1 #4：Kelvin → Celsius，optional）
+            // 剖面：Depth（公尺）+ Time（秒，罕見）／TimeISO8601（絕對時間戳，真機
+            // 實測唯一存在的欄位，相對秒數＝與 Header.DateTime 的差）+ Temperature
+            // （v1.1 #4：Kelvin → Celsius，optional）
             for s in samples {
-                if let depthNum = s["Depth"] as? NSNumber,
-                   let timeNum  = s["Time"]  as? NSNumber {
-                    let d = depthNum.doubleValue
-                    let t = timeNum.doubleValue
-                    let w = (s["Temperature"] as? NSNumber).map { $0.doubleValue - 273.15 }
-                    if t >= 0, d >= 0 {
-                        profileSamples.append(
-                            DiveProfileSample(timeSeconds: t, depthMeters: d, waterTemp: w)
-                        )
-                    }
+                guard let depthNum = s["Depth"] as? NSNumber else { continue }
+                let d = depthNum.doubleValue
+                var t: Double?
+                if let timeNum = s["Time"] as? NSNumber {
+                    t = timeNum.doubleValue
+                } else if let tsStr = s["TimeISO8601"] as? String,
+                          let ts = SuuntoJSONParser.parseISO8601(tsStr) {
+                    t = ts.timeIntervalSince(dateTime)
                 }
+                guard let t, t >= 0, d >= 0 else { continue }
+                let w = (s["Temperature"] as? NSNumber).map { $0.doubleValue - 273.15 }
+                profileSamples.append(
+                    DiveProfileSample(timeSeconds: t, depthMeters: d, waterTemp: w)
+                )
             }
             profileSamples.sort { $0.timeSeconds < $1.timeSeconds }
         }

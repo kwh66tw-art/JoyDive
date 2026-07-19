@@ -27,6 +27,49 @@ import XCTest
 
 final class GarminFITParserTests: XCTestCase {
 
+    // MARK: - 真實 Suunto FIT 匯出（2026-07-19 使用者提供）——必須被拒絕，不能誤解析
+    //
+    // 發現過程：這兩個 .fit 檔案通過了 canHandle 的 magic bytes 檢查（FIT 是通用容器
+    // 格式），修復前 GarminDescentParser 會「成功」解析出深度/時長（session GMN 18
+    // 是通用欄位，Suunto 也有寫），但因為缺少 Garmin 專屬的 dive_gas（GMN 269）訊息，
+    // gasMixJSON 靜默退回預設值 "air"——實際兩筆都是 Nitrox 30%（見
+    // SuuntoJSONParserTests／SuuntoDM5XMLParserTests 對照同一批潛水的斷言）。
+    // 不會拋錯、深度/時長還是對的，是最危險的一種靜默資料錯誤。
+    // file_id.manufacturer 欄位證實是 "suunto"（探測用 XCTFail 訊息核實過）。
+
+    private var suuntoFITDir: String {
+        let here       = (#filePath as NSString).deletingLastPathComponent
+        let moduleRoot = (here as NSString).deletingLastPathComponent
+        let repoRoot   = (moduleRoot as NSString).deletingLastPathComponent
+        return (repoRoot as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/Suunto/FIT")
+    }
+
+    private func skipIfMissing(_ path: String) throws {
+        try XCTSkipUnless(FileManager.default.fileExists(atPath: path),
+                          "測試檔案不存在，略過：\((path as NSString).lastPathComponent)")
+    }
+
+    func testCanHandleRejectsSuuntoFIT() throws {
+        let path = (suuntoFITDir as NSString).appendingPathComponent("6a5ccfc7393493432c953691.fit")
+        try skipIfMissing(path)
+        let parser = GarminDescentParser()
+        XCTAssertFalse(parser.canHandle(filePath: path),
+                       "Suunto FIT 應被拒絕，避免 factory 選中 GarminDescentParser 誤解析")
+    }
+
+    func testParseSuuntoFITThrowsUnsupportedFormat() throws {
+        let path = (suuntoFITDir as NSString).appendingPathComponent("6a5ccfc7baa3dc6d2f4fd9cf.fit")
+        try skipIfMissing(path)
+        let parser = GarminDescentParser()
+        XCTAssertThrowsError(try parser.parse(from: path)) { error in
+            guard case DiveLogImportError.unsupportedFormat(let msg) = error else {
+                XCTFail("應為 unsupportedFormat，實際: \(error)")
+                return
+            }
+            XCTAssertTrue(msg.contains("suunto"), "錯誤訊息應指出實際廠牌: \(msg)")
+        }
+    }
+
     // MARK: - 路徑輔助
 
     private var garminDir: String {

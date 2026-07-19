@@ -89,6 +89,64 @@ final class SuuntoDM5XMLParserTests: XCTestCase {
         XCTAssertEqual(dive.avgDepth, 4.54, accuracy: 0.001)
     }
 
+    // MARK: - 真實 D4i 樣本解析（2026-07-19 使用者提供，補齊 Suunto DM5 覆蓋）
+
+    func testParseRealSample_2025_06_30_0946() throws {
+        let path = dm5Path("Dive_2025-06-30-0946.xml")
+        try skipIfMissing(path)
+        let data = try Data(contentsOf: URL(fileURLWithPath: path))
+        let dives = try SuuntoDM5XMLParser.parseXMLData(data)
+        XCTAssertEqual(dives.count, 1)
+        let dive = dives[0]
+
+        XCTAssertEqual(dive.maxDepth, 16.26, accuracy: 0.001)
+        XCTAssertEqual(dive.diveTimeSeconds, 2347)
+        XCTAssertEqual(dive.avgDepth, 9.12, accuracy: 0.001)
+        XCTAssertEqual(dive.waterTemperature, 29, accuracy: 0.001)
+        XCTAssertEqual(dive.sourceFormat, "suunto-dm5")
+        // Air（Oxygen=21）
+        XCTAssertEqual(dive.gasMixJSON, "\"air\"")
+    }
+
+    func testParseRealSample_2025_06_30_1109() throws {
+        let path = dm5Path("Dive_2025-06-30-1109.xml")
+        try skipIfMissing(path)
+        let data = try Data(contentsOf: URL(fileURLWithPath: path))
+        let dives = try SuuntoDM5XMLParser.parseXMLData(data)
+        XCTAssertEqual(dives.count, 1)
+        let dive = dives[0]
+
+        XCTAssertEqual(dive.maxDepth, 13, accuracy: 0.001)
+        XCTAssertEqual(dive.diveTimeSeconds, 2781)
+        XCTAssertEqual(dive.avgDepth, 8.58, accuracy: 0.001)
+    }
+
+    func testParseRealSample_2026_06_03_0948() throws {
+        // 這筆是原本 F-07 待辦裡「確認遺失」的檔案，2026-07-19 使用者重新匯出補齊
+        let path = dm5Path("Dive_2026-06-03-0948.xml")
+        try skipIfMissing(path)
+        let data = try Data(contentsOf: URL(fileURLWithPath: path))
+        let dives = try SuuntoDM5XMLParser.parseXMLData(data)
+        XCTAssertEqual(dives.count, 1)
+        let dive = dives[0]
+
+        XCTAssertEqual(dive.maxDepth, 29.59, accuracy: 0.001)
+        XCTAssertEqual(dive.diveTimeSeconds, 2119)
+        XCTAssertEqual(dive.avgDepth, 17.44, accuracy: 0.001)
+        XCTAssertEqual(dive.waterTemperature, 28, accuracy: 0.001)
+
+        guard let gasData = dive.gasMixJSON.data(using: .utf8),
+              let gas = try? JSONDecoder().decode(GasMix.self, from: gasData) else {
+            XCTFail("gasMixJSON 應可解碼")
+            return
+        }
+        if case .nitrox(let fO2) = gas {
+            XCTAssertEqual(fO2, 0.30, accuracy: 0.001)
+        } else {
+            XCTFail("應為 Nitrox 30%，實際: \(gas)")
+        }
+    }
+
     // MARK: - 合成資料錯誤處理
 
     func testParseMissingRequiredFieldsThrows() {

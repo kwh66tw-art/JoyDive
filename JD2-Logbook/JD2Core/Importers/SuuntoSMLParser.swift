@@ -4,17 +4,21 @@
 // 結構同名但容器格式不同（XML vs JSON），彼此以副檔名（.json vs .sml/.xml）與
 // 內容型態互斥，不會誤判。
 //
-// 已知欄位（file_format_research/Suunto_SML/sample_moveslink_log.sml）：
+// 已知欄位（真實樣本 _JD2-family/dive-log-samples/Suunto/SML/，2026-07-19 補入）：
 //   <header><DeviceLog><Header>
 //     <Duration>       秒
-//     <DateTime>       ISO 8601
+//     <DateTime>       ISO 8601，**實測真機匯出不含時區designator**（如
+//                      "2021-09-01T15:14:26"，無 Z／無 offset），需 fallback
+//                      無時區格式解析（見 parseISO8601），否則整筆解析失敗
+//     <Depth><Max>     真機匯出其實有這個欄位，但本解析器刻意仍從樣本點推算
+//                      maxDepth（更穩健，不依賴 Header 欄位是否存在）
 //   <DeviceLog><Samples><Sample>
 //     <Time>           秒
 //     <Depth>          公尺
 //     <Temperature>    **絕對溫度 Kelvin**，需 -273.15 轉攝氏
 //
-// ⚠️ Header 沒有 MaxDepth/AvgDepth 欄位：maxDepth 從樣本點推算，avgDepth 交給
-// ImportCoordinator.validateDives() 既有的梯形近似重建（v1.1 #8）自動補上。
+// avgDepth 交給 ImportCoordinator.validateDives() 既有的梯形近似重建
+// （v1.1 #8）自動補上。
 // ⚠️ GPS：部分 Moveslink 匯出的經緯度可能是弧度而非十進位度數，本檔案樣本無
 // GPS 欄位可驗證，實作時以「數值落在 ±2π 內視為弧度」的啟發式防禦處理。
 
@@ -196,6 +200,16 @@ private final class SuuntoSMLDelegate: NSObject, XMLParserDelegate {
         if let d = fracFmt.date(from: str) { return d }
         let stdFmt = ISO8601DateFormatter()
         stdFmt.formatOptions = [.withInternetDateTime]
-        return stdFmt.date(from: str)
+        if let d = stdFmt.date(from: str) { return d }
+        // Moveslink 桌面同步實際匯出的 DateTime 不含時區designator
+        // （例如 "2021-09-01T15:14:26"，無 Z／無 offset）；ISO8601DateFormatter
+        // 的 .withInternetDateTime 要求時區，對這種格式一律回傳 nil。
+        // 與其他格式解析器（ShearwaterXMLParser／UDDFParser）一致的既有慣例：
+        // 無時區時當作 UTC 落地。
+        let noTZFmt = DateFormatter()
+        noTZFmt.locale = Locale(identifier: "en_US_POSIX")
+        noTZFmt.timeZone = TimeZone(secondsFromGMT: 0)
+        noTZFmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return noTZFmt.date(from: str)
     }
 }
