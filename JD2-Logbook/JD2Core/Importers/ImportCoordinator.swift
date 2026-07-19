@@ -10,6 +10,15 @@ import Foundation
 /// 匯入進度回調（已處理筆數, 總筆數）
 typealias ImportProgressCallback = (Int, Int) -> Void
 
+/// 單一檔案匯入結果
+struct ImportFileResult {
+    /// 實際新增的潛水日誌
+    let dives: [DiveLog]
+
+    /// 因去重（重複）而略過的筆數
+    let skippedDuplicates: Int
+}
+
 /// 匯入結果統計
 struct ImportStatistics {
     /// 成功匯入的日誌數
@@ -68,7 +77,7 @@ final class ImportCoordinator {
     func importFile(
         _ filePath: String,
         progressCallback: ImportProgressCallback? = nil
-    ) async throws -> [DiveLog] {
+    ) async throws -> ImportFileResult {
         isImporting = true
         importErrors.removeAll()
 
@@ -123,7 +132,7 @@ final class ImportCoordinator {
         }
 
         print("[Import] done: \(newDives.count) dives imported, \(skippedCount) skipped")
-        return newDives
+        return ImportFileResult(dives: newDives, skippedDuplicates: skippedCount)
     }
 
     /// 批量匯入多個檔案
@@ -144,11 +153,11 @@ final class ImportCoordinator {
 
         for filePath in filePaths {
             do {
-                let dives = try await importFile(filePath) { processed, total in
+                let result = try await importFile(filePath) { processed, total in
                     totalProcessed = processed
                     progressCallback?(totalProcessed, filePaths.count * total)
                 }
-                successCount += dives.count
+                successCount += result.dives.count
             } catch {
                 failureCount += 1
                 allErrors.append("[\(filePath)] \(error.localizedDescription)")

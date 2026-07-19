@@ -31,6 +31,27 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-19 — 匯入批次結果 UI：不再靜默丟棄失敗清單
+
+實測 `00_Import_samples`（20 個真實樣本）批次匯入時發現 UI 只顯示
+「Import Successful」，完全不顯示哪些檔案失敗。追查根因：
+`ImportWizardView.runBatchImport` 逐檔錯誤只記 `firstError`（第 2 個以後的失敗
+直接丟棄），只要批次裡有一筆成功就跳到 `.success`；`skipped` 也永遠寫死 0，
+即使 `ImportCoordinator` 內部確實算出 dedup 略過筆數，只印到 console 沒回傳。
+
+- `ImportCoordinator.importFile` 回傳型別改 `ImportFileResult`（`dives` +
+  `skippedDuplicates`），把原本只印 console 的 dedup 筆數一併回傳。
+- `ImportWizardView`：新增 `ImportFailure`（檔名+原因）；`ImportStep.success`
+  加 `failures` 參數；`runBatchImport` 改單一 catch block 蒐集**全部**失敗
+  （含原本被特殊跳過的 `emptyFile`），不再只留第一個；成功畫面依
+  `failures`/`count` 三態呈現（全成功綠勾勾／部分完成橘色警示+失敗清單／
+  全失敗紅色 X+失敗清單），不再有任何一筆錯誤資訊被靜默丟棄。
+- 驗證：iOS+macOS build 成功、測試套件全綠、`00_Import_samples` 全部 20 個
+  真實檔案批次匯入 **100% 成功**（0 失敗——搭配同日 DiveImportKit v0.2.1 的
+  Seabear／SubsurfaceCSV 格式覆蓋補強後，先前的 4 個失敗樣本已全部修正）。
+
+分支 `feature/import-failure-visibility`（總指揮驗收後 merge）。
+
 ### 2026-07-19 — F6 階段一：改用家族共用匯入解析器套件 DiveImportKit
 
 家族 F6（Importers 合流）第一步：Logbook 端採用新建的 `../DiveImportKit`
