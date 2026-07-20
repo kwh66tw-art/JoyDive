@@ -10,6 +10,7 @@
 
 import SwiftUI
 import DiveKit
+import DiveKitUI
 
 struct DiveSiteSheetView: View {
 
@@ -34,14 +35,7 @@ struct DiveSiteSheetView: View {
               let gas  = try? JSONDecoder().decode(GasMix.self, from: data) else {
             return String(localized: "Air")
         }
-        switch gas {
-        case .air:
-            return String(localized: "Air")
-        case .nitrox(let o2):
-            return String(format: "EANx%d", Int(o2 * 100))
-        case .trimix(let o2, let he):
-            return String(format: "Tx%.0f/%.0f", o2 * 100, he * 100)
-        }
+        return gas.localizedDisplayName
     }
 
     private var environmentText: String {
@@ -132,32 +126,38 @@ struct DiveSiteSheetView: View {
 
     private var keyStatsRow: some View {
         HStack(spacing: 0) {
-            SheetStatCell(
+            DiveKitUI.DiveStatCell(
                 value: String(format: "%.1f", dive.maxDepth),
                 unit:  "m",
-                label: String(localized: "Max Depth"),
+                label: "Max Depth",
                 icon:  "arrow.down.to.line",
-                color: .accentColor
+                color: .accentColor,
+                secondaryColor: .accessibleSecondary,
+                style: .compact
             )
 
             Divider().frame(height: 44)
 
-            SheetStatCell(
+            DiveKitUI.DiveStatCell(
                 value: durationFormatted,
                 unit:  "",
-                label: String(localized: "Dive Time"),
+                label: "Dive Time",
                 icon:  "timer",
-                color: .orange
+                color: .orange,
+                secondaryColor: .accessibleSecondary,
+                style: .compact
             )
 
             Divider().frame(height: 44)
 
-            SheetStatCell(
+            DiveKitUI.DiveStatCell(
                 value: String(format: "%.0f", dive.waterTemperature),
                 unit:  "°C",
-                label: String(localized: "Water Temp"),
+                label: "Water Temp",
                 icon:  "thermometer.medium",
-                color: .cyan
+                color: .cyan,
+                secondaryColor: .accessibleSecondary,
+                style: .compact
             )
         }
         .padding(.vertical, 6)
@@ -215,42 +215,6 @@ struct DiveSiteSheetView: View {
                 .padding(.vertical, 10)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-    }
-}
-
-// MARK: - SheetStatCell
-
-private struct SheetStatCell: View {
-    let value: String
-    let unit:  String
-    let label: String
-    let icon:  String
-    let color: Color
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Image(systemName: icon)
-                .font(.caption)
-                .foregroundStyle(color)
-
-            HStack(alignment: .lastTextBaseline, spacing: 1) {
-                Text(value)
-                    .font(.callout.bold().monospacedDigit())
-                if !unit.isEmpty {
-                    Text(unit)
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(Color.accessibleSecondary)
-                }
-            }
-
-            Text(label)
-                .font(.caption2)
-                .foregroundStyle(Color.accessibleSecondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(label): \(value)\(unit)")
     }
 }
 

@@ -7,6 +7,14 @@
 import Foundation
 import SwiftData
 
+/// 潛水日誌彙總統計（次數/總時長/平均深度/最大深度）
+struct DiveStatistics {
+    let count: Int
+    let totalTime: Int
+    let averageDepth: Double
+    let maxDepth: Double
+}
+
 /// SwiftData 模型容器與數據操作管理器
 @MainActor
 final class DiveLogDatabase {
@@ -133,8 +141,7 @@ final class DiveLogDatabase {
     }
 
     /// 取得統計信息
-    /// - Returns: 包含 count, totalTime, averageDepth 的字典
-    func getStatistics() throws -> [String: Any] {
+    func getStatistics() throws -> DiveStatistics {
         let dives = try fetchAllDives()
 
         let count = dives.count
@@ -142,12 +149,12 @@ final class DiveLogDatabase {
         let averageDepth = dives.isEmpty ? 0.0 : dives.reduce(0) { $0 + $1.maxDepth } / Double(count)
         let maxDepthRecord = dives.map { $0.maxDepth }.max() ?? 0.0
 
-        return [
-            "count": count,
-            "totalTime": totalTime,
-            "averageDepth": averageDepth,
-            "maxDepth": maxDepthRecord
-        ]
+        return DiveStatistics(
+            count: count,
+            totalTime: totalTime,
+            averageDepth: averageDepth,
+            maxDepth: maxDepthRecord
+        )
     }
 
     // MARK: - 數據維護

@@ -5,6 +5,7 @@ import SwiftUI
 import SwiftData
 import Charts
 import DiveKit
+import DiveKitUI
 
 struct DiveLogDetailView: View {
     let dive: DiveLog
@@ -48,16 +49,7 @@ struct DiveLogDetailView: View {
               let gas = try? JSONDecoder().decode(GasMix.self, from: data) else {
             return String(localized: "Air")
         }
-        switch gas {
-        case .air:
-            return String(localized: "Air")
-        case .nitrox(let fO2):
-            let eanxLabel = String(localized: "EANx")
-            return String(format: "%@ (EANx%d)", eanxLabel, Int(fO2 * 100))
-        case .trimix(let fO2, let fHe):
-            let trimixLabel = String(localized: "Trimix")
-            return String(format: "%@ (Trimix%.0f/%.0f)", trimixLabel, fO2 * 100, fHe * 100)
-        }
+        return gas.localizedDisplayName
     }
 
     private var coordinatesText: String? {
@@ -305,32 +297,35 @@ struct DiveLogDetailView: View {
 
     private var keyStatsRow: some View {
         HStack(spacing: 0) {
-            KeyStatCell(
+            DiveKitUI.DiveStatCell(
                 value: String(format: "%.1f", dive.maxDepth),
                 unit: "m",
                 label: "Max Depth",
                 icon: "arrow.down.to.line",
-                color: .accentColor
+                color: .accentColor,
+                secondaryColor: .accessibleSecondary
             )
 
             Divider().frame(height: 48)
 
-            KeyStatCell(
+            DiveKitUI.DiveStatCell(
                 value: durationFormatted,
                 unit: "",
                 label: "Dive Time",
                 icon: "timer",
-                color: .orange
+                color: .orange,
+                secondaryColor: .accessibleSecondary
             )
 
             Divider().frame(height: 48)
 
-            KeyStatCell(
+            DiveKitUI.DiveStatCell(
                 value: String(format: "%.0f", dive.waterTemperature),
                 unit: "°C",
                 label: "Water Temp",
                 icon: "thermometer.medium",
-                color: .cyan
+                color: .cyan,
+                secondaryColor: .accessibleSecondary
             )
         }
         .padding(.vertical, 8)
@@ -440,43 +435,6 @@ struct DiveLogDetailView: View {
 }
 
 // MARK: - Key Stat Cell
-
-private struct KeyStatCell: View {
-    let value: String
-    let unit: String
-    let label: String
-    let icon: String
-    let color: Color
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Image(systemName: icon)
-                .font(.caption)
-                .foregroundStyle(color)
-
-            HStack(alignment: .lastTextBaseline, spacing: 1) {
-                Text(value)
-                    .font(.title3.bold().monospacedDigit())
-                if !unit.isEmpty {
-                    Text(unit)
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(Color.accessibleSecondary)
-                }
-            }
-            .lineLimit(1)
-            .minimumScaleFactor(0.6) // 「27 min 22 sec」等長值改縮放保持單行，不換行
-
-            Text(LocalizedStringKey(label))
-                .font(.caption2)
-                .foregroundStyle(Color.accessibleSecondary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-        }
-        .frame(maxWidth: .infinity)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(label): \(value)\(unit)")
-    }
-}
 
 // MARK: - Detail Row
 

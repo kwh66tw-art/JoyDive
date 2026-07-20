@@ -175,14 +175,7 @@ struct DiveRowView: View {
               let gasMix = try? JSONDecoder().decode(GasMix.self, from: data) else {
             return String(localized: "Air")
         }
-        switch gasMix {
-        case .air:
-            return String(localized: "Air")
-        case .nitrox(let fO2):
-            return String(format: "EANx%d", Int(fO2 * 100))
-        case .trimix(let fO2, let fHe):
-            return String(format: "Tx%.0f/%.0f", fO2 * 100, fHe * 100)
-        }
+        return gasMix.localizedDisplayName
     }
 }
 
