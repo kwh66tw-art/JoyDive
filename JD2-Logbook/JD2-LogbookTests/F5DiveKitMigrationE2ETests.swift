@@ -56,7 +56,7 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
         let samples = dive.profileSamples
         try XCTSkipIf(samples.count < 2, "剖面樣本不足 2 筆")
         let profileSamples = samples.map {
-            DiveProfileSample(timeSeconds: $0.timeSeconds, depthMeters: $0.depthMeters)
+            JoyDive_.DiveProfileSample(timeSeconds: $0.timeSeconds, depthMeters: $0.depthMeters)
         }
 
         let replay = DiveReplayEngine.replay(samples: profileSamples, gasMix: gasMix)
@@ -74,10 +74,10 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
     /// 缺口僅限 trimix）。
     func testSyntheticAirDive_RunsFullDecoReplayThroughDiveKit() {
         let samples = [
-            DiveProfileSample(timeSeconds: 0, depthMeters: 0),
-            DiveProfileSample(timeSeconds: 60, depthMeters: 18),
-            DiveProfileSample(timeSeconds: 1800, depthMeters: 18),
-            DiveProfileSample(timeSeconds: 1860, depthMeters: 0),
+            JoyDive_.DiveProfileSample(timeSeconds: 0, depthMeters: 0),
+            JoyDive_.DiveProfileSample(timeSeconds: 60, depthMeters: 18),
+            JoyDive_.DiveProfileSample(timeSeconds: 1800, depthMeters: 18),
+            JoyDive_.DiveProfileSample(timeSeconds: 1860, depthMeters: 0),
         ]
         let replay = DiveReplayEngine.replay(samples: samples, gasMix: .air)
 

@@ -11,6 +11,7 @@
 		0AB40FC22FBC1D5D00A8AF55 /* FitFileParser in Frameworks */ = {isa = PBXBuildFile; productRef = 0AB40FC12FBC1D5D00A8AF55 /* FitFileParser */; };
 		0AB40FC52FBC1E9E00A8AF55 /* FitFileParser in Frameworks */ = {isa = PBXBuildFile; productRef = 0AB40FC42FBC1E9E00A8AF55 /* FitFileParser */; };
 		1636871E51CBE76C176D595E /* DiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3B4268573F911C81C0614165 /* DiveKit */; };
+		C3EB39C28366F0C1B210CF96 /* DiveKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = A2EDE0408395429455EB7342 /* DiveKitUI */; };
 		35B992AD328BFCCFDDC0FDF6 /* DiveImportKit in Frameworks */ = {isa = PBXBuildFile; productRef = 767481F9A6F2B44025528BF2 /* DiveImportKit */; };
 		523BF7E46F52D7B499AEF253 /* DiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = 58762D494870FF6ED10F2CED /* DiveKit */; };
 		DB3F6B3C525518F49E389056 /* DiveImportKit in Frameworks */ = {isa = PBXBuildFile; productRef = 916315CE596274EA28DA42E9 /* DiveImportKit */; };
@@ -81,6 +82,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1636871E51CBE76C176D595E /* DiveKit in Frameworks */,
+				C3EB39C28366F0C1B210CF96 /* DiveKitUI in Frameworks */,
 				DB3F6B3C525518F49E389056 /* DiveImportKit in Frameworks */,
 				0A21477E2FD0541D0098FDD9 /* GoogleMobileAds in Frameworks */,
 				0AB40FC22FBC1D5D00A8AF55 /* FitFileParser in Frameworks */,
@@ -158,6 +160,7 @@
 			name = "JD2-Logbook";
 			packageProductDependencies = (
 				3B4268573F911C81C0614165 /* DiveKit */,
+				A2EDE0408395429455EB7342 /* DiveKitUI */,
 				916315CE596274EA28DA42E9 /* DiveImportKit */,
 				0AB40FC12FBC1D5D00A8AF55 /* FitFileParser */,
 				0A21477D2FD0541D0098FDD9 /* GoogleMobileAds */,
@@ -735,6 +738,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 54AB5EDCEAF5C801C6E7E564 /* XCLocalSwiftPackageReference "../../DiveKit" */;
 			productName = DiveKit;
+		};
+		A2EDE0408395429455EB7342 /* DiveKitUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 54AB5EDCEAF5C801C6E7E564 /* XCLocalSwiftPackageReference "../../DiveKit" */;
+			productName = DiveKitUI;
 		};
 		58762D494870FF6ED10F2CED /* DiveKit */ = {
 			isa = XCSwiftPackageProductDependency;

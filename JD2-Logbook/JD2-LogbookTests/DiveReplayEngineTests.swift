@@ -10,7 +10,7 @@ final class DiveReplayEngineTests: XCTestCase {
 
     func testTooFewSamplesReturnsEmptyResult() {
         let result = DiveReplayEngine.replay(
-            samples: [DiveProfileSample(timeSeconds: 0, depthMeters: 10)],
+            samples: [JoyDive_.DiveProfileSample(timeSeconds: 0, depthMeters: 10)],
             gasMix: .air
         )
         XCTAssertTrue(result.points.isEmpty)
@@ -20,10 +20,10 @@ final class DiveReplayEngineTests: XCTestCase {
     func testShallowShortDiveNeverEntersDeco() {
         // 12m、10 分鐘：遠低於 NDL 極限，不應觸發減壓天花板
         let samples = [
-            DiveProfileSample(timeSeconds: 0,   depthMeters: 0),
-            DiveProfileSample(timeSeconds: 60,  depthMeters: 12),
-            DiveProfileSample(timeSeconds: 540, depthMeters: 12),
-            DiveProfileSample(timeSeconds: 600, depthMeters: 0),
+            JoyDive_.DiveProfileSample(timeSeconds: 0,   depthMeters: 0),
+            JoyDive_.DiveProfileSample(timeSeconds: 60,  depthMeters: 12),
+            JoyDive_.DiveProfileSample(timeSeconds: 540, depthMeters: 12),
+            JoyDive_.DiveProfileSample(timeSeconds: 600, depthMeters: 0),
         ]
         let result = DiveReplayEngine.replay(samples: samples, gasMix: .air)
         XCTAssertFalse(result.points.isEmpty)
@@ -34,10 +34,10 @@ final class DiveReplayEngineTests: XCTestCase {
 
     func testDeepLongDiveEntersDecoAndProducesNDL() {
         // 40m、40 分鐘的底部時間：應超過 NDL，進入減壓天花板 > 0
-        var samples: [DiveProfileSample] = [DiveProfileSample(timeSeconds: 0, depthMeters: 0)]
-        samples.append(DiveProfileSample(timeSeconds: 120, depthMeters: 40))
+        var samples: [JoyDive_.DiveProfileSample] = [JoyDive_.DiveProfileSample(timeSeconds: 0, depthMeters: 0)]
+        samples.append(JoyDive_.DiveProfileSample(timeSeconds: 120, depthMeters: 40))
         for minute in stride(from: 3, through: 40, by: 1) {
-            samples.append(DiveProfileSample(timeSeconds: Double(minute * 60), depthMeters: 40))
+            samples.append(JoyDive_.DiveProfileSample(timeSeconds: Double(minute * 60), depthMeters: 40))
         }
         let result = DiveReplayEngine.replay(samples: samples, gasMix: .air)
         XCTAssertTrue(result.enteredDeco, "40m/40min 應超過免減壓極限")
@@ -46,7 +46,7 @@ final class DiveReplayEngineTests: XCTestCase {
 
     func testNDLDecreasesAsBottomTimeAccumulates() {
         let samples = (0...20).map { i in
-            DiveProfileSample(timeSeconds: Double(i * 60), depthMeters: i == 0 ? 0 : 30)
+            JoyDive_.DiveProfileSample(timeSeconds: Double(i * 60), depthMeters: i == 0 ? 0 : 30)
         }
         let result = DiveReplayEngine.replay(samples: samples, gasMix: .air)
         guard let first = result.points.first(where: { $0.depthMeters >= 29 }),

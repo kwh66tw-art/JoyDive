@@ -229,24 +229,16 @@ final class DiveLog {
     }
 
     /// 平均深度以樣本梯形近似重建（匯入來源無 avgDepth 但有剖面樣本時使用）
-    /// 注意結束 tick 邊界：最後一個樣本到潛水結束仍需計入積分，
-    /// 否則會低估（見 V1_1_BACKLOG_解法參考 avgDepth 章節）
+    /// 帶 totalTimeSeconds 觸發尾段補償＋除以官方時長，避免尾段低估
+    /// （家族共用函式，見 DiveKit.DiveProfileSample.reconstructedAvgDepth）
     func reconstructedAvgDepth() -> Double {
-        let samples = profileSamples
-        guard samples.count >= 2 else { return 0 }
-        var area = 0.0
-        for i in 1..<samples.count {
-            let dt = samples[i].timeSeconds - samples[i - 1].timeSeconds
-            guard dt > 0 else { continue }
-            area += (samples[i].depthMeters + samples[i - 1].depthMeters) / 2.0 * dt
+        let kitSamples = profileSamples.map {
+            DiveKit.DiveProfileSample(timeSeconds: $0.timeSeconds, depthMeters: $0.depthMeters, waterTemp: $0.waterTemp)
         }
-        // 補最後一段到潛水結束（避免尾段深度未入積分但時長已計）
-        let totalTime = Double(diveTimeSeconds)
-        if let last = samples.last, totalTime > last.timeSeconds {
-            area += last.depthMeters * (totalTime - last.timeSeconds)
-        }
-        guard totalTime > 0 else { return 0 }
-        return area / totalTime
+        return DiveKit.DiveProfileSample.reconstructedAvgDepth(
+            samples: kitSamples,
+            totalTimeSeconds: Double(diveTimeSeconds)
+        )
     }
 
     // MARK: - 方法
