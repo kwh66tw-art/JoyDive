@@ -8,13 +8,20 @@
 
 > 艦隊憲法 `../CLAUDE.md` 的「JD2 家族鐵律」凌駕本檔。開場先讀 `../_JD2-family/`。
 
-- **JD2Core 演算法層凍結**（F4 決策，`../_JD2-family/decisions/2026-07-17_F4-JD2Core評估結論.md`）：
-  `JD2Core/Algorithm/` 與 DiveKit 同源的 Models/Constants 檔案不得單獨修演算法——
-  發現演算法 bug 的流程＝**先修統一 DiveKit（`../DiveKit`）→ 才 port 回 JD2Core
-  （方向只允許 DiveKit → JD2Core）→ 登錄 `SYNC_TO_JD2-ULTRA.md`**。只修自己不登錄＝違規。
-- Logbook 專屬層（SwiftData 模型、Importers、DiveReplayEngine、UI）不受凍結影響，正常開發。
-- F5（v1 上架後）：JD2Core 的 DiveKit-fork 換統一 DiveKit 引用；F6 候選：Importers 與
-  UltraPhone 合流為 ImportKit。排程見 `../_JD2-family/F-01-FAMILY_ROADMAP.md`。
+- **F5 已完成（2026-07-18）**：`JD2Core/Algorithm/` 的 DiveKit-fork（`Buhlmann`／
+  `DiveEngine`／`AlgorithmConstants`／`GasMix`／`DiveEnvironment` 等）已整包刪除，
+  改用統一 DiveKit 外部引用（`../../DiveKit`，SPM local path，目前 v1.4.0）。
+  **本 repo 已無任何演算法拷貝**，`JD2Core/Algorithm/` 僅留 `DiveReplayEngine.swift`
+  （Logbook 專屬的剖面重放邏輯，非演算法本體）。發現演算法問題→回統一 DiveKit
+  修（單一戰場），不得在本 repo 繞道；`SYNC_TO_JD2-ULTRA.md` 仍是 Logbook↔ultra
+  單向記錄機制（非 DiveKit 相關問題才用）。
+- **F6/F8/B組已完成（2026-07-19）**：Importers 全部（15 種格式）搬遷至獨立的
+  `DiveImportKit`（`../../DiveImportKit`，目前 v0.4.0），本 repo 已無任何本地
+  解析器/去重邏輯拷貝，只剩 `JD2Core/Importers/DiveImportKitAdapter.swift`
+  （全 App 唯一 import 點）。**解析器 bug 同樣回統一 DiveImportKit 修**。
+- Logbook 專屬層（SwiftData 模型、`DiveReplayEngine`、UI）不受影響，正常開發。
+  排程與決策見 `../_JD2-family/F-01-FAMILY_ROADMAP.md` 與
+  `../_JD2-family/decisions/`。
 
 ---
 
