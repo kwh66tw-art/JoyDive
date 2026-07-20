@@ -187,29 +187,15 @@ final class DiveLogDatabase {
         }
         guard !backup.dives.isEmpty else { throw DiveLogImportError.emptyFile }
 
-        var existing = try fetchAllDives()
-        var imported = 0
-        var skipped = 0
-
-        for entry in backup.dives {
-            let isDuplicate = existing.contains { ex in
-                abs(ex.dateTime.timeIntervalSince(entry.dateTime)) < 60
-                    && ex.location == entry.location
-                    && ex.maxDepth == entry.maxDepth
-            }
-            guard !isDuplicate else {
-                skipped += 1
-                continue
-            }
-            let dive = entry.makeDiveLog()
-            context.insert(dive)
-            existing.append(dive)   // 避免同一份備份內的重複條目互相漏檢
-            imported += 1
+        let existing = try fetchAllDives()
+        let (kept, skippedCount) = dedupeBackupEntries(backup.dives, against: existing)
+        for entry in kept {
+            context.insert(entry.makeDiveLog())
         }
 
-        if imported > 0 {
+        if !kept.isEmpty {
             try context.save()
         }
-        return (imported, skipped)
+        return (kept.count, skippedCount)
     }
 }

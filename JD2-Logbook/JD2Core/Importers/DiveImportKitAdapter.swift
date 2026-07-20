@@ -144,6 +144,21 @@ func formatDisplayName(for filePath: String) -> String? {
     DiveImportKit.DiveLogImporterFactory.selectImporter(for: filePath)?.format.displayName
 }
 
+/// 去重：備份還原候選項 vs 資料庫既有記錄（家族層共用抽取 B 組，2026-07-19）。
+/// 跟匯入流程用的是同一套 Kit 比對規則（地點+深度+60秒），供
+/// `DiveLogDatabase.importFromJSON` 呼叫，不再手寫一份物理重複的邏輯。
+func dedupeBackupEntries(
+    _ entries: [DiveLogBackupEntry],
+    against existing: [DiveLog]
+) -> (kept: [DiveLogBackupEntry], skippedCount: Int) {
+    let fingerprints = existing.map {
+        DiveImportKit.DiveFingerprint(dateTime: $0.dateTime, location: $0.location, maxDepth: $0.maxDepth)
+    }
+    return DiveImportKit.ImportBatchProcessor.dedupe(entries, against: fingerprints) {
+        DiveImportKit.DiveFingerprint(dateTime: $0.dateTime, location: $0.location, maxDepth: $0.maxDepth)
+    }
+}
+
 // MARK: - Kit 解析器薄包裝（實作本地 DiveLogImporter protocol）
 
 /// UDDF 解析器（ISO 12639:2015）——實作已搬遷至 DiveImportKit
