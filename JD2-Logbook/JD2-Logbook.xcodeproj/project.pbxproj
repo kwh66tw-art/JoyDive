@@ -269,8 +269,8 @@
 			mainGroup = 0A37CE982FB9E822004E01E9;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				54AB5EDCEAF5C801C6E7E564 /* XCLocalSwiftPackageReference "../../DiveKit" */,
-				EBEE64F5EB45CA4DB5972448 /* XCLocalSwiftPackageReference "../../DiveImportKit" */,
+				54AB5EDCEAF5C801C6E7E564 /* XCLocalSwiftPackageReference "../../_JD2-family/DiveKit" */,
+				EBEE64F5EB45CA4DB5972448 /* XCLocalSwiftPackageReference "../../_JD2-family/DiveImportKit" */,
 				0AB40FC02FBC1D5D00A8AF55 /* XCRemoteSwiftPackageReference "FitFileParser" */,
 				0A21477C2FD0541D0098FDD9 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
@@ -689,13 +689,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		54AB5EDCEAF5C801C6E7E564 /* XCLocalSwiftPackageReference "../../DiveKit" */ = {
+		54AB5EDCEAF5C801C6E7E564 /* XCLocalSwiftPackageReference "../../_JD2-family/DiveKit" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../DiveKit;
+			relativePath = ../../_JD2-family/DiveKit;
 		};
-		EBEE64F5EB45CA4DB5972448 /* XCLocalSwiftPackageReference "../../DiveImportKit" */ = {
+		EBEE64F5EB45CA4DB5972448 /* XCLocalSwiftPackageReference "../../_JD2-family/DiveImportKit" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../DiveImportKit;
+			relativePath = ../../_JD2-family/DiveImportKit;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -736,27 +736,27 @@
 		};
 		3B4268573F911C81C0614165 /* DiveKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 54AB5EDCEAF5C801C6E7E564 /* XCLocalSwiftPackageReference "../../DiveKit" */;
+			package = 54AB5EDCEAF5C801C6E7E564 /* XCLocalSwiftPackageReference "../../_JD2-family/DiveKit" */;
 			productName = DiveKit;
 		};
 		A2EDE0408395429455EB7342 /* DiveKitUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 54AB5EDCEAF5C801C6E7E564 /* XCLocalSwiftPackageReference "../../DiveKit" */;
+			package = 54AB5EDCEAF5C801C6E7E564 /* XCLocalSwiftPackageReference "../../_JD2-family/DiveKit" */;
 			productName = DiveKitUI;
 		};
 		58762D494870FF6ED10F2CED /* DiveKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 54AB5EDCEAF5C801C6E7E564 /* XCLocalSwiftPackageReference "../../DiveKit" */;
+			package = 54AB5EDCEAF5C801C6E7E564 /* XCLocalSwiftPackageReference "../../_JD2-family/DiveKit" */;
 			productName = DiveKit;
 		};
 		767481F9A6F2B44025528BF2 /* DiveImportKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = EBEE64F5EB45CA4DB5972448 /* XCLocalSwiftPackageReference "../../DiveImportKit" */;
+			package = EBEE64F5EB45CA4DB5972448 /* XCLocalSwiftPackageReference "../../_JD2-family/DiveImportKit" */;
 			productName = DiveImportKit;
 		};
 		916315CE596274EA28DA42E9 /* DiveImportKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = EBEE64F5EB45CA4DB5972448 /* XCLocalSwiftPackageReference "../../DiveImportKit" */;
+			package = EBEE64F5EB45CA4DB5972448 /* XCLocalSwiftPackageReference "../../_JD2-family/DiveImportKit" */;
 			productName = DiveImportKit;
 		};
 /* End XCSwiftPackageProductDependency section */

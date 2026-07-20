@@ -10,13 +10,13 @@
 
 - **F5 已完成（2026-07-18）**：`JD2Core/Algorithm/` 的 DiveKit-fork（`Buhlmann`／
   `DiveEngine`／`AlgorithmConstants`／`GasMix`／`DiveEnvironment` 等）已整包刪除，
-  改用統一 DiveKit 外部引用（`../../DiveKit`，SPM local path，目前 v1.4.0）。
+  改用統一 DiveKit 外部引用（`../../_JD2-family/DiveKit`，SPM local path，目前 v1.4.0）。
   **本 repo 已無任何演算法拷貝**，`JD2Core/Algorithm/` 僅留 `DiveReplayEngine.swift`
   （Logbook 專屬的剖面重放邏輯，非演算法本體）。發現演算法問題→回統一 DiveKit
   修（單一戰場），不得在本 repo 繞道；`SYNC_TO_JD2-ULTRA.md` 仍是 Logbook↔ultra
   單向記錄機制（非 DiveKit 相關問題才用）。
 - **F6/F8/B組已完成（2026-07-19）**：Importers 全部（15 種格式）搬遷至獨立的
-  `DiveImportKit`（`../../DiveImportKit`，目前 v0.4.0），本 repo 已無任何本地
+  `DiveImportKit`（`../../_JD2-family/DiveImportKit`，目前 v0.4.0），本 repo 已無任何本地
   解析器/去重邏輯拷貝，只剩 `JD2Core/Importers/DiveImportKitAdapter.swift`
   （全 App 唯一 import 點）。**解析器 bug 同樣回統一 DiveImportKit 修**。
 - Logbook 專屬層（SwiftData 模型、`DiveReplayEngine`、UI）不受影響，正常開發。
