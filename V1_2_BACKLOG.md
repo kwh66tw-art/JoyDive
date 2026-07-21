@@ -10,7 +10,7 @@
 
 | # | 項目 | 狀態 | 細節 |
 |---|------|------|------|
-| 1 | iOS 版送審被拒絕，擬訂下次送審對策 | 📋 待補充細節 | 使用者將提供完整拒絕內容（Apple Rejection 詳情），拿到後才能分析原因、擬訂修正方案 |
+| 1 | iOS 版送審被拒絕，擬訂下次送審對策 | 🔄 進行中 | 收到完整拒絕內容：2.3.6（Advertising 未勾選，Age Rating 需改 Yes，純 ASC 設定，使用者需自行至 App Store Connect 修改）+ 5.1.2(i)（App Privacy 標示 Coarse Location/Other Usage Data/Device ID 用於追蹤，但程式碼查核確認**未使用 ATT、未用 IDFA、AdMob 為預設非個人化廣告、CoreLocation 僅本機一次性定位**，判定為 ASC 隱私標籤誤填，非真的有追蹤行為）。已修復 `logbook/privacy.md` 三語（EN/繁中/日文）內文，移除「IDFA 僅在授權後」「ATT 重設」等與實際行為不符的敘述。**尚待使用者執行**：① ASC Age Rating 勾選 Advertising=Yes；② ASC App Privacy 問卷重新填寫，Location/Device ID/Usage Data 取消勾選「used to track」；③ 送審 Review Notes 註明已修正 |
 | 2 | App 內 icon 全盤 review | 📋 待開始 | 檢視所有 icon 使用情境是否恰當，不適當的要修改，可能需要自行設計新 icon |
 | 3 | 修正潛水剖面圖互動功能問題 | 📋 待開始 | 三個子項：①時間軸偏移（互動選取點與實際時間對不準）②狀態資訊列補充（目前 Time/Depth/Temp/Ceiling/No Deco 五欄可能需要更多資訊）③曲線圖增加警示標示（剖面圖上視覺化標示警示事件，例如超速上升、進入減壓等） |
 | 4 | 公制／英制單位設定 | 📋 待開始 | 目前 App 全硬編碼公制（公尺/攝氏），需評估加入單位系統設定（英制：呎/華氏），涉及全 App 各處顯示與輸入欄位 |

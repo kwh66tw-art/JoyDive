@@ -31,6 +31,26 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-20 — iOS 送審駁回分析 + privacy.md 修正
+
+iOS 1.0 (Build 2) 送審遭 Apple 駁回，兩項理由：
+
+- **2.3.6（Age Rating 不準確）**：Age Rating 的「Advertising」欄未勾選 Yes，
+  但 App 確實顯示 AdMob 廣告（駁回信附截圖佐證）。純 App Store Connect 設定
+  問題，不需改程式碼，待使用者自行於 ASC 修正。
+- **5.1.2(i)（隱私標籤與實際行為不符）**：ASC 的 App Privacy 標示 Coarse
+  Location、Other Usage Data、Device ID 用於「追蹤」，但需先請求 App Tracking
+  Transparency 授權才符合規範。逐項核對程式碼確認：全專案無 `AppTrackingTransparency`
+  引用、Info.plist 無 `NSUserTrackingUsageDescription`、AdMob 用預設
+  `Request()`（無 IDFA/個人化廣告設定）、`CoreLocation` 僅供地圖「回到我的
+  位置」一次性定位、資料不外傳。確認 App **實際上沒有追蹤行為**，ASC 隱私標籤
+  應是誤填（很可能是照抄 `logbook/privacy.md` 舊文案填的，該文案本身就寫了
+  「IDFA 僅在授權後」「可透過 ATT 重設追蹤授權」等從未真正實作的敘述）。
+  修正 `logbook/privacy.md` 三語版本（EN/繁中/日文），移除與實際行為不符的
+  IDFA/ATT 敘述，改為明確聲明不使用 IDFA、不請求 ATT 授權、廣告非個人化投放。
+  **待使用者執行**：ASC App Privacy 問卷重新填寫（Location/Device ID/Usage
+  Data 取消「used to track」）＋ Review Notes 註明已修正。詳見 `V1_2_BACKLOG.md` #1。
+
 ### 2026-07-19 — 移除 Deepblu COSMIQ+ 匯入格式支援
 
 Deepblu 公司已停業，官方 App 從未支援直接匯出 `.json`/`.csv`（2026-07-19 網路
