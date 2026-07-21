@@ -31,6 +31,12 @@ struct DiveAnalysisView: View {
         return replay.points[idx]
     }
 
+    /// v1.2 #3：目前選取的樣本點附近命中的警示事件（可能 0～2 筆：上升過速／強制安全停留）
+    private var selectedWarnings: [DiveReplayEngine.ReplayWarning] {
+        guard let idx = selectedIndex else { return [] }
+        return replay.warnings.filter { $0.sampleIndex == idx }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             interactiveChart
@@ -43,6 +49,10 @@ struct DiveAnalysisView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             } else if let point = selectedPoint {
                 calloutRow(point)
+                // v1.2 #3：狀態資訊列下第二列——選取點命中警示事件時才出現
+                if !selectedWarnings.isEmpty {
+                    warningEventsSection(selectedWarnings)
+                }
                 TissueBarsView(loadPercents: DiveReplayEngine.tissueLoadPercent(pN2: point.tissuePressures))
             } else {
                 Text("Touch and drag the profile to inspect any moment of the dive.")
@@ -88,6 +98,19 @@ struct DiveAnalysisView: View {
                             // 放開後保留選取（不自動收回），讓使用者能停下來仔細看
                             // callout／組織艙圖；下次點選其他時間點時才會更新。
                         )
+                    // v1.2 #3：曲線警示標示（紅點＝上升過速、橘點＝強制安全停留），
+                    // 同樣要用 plotFrame 校正，否則會踩到跟選取線一樣的偏移 bug。
+                    ForEach(Array(replay.warnings.enumerated()), id: \.offset) { _, warning in
+                        if let wx = proxy.position(forX: warning.timeSeconds / 60.0),
+                           let wy = proxy.position(forY: -warning.depthMeters) {
+                            Circle()
+                                .fill(warningColor(warning.kind))
+                                .frame(width: 11, height: 11)
+                                .overlay(Circle().stroke(.white, lineWidth: 1.5))
+                                .position(x: plotFrame.minX + wx, y: plotFrame.minY + wy)
+                        }
+                    }
+
                     // 選取豎線
                     if let point = selectedPoint,
                        let x = proxy.position(forX: point.timeSeconds / 60.0) {
@@ -171,6 +194,82 @@ struct DiveAnalysisView: View {
                 }
         }
         .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - 警示事件列（v1.2 #3：狀態資訊列下第二列）
+    // 門檻與觸發邏輯見 DiveReplayEngine.replay()；文案固定顯示公制＋英制雙單位
+    // （不看 Settings 的單位切換，避免這裡先行侷限單位系統展開範圍——見 V1_2_BACKLOG.md #4）。
+
+    private func warningEventsSection(_ warnings: [DiveReplayEngine.ReplayWarning]) -> some View {
+        VStack(spacing: 0) {
+            ForEach(Array(warnings.enumerated()), id: \.offset) { index, warning in
+                warningRow(warning)
+                if index < warnings.count - 1 {
+                    Divider().padding(.leading, 42)
+                }
+            }
+        }
+        .background(Color.platformSecondaryGroupedBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private func warningRow(_ warning: DiveReplayEngine.ReplayWarning) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: warningIcon(warning.kind))
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.white)
+                .frame(width: 22, height: 22)
+                .background(Circle().fill(warningColor(warning.kind)))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(warningTitle(warning.kind))
+                    .font(.subheadline.weight(.semibold))
+                Text(warningDetail(warning.kind))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 8)
+
+            VStack(alignment: .trailing, spacing: 1) {
+                Text(String(format: "%.0f m", warning.depthMeters))
+                    .font(.subheadline.weight(.semibold).monospacedDigit())
+                Text(timeLabel(warning.timeSeconds))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(10)
+    }
+
+    private func warningIcon(_ kind: DiveReplayEngine.ReplayWarningKind) -> String {
+        switch kind {
+        case .ascentRateExceeded:  return "arrow.up"
+        case .mandatorySafetyStop: return "hourglass"
+        }
+    }
+
+    private func warningColor(_ kind: DiveReplayEngine.ReplayWarningKind) -> Color {
+        switch kind {
+        case .ascentRateExceeded:  return .red
+        case .mandatorySafetyStop: return .orange
+        }
+    }
+
+    private func warningTitle(_ kind: DiveReplayEngine.ReplayWarningKind) -> String {
+        switch kind {
+        case .ascentRateExceeded:  return String(localized: "Ascent Rate Alert")
+        case .mandatorySafetyStop: return String(localized: "Mandatory Safety Stop")
+        }
+    }
+
+    private func warningDetail(_ kind: DiveReplayEngine.ReplayWarningKind) -> String {
+        switch kind {
+        case .ascentRateExceeded:
+            return String(localized: "Ascent rate exceeded 10 m/min (32.8 ft/min).")
+        case .mandatorySafetyStop:
+            return String(localized: "Safety stop became mandatory: ascent rate stayed above 10 m/min (32.8 ft/min) for 10 seconds.")
+        }
     }
 
     private func timeLabel(_ seconds: Double) -> String {

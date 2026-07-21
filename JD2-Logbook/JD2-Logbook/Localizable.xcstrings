@@ -2441,6 +2441,230 @@
         }
       }
     },
+    "Ascent Rate Alert" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aufstiegsgeschwindigkeit-Warnung"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ειδοποίηση Ταχύτητας Ανόδου"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ascent Rate Alert"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ascent Rate Alert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerta de velocidad de ascenso"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerte de vitesse de remontée"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upozorenje o brzini uspona"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peringatan Kecepatan Naik"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avviso velocità di risalita"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "浮上速度警告"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상승 속도 경고"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amaran Kadar Menaik"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waarschuwing stijgsnelheid"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerta de velocidade de subida"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แจ้งเตือนอัตราการขึ้นสู่ผิวน้ำ"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cảnh báo tốc độ nổi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上升速度警报"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上升速度警報"
+          }
+        }
+      }
+    },
+    "Ascent rate exceeded 10 m/min (32.8 ft/min)." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Aufstiegsgeschwindigkeit hat 10 m/min (32,8 ft/min) überschritten."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η ταχύτητα ανόδου ξεπέρασε τα 10 μ/λεπτό (32,8 πόδια/λεπτό)."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ascent rate exceeded 10 m/min (32.8 ft/min)."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ascent rate exceeded 10 m/min (32.8 ft/min)."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La velocidad de ascenso superó los 10 m/min (32,8 pies/min)."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La vitesse de remontée a dépassé 10 m/min (32,8 pi/min)."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brzina uspona premašila je 10 m/min (32,8 ft/min)."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kecepatan naik melebihi 10 m/menit (32.8 ft/menit)."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La velocità di risalita ha superato 10 m/min (32,8 ft/min)."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "浮上速度が10 m/分（32.8 ft/分）を超えました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상승 속도가 10 m/분(32.8 ft/분)을 초과했습니다."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kadar menaik melebihi 10 m/min (32.8 ka/min)."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De stijgsnelheid overschreed 10 m/min (32,8 ft/min)."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A velocidade de subida excedeu 10 m/min (32,8 pés/min)."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "อัตราการขึ้นสู่ผิวน้ำเกิน 10 ม./นาที (32.8 ฟุต/นาที)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tốc độ nổi vượt quá 10 m/phút (32,8 ft/phút)."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上升速度超过10公尺/分(32.8英尺/分)。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上升速度超過10公尺/分(32.8英呎/分)。"
+          }
+        }
+      }
+    },
     "Auto-detects format from file content" : {
       "comment" : "Import wizard subtitle",
       "localizations" : {
@@ -10229,6 +10453,118 @@
         }
       }
     },
+    "Import Completed with Issues" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import mit Problemen abgeschlossen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η εισαγωγή ολοκληρώθηκε με προβλήματα"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Completed with Issues"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Completed with Issues"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importación completada con problemas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importation terminée avec des problèmes"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uvoz dovršen s problemima"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impor Selesai dengan Masalah"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importazione completata con problemi"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "問題が発生しましたがインポートが完了しました"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "문제와 함께 가져오기 완료됨"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Selesai dengan Isu"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import voltooid met problemen"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importação concluída com problemas"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "นำเข้าเสร็จสิ้นพร้อมปัญหา"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nhập hoàn tất kèm sự cố"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入完成，但有问题"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯入完成，但有問題"
+          }
+        }
+      }
+    },
     "Import Dives" : {
       "comment" : "Import wizard navigation title",
       "localizations" : {
@@ -12385,6 +12721,118 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "m"
+          }
+        }
+      }
+    },
+    "Mandatory Safety Stop" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obligatorischer Sicherheitsstopp"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Υποχρεωτική Στάση Ασφαλείας"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mandatory Safety Stop"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mandatory Safety Stop"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parada de seguridad obligatoria"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Palier de sécurité obligatoire"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obavezno sigurnosno zaustavljanje"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Safety Stop Wajib"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sosta di sicurezza obbligatoria"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "強制セーフティストップ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "필수 안전 정지"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Safety Stop Wajib"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verplichte veiligheidsstop"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paragem de segurança obrigatória"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การหยุดพักเพื่อความปลอดภัยภาคบังคับ"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dừng an toàn bắt buộc"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "强制安全停留"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "強制安全停留"
           }
         }
       }
@@ -18838,6 +19286,118 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "安全停留"
+          }
+        }
+      }
+    },
+    "Safety stop became mandatory: ascent rate stayed above 10 m/min (32.8 ft/min) for 10 seconds." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Sicherheitsstopp ist jetzt obligatorisch: Die Aufstiegsgeschwindigkeit blieb 10 Sekunden lang über 10 m/min (32,8 ft/min)."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Η στάση ασφαλείας έγινε υποχρεωτική: η ταχύτητα ανόδου παρέμεινε πάνω από 10 μ/λεπτό (32,8 πόδια/λεπτό) για 10 δευτερόλεπτα."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Safety stop became mandatory: ascent rate stayed above 10 m/min (32.8 ft/min) for 10 seconds."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Safety stop became mandatory: ascent rate stayed above 10 m/min (32.8 ft/min) for 10 seconds."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La parada de seguridad pasó a ser obligatoria: la velocidad de ascenso se mantuvo por encima de 10 m/min (32,8 pies/min) durante 10 segundos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le palier de sécurité est devenu obligatoire : la vitesse de remontée est restée supérieure à 10 m/min (32,8 pi/min) pendant 10 secondes."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sigurnosno zaustavljanje postalo je obavezno: brzina uspona ostala je iznad 10 m/min (32,8 ft/min) 10 sekundi."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Safety stop menjadi wajib: kecepatan naik tetap di atas 10 m/menit (32.8 ft/menit) selama 10 detik."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La sosta di sicurezza è diventata obbligatoria: la velocità di risalita è rimasta sopra i 10 m/min (32,8 ft/min) per 10 secondi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "セーフティストップが強制になりました：浮上速度が10秒間10 m/分（32.8 ft/分）を超えたままでした。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "안전 정지가 필수로 전환되었습니다: 상승 속도가 10초 동안 10 m/분(32.8 ft/분)을 초과한 상태로 유지되었습니다."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Safety stop menjadi wajib: kadar menaik kekal melebihi 10 m/min (32.8 ka/min) selama 10 saat."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De veiligheidsstop werd verplicht: de stijgsnelheid bleef 10 seconden lang boven 10 m/min (32,8 ft/min)."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A paragem de segurança tornou-se obrigatória: a velocidade de subida manteve-se acima de 10 m/min (32,8 pés/min) durante 10 segundos."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การหยุดพักเพื่อความปลอดภัยกลายเป็นภาคบังคับ: อัตราการขึ้นสู่ผิวน้ำสูงกว่า 10 ม./นาที (32.8 ฟุต/นาที) นานติดต่อกัน 10 วินาที"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dừng an toàn trở thành bắt buộc: tốc độ nổi duy trì trên 10 m/phút (32,8 ft/phút) trong 10 giây."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安全停留改为强制性：上升速度连续10秒超过10公尺/分(32.8英尺/分)。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安全停留改為強制性：上升速度連續10秒超過10公尺/分(32.8英呎/分)。"
           }
         }
       }

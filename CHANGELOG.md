@@ -31,6 +31,25 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-21 — 剖面圖警示標示與資訊列 + Import 語系修復（同日第二條）
+
+- **剖面圖警示事件系統**（V1_2_BACKLOG.md #3 子項②③）：`DiveReplayEngine.replay()`
+  新增上升速度追蹤，門檻與文案數值比照統一 DiveKit `AlgorithmConstants`
+  （10 m/min、連續 5s→Ascent Rate Alert、連續 10s→Mandatory Safety Stop），
+  新增 `ReplayWarning`／`ReplayWarningKind`，不綁在既有 `ReplayPoint` 上（獨立
+  清單，避免兩種警示落在同一樣本區間互相覆蓋）。`DiveAnalysisView` 新增：
+  ①曲線上的彩色圓點標記（chartOverlay 疊加，沿用時間軸偏移修復的
+  `plotAreaFrame` 校正手法）②狀態資訊列下方第二列——選取點命中警示事件時顯示
+  事件卡片（圖示＋標題＋描述＋右側深度/時間）。4 個新翻譯 key 補齊 18 語言。
+- **Import tab 語系死角修復**：使用者發現日文語系下 Import tab 仍顯示英文。
+  根因與 v1.1 #8（navigationTitle/tabItem 死角）同類型：`ImportWizardView.swift`
+  用 `String(localized:)`（純 Foundation API，只認系統語言）而非
+  `languageManager.localized(_:)`（吃 App 內語言切換器）——v1.1 #8 修復當時這批
+  Import 格式清單程式碼還沒寫，沒被涵蓋到。全面替換，新增缺漏的
+  "Import Completed with Issues" 翻譯 key。
+- **macOS 地圖 recenter 按鈕缺失**：查證後確認非 bug，是 Settings 頁 GPS 定位
+  開關未開（macOS/iOS 各自獨立安裝，UserDefaults 不共用），使用者確認後跳過。
+
 ### 2026-07-21 — 剖面圖時間軸偏移修復 + 公英制單位設定選項
 
 - **剖面圖互動選取偏移 bug**：`DiveAnalysisView` 的 `chartOverlay` 把 Swift

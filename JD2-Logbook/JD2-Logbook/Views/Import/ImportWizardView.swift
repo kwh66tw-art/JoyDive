@@ -141,10 +141,15 @@ struct ImportWizardView: View {
         .background(Color.platformGroupedBackground)
     }
 
+    // ⚠️ 這裡全面改用 languageManager.localized(_:) 而非 String(localized:)：
+    // 後者不吃 App 內語言切換器（\.locale 環境只有 Text(LocalizedStringKey) 這類
+    // SwiftUI 原生機制才會自動套用，String(localized:) 是純 Foundation API，只認
+    // 系統語言），跟 navigationTitle／tabItem 當初踩的是同一個死角（v1.1 #8），
+    // 只是這裡是後來新增的 Import 格式清單，沒被那次修復涵蓋到。
     private var stepLabels: [String] {
-        [String(localized: "Select"),
-         String(localized: "Import"),
-         String(localized: "Result")]
+        [languageManager.localized("Select"),
+         languageManager.localized("Import"),
+         languageManager.localized("Result")]
     }
 
     private var currentStepIndex: Int {
@@ -195,7 +200,7 @@ struct ImportWizardView: View {
             Button {
                 showFilePicker = true
             } label: {
-                Label(String(localized: "Select Files or Folder"), systemImage: "folder")
+                Label(languageManager.localized("Select Files or Folder"), systemImage: "folder")
                     .font(.headline)
                     #if os(iOS)
                     .frame(maxWidth: .infinity)
@@ -210,7 +215,7 @@ struct ImportWizardView: View {
             .controlSize(.regular)
             .padding(.horizontal, 16)
             #endif
-            .accessibilityLabel(String(localized: "Select Files or Folder"))
+            .accessibilityLabel(languageManager.localized("Select Files or Folder"))
             .accessibilityHint("Opens file picker to choose dive log files or a folder")
 
             if let label = selectedFileLabel {
@@ -240,7 +245,7 @@ struct ImportWizardView: View {
 
     private var supportedFormatsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(String(localized: "Supported Formats"))
+            Text(languageManager.localized("Supported Formats"))
                 .font(.subheadline.weight(.semibold))
                 .padding(.horizontal, 24)
 
@@ -275,23 +280,23 @@ struct ImportWizardView: View {
 
     private var supportedFormatGroups: [(title: String, formats: [(name: String, ext: String, icon: String)])] {
         [
-            (String(localized: "Universal"), [
-                ("UDDF",                              ".uddf, .zip",  "doc.badge.gearshape"),
-                (String(localized: "Subsurface XML"), ".ssrf / .xml", "doc.richtext"),
-                (String(localized: "Subsurface CSV"), ".csv",         "tablecells"),
-                (String(localized: "Seabear CSV"),    ".csv",         "tablecells.fill")
+            (languageManager.localized("Universal"), [
+                ("UDDF",                                       ".uddf, .zip",  "doc.badge.gearshape"),
+                (languageManager.localized("Subsurface XML"), ".ssrf / .xml", "doc.richtext"),
+                (languageManager.localized("Subsurface CSV"), ".csv",         "tablecells"),
+                (languageManager.localized("Seabear CSV"),    ".csv",         "tablecells.fill")
             ]),
             ("Suunto", [
-                ("Suunto DM4/DM5",                    ".xml",         "applewatch.watchface"),
-                ("Suunto SML",                        ".sml",         "applewatch.watchface"),
-                ("Suunto SDE",                        ".sde",         "applewatch.watchface"),
-                (String(localized: "Suunto JSON"),    ".json",        "curlybraces")
+                ("Suunto DM4/DM5",                             ".xml",         "applewatch.watchface"),
+                ("Suunto SML",                                 ".sml",         "applewatch.watchface"),
+                ("Suunto SDE",                                 ".sde",         "applewatch.watchface"),
+                (languageManager.localized("Suunto JSON"),    ".json",        "curlybraces")
             ]),
             ("Garmin", [
-                (String(localized: "Garmin Descent"), ".fit",         "waveform.path.ecg"),
-                ("Garmin Connect",                    ".json",        "curlybraces")
+                (languageManager.localized("Garmin Descent"), ".fit",         "waveform.path.ecg"),
+                ("Garmin Connect",                             ".json",        "curlybraces")
             ]),
-            (String(localized: "Other Brands"), [
+            (languageManager.localized("Other Brands"), [
                 ("Shearwater Cloud",                  ".xml",         "gauge.with.dots.needle.67percent"),
                 ("DAN DL7",                            ".dl7, .zxu, .zxl",   "doc.text"),
                 ("Divesoft DLF",                       ".dlf",               "doc.text"),
@@ -334,7 +339,7 @@ struct ImportWizardView: View {
                         .scaleEffect(1.6)
                         .tint(.accentColor)
 
-                    Text(String(localized: "Scanning files"))
+                    Text(languageManager.localized("Scanning files"))
                         .font(.headline)
                         .foregroundStyle(.secondary)
                 }
@@ -365,7 +370,7 @@ struct ImportWizardView: View {
                 .font(.system(size: 64))
                 .foregroundStyle(allFailed ? .red : (hasFailures ? .orange : .green))
 
-            Text(String(localized: allFailed
+            Text(languageManager.localized(allFailed
                         ? "Import Failed"
                         : (hasFailures ? "Import Completed with Issues" : "Import Successful")))
                 .font(.title2.bold())
@@ -411,7 +416,7 @@ struct ImportWizardView: View {
     /// 批次匯入失敗清單：分組卡片背景 + Divider 分隔行，樣式比照 FormatGroupSection
     private func importFailuresList(_ failures: [ImportFailure]) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(String(localized: "Failed Files"))
+            Text(languageManager.localized("Failed Files"))
                 .font(.caption.weight(.semibold))
                 .textCase(.uppercase)
                 .tracking(0.6)
