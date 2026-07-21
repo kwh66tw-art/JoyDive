@@ -31,6 +31,20 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-21 — 剖面圖時間軸偏移修復 + 公英制單位設定選項
+
+- **剖面圖互動選取偏移 bug**：`DiveAnalysisView` 的 `chartOverlay` 把 Swift
+  Charts 的 `proxy.position(forX:)`／`proxy.value(atX:)`（相對繪圖區域座標，
+  不含左側 Y 軸刻度標籤寬度）直接當成 GeometryReader 的座標系使用，導致選取線
+  與拖曳命中整體往左偏移一個刻度標籤寬度（使用者截圖佐證：選取線飄移到 0 分鐘
+  外面）。改用 `geo[proxy.plotAreaFrame]` 校正 origin。JD2-Ultra companion 的
+  同款程式碼有一樣的 bug，已記錄到 `SYNC_TO_JD2-ULTRA.md` #6。
+- **公制／英制單位設定（Settings 選項，範圍限定）**：新增
+  `JD2Core/Models/UnitSystem.swift`（metric/imperial 列舉＋深度/溫度轉換函式）
+  ＋ Settings 頁單位系統切換，依指示不用文字、直接用符號表示（`m / °C` vs
+  `ft / °F`），`@AppStorage` 持久化。⚠️ 本次只做設定頁選項本身，尚未展開到全
+  App 各處顯示/輸入欄位套用，詳見 `V1_2_BACKLOG.md` #4。
+
 ### 2026-07-20 — iOS 送審駁回分析 + privacy.md 修正
 
 iOS 1.0 (Build 2) 送審遭 Apple 駁回，兩項理由：

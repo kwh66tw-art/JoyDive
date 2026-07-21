@@ -68,13 +68,22 @@ struct DiveAnalysisView: View {
         DiveProfileChartView(samples: samples)
             .chartOverlay { proxy in
                 GeometryReader { geo in
+                    // ⚠️ 修復時間軸偏移 bug：proxy.position(forX:)／proxy.value(atX:)
+                    // 都是相對「繪圖區域」（plot area）的座標，不含左側 Y 軸刻度標籤
+                    // （"0m"/"10m"/... 的文字寬度）。原本直接拿 GeometryReader 的座標
+                    // 用，等於少扣掉這段刻度標籤寬度，選取線/命中判定整體往左偏移了
+                    // 一個刻度標籤寬度，深度夠大（三位數字寬度變寬）時偏移更明顯——
+                    // 對照 JD2-Ultra companion 的同款程式碼，是同一個從未被抓到的 bug，
+                    // 已記錄到 SYNC_TO_JD2-ULTRA.md。這裡統一用 plotFrame.minX 校正。
+                    let plotFrame = geo[proxy.plotAreaFrame]
+
                     Rectangle()
                         .fill(Color.clear)
                         .contentShape(Rectangle())
                         .gesture(
                             DragGesture(minimumDistance: 0)
                                 .onChanged { value in
-                                    select(atX: value.location.x, proxy: proxy)
+                                    select(atX: value.location.x, proxy: proxy, plotFrame: plotFrame)
                                 }
                             // 放開後保留選取（不自動收回），讓使用者能停下來仔細看
                             // callout／組織艙圖；下次點選其他時間點時才會更新。
@@ -84,15 +93,16 @@ struct DiveAnalysisView: View {
                        let x = proxy.position(forX: point.timeSeconds / 60.0) {
                         Rectangle()
                             .fill(Color.accentColor.opacity(0.6))
-                            .frame(width: 1.5)
-                            .offset(x: x)
+                            .frame(width: 1.5, height: plotFrame.height)
+                            .position(x: plotFrame.minX + x, y: plotFrame.midY)
                     }
                 }
             }
     }
 
-    private func select(atX x: CGFloat, proxy: ChartProxy) {
-        guard !samples.isEmpty, let minutes: Double = proxy.value(atX: x) else { return }
+    private func select(atX x: CGFloat, proxy: ChartProxy, plotFrame: CGRect) {
+        guard !samples.isEmpty,
+              let minutes: Double = proxy.value(atX: x - plotFrame.minX) else { return }
         let t = minutes * 60
         let nearest = samples.enumerated().min {
             abs($0.element.timeSeconds - t) < abs($1.element.timeSeconds - t)

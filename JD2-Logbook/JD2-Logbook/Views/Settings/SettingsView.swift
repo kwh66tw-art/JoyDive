@@ -12,6 +12,7 @@ struct SettingsView: View {
     @State private var purchaseManager        = PurchaseManager.shared
     @State private var locationProvider       = UserLocationProvider()
     @AppStorage(UserLocationProvider.isEnabledKey) private var gpsLocationEnabled = false
+    @AppStorage(UnitSystem.storageKey) private var unitSystem = UnitSystem.metric
     #if os(iOS)
     @State private var showPremiumSheet       = false
     @State private var showRestoreAlert       = false
@@ -65,6 +66,17 @@ struct SettingsView: View {
                     } label: {
                         Label("App Language", systemImage: "globe")
                     }
+                }
+
+                // ── 單位系統（v1.2 #4：用單位符號本身表示選項，不用文字）───
+                Section(header: Text("Units")) {
+                    Picker(selection: $unitSystem) {
+                        Text(verbatim: "m / °C").tag(UnitSystem.metric)
+                        Text(verbatim: "ft / °F").tag(UnitSystem.imperial)
+                    } label: {
+                        Label("Units", systemImage: "ruler")
+                    }
+                    .pickerStyle(.segmented)
                 }
 
                 // ── GPS 定位（雙平台：地圖 recenter 按鈕的前置開關）──────

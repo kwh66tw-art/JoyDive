@@ -10,10 +10,11 @@
 
 | # | 項目 | 狀態 | 細節 |
 |---|------|------|------|
-| 1 | iOS 版送審被拒絕，擬訂下次送審對策 | 🔄 進行中 | 收到完整拒絕內容：2.3.6（Advertising 未勾選，Age Rating 需改 Yes，純 ASC 設定，使用者需自行至 App Store Connect 修改）+ 5.1.2(i)（App Privacy 標示 Coarse Location/Other Usage Data/Device ID 用於追蹤，但程式碼查核確認**未使用 ATT、未用 IDFA、AdMob 為預設非個人化廣告、CoreLocation 僅本機一次性定位**，判定為 ASC 隱私標籤誤填，非真的有追蹤行為）。已修復 `logbook/privacy.md` 三語（EN/繁中/日文）內文，移除「IDFA 僅在授權後」「ATT 重設」等與實際行為不符的敘述。**尚待使用者執行**：① ASC Age Rating 勾選 Advertising=Yes；② ASC App Privacy 問卷重新填寫，Location/Device ID/Usage Data 取消勾選「used to track」；③ 送審 Review Notes 註明已修正 |
+| 1 | iOS 版送審被拒絕，擬訂下次送審對策 | 🔄 進行中 | 收到完整拒絕內容：2.3.6（Advertising 未勾選，Age Rating 需改 Yes，純 ASC 設定，使用者需自行至 App Store Connect 修改）+ 5.1.2(i)（App Privacy 標示 Coarse Location/Other Usage Data/Device ID 用於追蹤，但程式碼查核確認**未使用 ATT、未用 IDFA、AdMob 為預設非個人化廣告、CoreLocation 僅本機一次性定位**，判定為 ASC 隱私標籤誤填，非真的有追蹤行為）。已修復 `logbook/privacy.md` 三語（EN/繁中/日文）內文，移除「IDFA 僅在授權後」「ATT 重設」等與實際行為不符的敘述。**尚待使用者執行（送審時提醒）**：① ASC Age Rating 勾選 Advertising=Yes；② ASC App Privacy 問卷重新填寫，Location/Device ID/Usage Data 取消勾選「used to track」；③ 送審 Review Notes 註明已修正。**⚠️ 使用者已指示：處理完成後（送審過關/事件落幕時）要把本次駁回事件（原因/分析/對策/行動/lessons learned）整理記錄到適當檔案，目前尚未執行，屆時提醒** |
+| 1b | macOS「開啟 Game Center」誤設定 | 📋 待開始（使用者指示到時候修正） | 使用者回報有一個「設定成開啟 Game Center」的錯誤設定，細節待釐清（程式碼查無 GameKit/Game Center entitlement，可能是 App Store Connect 的 App 資訊設定、或與既有已知的 macOS `LSApplicationCategoryType` 誤觸發遊戲模式問題有關，見 `docs/KNOWN_ISSUES.md`「待決策事項」）。使用者指示「到時候」（送審前）再處理，先登錄追蹤 |
 | 2 | App 內 icon 全盤 review | 📋 待開始 | 檢視所有 icon 使用情境是否恰當，不適當的要修改，可能需要自行設計新 icon |
-| 3 | 修正潛水剖面圖互動功能問題 | 📋 待開始 | 三個子項：①時間軸偏移（互動選取點與實際時間對不準）②狀態資訊列補充（目前 Time/Depth/Temp/Ceiling/No Deco 五欄可能需要更多資訊）③曲線圖增加警示標示（剖面圖上視覺化標示警示事件，例如超速上升、進入減壓等） |
-| 4 | 公制／英制單位設定 | 📋 待開始 | 目前 App 全硬編碼公制（公尺/攝氏），需評估加入單位系統設定（英制：呎/華氏），涉及全 App 各處顯示與輸入欄位 |
+| 3 | 修正潛水剖面圖互動功能問題 | 🔄 進行中（①已修復） | 三個子項：①**時間軸偏移已修復**——根因是 `DiveAnalysisView.swift` 的 `chartOverlay` 直接拿 `proxy.position(forX:)`/`proxy.value(atX:)` 當 GeometryReader 座標用，沒扣掉 Swift Charts 左側 Y 軸刻度標籤的寬度，導致選取線與拖曳命中判定整體往左偏移一個刻度標籤寬度；改用 `geo[proxy.plotAreaFrame]` 校正 origin。JD2-Ultra companion 同款程式碼有一樣的 bug，已記錄到 `SYNC_TO_JD2-ULTRA.md`。②狀態資訊列補充、③曲線圖增加警示標示——**尚待使用者說明具體要補充/標示什麼內容**才能展開 |
+| 4 | 公制／英制單位設定 | 🔄 進行中（Settings 選項已完成） | 新增 `JD2Core/Models/UnitSystem.swift`（metric/imperial 列舉 + 深度/溫度轉換函式）+ Settings 頁單位系統切換（不用文字，直接用符號：`m / °C` vs `ft / °F`），`@AppStorage` 持久化。**範圍限定聲明**：本次只做了設定頁選項本身；全 App 各處深度/溫度顯示與輸入欄位套用英制換算（Logbook 列表、Dive Detail、剖面圖、地圖、匯入預覽等）是後續較大範圍的工作，目前選了 ft/°F 也不會改變任何畫面顯示，尚未真正生效 |
 | 5 | 匯入情境測試 | 📋 待開始 | 對 16 種已實作格式做情境化/端對端測試（目前多為單元測試，此項可能著重實際匯入流程、批次匯入、錯誤情境等） |
 | 6 | 語系全審核 | 📋 待開始 | 18 種語言的翻譯品質全面覆核（非僅補齊缺漏 key，而是審核既有翻譯的正確性/自然度） |
 
