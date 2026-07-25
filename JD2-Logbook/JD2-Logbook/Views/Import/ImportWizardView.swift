@@ -330,6 +330,15 @@ struct ImportWizardView: View {
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                             .padding(.horizontal, 40)
+
+                        // v1.2：「File X of Y」計的是檔案數，跟 Step 3 顯示的「N dives
+                        // imported」不一定相等（部分格式如 Suunto DM5/SML、Diving Log 6.0
+                        // 單一檔案可能內含多筆潛水）。補一行說明，避免使用者看到數字對
+                        // 不上時誤以為是 bug。
+                        Text("Some files may contain multiple dives.")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .padding(.top, 4)
                     }
                 }
             } else {
