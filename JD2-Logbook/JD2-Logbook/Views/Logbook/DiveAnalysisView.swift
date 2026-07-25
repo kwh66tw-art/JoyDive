@@ -20,8 +20,16 @@ import Charts
 import DiveKit
 
 struct DiveAnalysisView: View {
+    // v1.2：PM 決定曲線警示標示／狀態資訊列第二列的呈現方式要等改版再定案，
+    // 程式碼保留（DiveReplayEngine 的警示偵測邏輯與 UI 都還在），先關閉、不刪除。
+    // 之後要重新開放：把這個常數改回 true 即可，不需要改動其他任何地方。
+    private let showWarningEvents = false
+
     let samples: [DiveProfileSample]
     let gasMix: GasMix
+
+    // v1.2 #4：公制／英制單位系統，儲存值永遠是公制，這裡只負責顯示層換算。
+    @AppStorage(UnitSystem.storageKey) private var unitSystem = UnitSystem.metric
 
     @State private var replay = DiveReplayEngine.ReplayResult()
     @State private var selectedIndex: Int?
@@ -32,8 +40,9 @@ struct DiveAnalysisView: View {
     }
 
     /// v1.2 #3：目前選取的樣本點附近命中的警示事件（可能 0～2 筆：上升過速／強制安全停留）
+    /// showWarningEvents=false 時強制回傳空陣列，UI 端不需要另外判斷開關。
     private var selectedWarnings: [DiveReplayEngine.ReplayWarning] {
-        guard let idx = selectedIndex else { return [] }
+        guard showWarningEvents, let idx = selectedIndex else { return [] }
         return replay.warnings.filter { $0.sampleIndex == idx }
     }
 
@@ -41,19 +50,35 @@ struct DiveAnalysisView: View {
         VStack(alignment: .leading, spacing: 8) {
             interactiveChart
 
-            if replay.decoDataUnavailable {
-                // F5：trimix 潛水——DiveKit 尚未支援氦氣組織負荷計算，只給深度/時間/溫度。
-                Text("Decompression analysis is not yet available for trimix dives.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            } else if let point = selectedPoint {
+            if let point = selectedPoint {
+                // v1.2：Time/Depth/Temp 對 trimix 潛水一樣有效（回放本來就有算），
+                // 只有 Ceiling/No Deco（需要減壓生理計算）跟組織艙才是 trimix 缺的部分，
+                // 所以狀態列本身要照常顯示，不能整列被 trimix 免責聲明取代。
+                // v1.2：狀態列文字不跟著外層 .animation(value: selectedIndex) 做隱式動畫
+                // ——原本整個 VStack 共用同一個 easeInOut，狀態列在「插入」瞬間會跟著
+                // 淡入/版面過渡一起跑，若剛好在動畫還沒跑完時被截圖，數值文字會停在
+                // 過渡中間的狀態，看起來字級／樣式跟穩定後不一致。用 transaction 關掉
+                // 這個子樹的動畫，狀態列一律立即以最終樣式出現，不會有中間態。
                 calloutRow(point)
+                    .transaction { $0.animation = nil }
                 // v1.2 #3：狀態資訊列下第二列——選取點命中警示事件時才出現
                 if !selectedWarnings.isEmpty {
                     warningEventsSection(selectedWarnings)
                 }
-                TissueBarsView(loadPercents: DiveReplayEngine.tissueLoadPercent(pN2: point.tissuePressures))
+                if replay.decoDataUnavailable {
+                    // F5：trimix 潛水——DiveKit 尚未支援氦氣組織負荷計算，只有組織艙圖不顯示。
+                    // 加 info 圖示＋明確措辭，告知這是已知限制而非 app 故障。
+                    Label {
+                        Text("Tissue nitrogen loading isn't available for trimix dives yet — this is a known limitation, not an error.")
+                    } icon: {
+                        Image(systemName: "info.circle")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    TissueBarsView(loadPercents: DiveReplayEngine.tissueLoadPercent(pN2: point.tissuePressures))
+                }
             } else {
                 Text("Touch and drag the profile to inspect any moment of the dive.")
                     .font(.caption)
@@ -98,16 +123,19 @@ struct DiveAnalysisView: View {
                             // 放開後保留選取（不自動收回），讓使用者能停下來仔細看
                             // callout／組織艙圖；下次點選其他時間點時才會更新。
                         )
-                    // v1.2 #3：曲線警示標示（紅點＝上升過速、橘點＝強制安全停留），
-                    // 同樣要用 plotFrame 校正，否則會踩到跟選取線一樣的偏移 bug。
-                    ForEach(Array(replay.warnings.enumerated()), id: \.offset) { _, warning in
-                        if let wx = proxy.position(forX: warning.timeSeconds / 60.0),
-                           let wy = proxy.position(forY: -warning.depthMeters) {
-                            Circle()
-                                .fill(warningColor(warning.kind))
-                                .frame(width: 11, height: 11)
-                                .overlay(Circle().stroke(.white, lineWidth: 1.5))
-                                .position(x: plotFrame.minX + wx, y: plotFrame.minY + wy)
+                    // v1.2 #3：曲線警示標示（紅點＝上升過速、橘點＝強制安全停留）——
+                    // 暫時關閉（showWarningEvents，見型別開頭註解），同樣要用 plotFrame
+                    // 校正，否則會踩到跟選取線一樣的偏移 bug，重新開放時保留這段校正邏輯。
+                    if showWarningEvents {
+                        ForEach(Array(replay.warnings.enumerated()), id: \.offset) { _, warning in
+                            if let wx = proxy.position(forX: warning.timeSeconds / 60.0),
+                               let wy = proxy.position(forY: -warning.depthMeters) {
+                                Circle()
+                                    .fill(warningColor(warning.kind))
+                                    .frame(width: 11, height: 11)
+                                    .overlay(Circle().stroke(.white, lineWidth: 1.5))
+                                    .position(x: plotFrame.minX + wx, y: plotFrame.minY + wy)
+                            }
                         }
                     }
 
@@ -139,21 +167,25 @@ struct DiveAnalysisView: View {
     // （減壓中 / NDL 逼近）數值才用填色膠囊強調，其餘為一般深色文字。
 
     private func calloutRow(_ point: DiveReplayEngine.ReplayPoint) -> some View {
+        // v1.2：畫面一致性——固定 5 欄排版，不因資料缺漏（trimix 沒有溫度樣本／
+        // 沒有減壓生理重放）而增減欄位數，缺的欄位一律用「—」佔位，不隱藏欄位本身。
         HStack(spacing: 0) {
             calloutCell(label: Text("Time"), value: timeLabel(point.timeSeconds))
-            calloutCell(label: Text("Depth"), value: String(format: "%.1f m", point.depthMeters))
-            if let temp = point.waterTemp {
-                calloutCell(label: Text("Temp"), value: String(format: "%.0f°C", temp))
-            }
+            calloutCell(label: Text("Depth"), value: unitSystem.formatDepth(point.depthMeters))
+            calloutCell(
+                label: Text("Temp"),
+                value: point.waterTemp.map { unitSystem.formatTemperature($0) } ?? "—"
+            )
             calloutCell(
                 label: Text("Ceiling"),
-                value: point.ceilingDepth > 0 ? String(format: "%.0f m", point.ceilingDepth) : "—",
-                accent: point.ceilingDepth > 0 ? .deco : .neutral
+                value: replay.decoDataUnavailable ? "—"
+                    : (point.ceilingDepth > 0 ? unitSystem.formatDepth(point.ceilingDepth, decimals: 0) : "—"),
+                accent: (!replay.decoDataUnavailable && point.ceilingDepth > 0) ? .deco : .neutral
             )
             calloutCell(
                 label: Text("No Deco"),
-                value: ndlText(point.ndlSeconds),
-                accent: point.ndlSeconds < 10 * 60 ? .warning : .neutral
+                value: replay.decoDataUnavailable ? "—" : ndlText(point.ndlSeconds),
+                accent: (!replay.decoDataUnavailable && point.ndlSeconds < 10 * 60) ? .warning : .neutral
             )
         }
     }
@@ -178,15 +210,20 @@ struct DiveAnalysisView: View {
     }
 
     private func calloutCell(label: Text, value: String, accent: CalloutAccent = .neutral) -> some View {
+        // v1.2：畫面一致性——原本的 `.minimumScaleFactor(0.7)` 讓 5 欄各自的 Text
+        // 依「自己的字串長度是否超出所分到的等寬欄位」獨立決定縮放比例，不同潛水的
+        // 數值字串長度不同（"16'24"" vs "33'00"" 等）就可能讓同一列裡各欄縮放比例不一致，
+        // 使用者會覺得「文字大小格式不一樣」。改用固定不縮放的 `.footnote`——在最窄的
+        // 支援機型（iPhone SE，5 欄等寬）下這個字級搭配目前最長的數值字串仍然放得下，
+        // 不需要再靠縮放救援，確保每次都是同一個絕對字級。
         VStack(spacing: 3) {
             label
                 .font(.caption2)
                 .foregroundStyle(Color.accessibleSecondary)
             Text(verbatim: value)
-                .font(.subheadline.weight(.semibold).monospacedDigit())
+                .font(.footnote.weight(.semibold).monospacedDigit())
                 .foregroundStyle(accent.textColor)
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 2)
                 .background {
@@ -232,7 +269,7 @@ struct DiveAnalysisView: View {
             Spacer(minLength: 8)
 
             VStack(alignment: .trailing, spacing: 1) {
-                Text(String(format: "%.0f m", warning.depthMeters))
+                Text(unitSystem.formatDepth(warning.depthMeters, decimals: 0))
                     .font(.subheadline.weight(.semibold).monospacedDigit())
                 Text(timeLabel(warning.timeSeconds))
                     .font(.caption2)

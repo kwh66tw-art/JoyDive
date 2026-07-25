@@ -19,6 +19,10 @@ struct DiveLogEditSheet: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
+    // v1.2 #4：公制／英制單位系統，@State 內部儲存值永遠是公制，
+    // 這裡只負責輸入欄位的雙向換算（顯示值 ↔ 公制儲存值）。
+    @AppStorage(UnitSystem.storageKey) private var unitSystem = UnitSystem.metric
+
     let mode: DiveEditMode
 
     // MARK: Form State
@@ -148,6 +152,36 @@ struct DiveLogEditSheet: View {
         }
     }
 
+    // MARK: - Unit-aware Bindings（顯示值 ↔ 公制儲存值）
+
+    private var maxDepthDisplay: Binding<Double> {
+        Binding(
+            get: { unitSystem.convertDepth(metersValue: maxDepth) },
+            set: { maxDepth = unitSystem.metersValue(fromDisplay: $0) }
+        )
+    }
+
+    private var waterTemperatureDisplay: Binding<Double> {
+        Binding(
+            get: { unitSystem.convertTemperature(celsiusValue: waterTemperature) },
+            set: { waterTemperature = unitSystem.celsiusValue(fromDisplay: $0) }
+        )
+    }
+
+    private var airTemperatureDisplay: Binding<Double?> {
+        Binding(
+            get: { airTemperature.map { unitSystem.convertTemperature(celsiusValue: $0) } },
+            set: { airTemperature = $0.map { unitSystem.celsiusValue(fromDisplay: $0) } }
+        )
+    }
+
+    private var visibilityDisplay: Binding<Double?> {
+        Binding(
+            get: { visibility.map { unitSystem.convertDepth(metersValue: $0) } },
+            set: { visibility = $0.map { unitSystem.metersValue(fromDisplay: $0) } }
+        )
+    }
+
     // MARK: - Helpers
 
     private func formatTime(_ date: Date) -> String {
@@ -232,7 +266,7 @@ struct DiveLogEditSheet: View {
                         Text("Max Depth")
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField(String("0.0"), value: $maxDepth,
+                        TextField(String("0.0"), value: maxDepthDisplay,
                                   format: .number.precision(.fractionLength(1)))
                             .labelsHidden()
                             #if os(iOS)
@@ -241,12 +275,12 @@ struct DiveLogEditSheet: View {
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
                             .focused($focusedField, equals: .maxDepth)
-                        Text("m")
+                        Text(unitSystem.depthSymbol)
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: String(localized: "Max Depth: %.1f metres"), maxDepth)
+                        String(format: String(localized: "Max Depth: %@"), unitSystem.formatDepth(maxDepth))
                     )
 
                     // 水溫
@@ -254,7 +288,7 @@ struct DiveLogEditSheet: View {
                         Text("Water Temp")
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField(String("0.0"), value: $waterTemperature,
+                        TextField(String("0.0"), value: waterTemperatureDisplay,
                                   format: .number.precision(.fractionLength(1)))
                             .labelsHidden()
                             #if os(iOS)
@@ -263,13 +297,13 @@ struct DiveLogEditSheet: View {
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
                             .focused($focusedField, equals: .waterTemp)
-                        Text("°C")
+                        Text(unitSystem.temperatureSymbol)
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: String(localized: "Water Temperature: %.1f degrees Celsius"),
-                               waterTemperature)
+                        String(format: String(localized: "Water Temperature: %@"),
+                               unitSystem.formatTemperature(waterTemperature))
                     )
                 }
 
@@ -332,7 +366,7 @@ struct DiveLogEditSheet: View {
                             .foregroundStyle(.primary)
                         Spacer()
                         TextField(String("–"),
-                                  value: $airTemperature,
+                                  value: airTemperatureDisplay,
                                   format: .number.precision(.fractionLength(1)))
                             .labelsHidden()
                             #if os(iOS)
@@ -341,13 +375,13 @@ struct DiveLogEditSheet: View {
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
                             .foregroundStyle(airTemperature == nil ? .secondary : .primary)
-                        Text("°C")
+                        Text(unitSystem.temperatureSymbol)
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
                         airTemperature.map {
-                            String(format: String(localized: "Air Temperature: %.1f degrees Celsius"), $0)
+                            String(format: String(localized: "Air Temperature: %@"), unitSystem.formatTemperature($0))
                         } ?? String(localized: "Air Temperature: Not recorded")
                     )
 
@@ -375,7 +409,7 @@ struct DiveLogEditSheet: View {
                             .foregroundStyle(.primary)
                         Spacer()
                         TextField(String("–"),
-                                  value: $visibility,
+                                  value: visibilityDisplay,
                                   format: .number.precision(.fractionLength(1)))
                             .labelsHidden()
                             #if os(iOS)
@@ -384,13 +418,13 @@ struct DiveLogEditSheet: View {
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
                             .foregroundStyle(visibility == nil ? .secondary : .primary)
-                        Text("m")
+                        Text(unitSystem.depthSymbol)
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
                         visibility.map {
-                            String(format: String(localized: "Visibility: %.1f metres"), $0)
+                            String(format: String(localized: "Visibility: %@"), unitSystem.formatDepth($0))
                         } ?? String(localized: "Visibility: Not recorded")
                     )
                 }

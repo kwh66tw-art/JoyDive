@@ -9,6 +9,9 @@ struct DiveRowView: View {
     /// macOS：是否為目前選取的卡片（畫在卡片邊框上，取代 List 系統選取框）
     var isSelected: Bool = false
 
+    // v1.2 #4：公制／英制單位系統，儲存值永遠是公制，這裡只負責顯示層換算。
+    @AppStorage(UnitSystem.storageKey) private var unitSystem = UnitSystem.metric
+
     // MARK: - Computed properties
 
     var locationText: String {
@@ -123,7 +126,7 @@ struct DiveRowView: View {
             HStack(spacing: 14) {
                 HStack(spacing: 4) {
                     Image(systemName: "arrow.down.to.line")
-                    Text(String(format: "%.1f m", dive.maxDepth))
+                    Text(unitSystem.formatDepth(dive.maxDepth))
                 }
                 .font(.callout.bold())
                 .foregroundStyle(.tint)
@@ -142,7 +145,7 @@ struct DiveRowView: View {
             HStack(spacing: 10) {
                 HStack(spacing: 4) {
                     Image(systemName: "thermometer.medium")
-                    Text(String(format: "%.0f°C", dive.waterTemperature))
+                    Text(unitSystem.formatTemperature(dive.waterTemperature))
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -165,7 +168,7 @@ struct DiveRowView: View {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         let dateStr = dateFormatter.string(from: dive.dateTime)
-        return "\(dateStr), \(locationText), \(String(format: "%.1f", dive.maxDepth)) metres, \(durationText)"
+        return "\(dateStr), \(locationText), \(unitSystem.formatDepth(dive.maxDepth)), \(durationText)"
     }
 
     // MARK: - Gas Mix Helpers

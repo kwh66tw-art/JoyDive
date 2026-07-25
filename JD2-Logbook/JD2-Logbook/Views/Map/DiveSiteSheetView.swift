@@ -16,6 +16,9 @@ struct DiveSiteSheetView: View {
 
     let dive: DiveLog
 
+    // v1.2 #4：公制／英制單位系統，儲存值永遠是公制，這裡只負責顯示層換算。
+    @AppStorage(UnitSystem.storageKey) private var unitSystem = UnitSystem.metric
+
     // MARK: - Computed helpers
 
     private var locationName: String {
@@ -89,7 +92,7 @@ struct DiveSiteSheetView: View {
             }
         }
         .accessibilityLabel(
-            "\(locationName), \(String(format: "%.1f", dive.maxDepth)) m, \(durationFormatted)"
+            "\(locationName), \(unitSystem.formatDepth(dive.maxDepth)), \(durationFormatted)"
         )
     }
 
@@ -127,8 +130,8 @@ struct DiveSiteSheetView: View {
     private var keyStatsRow: some View {
         HStack(spacing: 0) {
             DiveKitUI.DiveStatCell(
-                value: String(format: "%.1f", dive.maxDepth),
-                unit:  "m",
+                value: String(format: "%.1f", unitSystem.convertDepth(metersValue: dive.maxDepth)),
+                unit:  unitSystem.depthSymbol,
                 label: "Max Depth",
                 icon:  "arrow.down.to.line",
                 color: .accentColor,
@@ -151,8 +154,8 @@ struct DiveSiteSheetView: View {
             Divider().frame(height: 44)
 
             DiveKitUI.DiveStatCell(
-                value: String(format: "%.0f", dive.waterTemperature),
-                unit:  "°C",
+                value: String(format: "%.0f", unitSystem.convertTemperature(celsiusValue: dive.waterTemperature)),
+                unit:  unitSystem.temperatureSymbol,
                 label: "Water Temp",
                 icon:  "thermometer.medium",
                 color: .cyan,

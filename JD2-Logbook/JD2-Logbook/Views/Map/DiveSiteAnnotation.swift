@@ -37,7 +37,9 @@ final class DiveSiteAnnotation: NSObject, MKAnnotation {
         self.title    = dive.location.isEmpty
             ? String(localized: "Unknown Location")
             : dive.location
-        self.subtitle = String(format: "%.1f m", dive.maxDepth)
+        // v1.2 #4：非 SwiftUI View，不能用 @AppStorage，直接讀同一個 UserDefaults key。
+        let unitSystem = UnitSystem(rawValue: UserDefaults.standard.string(forKey: UnitSystem.storageKey) ?? "") ?? .metric
+        self.subtitle = unitSystem.formatDepth(dive.maxDepth)
         super.init()
     }
 }

@@ -18,6 +18,9 @@ struct DiveLogDetailView: View {
     @State private var showEditSheet     = false
     @State private var showDeleteConfirm = false
 
+    // v1.2 #4：公制／英制單位系統，儲存值永遠是公制，這裡只負責顯示層換算。
+    @AppStorage(UnitSystem.storageKey) private var unitSystem = UnitSystem.metric
+
     // MARK: - Computed
 
     private var durationFormatted: String {
@@ -108,7 +111,7 @@ struct DiveLogDetailView: View {
                 DetailRow(icon: "bubbles.and.sparkles.fill", label: "Gas",      value: gasMixText)
                 DetailRow(icon: "water.waves",       label: "Environment",   value: environmentText)
                 if dive.avgDepth > 0 {
-                    DetailRow(icon: "water.waves",   label: "Avg Depth",     value: String(format: "%.1f m", dive.avgDepth))
+                    DetailRow(icon: "water.waves",   label: "Avg Depth",     value: unitSystem.formatDepth(dive.avgDepth))
                 }
                 DetailRow(icon: "doc.text",          label: "Source Format", value: sourceFormatDisplayName(dive.sourceFormat))
             }
@@ -122,7 +125,7 @@ struct DiveLogDetailView: View {
                         DetailRow(icon: "sun.max.fill",   label: "Weather",           value: weatherDisplayName(w))
                     }
                     if let t = dive.airTemperature {
-                        DetailRow(icon: "thermometer.medium", label: "Air Temperature", value: String(format: "%.0f°C", t))
+                        DetailRow(icon: "thermometer.medium", label: "Air Temperature", value: unitSystem.formatTemperature(t))
                     }
                     if let sc = dive.surfaceCondition {
                         DetailRow(icon: "water.waves",    label: "Surface Condition", value: surfaceConditionDisplayName(sc))
@@ -131,7 +134,7 @@ struct DiveLogDetailView: View {
                         DetailRow(icon: "wind",           label: "Water Flow",        value: waterFlowDisplayName(wf))
                     }
                     if let vis = dive.visibility {
-                        DetailRow(icon: "eye.fill",       label: "Visibility",        value: String(format: "%.1f m", vis))
+                        DetailRow(icon: "eye.fill",       label: "Visibility",        value: unitSystem.formatDepth(vis))
                     }
                 }
             }
@@ -298,8 +301,8 @@ struct DiveLogDetailView: View {
     private var keyStatsRow: some View {
         HStack(spacing: 0) {
             DiveKitUI.DiveStatCell(
-                value: String(format: "%.1f", dive.maxDepth),
-                unit: "m",
+                value: String(format: "%.1f", unitSystem.convertDepth(metersValue: dive.maxDepth)),
+                unit: unitSystem.depthSymbol,
                 label: "Max Depth",
                 icon: "arrow.down.to.line",
                 color: .accentColor,
@@ -320,8 +323,8 @@ struct DiveLogDetailView: View {
             Divider().frame(height: 48)
 
             DiveKitUI.DiveStatCell(
-                value: String(format: "%.0f", dive.waterTemperature),
-                unit: "°C",
+                value: String(format: "%.0f", unitSystem.convertTemperature(celsiusValue: dive.waterTemperature)),
+                unit: unitSystem.temperatureSymbol,
                 label: "Water Temp",
                 icon: "thermometer.medium",
                 color: .cyan,

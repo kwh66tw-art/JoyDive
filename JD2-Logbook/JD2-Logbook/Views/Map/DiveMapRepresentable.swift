@@ -180,7 +180,9 @@ private extension DiveMapRepresentable {
                 let newTitle = newDive.location.isEmpty
                     ? String(localized: "Unknown Location") : newDive.location
                 if annotation.title != newTitle { annotation.title = newTitle }
-                let newSubtitle = String(format: "%.1f m", newDive.maxDepth)
+                // v1.2 #4：非 SwiftUI View，不能用 @AppStorage，直接讀同一個 UserDefaults key。
+                let unitSystem = UnitSystem(rawValue: UserDefaults.standard.string(forKey: UnitSystem.storageKey) ?? "") ?? .metric
+                let newSubtitle = unitSystem.formatDepth(newDive.maxDepth)
                 if annotation.subtitle != newSubtitle { annotation.subtitle = newSubtitle }
             }
         }
