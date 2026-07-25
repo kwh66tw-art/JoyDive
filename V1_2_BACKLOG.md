@@ -31,6 +31,8 @@
 | 11 | Export/Import Backup 功能尚未測試，先隱藏 | ✅ 完成 | 使用者發現這個 v1.1 #14 做的功能這輪還沒實際測過（無論是單元測試以外的真機 round-trip），決定這版先隱藏、下一版驗證過再開放。`SettingsView.swift` 加入 `private let showBackupSection = false` feature flag（同 v1.2 #3 的 `showWarningEvents` 手法），把整個 Backup Section（Export/Import 兩顆按鈕）包進 `if showBackupSection { ... }`；程式碼與底層邏輯（`exportBackup()`/`importBackup(from:)`/`BackupJSONDocument`）完全保留未刪除，日後只需把常數改回 `true` 即可重新開放，不需要改動其他任何地方。iOS + macOS build 皆通過 |
 | 12 | 語系全審核（#6）— CSV 素材已備妥 | 🔄 進行中，CSV 已產出待審 | 從 `Localizable.xcstrings`（260 個 key × 18 語言）匯出成 CSV，額外加一欄「使用情境」：優先沿用 xcstrings 既有的 `comment`，沒有的話用程式碼 grep 找出該 key 出現在哪些 Swift 檔案自動補上定位線索（例如「None」同時出現在 `DiveLogDetailView.swift`/`DiveLogEditSheet.swift`，可能對應天氣/氣體/裝備等不同下拉選單，提醒審核時留意每個出現位置語境是否一致），完全查無引用的標警示（可能是動態組字串）。已交付使用者審閱。**⚠️ 待使用者逐語言審完回報，再回頭修正翻譯品質有問題的 key** |
 
+| 13 | 語系全審核 CSV 審閱結果已套用 | ✅ 完成（含一項架構建議記錄待後續） | 使用者提供翻譯團隊審閱過的 `JD2-Logbook_i18n_Completed_0725_rev02.csv`，已寫回 `Localizable.xcstrings`（24 個 key、209 個儲存格更新，含補齊先前 v1.2 這輪新增但僅英文的 stopgap key 之其餘語言翻譯）。編碼為 `utf-8-sig`，泰文/越南文變音符號抽查完整無亂碼。iOS + macOS build 皆通過。**翻譯團隊另附架構建議**：`%lld dive%@ imported`／`%lld skipped (duplicates)` 兩個動態數量字串，目前是 Swift 端算好 `""`/`"s"` 後綴塞進 `%2$@` 的手動 hack，建議改用 `.xcstrings` 原生「Vary by Plural」（`%#@variable@` 語意化格式＋各語言 Zero/One/Two/Few/Many/Other CLDR 規則）——**這項建議判斷正確但本次不動手**：這類多語言 plural 規則正常要靠 Xcode String Catalog 編輯器 UI 逐語言生成/驗證骨架（例如 `hr` 克羅埃西亞語有 one/few/many/other 四類，跟英文的二分完全不同），沒有 Xcode 介面驗證、純手刻 JSON 對 18 種語言逐一填對規則風險太高，可能填錯導致退回英文或編譯失敗。**留給有 Xcode 在手邊的人透過編輯器 UI 執行**，不建議之後也用純文字/腳本方式硬改 |
+
 ## 使用方式
 
 - 每項工作展開前，先跟使用者確認細節範圍（尤其 #1 需要等使用者提供 Apple 拒絕信完整內容）。
