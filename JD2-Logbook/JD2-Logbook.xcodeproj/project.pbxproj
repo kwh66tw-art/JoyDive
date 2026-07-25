@@ -260,7 +260,6 @@
 				vi,
 				ms,
 				id,
-				ar,
 				hr,
 				"zh-Hans",
 				Base,
