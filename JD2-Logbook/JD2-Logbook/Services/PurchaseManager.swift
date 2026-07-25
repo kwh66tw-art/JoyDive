@@ -125,12 +125,6 @@ final class PurchaseManager {
     // MARK: - Refresh Purchase Status
 
     func refreshPurchaseStatus() async {
-        #if DEBUG
-        if UserDefaults.standard.bool(forKey: "DEBUG_isPremiumOverride") {
-            setIsPremium(true)
-            return
-        }
-        #endif
         var foundPremium = false
         for await result in Transaction.currentEntitlements {
             guard case .verified(let transaction) = result else { continue }
@@ -142,13 +136,6 @@ final class PurchaseManager {
         }
         setIsPremium(foundPremium)
     }
-
-    #if DEBUG
-    func setDebugPremium(_ value: Bool) {
-        UserDefaults.standard.set(value, forKey: "DEBUG_isPremiumOverride")
-        setIsPremium(value)
-    }
-    #endif
 
     // MARK: - Transaction Listener
     //

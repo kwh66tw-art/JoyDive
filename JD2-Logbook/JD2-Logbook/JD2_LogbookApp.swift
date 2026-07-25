@@ -18,6 +18,9 @@ struct JD2_LogbookApp: App {
 
     init() {
         #if canImport(GoogleMobileAds)
+        // v1.2：DEBUG build 已改用 Google 官方測試 Ad Unit ID（見 AdBannerView.swift
+        // 的 AdUnitID），不需要再靠 testDeviceIdentifiers 註冊特定裝置——原本那個做法
+        // 每次整個刪除重裝 App 後裝置 ID 就會變，追著加裝置 ID 沒有意義。
         MobileAds.shared.start { _ in }
         #endif
     }

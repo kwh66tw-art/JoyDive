@@ -113,9 +113,22 @@ let adBannerHeight: CGFloat = 50
 #endif
 
 // MARK: - Ad Unit ID 常數
-//
-// ⚠️ 上線前將下方測試 ID 替換為 AdMob console 核發的正式 Ad Unit ID
 
+#if DEBUG
+// v1.2：開發階段一律用 Google 官方測試 Ad Unit ID（四個版位共用同一組官方常數，
+// Google 允許重複使用），保證每次都收到測試廣告、不需要註冊裝置 ID。
+// 原本用 testDeviceIdentifiers 註冊真機的做法，缺點是裝置的 identifierForVendor
+// 在「該開發商所有 App 都被移除後重裝」時會重新產生，測 Restore Purchase 這類
+// 需要整個刪除重裝 App 的情境時，Google 裝置 ID 每次都會變、追著加永遠追不完。
+// 官方測試 ID 沒有這個問題，不綁裝置、永久有效：
+// https://developers.google.com/admob/ios/test-ads
+enum AdUnitID {
+    static let logbook       = "ca-app-pub-3940256099942544/2934735716"
+    static let settings      = "ca-app-pub-3940256099942544/2934735716"
+    static let importBanner  = "ca-app-pub-3940256099942544/2934735716"
+    static let mapEmptyState = "ca-app-pub-3940256099942544/2934735716"
+}
+#else
 enum AdUnitID {
     /// 日誌主畫面底部 banner
     static let logbook       = "ca-app-pub-9582822701117167/7912367341"
@@ -126,6 +139,7 @@ enum AdUnitID {
     /// 地圖空狀態 inline ad
     static let mapEmptyState = "ca-app-pub-9582822701117167/3449692393"
 }
+#endif
 
 // MARK: - PremiumAwareAdBanner
 //

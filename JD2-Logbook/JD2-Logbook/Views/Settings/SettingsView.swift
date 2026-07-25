@@ -250,13 +250,6 @@ struct SettingsView: View {
                     #if os(macOS)
                     .buttonStyle(.borderless)
                     #endif
-
-                    Toggle(isOn: Binding(
-                        get: { purchaseManager.isPremium },
-                        set: { purchaseManager.setDebugPremium($0) }
-                    )) {
-                        Label("Simulate Premium (No Ads)", systemImage: "star.fill")
-                    }
                 }
                 #endif
 
