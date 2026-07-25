@@ -37,7 +37,7 @@
 ### 審核狀態（截至 2026-07-14）
 - **macOS App 1.0**：✅ 已通過審核
 - **iOS App 1.0**：⏳ Waiting for Review（等待超過一個月無回應，不阻塞 v1.1 開發）
-- **Build**：iOS + macOS 均為 Build 2（`CURRENT_PROJECT_VERSION = 2`；下次發布需 +1 → 3）
+- **Build**：2026-07-25 已為 v1.2 送審做準備，`MARKETING_VERSION = 1.2`／`CURRENT_PROJECT_VERSION = 3`（iOS + macOS 皆同步）；尚未實際 Archive 送出，見 `V1_2_BACKLOG.md`
 - **IAP**：`com.jd2logbook.premium`，Non-Consumable，$1.99，已隨版本送審
 
 ### v1.1 開發（2026-07-14 啟動，2026-07-17 完工 13/14 項）

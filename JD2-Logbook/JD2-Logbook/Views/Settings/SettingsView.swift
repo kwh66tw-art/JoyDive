@@ -19,6 +19,10 @@ struct SettingsView: View {
     @State private var restoreAlertMessage    = ""
     #endif
 
+    // v1.2：Export/Import Backup 功能尚未經過完整測試，這版先隱藏 UI、保留程式碼，
+    // 下一版驗證過再開放。要重新開放：把這個常數改回 true 即可，不需要改動其他任何地方。
+    private let showBackupSection = false
+
     // v1.1 #14：備份匯出/匯入
     @State private var showBackupExporter    = false
     @State private var backupExportDocument: BackupJSONDocument?
@@ -179,27 +183,30 @@ struct SettingsView: View {
                 #endif
 
                 // ── 備份（v1.1 #14：Export/Import round-trip）───────
-                Section(
-                    header: Text("Backup"),
-                    footer: Text("Export all dives to a JSON file, or restore from a previously exported file.")
-                ) {
-                    Button {
-                        exportBackup()
-                    } label: {
-                        Label("Export Backup", systemImage: "square.and.arrow.up")
-                    }
-                    #if os(macOS)
-                    .buttonStyle(.borderless)
-                    #endif
+                // v1.2：尚未完整測試過，先隱藏，見 showBackupSection 說明。
+                if showBackupSection {
+                    Section(
+                        header: Text("Backup"),
+                        footer: Text("Export all dives to a JSON file, or restore from a previously exported file.")
+                    ) {
+                        Button {
+                            exportBackup()
+                        } label: {
+                            Label("Export Backup", systemImage: "square.and.arrow.up")
+                        }
+                        #if os(macOS)
+                        .buttonStyle(.borderless)
+                        #endif
 
-                    Button {
-                        showBackupImporter = true
-                    } label: {
-                        Label("Import Backup", systemImage: "square.and.arrow.down")
+                        Button {
+                            showBackupImporter = true
+                        } label: {
+                            Label("Import Backup", systemImage: "square.and.arrow.down")
+                        }
+                        #if os(macOS)
+                        .buttonStyle(.borderless)
+                        #endif
                     }
-                    #if os(macOS)
-                    .buttonStyle(.borderless)
-                    #endif
                 }
 
                 // ── 關於 ───────────────────────────────────
