@@ -1,14 +1,14 @@
 # 已知問題 & v1.1 規劃
 
-**最後更新**：2026-07-17
+**最後更新**：2026-07-25
 
 ---
 
-## ⚠️ 待決策事項（上架前需拍板）
+## ✅ 已解決（原「待決策事項」，2026-07-25 解決）
 
-| 項目 | 說明 | 決策時機 |
+| 項目 | 說明 | 解決方式 |
 |------|------|---------|
-| macOS `LSApplicationCategoryType` 誤觸發遊戲模式 | `Info.plist` 目前設為 `public.app-category.sports-games`（Apple 分類體系裡「運動類電玩遊戲」子分類，非「運動」本身）。macOS 的 `gamepolicyd` 只檢查該值是否以 `games` 結尾即觸發遊戲模式，導致 JoyDive² 全螢幕執行時被系統誤判為遊戲。候選修正值：`public.app-category.sports`（運動）或 `public.app-category.healthcare-fitness`（健康與健身），需同時對齊 App Store Connect 的上架分類設定。2026-07-17 PM 決定 pending，待新版本收斂準備上架前再決定。 | 下次上架前 |
+| macOS/iOS `LSApplicationCategoryType` 誤觸發遊戲模式 | `Info.plist` 原設為 `public.app-category.sports-games`（Apple 分類體系裡「運動類電玩遊戲」子分類，非「運動」本身），會讓 iOS 18+/macOS 系統把 App 誤判為遊戲，觸發 Game Mode／Game Center 相關行為（iOS 端曾出現「遊戲模式：已開啟」橫幅）。已改為 `public.app-category.healthcare-fitness`；App Store Connect 的 Category 欄位同步改為 Health & Fitness。iOS + macOS 皆已用真機／直接雙擊安裝版驗證修復生效（不需要等這次送審核准）。詳見 `V1_2_BACKLOG.md` #1b |
 
 ---
 

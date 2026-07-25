@@ -31,6 +31,54 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-25 — v1.2 (Build 3)：單位系統全面套用、Game Mode 修復、真機廣告/IAP 驗證、匯入情境測試
+
+- **公制／英制單位系統全面套用**（V1_2_BACKLOG.md #4 收尾）：先前只做了 Settings
+  選項本身，這次展開到 `DiveRowView`／`DiveLogDetailView`／`DiveSiteSheetView`／
+  `DiveAnalysisView` 的 `calloutRow`／`DiveSiteAnnotation`／`DiveMapRepresentable`
+  （非 SwiftUI View context，改直讀 `UserDefaults`）／`DiveLogEditSheet`（新增
+  4 個雙向 `Binding` computed property供輸入欄位換算）。
+- **Dive Profile trimix 顯示修復**：原本 trimix 潛水（DiveKit 無氦氣組織負荷
+  計算）會讓整個狀態列（連 Time/Depth/Temp 都有算的資料）被免責聲明取代；改為
+  `calloutRow` 固定 5 欄排版，缺資料的 Ceiling/No Deco 才用「—」佔位，維持互動；
+  組織艙圖用帶 `info.circle` 圖示的說明文字取代，明確標示是已知限制非程式錯誤。
+  順便修好狀態列文字大小忽大忽小的問題（`minimumScaleFactor` 導致 5 欄各自獨立
+  縮放不一致，改用固定不縮放字級＋關閉插入動畫）。
+- **macOS/iOS Game Mode 誤觸發修復**：`Info.plist` 的 `LSApplicationCategoryType`
+  從 `public.app-category.sports-games`（Apple 分類系統裡其實是「Games→Sports」
+  子分類，非獨立的「Sports」）改為 `public.app-category.healthcare-fitness`；
+  App Store Connect 的 Category 欄位同步更新。iOS + macOS 皆已用真機／直接雙擊
+  安裝版驗證修復生效（排除是 Xcode `cmd+R` 偵錯階段特有現象後確認）。
+- **AdMob 真機驗證 + DEBUG 測試 ID 改用官方常數**：真機驗證 4 個廣告版位正常
+  顯示；`AdUnitID` 的 DEBUG 分支改用 Google 官方測試 Ad Unit ID（不綁裝置），
+  取代原本註冊 `testDeviceIdentifiers` 的做法（裝置 `identifierForVendor` 在整個
+  刪除重裝 App 後會重新產生，測 Restore Purchase 這類情境時裝置 ID 一直變）。
+- **IAP／Restore Purchase 真機 Sandbox 驗證**：正向購買、正向 Restore、反向
+  Restore（Clear Purchase History 後應正確顯示無法還原）、重複購買後再 Restore
+  皆 PASS。移除 Settings 的「Simulate Premium」除錯開關（其 getter 直接綁真實
+  StoreKit 授權狀態，一旦帳號完成過真實購買，`refreshPurchaseStatus()` 每次啟動
+  都會覆蓋回 true，開關永遠關不掉）。
+- **匯入情境測試（V1_2_BACKLOG.md #5）**：`_JD2-family/00_Import_test_scenes/`
+  建 5 個情境資料夾，涵蓋黃金路徑、單檔多潛水、8 格式批次混合、去重/錯誤處理、
+  trimix／ZIP 包裝／跨品牌相容性等特殊情況，全數通過。過程發現 `DiveImportKit`
+  的匯入失敗錯誤訊息全數寫死繁體中文（跨三個 App），依家族鐵律回報而非自行
+  修改，記錄於 `_JD2-family/reports/R-2026-07-25-DiveImportKit錯誤訊息未本地化.md`；
+  家族總管已處理第一階段（6 個錯誤樣板改英文，DiveImportKit v0.4.0→v0.4.1）。
+  同時補上 `F-07-IMPORT_FORMAT_COVERAGE.md` 的 Garmin Connect JSON（首次有資料
+  驗證過）、DAN DL7／Divesoft DLF v2／Garmin FIT 跨廠牌拒收的 E2E 驗證紀錄。
+- **App Store Connect 送審動作完成**：Age Rating 問卷（Advertising=Yes，其餘
+  如實回答 No）、App Privacy 問卷（Location/Device ID/Usage Data 的「used to
+  track」皆改 No）、Category 改 Health & Fitness。AdMob 後台封鎖全部 13 個標準
+  敏感類別廣告（因應 Google 8/10 賭博廣告政策放寬，主動避免未來廣告內容跟年齡
+  分級不符的風險）。
+- **Export/Import Backup 功能先隱藏**：v1.1 做的功能這輪還沒完整測試，
+  `SettingsView.swift` 加 `showBackupSection = false` feature flag，UI 隱藏、
+  程式碼保留，下一版驗證後開放。
+- **版號**：`MARKETING_VERSION` 1.0 → 1.2，`CURRENT_PROJECT_VERSION` 2 → 3。
+- **本機開發環境清理**：清除 29 筆 macOS LaunchServices 殭屍 App 註冊（模擬器/
+  XCTestDevice 暫存路徑已刪除但快取殘留）＋約 2.7GB 舊 DerivedData／過期專案
+  資料夾（`iosApp/JoyDive` 舊專案、JD2-ultra/JD2-immersion 的舊 DerivedData）。
+
 ### 2026-07-21 — 剖面圖警示標示與資訊列 + Import 語系修復（同日第二條）
 
 - **剖面圖警示事件系統**（V1_2_BACKLOG.md #3 子項②③）：`DiveReplayEngine.replay()`
