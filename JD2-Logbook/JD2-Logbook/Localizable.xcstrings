@@ -133,7 +133,7 @@
         },
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "%1$@, %2$@"
           }
         },
@@ -297,7 +297,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@, %2$@m, %3$@"
+            "value" : "%1$@, %2$@ m, %3$@"
           }
         },
         "ms" : {
@@ -362,7 +362,7 @@
         },
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "%1$@, %2$@, %3$@"
           }
         },
@@ -1037,7 +1037,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld min"
+            "value" : "%lld Min."
           }
         },
         "el" : {
@@ -1494,7 +1494,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld Min."
+            "value" : "%lld min"
           }
         },
         "el" : {
@@ -1536,7 +1536,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld mnt"
+            "value" : "%lld menit"
           }
         },
         "it" : {
@@ -1716,10 +1716,228 @@
       }
     },
     "10L (Steel)" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L（鋼瓶）"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L（钢瓶）"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10L (Steel)"
+          }
+        }
+      }
     },
     "12L (Steel)" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L（鋼瓶）"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L（钢瓶）"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12L (Steel)"
+          }
+        }
+      }
     },
     "About" : {
       "comment" : "Settings section header",
@@ -1781,7 +1999,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "情報"
+            "value" : "について"
           }
         },
         "ko" : {
@@ -1953,7 +2171,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tauchgang hinzufügen"
+            "value" : "Neuen Tauchgang hinzufügen"
           }
         },
         "el" : {
@@ -2025,7 +2243,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Voeg duik toe"
+            "value" : "Nieuwe duik toevoegen"
           }
         },
         "pt-PT" : {
@@ -2043,7 +2261,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Thêm lặn mới"
+            "value" : "Thêm chuyến lặn mới"
           }
         },
         "zh-Hans" : {
@@ -2445,7 +2663,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Suhu Udara: %@"
+            "value" : "Suhu udara: %@"
           }
         },
         "it" : {
@@ -2469,7 +2687,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Suhu Udara: %@"
+            "value" : "Suhu udara: %@"
           }
         },
         "nl" : {
@@ -2623,7 +2841,68 @@
       }
     },
     "AL100 (14L)" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AL100 (14L)"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AL100 (14L)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AL100（14L）"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AL100（14L）"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AL100 (14L)"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AL100 (14L)"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AL100 (14L)"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AL100 (14L)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AL100 (14L)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AL100 (14L)"
+          }
+        }
+      }
     },
     "Altitude" : {
       "comment" : "Dive environment type",
@@ -2631,7 +2910,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Höhe"
+            "value" : "Höhen tauchen / Höhe"
           }
         },
         "el" : {
@@ -2685,13 +2964,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高地"
+            "value" : "高所"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "고도"
+            "value" : "고산"
           }
         },
         "ms" : {
@@ -2703,7 +2982,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Altitude"
+            "value" : "Hoogte"
           }
         },
         "pt-PT" : {
@@ -2721,19 +3000,19 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Altitude"
+            "value" : "Độ cao"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高海拔"
+            "value" : "高海拔潜水"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高海拔"
+            "value" : "高海拔潛水"
           }
         }
       }
@@ -2779,7 +3058,7 @@
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aluminijum"
+            "value" : "Aluminij"
           }
         },
         "id" : {
@@ -2968,7 +3247,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aufstiegsgeschwindigkeit-Warnung"
+            "value" : "Aufstiegsraten-Warnung"
           }
         },
         "el" : {
@@ -3010,7 +3289,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Peringatan Kecepatan Naik"
+            "value" : "Peringatan Laju Ascent"
           }
         },
         "it" : {
@@ -3034,7 +3313,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Amaran Kadar Menaik"
+            "value" : "Amaran Kadar Ascent"
           }
         },
         "nl" : {
@@ -3058,19 +3337,19 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cảnh báo tốc độ nổi"
+            "value" : "Cảnh báo tốc độ lên"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "上升速度警报"
+            "value" : "上升速率警报"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "上升速度警報"
+            "value" : "上升速率警報"
           }
         }
       }
@@ -3080,7 +3359,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Aufstiegsgeschwindigkeit hat 10 m/min (32,8 ft/min) überschritten."
+            "value" : "Die Aufstiegsrate hat 10 m/min (32,8 ft/min) überschritten."
           }
         },
         "el" : {
@@ -3122,7 +3401,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kecepatan naik melebihi 10 m/menit (32.8 ft/menit)."
+            "value" : "Laju ascent melebihi 10 m/menit (32.8 ft/menit)."
           }
         },
         "it" : {
@@ -3164,25 +3443,25 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "อัตราการขึ้นสู่ผิวน้ำเกิน 10 ม./นาที (32.8 ฟุต/นาที)"
+            "value" : "อัตราการขึ้นเกิน 10 ม./นาที (32.8 ฟุต/นาที)"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tốc độ nổi vượt quá 10 m/phút (32,8 ft/phút)."
+            "value" : "Tốc độ lên vượt quá 10 m/phút (32,8 ft/phút)."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "上升速度超过10公尺/分(32.8英尺/分)。"
+            "value" : "上升速率超过 10 米/分（32.8 英尺/分）。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "上升速度超過10公尺/分(32.8英呎/分)。"
+            "value" : "上升速率超過 10 公尺/分（32.8 英呎/分）。"
           }
         }
       }
@@ -3330,7 +3609,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Profundidad promedio"
+            "value" : "Profundidad media"
           }
         },
         "fr" : {
@@ -3360,19 +3639,19 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "平均深度"
+            "value" : "平均水深"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "평균 깊이"
+            "value" : "평균 수심"
           }
         },
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kedalaman rata-rata"
+            "value" : "Kedalaman purata"
           }
         },
         "nl" : {
@@ -3418,7 +3697,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Durchschnittstiefe"
+            "value" : "Ø-Tiefe / Mittlere Tiefe"
           }
         },
         "el" : {
@@ -3442,13 +3721,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Profundidad Media"
+            "value" : "Prof. media"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Profondeur Moyenne"
+            "value" : "Prof. moy. / Profondeur moyenne"
           }
         },
         "hr" : {
@@ -3484,7 +3763,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kedalaman Purata"
+            "value" : "Kedalaman purata"
           }
         },
         "nl" : {
@@ -3638,7 +3917,116 @@
       }
     },
     "bar" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bar"
+          }
+        }
+      }
     },
     "Basic Info" : {
       "comment" : "Section header for basic dive information",
@@ -3764,7 +4152,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Συνοδός Κατάδυσης"
+            "value" : "Σύντροφος / Buddy"
           }
         },
         "en" : {
@@ -3782,7 +4170,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Compañero"
+            "value" : "Compañero de buceo"
           }
         },
         "fr" : {
@@ -3794,19 +4182,19 @@
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ronilački Par"
+            "value" : "Buddy / Partner"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buddy Selam"
+            "value" : "Buddy"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Compagno"
+            "value" : "Compagno di immersione"
           }
         },
         "ja" : {
@@ -3836,7 +4224,7 @@
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Companheiro de Mergulho"
+            "value" : "Buddy / Companheiro"
           }
         },
         "th" : {
@@ -3967,7 +4355,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "以 %@ 购买专业版"
+            "value" : "以 %@ 购买高级版"
           }
         },
         "zh-Hant" : {
@@ -3989,7 +4377,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ήσυχα"
+            "value" : "Ήρεμη"
           }
         },
         "en" : {
@@ -4144,7 +4532,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Annulla"
+            "value" : "Ana"
           }
         },
         "ja" : {
@@ -4208,7 +4596,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Decotiefe"
+            "value" : "Deco-Ceiling / Decotiefe"
           }
         },
         "el" : {
@@ -4232,7 +4620,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Techo"
+            "value" : "Techo de descompresión"
           }
         },
         "fr" : {
@@ -4250,13 +4638,13 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ceiling"
+            "value" : "Plafon dekompresi"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ceiling"
+            "value" : "Quota"
           }
         },
         "ja" : {
@@ -4274,13 +4662,13 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Siling"
+            "value" : "Siling deko"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ceiling"
+            "value" : "Ceiling / Decoplafond"
           }
         },
         "pt-PT" : {
@@ -4292,25 +4680,25 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เพดาน"
+            "value" : "เพดานดีโก้"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trần"
+            "value" : "Trần deco"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "减压天花板"
+            "value" : "减压上限"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "減壓天花板"
+            "value" : "減壓上限"
           }
         }
       }
@@ -4416,13 +4804,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "晴空万里"
+            "value" : "晴朗"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "晴空萬里"
+            "value" : "晴朗"
           }
         }
       }
@@ -4907,13 +5295,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Material del cilindro"
+            "value" : "Material de la botella"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Matériau du cylindre"
+            "value" : "Matériau de la bouteille"
           }
         },
         "hr" : {
@@ -4937,7 +5325,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "シリンダーマテリアル"
+            "value" : "シリンダー素材"
           }
         },
         "ko" : {
@@ -4995,7 +5383,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zylindergröße"
+            "value" : "Flaschenvolumen"
           }
         },
         "el" : {
@@ -5019,13 +5407,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tamaño del cilindro"
+            "value" : "Capacidad de la botella"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Taille du cylindre"
+            "value" : "Volume de la bouteille"
           }
         },
         "hr" : {
@@ -5049,13 +5437,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "シリンダーサイズ"
+            "value" : "シリンダー容量"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "실린더 크기"
+            "value" : "실린더 용량"
           }
         },
         "ms" : {
@@ -5067,7 +5455,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cylindergrootte"
+            "value" : "Cilindergrootte"
           }
         },
         "pt-PT" : {
@@ -5246,13 +5634,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Análisis de Descompresión"
+            "value" : "Análisis de descompresión"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Analyse de Décompression"
+            "value" : "Analyse de décompression"
           }
         },
         "hr" : {
@@ -5360,13 +5748,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Más profundo"
+            "value" : "Máx. profundidad"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le plus profond"
+            "value" : "Plus profonde"
           }
         },
         "hr" : {
@@ -5384,7 +5772,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Più profondo"
+            "value" : "Max profondità"
           }
         },
         "ja" : {
@@ -5756,7 +6144,7 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ลบบันทึกการดำน้ำนี้หรือไม่?"
+            "value" : "ลบบันทึกไดฟ์นี้หรือไม่?"
           }
         },
         "vi" : {
@@ -6361,7 +6749,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dive Data & Time"
+            "value" : "Dive Date & Time"
           }
         },
         "en-GB" : {
@@ -6403,13 +6791,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ダイビングデータと日時"
+            "value" : "ダイビングの日時"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "다이빙 데이터 및 시간"
+            "value" : "다이빙 날짜 및 시간"
           }
         },
         "ms" : {
@@ -6433,7 +6821,7 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ข้อมูลและเวลาดำน้ำ"
+            "value" : "ข้อมูลและเวลาไดฟ์"
           }
         },
         "vi" : {
@@ -6445,13 +6833,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "潜水数据与时间"
+            "value" : "潜水日期与时间"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "潛水數據與時間"
+            "value" : "潛水日期與時間"
           }
         }
       }
@@ -6736,7 +7124,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Giornale di immersione"
+            "value" : "Logbook / Diario di immersione"
           }
         },
         "ja" : {
@@ -6772,7 +7160,7 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "สมุดบันทึกการดำน้ำ"
+            "value" : "สมุดบันทึกไดฟ์"
           }
         },
         "vi" : {
@@ -6884,7 +7272,7 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "บันทึกการดำน้ำ"
+            "value" : "บันทึกไดฟ์"
           }
         },
         "vi" : {
@@ -6948,7 +7336,7 @@
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Broj Ronjenja"
+            "value" : "Broj Urona"
           }
         },
         "id" : {
@@ -6966,13 +7354,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "潜水番号"
+            "value" : "ダイブ番号"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "다이브 번호"
+            "value" : "다이빙 번호"
           }
         },
         "ms" : {
@@ -7080,7 +7468,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ダイブプロフィール図"
+            "value" : "ダイブプロファイル"
           }
         },
         "ko" : {
@@ -7116,19 +7504,19 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Biểu đồ hồ sơ lặn"
+            "value" : "Hồ sơ lặn"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "潜水剖面图"
+            "value" : "潜水曲线"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "潛水剖面圖"
+            "value" : "潛水曲線"
           }
         }
       }
@@ -7199,7 +7587,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "다이빙 사이트"
+            "value" : "다이빙 포인트"
           }
         },
         "ms" : {
@@ -7235,13 +7623,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "潜水地点"
+            "value" : "潜点"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "潛水地點"
+            "value" : "潛點"
           }
         }
       }
@@ -7355,7 +7743,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "潛點地圖將在後續版本中提供。"
+            "value" : "潛點地圖將於後續更新提供。"
           }
         }
       }
@@ -7420,13 +7808,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "潜水時間"
+            "value" : "ダイブタイム"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "잠수 시간"
+            "value" : "다이빙 시간"
           }
         },
         "ms" : {
@@ -7534,13 +7922,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ダイビング"
+            "value" : "ダイビング本数"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "다이빙"
+            "value" : "다이빙 횟수"
           }
         },
         "ms" : {
@@ -7564,7 +7952,7 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ไดฟ์"
+            "value" : "จำนวนไดฟ์"
           }
         },
         "vi" : {
@@ -7576,13 +7964,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "潜水"
+            "value" : "潜水次数"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "潛水"
+            "value" : "潛水次數"
           }
         }
       }
@@ -7754,7 +8142,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fine"
+            "value" : "Fine / Fatto"
           }
         },
         "ja" : {
@@ -7843,7 +8231,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tiempo de buceo: %d min"
+            "value" : "Tiempo de inmersión: %d min"
           }
         },
         "fr" : {
@@ -7986,7 +8374,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "EANx"
+            "value" : "EANx（エンリッチドエア）"
           }
         },
         "ko" : {
@@ -8028,13 +8416,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高氧"
+            "value" : "EANx"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高氧"
+            "value" : "EANx"
           }
         }
       }
@@ -8412,7 +8800,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pression finale"
+            "value" : "Pression de sortie / Pression finale"
           }
         },
         "hr" : {
@@ -8436,13 +8824,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "終了圧力"
+            "value" : "終了圧力（エンド圧）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "종료 압력"
+            "value" : "종료 잔압"
           }
         },
         "ms" : {
@@ -8472,19 +8860,19 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Áp lực cuối cùng"
+            "value" : "Áp suất cuối"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "结束压力"
+            "value" : "终压"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "結束壓力"
+            "value" : "終壓"
           }
         }
       }
@@ -8650,7 +9038,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Udara Kaya"
+            "value" : "Udara Kaya Oksigen / Enriched Air"
           }
         },
         "it" : {
@@ -8668,13 +9056,13 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "농축 공기"
+            "value" : "부화 공기 / 엔리치드 에어"
           }
         },
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Udara Kaya"
+            "value" : "Udara Diperkaya / Enriched Air"
           }
         },
         "nl" : {
@@ -8692,25 +9080,25 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "อากาศที่เข้มข้น"
+            "value" : "อากาศเสริมออกซิเจน / Enriched Air"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Không khí giàu"
+            "value" : "Không khí giàu oxy / Enriched Air"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高氧"
+            "value" : "高氧空气"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高氧"
+            "value" : "高氧空氣"
           }
         }
       }
@@ -8721,7 +9109,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deko betreten"
+            "value" : "In Deko eingetreten"
           }
         },
         "el" : {
@@ -8745,13 +9133,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Entró en Descompresión"
+            "value" : "Descompresión Obligatoria"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Décompression Requise"
+            "value" : "En décompression"
           }
         },
         "hr" : {
@@ -8763,31 +9151,31 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Memasuki Dekompresi"
+            "value" : "Dekompresi Wajib"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Decompressione Richiesta"
+            "value" : "In decompressione"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "減圧潜水"
+            "value" : "減圧に入った"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "감압 다이빙 진입"
+            "value" : "감압 진입"
           }
         },
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Memasuki Dekompresi"
+            "value" : "Dekompresi Wajib"
           }
         },
         "nl" : {
@@ -8799,31 +9187,31 @@
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Entrou em Descompressão"
+            "value" : "Descompressão Obrigatória"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เข้าสู่การลดความดัน"
+            "value" : "ติดเดคโค"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Đã Vào Giảm Áp"
+            "value" : "Giảm Áp Bắt Buộc"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已进入减压"
+            "value" : "已进入减压停止"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已進入減壓"
+            "value" : "已進入減壓停止"
           }
         }
       }
@@ -8887,7 +9275,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "入水と出水"
+            "value" : "エントリーとエグジット"
           }
         },
         "ko" : {
@@ -8929,13 +9317,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "出入水时间"
+            "value" : "入水与出水"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "出入水時間"
+            "value" : "入水與出水"
           }
         }
       }
@@ -9058,7 +9446,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Umgebung"
+            "value" : "Umgebung / Gewässer"
           }
         },
         "el" : {
@@ -9273,7 +9661,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "潛水裝備"
+            "value" : "裝備"
           }
         }
       }
@@ -9283,7 +9671,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geschätzt mit Bühlmann ZHL-16C ausschließlich auf Basis des importierten Profils. Kein Ersatz für deinen Tauchcomputer oder zertifizierte Dekompressionssoftware."
+            "value" : "Geschätzt mit Bühlmann ZHL-16C ausschließlich auf Basis des importierten Profils. Kein Ersatz für Ihren Tauchcomputer oder zertifizierte Dekompressionssoftware."
           }
         },
         "el" : {
@@ -9319,7 +9707,7 @@
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Procijenjeno pomoću Bühlmann ZHL-16C samo na temelju uvezenog profila. Nije zamjena za vaš ronilački computer ili certificirani softver za dekompresiju."
+            "value" : "Procijenjeno pomoću Bühlmann ZHL-16C samo na temelju uvezenog profila. Nije zamjena za vaš ronilački računalo ili certificirani softver za dekompresiju."
           }
         },
         "id" : {
@@ -9485,7 +9873,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Thời gian thoát nước"
+            "value" : "Thời gian ra nước"
           }
         },
         "zh-Hans" : {
@@ -9543,7 +9931,7 @@
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Izvezite sva ronjenja u JSON datoteku ili vratite iz prethodno izvezene datoteke."
+            "value" : "Izvezite sve urone u JSON datoteku ili vratite iz prethodno izvezene datoteke."
           }
         },
         "id" : {
@@ -9970,7 +10358,7 @@
         },
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "File %1$lld of %2$lld"
           }
         },
@@ -10071,7 +10459,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Systemsprache"
+            "value" : "System folgen"
           }
         },
         "el" : {
@@ -10125,7 +10513,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "システムに従う"
+            "value" : "システム設定に従う"
           }
         },
         "ko" : {
@@ -10256,7 +10644,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zoet water"
+            "value" : "Zoetwater"
           }
         },
         "pt-PT" : {
@@ -10499,7 +10887,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Khí lặn"
+            "value" : "Khí"
           }
         },
         "zh-Hans" : {
@@ -10606,13 +10994,13 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "แก๊สผสม"
+            "value" : "ส่วนผสมแก๊ส / ก๊าซผสม"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Khí trộn"
+            "value" : "Hỗn hợp khí"
           }
         },
         "zh-Hans" : {
@@ -10916,7 +11304,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "取り込み"
+            "value" : "読み込む / インポート"
           }
         },
         "ko" : {
@@ -11028,7 +11416,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バックアップを読み込む"
+            "value" : "バックアップをインポート"
           }
         },
         "ko" : {
@@ -11140,19 +11528,19 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "問題が発生しましたがインポートが完了しました"
+            "value" : "インポート完了（問題あり）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "문제와 함께 가져오기 완료됨"
+            "value" : "가져오기 완료(문제 있음)"
           }
         },
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Import Selesai dengan Isu"
+            "value" : "Import selesai dengan isu"
           }
         },
         "nl" : {
@@ -11253,7 +11641,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ダイビングを読み込む"
+            "value" : "ダイビングをインポート"
           }
         },
         "ko" : {
@@ -11384,7 +11772,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importen mislukt"
+            "value" : "Importeren mislukt"
           }
         },
         "pt-PT" : {
@@ -11573,7 +11961,7 @@
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uvezeno %d ronjenja, preskočeno %d duplikata."
+            "value" : "Uvezeno %d urona, preskočeno %d duplikata."
           }
         },
         "id" : {
@@ -11633,7 +12021,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已导入 %d 笔潜水记录，跳过 %d 笔重复记录。"
+            "value" : "已导入 %d 条潜水记录，跳过 %d 条重复记录。"
           }
         },
         "zh-Hant" : {
@@ -11662,7 +12050,7 @@
         },
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Importing file %1$lld of %2$lld: %3$@"
           }
         },
@@ -11831,7 +12219,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Importing…"
+            "value" : "Sedang mengimport…"
           }
         },
         "nl" : {
@@ -11884,7 +12272,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Παλίρροια"
+            "value" : "Πλημμυρίδα"
           }
         },
         "en" : {
@@ -12201,24 +12589,244 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "JD2 潜水日志专业版"
+            "value" : "JD2 潜水日志高级版"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "JD2 潛水日誌進階版"
+            "value" : "JD2 潛水日誌 Premium"
           }
         }
       }
     },
     "JoyDive²" : {
       "comment" : "The name of the app.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive²"
+          }
+        }
+      }
     },
     "JoyDive² Premium" : {
       "comment" : "The title of the premium purchase screen.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JoyDive² Premium"
+          }
+        }
+      }
     },
     "Jump to Today" : {
       "comment" : "A button that jumps to today.",
@@ -12448,7 +13056,116 @@
       }
     },
     "kg" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kg"
+          }
+        }
+      }
     },
     "Language" : {
       "comment" : "Settings section header",
@@ -12664,7 +13381,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "语言变更会立即生效。部分系统提供的面板在您重新开启 App 前可能仍会使用装置语言。"
+            "value" : "语言更改会立即生效。部分系统提供的面板在您重新打开 App 前可能仍会使用设备语言。"
           }
         },
         "zh-Hant" : {
@@ -13003,7 +13720,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "定位权限被拒绝"
+            "value" : "位置权限被拒绝"
           }
         },
         "zh-Hant" : {
@@ -13115,7 +13832,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "位置数据只保留在您的装置上，且仅在启用时才会请求。"
+            "value" : "位置数据仅保留在您的设备上，且仅在启用时才会请求。"
           }
         },
         "zh-Hant" : {
@@ -13400,7 +14117,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Safety Stop Wajib"
+            "value" : "Pemberhentian keselamatan wajib"
           }
         },
         "it" : {
@@ -13418,13 +14135,13 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "필수 안전 정지"
+            "value" : "필수 안전 스톱"
           }
         },
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Safety Stop Wajib"
+            "value" : "Hentian keselamatan wajib"
           }
         },
         "nl" : {
@@ -13442,7 +14159,7 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "การหยุดพักเพื่อความปลอดภัยภาคบังคับ"
+            "value" : "เซฟตี้สต็อปบังคับ"
           }
         },
         "vi" : {
@@ -13454,13 +14171,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "强制安全停留点"
+            "value" : "强制安全停留"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "強制安全停留點"
+            "value" : "強制安全停留"
           }
         }
       }
@@ -13573,7 +14290,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手動建立"
+            "value" : "手動輸入"
           }
         }
       }
@@ -13853,13 +14570,13 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kedalaman plafon dekompresi maksimum"
+            "value" : "Plafon maks."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ceiling Massimo"
+            "value" : "Quota max"
           }
         },
         "ja" : {
@@ -13877,13 +14594,13 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kedalaman siling dekompresi maksimum"
+            "value" : "Siling maks."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maximale Ceiling"
+            "value" : "Max. decoplafond"
           }
         },
         "pt-PT" : {
@@ -13907,13 +14624,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最深减压天花板"
+            "value" : "最大减压上限"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最深減壓天花板"
+            "value" : "最大減壓上限"
           }
         }
       }
@@ -13984,7 +14701,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최대 깊이"
+            "value" : "최대 수심"
           }
         },
         "ms" : {
@@ -14044,7 +14761,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Μέγιστο βάθος: %.1f μέτρα"
+            "value" : "Μέγιστο βάθος: %.1f μ."
           }
         },
         "en" : {
@@ -14098,7 +14815,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최대 깊이: %.1f미터"
+            "value" : "최대 수심: %.1f m"
           }
         },
         "ms" : {
@@ -14122,13 +14839,13 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ความลึกสูงสุด: %.1f เมตร"
+            "value" : "ความลึกสูงสุด: %.1f ม."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Độ sâu tối đa: %.1f mét"
+            "value" : "Độ sâu tối đa: %.1f m"
           }
         },
         "zh-Hans" : {
@@ -14151,7 +14868,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Max. Tiefe: %@"
+            "value" : "Maximale Tiefe: %@"
           }
         },
         "el" : {
@@ -14193,7 +14910,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kedalaman Maks: %@"
+            "value" : "Kedalaman maks.: %@"
           }
         },
         "it" : {
@@ -14217,7 +14934,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kedalaman Maks: %@"
+            "value" : "Kedalaman maks.: %@"
           }
         },
         "nl" : {
@@ -14430,13 +15147,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最小深度"
+            "value" : "最小水深"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최소 깊이"
+            "value" : "최소 수심"
           }
         },
         "ms" : {
@@ -14585,19 +15302,128 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最短免减压时间"
+            "value" : "最短免停留极限"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最短免減壓時間"
+            "value" : "最短免停留極限"
           }
         }
       }
     },
     "mm" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mm"
+          }
+        }
+      }
     },
     "Moderate" : {
       "localizations" : {
@@ -14789,7 +15615,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monat"
+            "value" : "Maand"
           }
         },
         "pt-PT" : {
@@ -15268,13 +16094,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高氧"
+            "value" : "Nitrox（高氧）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高氧"
+            "value" : "Nitrox（高氧）"
           }
         }
       }
@@ -15339,13 +16165,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ナイトロックス O₂：%dパーセント"
+            "value" : "ナイトロックス O₂：%d%%"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "나이트록스 O₂: %d퍼센트"
+            "value" : "나이트록스 O₂: %d%%"
           }
         },
         "ms" : {
@@ -15381,13 +16207,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高氧空气 O₂：%d%%"
+            "value" : "Nitrox O₂：%d%%"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高氧空氣 O₂：%d%%"
+            "value" : "Nitrox O₂：%d%%"
           }
         }
       }
@@ -15516,7 +16342,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NDL"
+            "value" : "Χωρίς αποσυμπίεση / No deco"
           }
         },
         "en" : {
@@ -15540,25 +16366,25 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sans palier"
+            "value" : "Sans décompression / No deco"
           }
         },
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NDL"
+            "value" : "Bez dekompresije / No deco"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NDL"
+            "value" : "No Deco / Tanpa dekompresi"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No-deco"
+            "value" : "No deco"
           }
         },
         "ja" : {
@@ -15576,7 +16402,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NDL"
+            "value" : "No Deco / Tanpa dekompresi"
           }
         },
         "nl" : {
@@ -15594,13 +16420,13 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NDL"
+            "value" : "No Deco / ไม่มีดีโก้"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NDL"
+            "value" : "No Deco / Không deco"
           }
         },
         "zh-Hans" : {
@@ -15720,13 +16546,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未选取潜水日志"
+            "value" : "未选择潜水"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未選取潛水日誌"
+            "value" : "未選取潛水"
           }
         }
       }
@@ -16131,7 +16957,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GPSなしのダイビングポイント"
+            "value" : "GPS座標なしのポイント"
           }
         },
         "ko" : {
@@ -16551,13 +17377,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No registrado"
+            "value" : "Sin registrar"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non enregistré"
+            "value" : "Non enregistrée"
           }
         },
         "hr" : {
@@ -18008,7 +18834,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Αμπώτιδα"
+            "value" : "Άμπωτη"
           }
         },
         "en" : {
@@ -19908,16 +20734,234 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "大浪"
+            "value" : "洶湧 / 大浪"
           }
         }
       }
     },
     "S63 (8.6L)" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63（8.6L）"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63（8.6L）"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S63 (8.6L)"
+          }
+        }
+      }
     },
     "S80 (12L)" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S80 (12L)"
+          }
+        }
+      }
     },
     "Safety Stop" : {
       "extractionState" : "stale",
@@ -19925,13 +20969,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sicherheitshalt"
+            "value" : "Sicherheitsstopp"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ασφαλή στάση"
+            "value" : "Στάση Ασφαλείας"
           }
         },
         "en" : {
@@ -19955,19 +20999,19 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Arrêt de sécurité"
+            "value" : "Palier de sécurité"
           }
         },
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sigurnosni stoj"
+            "value" : "Sigurnosno zaustavljanje"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Perhentian keselamatan"
+            "value" : "Safety stop"
           }
         },
         "it" : {
@@ -19985,19 +21029,19 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "안전 스톱"
+            "value" : "안전 정지"
           }
         },
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Perhentian keselamatan"
+            "value" : "Safety stop"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Veiligheid stop"
+            "value" : "Veiligheidsstop"
           }
         },
         "pt-PT" : {
@@ -20009,7 +21053,7 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "หยุดความปลอดภัย"
+            "value" : "เซฟตี้สต็อป"
           }
         },
         "vi" : {
@@ -20037,7 +21081,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der Sicherheitsstopp ist jetzt obligatorisch: Die Aufstiegsgeschwindigkeit blieb 10 Sekunden lang über 10 m/min (32,8 ft/min)."
+            "value" : "Der Sicherheitsstopp ist jetzt obligatorisch: Die Aufstiegsrate blieb 10 Sekunden lang über 10 m/min (32,8 ft/min)."
           }
         },
         "el" : {
@@ -20091,19 +21135,19 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "セーフティストップが強制になりました：浮上速度が10秒間10 m/分（32.8 ft/分）を超えたままでした。"
+            "value" : "セーフティストップが必須になりました：浮上速度が10秒間 10 m/分（32.8 ft/分）を超えていました。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "안전 정지가 필수로 전환되었습니다: 상승 속도가 10초 동안 10 m/분(32.8 ft/분)을 초과한 상태로 유지되었습니다."
+            "value" : "안전 정지가 필수로 바뀌었습니다: 상승 속도가 10초 동안 10 m/분(32.8 ft/분)을 초과한 상태였습니다."
           }
         },
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Safety stop menjadi wajib: kadar menaik kekal melebihi 10 m/min (32.8 ka/min) selama 10 saat."
+            "value" : "Safety stop menjadi wajib: kadar naik kekal melebihi 10 m/min (32.8 ka/min) selama 10 saat."
           }
         },
         "nl" : {
@@ -20127,19 +21171,19 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dừng an toàn trở thành bắt buộc: tốc độ nổi duy trì trên 10 m/phút (32,8 ft/phút) trong 10 giây."
+            "value" : "Dừng an toàn trở thành bắt buộc: tốc độ lên duy trì trên 10 m/phút (32,8 ft/phút) trong 10 giây."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "安全停留改为强制性：上升速度连续10秒超过10公尺/分(32.8英尺/分)。"
+            "value" : "安全停留改为强制：上升速率持续超过 10 米/分（32.8 英尺/分）达 10 秒。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "安全停留改為強制性：上升速度連續10秒超過10公尺/分(32.8英呎/分)。"
+            "value" : "安全停留改為強制：上升速率持續超過 10 公尺/分（32.8 英呎/分）達 10 秒。"
           }
         }
       }
@@ -20246,7 +21290,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "存储"
+            "value" : "保存"
           }
         },
         "zh-Hant" : {
@@ -20795,7 +21839,7 @@
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Água salgada"
+            "value" : "Água do mar"
           }
         },
         "th" : {
@@ -21991,7 +23035,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Marea muerta"
+            "value" : "Estoa"
           }
         },
         "fr" : {
@@ -22103,13 +23147,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Poco agitada"
+            "value" : "Poco agitado"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Calme"
+            "value" : "Peu agité"
           }
         },
         "hr" : {
@@ -22181,7 +23225,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "微浪"
+            "value" : "輕微"
           }
         }
       }
@@ -22339,7 +23383,7 @@
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Neke datoteke mogu sadržavati više zarona."
+            "value" : "Neke datoteke mogu sadržavati više urona."
           }
         },
         "id" : {
@@ -22375,7 +23419,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Soms bevatten bestanden meerdere duiken."
+            "value" : "Sommige bestanden kunnen meerdere duiken bevatten."
           }
         },
         "pt-PT" : {
@@ -22552,13 +23596,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Presión de inicio"
+            "value" : "Presión inicial"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pression de démarrage"
+            "value" : "Pression initiale"
           }
         },
         "hr" : {
@@ -22618,19 +23662,19 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Áp lực bắt đầu"
+            "value" : "Áp suất đầu"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "起始压力"
+            "value" : "初压"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "起始壓力"
+            "value" : "初壓"
           }
         }
       }
@@ -22736,13 +23780,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "起始压力：%.0f bar"
+            "value" : "初压：%.0f bar"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "起始壓力：%.0f bar"
+            "value" : "初壓：%.0f bar"
           }
         }
       }
@@ -22848,13 +23892,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "钢"
+            "value" : "钢瓶"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "鋼"
+            "value" : "鋼瓶"
           }
         }
       }
@@ -22966,7 +24010,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "強流"
+            "value" : "強"
           }
         }
       }
@@ -24440,7 +25484,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Temp."
+            "value" : "Wassertemp."
           }
         },
         "el" : {
@@ -24600,7 +25644,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Questa azione non può essere annullata."
+            "value" : "Questa azione non può essere anata."
           }
         },
         "ja" : {
@@ -25033,7 +26077,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L'saturation en azote tissulaire n'est pas encore disponible pour les plongées au trimix — il s'agit d'une limitation connue et non d'une erreur."
+            "value" : "La saturation en azote tissulaire n'est pas encore disponible pour les plongées au trimix — il s'agit d'une limitation connue, pas d'une erreur."
           }
         },
         "hr" : {
@@ -25057,7 +26101,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trimix（トリミックス）ダイビングの組織窒素量はまだ対応していません。これは既知の制限事項であり、エラーではありません。"
+            "value" : "Trimix（トリミックス）ダイビングの組織窒素負荷はまだ対応していません。これは既知の制限事項であり、エラーではありません。"
           }
         },
         "ko" : {
@@ -25093,19 +26137,19 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tải lượng nitơ trong mô chưa hỗ trợ cho các lượt lặn trimix — đây là giới hạn đã biết, không phải lỗi."
+            "value" : "Tải lượng nitơ trong mô chưa khả dụng cho các chuyến lặn trimix — đây là giới hạn đã biết, không phải lỗi."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trimix 混合气体潜水暂不支持组织氮气饱和度计算 — 此为已知限制而非错误。"
+            "value" : "Trimix 混合气体潜水暂不支持组织氮负荷计算 — 这是已知限制，不是错误。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trimix 混合氣體潛水暫不支援組織氮氣負荷計算 — 此為已知限制而非錯誤。"
+            "value" : "Trimix 混合氣體潛水暫不支援組織氮負荷計算 — 此為已知限制，非錯誤。"
           }
         }
       }
@@ -25265,7 +26309,7 @@
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dodirnite i povucite profil kako biste pregledali bilo koji trenutak ronjenja."
+            "value" : "Dodirnite i povucite profil kako biste pregledali bilo koji trenutak urona."
           }
         },
         "id" : {
@@ -25396,7 +26440,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trimix"
+            "value" : "トライミックス"
           }
         },
         "ko" : {
@@ -25438,13 +26482,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "混合气体"
+            "value" : "Trimix"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "混合氣體"
+            "value" : "Trimix"
           }
         }
       }
@@ -26256,7 +27300,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Version %@"
+            "value" : "Version %1$@"
           }
         },
         "en-GB" : {
@@ -26410,7 +27454,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "能見度"
+            "value" : "透明度"
           }
         },
         "ko" : {
@@ -26440,13 +27484,13 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ระดับความเห็น"
+            "value" : "ทัศนวิสัย"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Khả năng nhìn thấy"
+            "value" : "Tầm nhìn"
           }
         },
         "zh-Hans" : {
@@ -26511,7 +27555,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jarak pandang: %.1f m"
+            "value" : "Visibilitas: %.1f m"
           }
         },
         "it" : {
@@ -26535,7 +27579,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jarak penglihatan: %.1f m"
+            "value" : "Visibilitas: %.1f m"
           }
         },
         "nl" : {
@@ -26647,7 +27691,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keterlihatan: %@"
+            "value" : "Visibilitas: %@"
           }
         },
         "nl" : {
@@ -26735,7 +27779,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jarak pandang: Tidak tercatat"
+            "value" : "Visibilitas: Tidak tercatat"
           }
         },
         "it" : {
@@ -26759,7 +27803,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jarak penglihatan: Tidak direkodkan"
+            "value" : "Visibilitas: Tidak direkodkan"
           }
         },
         "nl" : {
@@ -27092,7 +28136,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "수온: %.1f도"
+            "value" : "수온: %.1f °C"
           }
         },
         "ms" : {
@@ -27536,13 +28580,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ウェイト"
+            "value" : "ウエイト"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "무게"
+            "value" : "웨이트"
           }
         },
         "ms" : {
@@ -27661,7 +28705,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Total Pemberat"
+            "value" : "Jumlah Pemberat"
           }
         },
         "nl" : {
@@ -27685,7 +28729,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tổng chì"
+            "value" : "Tổng trọng lượng chì"
           }
         },
         "zh-Hans" : {
@@ -27915,13 +28959,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "濕衣"
+            "value" : "潜水服 或 湿衣"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "防寒衣"
+            "value" : "防寒衣 / 濕式防寒衣"
           }
         }
       }
@@ -28016,7 +29060,7 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ความหนาของชุดลำน้ำ"
+            "value" : "ความหนาของชุดดำน้ำ"
           }
         },
         "vi" : {
@@ -28028,7 +29072,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "潜水服厚度"
+            "value" : "湿衣厚度"
           }
         },
         "zh-Hant" : {
