@@ -28,14 +28,18 @@ final class DiveSiteAnnotation: NSObject, MKAnnotation {
     var title: String?
     var subtitle: String?
 
-    init(dive: DiveLog) {
+    // ⚠️ 不在這裡用 String(localized:)：這是純 NSObject/MKAnnotation，沒有 SwiftUI
+    // Environment 可用，String(localized:) 讀系統 Locale，語言切換後不重開 App 會
+    // 殘留舊語言。改由呼叫端（DiveMapRepresentable，有 languageManager）把已解析好
+    // 的字串傳進來。
+    init(dive: DiveLog, unknownLocationText: String) {
         self.dive       = dive
         self.coordinate = CLLocationCoordinate2D(
             latitude:  dive.latitude  ?? 0,
             longitude: dive.longitude ?? 0
         )
         self.title    = dive.location.isEmpty
-            ? String(localized: "Unknown Location")
+            ? unknownLocationText
             : dive.location
         // v1.2 #4：非 SwiftUI View，不能用 @AppStorage，直接讀同一個 UserDefaults key。
         let unitSystem = UnitSystem(rawValue: UserDefaults.standard.string(forKey: UnitSystem.storageKey) ?? "") ?? .metric

@@ -12,11 +12,16 @@ struct DiveRowView: View {
     // v1.2 #4：公制／英制單位系統，儲存值永遠是公制，這裡只負責顯示層換算。
     @AppStorage(UnitSystem.storageKey) private var unitSystem = UnitSystem.metric
 
+    // ⚠️ languageManager.localized(_:) 而非 String(localized:)：這裡回傳的是 String
+    // （餵給 accessibility label 等），String(localized:) 讀系統 Locale，語言切換後
+    // 不重開 App 會殘留舊語言，同 DiveSiteSheetView 那個 bug。
+    @Environment(AppLanguageManager.self) private var languageManager
+
     // MARK: - Computed properties
 
     var locationText: String {
         dive.location.isEmpty
-            ? String(localized: "Unknown Location")
+            ? languageManager.localized("Unknown Location")
             : dive.location
     }
 
@@ -176,9 +181,9 @@ struct DiveRowView: View {
     private func gasMixDisplayName(_ json: String) -> String {
         guard let data = json.data(using: .utf8),
               let gasMix = try? JSONDecoder().decode(GasMix.self, from: data) else {
-            return String(localized: "Air")
+            return languageManager.localized("Air")
         }
-        return gasMix.localizedDisplayName
+        return gasMix.localizedDisplayName(languageManager)
     }
 }
 

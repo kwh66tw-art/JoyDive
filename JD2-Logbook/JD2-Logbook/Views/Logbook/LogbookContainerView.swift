@@ -44,8 +44,8 @@ struct LogbookContainerView: View {
                     }
                     .accessibilityLabel(
                         viewMode == .list
-                            ? String(localized: "Switch to Calendar View")
-                            : String(localized: "Switch to List View")
+                            ? languageManager.localized("Switch to Calendar View")
+                            : languageManager.localized("Switch to List View")
                     )
                 }
 
@@ -57,7 +57,7 @@ struct LogbookContainerView: View {
                         Image(systemName: "plus")
                             .imageScale(.medium)
                     }
-                    .accessibilityLabel(String(localized: "Add New Dive"))
+                    .accessibilityLabel(languageManager.localized("Add New Dive"))
                 }
             }
             // 全域 NavigationDestination：List 和 Calendar 共用

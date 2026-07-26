@@ -76,6 +76,8 @@ struct DiveMapRepresentable: UIViewRepresentable {
     @Binding var recenterCoordinate: CLLocationCoordinate2D?
     var onAnnotationTapped: (DiveLog) -> Void
 
+    @Environment(AppLanguageManager.self) private var languageManager
+
     func makeCoordinator() -> DiveMapCoordinator {
         DiveMapCoordinator(onAnnotationTapped: onAnnotationTapped)
     }
@@ -102,6 +104,8 @@ struct DiveMapRepresentable: NSViewRepresentable {
     /// v1.1 #11：recenter 按鈕觸發的目標座標；套用後由 _updateMapView 清空。
     @Binding var recenterCoordinate: CLLocationCoordinate2D?
     var onAnnotationTapped: (DiveLog) -> Void
+
+    @Environment(AppLanguageManager.self) private var languageManager
 
     func makeCoordinator() -> DiveMapCoordinator {
         DiveMapCoordinator(onAnnotationTapped: onAnnotationTapped)
@@ -178,7 +182,7 @@ private extension DiveMapRepresentable {
         for annotation in existing {
             if let newDive = dives.first(where: { $0.persistentModelID == annotation.dive.persistentModelID }) {
                 let newTitle = newDive.location.isEmpty
-                    ? String(localized: "Unknown Location") : newDive.location
+                    ? languageManager.localized("Unknown Location") : newDive.location
                 if annotation.title != newTitle { annotation.title = newTitle }
                 // v1.2 #4：非 SwiftUI View，不能用 @AppStorage，直接讀同一個 UserDefaults key。
                 let unitSystem = UnitSystem(rawValue: UserDefaults.standard.string(forKey: UnitSystem.storageKey) ?? "") ?? .metric
@@ -198,9 +202,10 @@ private extension DiveMapRepresentable {
                 .compactMap { $0 as? DiveSiteAnnotation }
                 .map { $0.dive.persistentModelID }
         )
+        let unknownLocationText = languageManager.localized("Unknown Location")
         let toAdd = dives
             .filter { !currentIDs.contains($0.persistentModelID) }
-            .map    { DiveSiteAnnotation(dive: $0) }
+            .map    { DiveSiteAnnotation(dive: $0, unknownLocationText: unknownLocationText) }
 
         mapView.addAnnotations(toAdd)
 

@@ -31,6 +31,11 @@ struct DiveAnalysisView: View {
     // v1.2 #4：公制／英制單位系統，儲存值永遠是公制，這裡只負責顯示層換算。
     @AppStorage(UnitSystem.storageKey) private var unitSystem = UnitSystem.metric
 
+    // v1.2 #17：warningTitle/warningDetail 原本用 String(localized:)（讀系統
+    // Locale，語言切換後不重開 App 會殘留舊語言），改吃 languageManager.localized(_:)。
+    // 目前這段被 showWarningEvents=false 藏起來，先修正避免功能重開時繼承舊 bug。
+    @Environment(AppLanguageManager.self) private var languageManager
+
     @State private var replay = DiveReplayEngine.ReplayResult()
     @State private var selectedIndex: Int?
 
@@ -216,10 +221,18 @@ struct DiveAnalysisView: View {
         // 使用者會覺得「文字大小格式不一樣」。改用固定不縮放的 `.footnote`——在最窄的
         // 支援機型（iPhone SE，5 欄等寬）下這個字級搭配目前最長的數值字串仍然放得下，
         // 不需要再靠縮放救援，確保每次都是同一個絕對字級。
+        //
+        // ⚠️ label 當時漏了同樣處理：沒設 lineLimit，某些語言的 label 翻譯偏長（例如
+        // 德文 "Deco-Ceiling / Decotiefe"、印尼文/馬來文/希臘文 "No Deco / ..." 這類
+        // 保留雙語的複合字串）在這個等寬窄欄位裡會折成兩行，撐高整列高度、跟數值行
+        // 對不齊。先加 `.lineLimit(1)` 讓過長的 label 用省略號截斷、不折行，維持列高
+        // 一致；翻譯內容本身是否要縮短（跟數值一樣改成單一絕對字級或改語意）留給
+        // 翻譯校對決定，這裡只處理版面不會壞掉。
         VStack(spacing: 3) {
             label
                 .font(.caption2)
                 .foregroundStyle(Color.accessibleSecondary)
+                .lineLimit(1)
             Text(verbatim: value)
                 .font(.footnote.weight(.semibold).monospacedDigit())
                 .foregroundStyle(accent.textColor)
@@ -295,17 +308,17 @@ struct DiveAnalysisView: View {
 
     private func warningTitle(_ kind: DiveReplayEngine.ReplayWarningKind) -> String {
         switch kind {
-        case .ascentRateExceeded:  return String(localized: "Ascent Rate Alert")
-        case .mandatorySafetyStop: return String(localized: "Mandatory Safety Stop")
+        case .ascentRateExceeded:  return languageManager.localized("Ascent Rate Alert")
+        case .mandatorySafetyStop: return languageManager.localized("Mandatory Safety Stop")
         }
     }
 
     private func warningDetail(_ kind: DiveReplayEngine.ReplayWarningKind) -> String {
         switch kind {
         case .ascentRateExceeded:
-            return String(localized: "Ascent rate exceeded 10 m/min (32.8 ft/min).")
+            return languageManager.localized("Ascent rate exceeded 10 m/min (32.8 ft/min).")
         case .mandatorySafetyStop:
-            return String(localized: "Safety stop became mandatory: ascent rate stayed above 10 m/min (32.8 ft/min) for 10 seconds.")
+            return languageManager.localized("Safety stop became mandatory: ascent rate stayed above 10 m/min (32.8 ft/min) for 10 seconds.")
         }
     }
 

@@ -41,18 +41,18 @@ struct DiveLogDetailView: View {
 
     private var environmentText: String {
         switch dive.environmentType {
-        case "freshwater": return String(localized: "Freshwater")
-        case "altitude":   return String(localized: "Altitude")
-        default:           return String(localized: "Seawater")
+        case "freshwater": return languageManager.localized("Freshwater")
+        case "altitude":   return languageManager.localized("Altitude")
+        default:           return languageManager.localized("Seawater")
         }
     }
 
     private var gasMixText: String {
         guard let data = dive.gasMixJSON.data(using: .utf8),
               let gas = try? JSONDecoder().decode(GasMix.self, from: data) else {
-            return String(localized: "Air")
+            return languageManager.localized("Air")
         }
-        return gas.localizedDisplayName
+        return gas.localizedDisplayName(languageManager)
     }
 
     private var coordinatesText: String? {
@@ -208,7 +208,7 @@ struct DiveLogDetailView: View {
             let extras = dive.importExtras
             if !extras.isEmpty {
                 Section {
-                    DisclosureGroup(String(localized: "Raw Import Data")) {
+                    DisclosureGroup(languageManager.localized("Raw Import Data")) {
                         ForEach(extras.keys.sorted(), id: \.self) { key in
                             DetailRow(icon: "shippingbox", label: importExtraKeyLabel(key), value: extras[key] ?? "")
                         }
@@ -233,7 +233,7 @@ struct DiveLogDetailView: View {
                 } label: {
                     Image(systemName: "trash")
                 }
-                .accessibilityLabel(String(localized: "Delete Dive"))
+                .accessibilityLabel(languageManager.localized("Delete Dive"))
             }
             // ── Edit 按鈕 ────────────────────────────────────
             ToolbarItem(placement: .primaryAction) {
@@ -242,17 +242,17 @@ struct DiveLogDetailView: View {
                 } label: {
                     Text("Edit")
                 }
-                .accessibilityLabel(String(localized: "Edit Dive"))
+                .accessibilityLabel(languageManager.localized("Edit Dive"))
             }
         }
         // ── 刪除確認 ──────────────────────────────────────────
         .confirmationDialog(
-            String(localized: "Delete this dive log?"),
+            languageManager.localized("Delete this dive log?"),
             isPresented: $showDeleteConfirm,
             titleVisibility: .visible
         ) {
-            Button(String(localized: "Delete"), role: .destructive) { deleteDive() }
-            Button(String(localized: "Cancel"), role: .cancel) { }
+            Button(languageManager.localized("Delete"), role: .destructive) { deleteDive() }
+            Button(languageManager.localized("Cancel"), role: .cancel) { }
         } message: {
             Text("This action cannot be undone.")
         }
@@ -272,7 +272,7 @@ struct DiveLogDetailView: View {
                     .foregroundStyle(.tint)
                     .accessibilityHidden(true)   // 裝飾性圖示，避免 VoiceOver 讀出無意義 label
                 Text(dive.location.isEmpty
-                     ? String(localized: "Unknown Location")
+                     ? languageManager.localized("Unknown Location")
                      : dive.location)
                     .font(.title3.bold())
                     .lineLimit(2)
@@ -355,30 +355,30 @@ struct DiveLogDetailView: View {
 
     private func weatherDisplayName(_ raw: String) -> String {
         switch raw.lowercased() {
-        case "sunny":  return String(localized: "Sunny")
-        case "cloudy": return String(localized: "Cloudy")
-        case "rainy":  return String(localized: "Rainy")
-        case "clear":  return String(localized: "Clear")
+        case "sunny":  return languageManager.localized("Sunny")
+        case "cloudy": return languageManager.localized("Cloudy")
+        case "rainy":  return languageManager.localized("Rainy")
+        case "clear":  return languageManager.localized("Clear")
         default:       return raw
         }
     }
 
     private func surfaceConditionDisplayName(_ raw: String) -> String {
         switch raw.lowercased() {
-        case "calm":     return String(localized: "Calm")
-        case "slight":   return String(localized: "Slight")
-        case "moderate": return String(localized: "Moderate")
-        case "rough":    return String(localized: "Rough")
+        case "calm":     return languageManager.localized("Calm")
+        case "slight":   return languageManager.localized("Slight")
+        case "moderate": return languageManager.localized("Moderate")
+        case "rough":    return languageManager.localized("Rough")
         default:         return raw
         }
     }
 
     private func waterFlowDisplayName(_ raw: String) -> String {
         switch raw.lowercased() {
-        case "none":     return String(localized: "None")
-        case "slight":   return String(localized: "Slight")
-        case "moderate": return String(localized: "Moderate")
-        case "strong":   return String(localized: "Strong")
+        case "none":     return languageManager.localized("None")
+        case "slight":   return languageManager.localized("Slight")
+        case "moderate": return languageManager.localized("Moderate")
+        case "strong":   return languageManager.localized("Strong")
         default:         return raw
         }
     }
@@ -390,8 +390,8 @@ struct DiveLogDetailView: View {
 
     private func cylinderMaterialDisplayName(_ raw: String) -> String {
         switch raw.lowercased() {
-        case "aluminum": return String(localized: "Aluminum")
-        case "steel":    return String(localized: "Steel")
+        case "aluminum": return languageManager.localized("Aluminum")
+        case "steel":    return languageManager.localized("Steel")
         default:         return raw
         }
     }
@@ -399,12 +399,12 @@ struct DiveLogDetailView: View {
     /// importExtrasJSON 的 key（英文，見 DiveLogImporter.swift 各 parser）→ 顯示用標籤
     private func importExtraKeyLabel(_ key: String) -> String {
         switch key {
-        case "buddy":          return String(localized: "Buddy")
-        case "tags":           return String(localized: "Tags")
-        case "diveNumber":     return String(localized: "Dive Number")
-        case "deviceModel":    return String(localized: "Device Model")
-        case "deviceSerial":   return String(localized: "Device Serial")
-        case "deviceFirmware": return String(localized: "Device Firmware")
+        case "buddy":          return languageManager.localized("Buddy")
+        case "tags":           return languageManager.localized("Tags")
+        case "diveNumber":     return languageManager.localized("Dive Number")
+        case "deviceModel":    return languageManager.localized("Device Model")
+        case "deviceSerial":   return languageManager.localized("Device Serial")
+        case "deviceFirmware": return languageManager.localized("Device Firmware")
         default:               return key
         }
     }

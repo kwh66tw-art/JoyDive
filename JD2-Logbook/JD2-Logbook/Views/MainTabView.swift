@@ -208,7 +208,7 @@ private struct MacLogbookSplitView: View {
                             Button { showNewDiveSheet = true } label: {
                                 Image(systemName: "plus")
                             }
-                            .help(String(localized: "Add New Dive"))
+                            .help(languageManager.localized("Add New Dive"))
                         }
                     }
                 }
@@ -248,13 +248,13 @@ private struct MacLogbookSplitView: View {
                                     Image(systemName: viewMode == .list ? "calendar" : "list.bullet")
                                 }
                                 .help(viewMode == .list
-                                      ? String(localized: "Switch to Calendar View")
-                                      : String(localized: "Switch to List View"))
+                                      ? languageManager.localized("Switch to Calendar View")
+                                      : languageManager.localized("Switch to List View"))
 
                                 Button { showNewDiveSheet = true } label: {
                                     Image(systemName: "plus")
                                 }
-                                .help(String(localized: "Add New Dive"))
+                                .help(languageManager.localized("Add New Dive"))
                             }
                         }
                     }

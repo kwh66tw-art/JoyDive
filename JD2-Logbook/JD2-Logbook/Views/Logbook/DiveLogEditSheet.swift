@@ -215,7 +215,7 @@ struct DiveLogEditSheet: View {
                 Section(header: Text("Dive Data & Time")) {
                     // 潛水時間（分鐘）
                     HStack {
-                        Text(String(localized: "Dive Time"))
+                        Text(languageManager.localized("Dive Time"))
                             .foregroundStyle(.primary)
                         Spacer()
                         TextField(String("45"), value: $durationMinutes,
@@ -232,19 +232,19 @@ struct DiveLogEditSheet: View {
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: String(localized: "Duration: %d minutes"), durationMinutes)
+                        String(format: languageManager.localized("Duration: %d minutes"), durationMinutes)
                     )
 
                     // 入水時間（可編輯，日期 + 時間）
                     DatePicker(
-                        String(localized: "Entry Time"),
+                        languageManager.localized("Entry Time"),
                         selection: $entryTime,
                         displayedComponents: [.date, .hourAndMinute]
                     )
 
                     // 出水時間（自動計算，唯讀）
                     HStack {
-                        Text(String(localized: "Exit Time"))
+                        Text(languageManager.localized("Exit Time"))
                             .foregroundStyle(.primary)
                         Spacer()
                         if let exit = Calendar.current.date(
@@ -280,7 +280,7 @@ struct DiveLogEditSheet: View {
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: String(localized: "Max Depth: %@"), unitSystem.formatDepth(maxDepth))
+                        String(format: languageManager.localized("Max Depth: %@"), unitSystem.formatDepth(maxDepth))
                     )
 
                     // 水溫
@@ -302,14 +302,14 @@ struct DiveLogEditSheet: View {
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: String(localized: "Water Temperature: %@"),
+                        String(format: languageManager.localized("Water Temperature: %@"),
                                unitSystem.formatTemperature(waterTemperature))
                     )
                 }
 
                 // ── 氣體混合（Gas Mix 配置在此）─────────────
                 Section(header: Text("Gas Mix")) {
-                    Picker(String(localized: "Gas"), selection: $gasMixType) {
+                    Picker(languageManager.localized("Gas"), selection: $gasMixType) {
                         ForEach(GasMixPickerType.allCases) { type in
                             Text(LocalizedStringKey(type.rawValue)).tag(type)
                         }
@@ -335,7 +335,7 @@ struct DiveLogEditSheet: View {
                         }
                         .accessibilityElement(children: .combine)
                         .accessibilityLabel(
-                            String(format: String(localized: "Nitrox O2: %d percent"),
+                            String(format: languageManager.localized("Nitrox O2: %d percent"),
                                    Int(nitroxO2Percent))
                         )
                     }
@@ -345,15 +345,15 @@ struct DiveLogEditSheet: View {
                 // BLOCK 3: 環境 (Environment)
                 // ═════════════════════════════════════════════════════════
                 Section(header: Text("Conditions")) {
-                    Picker(String(localized: "Water Type"), selection: $environmentType) {
+                    Picker(languageManager.localized("Water Type"), selection: $environmentType) {
                         Text("Seawater").tag("seawater")
                         Text("Freshwater").tag("freshwater")
                         Text("Altitude").tag("altitude")
                     }
 
                     // 天氣（nil = 未記錄）
-                    Picker(String(localized: "Weather"), selection: $weather) {
-                        Text(String(localized: "Not Recorded")).tag(String?.none)
+                    Picker(languageManager.localized("Weather"), selection: $weather) {
+                        Text(languageManager.localized("Not Recorded")).tag(String?.none)
                         Text(LocalizedStringKey("Sunny")).tag(String?.some("sunny"))
                         Text(LocalizedStringKey("Cloudy")).tag(String?.some("cloudy"))
                         Text(LocalizedStringKey("Rainy")).tag(String?.some("rainy"))
@@ -362,7 +362,7 @@ struct DiveLogEditSheet: View {
 
                     // 氣溫（nil = 未記錄）
                     HStack {
-                        Text(String(localized: "Air Temperature"))
+                        Text(languageManager.localized("Air Temperature"))
                             .foregroundStyle(.primary)
                         Spacer()
                         TextField(String("–"),
@@ -381,13 +381,13 @@ struct DiveLogEditSheet: View {
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
                         airTemperature.map {
-                            String(format: String(localized: "Air Temperature: %@"), unitSystem.formatTemperature($0))
-                        } ?? String(localized: "Air Temperature: Not recorded")
+                            String(format: languageManager.localized("Air Temperature: %@"), unitSystem.formatTemperature($0))
+                        } ?? languageManager.localized("Air Temperature: Not recorded")
                     )
 
                     // 水面狀況（nil = 未記錄）
-                    Picker(String(localized: "Surface Condition"), selection: $surfaceCondition) {
-                        Text(String(localized: "Not Recorded")).tag(String?.none)
+                    Picker(languageManager.localized("Surface Condition"), selection: $surfaceCondition) {
+                        Text(languageManager.localized("Not Recorded")).tag(String?.none)
                         Text(LocalizedStringKey("Calm")).tag(String?.some("calm"))
                         Text(LocalizedStringKey("Slight")).tag(String?.some("slight"))
                         Text(LocalizedStringKey("Moderate")).tag(String?.some("moderate"))
@@ -395,8 +395,8 @@ struct DiveLogEditSheet: View {
                     }
 
                     // 水流（nil = 未記錄）
-                    Picker(String(localized: "Water Flow"), selection: $waterflow) {
-                        Text(String(localized: "Not Recorded")).tag(String?.none)
+                    Picker(languageManager.localized("Water Flow"), selection: $waterflow) {
+                        Text(languageManager.localized("Not Recorded")).tag(String?.none)
                         Text(LocalizedStringKey("None")).tag(String?.some("none"))
                         Text(LocalizedStringKey("Slight")).tag(String?.some("slight"))
                         Text(LocalizedStringKey("Moderate")).tag(String?.some("moderate"))
@@ -405,7 +405,7 @@ struct DiveLogEditSheet: View {
 
                     // 能見度（nil = 未記錄）
                     HStack {
-                        Text(String(localized: "Visibility"))
+                        Text(languageManager.localized("Visibility"))
                             .foregroundStyle(.primary)
                         Spacer()
                         TextField(String("–"),
@@ -424,8 +424,8 @@ struct DiveLogEditSheet: View {
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
                         visibility.map {
-                            String(format: String(localized: "Visibility: %@"), unitSystem.formatDepth($0))
-                        } ?? String(localized: "Visibility: Not recorded")
+                            String(format: languageManager.localized("Visibility: %@"), unitSystem.formatDepth($0))
+                        } ?? languageManager.localized("Visibility: Not recorded")
                     )
                 }
 
@@ -435,7 +435,7 @@ struct DiveLogEditSheet: View {
                 Section(header: Text("Equipment")) {
                     // 防寒衣厚度（只輸入數字，mm 單位固定）
                     HStack {
-                        Text(String(localized: "Wetsuit"))
+                        Text(languageManager.localized("Wetsuit"))
                             .foregroundStyle(.primary)
                         Spacer()
                         TextField(String(""), text: $wetsuitThickness)
@@ -453,11 +453,11 @@ struct DiveLogEditSheet: View {
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .combine)
-                    .accessibilityLabel(String(localized: "Wetsuit"))
+                    .accessibilityLabel(languageManager.localized("Wetsuit"))
 
                     // 配重總重量
                     HStack {
-                        Text(String(localized: "Weight"))
+                        Text(languageManager.localized("Weight"))
                             .foregroundStyle(.primary)
                         Spacer()
                         TextField(String("0"), value: $weightTotal,
@@ -473,17 +473,17 @@ struct DiveLogEditSheet: View {
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: String(localized: "Weight: %.1f kilograms"), weightTotal ?? 0)
+                        String(format: languageManager.localized("Weight: %.1f kilograms"), weightTotal ?? 0)
                     )
 
                     // 氣瓶材質
-                    Picker(String(localized: "Cylinder Material"), selection: $cylinderMaterial) {
+                    Picker(languageManager.localized("Cylinder Material"), selection: $cylinderMaterial) {
                         Text(LocalizedStringKey("Aluminum")).tag("aluminum")
                         Text(LocalizedStringKey("Steel")).tag("steel")
                     }
 
                     // 氣瓶規格（預定義選項）
-                    Picker(String(localized: "Cylinder Size"), selection: $cylinderSize) {
+                    Picker(languageManager.localized("Cylinder Size"), selection: $cylinderSize) {
                         Text("S80 (12L)").tag("S80(12L)")
                         Text("S63 (8.6L)").tag("S63(8.6L)")
                         Text("AL100 (14L)").tag("AL100(14L)")
@@ -493,7 +493,7 @@ struct DiveLogEditSheet: View {
 
                     // 氣瓶起始壓力（預設 200 bar）
                     HStack {
-                        Text(String(localized: "Start Pressure"))
+                        Text(languageManager.localized("Start Pressure"))
                             .foregroundStyle(.primary)
                         Spacer()
                         TextField(String("200"), value: $cylinderStartPressure,
@@ -509,12 +509,12 @@ struct DiveLogEditSheet: View {
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: String(localized: "Start Pressure: %.0f bar"), cylinderStartPressure ?? 0)
+                        String(format: languageManager.localized("Start Pressure: %.0f bar"), cylinderStartPressure ?? 0)
                     )
 
                     // 氣瓶結束壓力（預設 50 bar）
                     HStack {
-                        Text(String(localized: "End Pressure"))
+                        Text(languageManager.localized("End Pressure"))
                             .foregroundStyle(.primary)
                         Spacer()
                         TextField(String("50"), value: $cylinderEndPressure,
@@ -530,7 +530,7 @@ struct DiveLogEditSheet: View {
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(localized: "End Pressure")
+                        languageManager.localized("End Pressure")
                     )
                 }
 
@@ -539,7 +539,7 @@ struct DiveLogEditSheet: View {
                 // ═════════════════════════════════════════════════════════
                 Section(header: Text("Basic Info")) {
                     // 日期改由「入水時間」的 date+time picker 統一選取
-                    TextField(String(localized: "Dive Site"), text: $location)
+                    TextField(languageManager.localized("Dive Site"), text: $location)
                         .textContentType(.addressCity)
                         .autocorrectionDisabled()
                         .focused($focusedField, equals: .location)
@@ -551,7 +551,7 @@ struct DiveLogEditSheet: View {
                 Section(header: Text("Dive Notes")) {
                     TextEditor(text: $notes)
                         .frame(minHeight: 80, maxHeight: 200)
-                        .accessibilityLabel(String(localized: "Notes"))
+                        .accessibilityLabel(languageManager.localized("Notes"))
                         .focused($focusedField, equals: .notes)
                 }
             }
@@ -562,10 +562,10 @@ struct DiveLogEditSheet: View {
             .formStyle(.grouped) // iOS 會自動呈現 Inset-Grouped 質感；macOS 原生分組表單
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(String(localized: "Cancel")) { dismiss() }
+                    Button(languageManager.localized("Cancel")) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(String(localized: "Save")) { save() }
+                    Button(languageManager.localized("Save")) { save() }
                         .disabled(!isSaveEnabled)
                         .fontWeight(.semibold)
                 }

@@ -152,8 +152,8 @@ struct MapView: View {
                         .foregroundStyle(.secondary)
                 }
                 .buttonStyle(.plain)
-                .help(String(localized: "Close"))
-                .accessibilityLabel(String(localized: "Close"))
+                .help(languageManager.localized("Close"))
+                .accessibilityLabel(languageManager.localized("Close"))
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
@@ -194,8 +194,8 @@ struct MapView: View {
         .buttonStyle(.plain) // 移除 macOS 預設按鈕外框/焦點環（半透明白圈）
         .accessibilityLabel(
             mapType == .standard
-                ? String(localized: "Switch to Hybrid Map")
-                : String(localized: "Switch to Standard Map")
+                ? languageManager.localized("Switch to Hybrid Map")
+                : languageManager.localized("Switch to Standard Map")
         )
     }
 
@@ -221,8 +221,8 @@ struct MapView: View {
                 .shadow(color: .black.opacity(0.15), radius: 4, x: 0, y: 2)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(String(localized: "Recenter on My Location"))
-        .accessibilityHint(isDenied ? String(localized: "Location Access Denied") : "")
+        .accessibilityLabel(languageManager.localized("Recenter on My Location"))
+        .accessibilityHint(isDenied ? languageManager.localized("Location Access Denied") : "")
     }
 
     private func openSystemLocationSettingsFromMap() {
@@ -244,7 +244,7 @@ struct MapView: View {
         VStack(spacing: 0) {
             ContentUnavailableView {
                 Label(
-                    String(localized: "No GPS Dive Sites"),
+                    languageManager.localized("No GPS Dive Sites"),
                     systemImage: "map.fill"
                 )
             } description: {

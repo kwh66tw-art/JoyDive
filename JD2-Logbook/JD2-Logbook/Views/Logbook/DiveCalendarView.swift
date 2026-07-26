@@ -6,6 +6,7 @@ import SwiftData
 
 struct DiveCalendarView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppLanguageManager.self) private var languageManager
     @Query(sort: \DiveLog.dateTime, order: .reverse) var allDives: [DiveLog]
     @State private var displayedMonth: Date = Calendar.current.startOfMonth(for: Date())
     @State private var selectedDate: Date? = Date() // 初始化為今天
@@ -239,7 +240,7 @@ struct DiveCalendarView: View {
                 }
                 .buttonStyle(.plain)
                 .disabled(currentYear <= 1980)
-                .accessibilityLabel(String(localized: "Previous year"))
+                .accessibilityLabel(languageManager.localized("Previous year"))
 
                 Spacer()
                 Text(verbatim: "\(currentYear)")
@@ -251,7 +252,7 @@ struct DiveCalendarView: View {
                 }
                 .buttonStyle(.plain)
                 .disabled(currentYear >= maxCalendarYear)
-                .accessibilityLabel(String(localized: "Next year"))
+                .accessibilityLabel(languageManager.localized("Next year"))
             }
 
             // ── 12 個月網格（3×4），當前月份高亮 ──────────────
@@ -304,7 +305,7 @@ struct DiveCalendarView: View {
                     #if !os(iOS)
                     .buttonStyle(.plain)
                     #endif
-                    .accessibilityLabel(String(localized: "Select year and month"))
+                    .accessibilityLabel(languageManager.localized("Select year and month"))
                     .popover(isPresented: $showDatePicker) {
                         yearMonthGridPicker
                             .presentationCompactAdaptation(.popover)
@@ -317,9 +318,9 @@ struct DiveCalendarView: View {
                     }
                     #if !os(iOS)
                     .buttonStyle(.borderless)
-                    .help(String(localized: "Jump to Today"))
+                    .help(languageManager.localized("Jump to Today"))
                     #endif
-                    .accessibilityLabel(String(localized: "Jump to Today"))
+                    .accessibilityLabel(languageManager.localized("Jump to Today"))
                 }
 
                 Spacer()

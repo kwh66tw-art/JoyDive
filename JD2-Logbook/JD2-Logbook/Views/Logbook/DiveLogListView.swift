@@ -6,6 +6,7 @@ import SwiftData
 
 struct DiveLogListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppLanguageManager.self) private var languageManager
     @Query(sort: \DiveLog.dateTime, order: .reverse) var dives: [DiveLog]
     @State private var searchText = ""
 
@@ -134,7 +135,7 @@ struct DiveLogListView: View {
                         HStack(spacing: 8) {
                             Image(systemName: "magnifyingglass")
                                 .foregroundStyle(.secondary)
-                            TextField(String(localized: "Search location…"), text: $searchText)
+                            TextField(languageManager.localized("Search location…"), text: $searchText)
                                 .textFieldStyle(.plain)
                             if !searchText.isEmpty {
                                 Button {

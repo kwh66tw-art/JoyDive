@@ -10329,13 +10329,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "快速"
+            "value" : "快组织"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "快速"
+            "value" : "快組織"
           }
         }
       }
@@ -23331,13 +23331,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缓慢"
+            "value" : "慢组织"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "緩慢"
+            "value" : "慢組織"
           }
         }
       }

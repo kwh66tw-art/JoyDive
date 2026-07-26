@@ -27,6 +27,14 @@ import FitFileParser   // roznet/FitFileParser — 封裝 Garmin 官方 C SDK Fi
 import DiveKit
 
 /// 匯入錯誤類型定義
+///
+/// ⚠️ 樣板文字改英文（2026-07-26）：`DiveImportKitAdapter.mapImportKitError` 把
+/// `DiveImportKit.DiveLogImportError`（家族層，已於 R-2026-07-25-DiveImportKit
+/// 錯誤訊息未本地化.md 修法 1 改成英文）轉成這個本地同名 enum，該檔案自己的註解
+/// 明講「訊息內容與 Kit errorDescription 一致」——但這裡的樣板當時沒有跟著改，
+/// 等於把 Kit 那邊已經修好的英文又蓋回舊的中文，這裡補上同步，維持跟 Kit 一致。
+/// 各解析器丟出的 detail/format 內容目前仍多為中文技術性描述（沿用 Kit 現況），
+/// 完整結構化本地化仍是家族層後續工作，不在這裡處理。
 enum DiveLogImportError: Error, LocalizedError {
     case fileNotFound(String)
     case invalidFormat(String)
@@ -38,17 +46,17 @@ enum DiveLogImportError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .fileNotFound(let path):
-            return "找不到檔案: \(path)"
+            return "File not found: \(path)"
         case .invalidFormat(let format):
-            return "無效的檔案格式: \(format)"
+            return "Invalid file format: \(format)"
         case .parsingFailed(let detail, let error):
-            return "解析失敗: \(detail)" + (error != nil ? " (\(error!))" : "")
+            return "Parsing failed: \(detail)" + (error != nil ? " (\(error!))" : "")
         case .unsupportedFormat(let format):
-            return "不支援的格式: \(format)"
+            return "Unsupported format: \(format)"
         case .corruptedData(let detail):
-            return "檔案已損壞: \(detail)"
+            return "File is corrupted: \(detail)"
         case .emptyFile:
-            return "空檔案"
+            return "Empty file"
         }
     }
 }

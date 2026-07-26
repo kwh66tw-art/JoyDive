@@ -128,8 +128,8 @@ struct SettingsView: View {
                     header: Text("Premium"),
                     footer: Text(
                         purchaseManager.isPremium
-                            ? String(localized: "Premium unlocked — Ads removed.")
-                            : String(localized: "One-time purchase. No subscription.\nRemove all ads.")
+                            ? languageManager.localized("Premium unlocked — Ads removed.")
+                            : languageManager.localized("One-time purchase. No subscription.\nRemove all ads.")
                     )
                 ) {
                     if purchaseManager.isPremium {
@@ -159,7 +159,7 @@ struct SettingsView: View {
                         }
                         .foregroundStyle(.primary)
                         .accessibilityLabel(
-                            String(format: String(localized: "Buy Premium for %@"),
+                            String(format: languageManager.localized("Buy Premium for %@"),
                                    purchaseManager.premiumPriceString)
                         )
 
@@ -220,7 +220,7 @@ struct SettingsView: View {
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: String(localized: "Version %@"), appVersion)
+                        String(format: languageManager.localized("Version %@"), appVersion)
                     )
 
                     NavigationLink {
@@ -332,7 +332,7 @@ struct SettingsView: View {
                 let data = try Data(contentsOf: url)
                 let (imported, skipped) = try DiveLogDatabase.shared.importFromJSON(data)
                 backupResultMessage = String(
-                    format: String(localized: "Imported %d dives, skipped %d duplicates."),
+                    format: languageManager.localized("Imported %d dives, skipped %d duplicates."),
                     imported, skipped
                 )
             } catch {
@@ -361,9 +361,9 @@ struct SettingsView: View {
             try await AppStore.sync()
             await purchaseManager.refreshPurchaseStatus()
             if purchaseManager.isPremium {
-                restoreAlertMessage = String(localized: "Premium restored successfully.")
+                restoreAlertMessage = languageManager.localized("Premium restored successfully.")
             } else {
-                restoreAlertMessage = String(localized: "No previous purchase found.")
+                restoreAlertMessage = languageManager.localized("No previous purchase found.")
             }
         } catch {
             restoreAlertMessage = error.localizedDescription
@@ -413,6 +413,7 @@ private struct LicensesView: View {
 struct PremiumUpgradeSheet: View {
     @State private var purchaseManager = PurchaseManager.shared
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppLanguageManager.self) private var languageManager
     @State private var showRestoreAlert    = false
     @State private var restoreAlertMessage = ""
 
@@ -440,8 +441,8 @@ struct PremiumUpgradeSheet: View {
                     PremiumFeatureRow(
                         icon: "nosign",
                         color: .red,
-                        title: String(localized: "Remove All Ads"),
-                        subtitle: String(localized: "Enjoy an uninterrupted dive log experience.")
+                        title: languageManager.localized("Remove All Ads"),
+                        subtitle: languageManager.localized("Enjoy an uninterrupted dive log experience.")
                     )
                 }
                 .padding(.horizontal, 24)
@@ -458,7 +459,7 @@ struct PremiumUpgradeSheet: View {
                                 ProgressView()
                                     .tint(.white)
                             } else {
-                                Text(String(format: String(localized: "Unlock for %@"),
+                                Text(String(format: languageManager.localized("Unlock for %@"),
                                            purchaseManager.premiumPriceString))
                                     .font(.headline)
                             }
@@ -470,7 +471,7 @@ struct PremiumUpgradeSheet: View {
                     .disabled(purchaseManager.isLoading)
                     .padding(.horizontal, 24)
 
-                    Button(String(localized: "Restore Purchase")) {
+                    Button(languageManager.localized("Restore Purchase")) {
                         Task {
                             do {
                                 try await AppStore.sync()
@@ -478,7 +479,7 @@ struct PremiumUpgradeSheet: View {
                                 if purchaseManager.isPremium {
                                     dismiss()
                                 } else {
-                                    restoreAlertMessage = String(localized: "No previous purchase found.")
+                                    restoreAlertMessage = languageManager.localized("No previous purchase found.")
                                     showRestoreAlert = true
                                 }
                             } catch {
@@ -498,7 +499,7 @@ struct PremiumUpgradeSheet: View {
             #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(String(localized: "Close")) { dismiss() }
+                    Button(languageManager.localized("Close")) { dismiss() }
                 }
             }
             .onChange(of: purchaseManager.isPremium) { _, isPremium in
