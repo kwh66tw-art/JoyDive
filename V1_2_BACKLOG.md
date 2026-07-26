@@ -35,15 +35,34 @@
 | 13 | 語系全審核 CSV 審閱結果已套用 | ✅ 完成（含一項架構建議記錄待後續） | 使用者提供翻譯團隊審閱過的 `JD2-Logbook_i18n_Completed_0725_rev02.csv`，已寫回 `Localizable.xcstrings`（24 個 key、209 個儲存格更新，含補齊先前 v1.2 這輪新增但僅英文的 stopgap key 之其餘語言翻譯）。編碼為 `utf-8-sig`，泰文/越南文變音符號抽查完整無亂碼。iOS + macOS build 皆通過。**翻譯團隊另附架構建議**：`%lld dive%@ imported`／`%lld skipped (duplicates)` 兩個動態數量字串，目前是 Swift 端算好 `""`/`"s"` 後綴塞進 `%2$@` 的手動 hack，建議改用 `.xcstrings` 原生「Vary by Plural」（`%#@variable@` 語意化格式＋各語言 Zero/One/Two/Few/Many/Other CLDR 規則）——**這項建議判斷正確但本次不動手**：這類多語言 plural 規則正常要靠 Xcode String Catalog 編輯器 UI 逐語言生成/驗證骨架（例如 `hr` 克羅埃西亞語有 one/few/many/other 四類，跟英文的二分完全不同），沒有 Xcode 介面驗證、純手刻 JSON 對 18 種語言逐一填對規則風險太高，可能填錯導致退回英文或編譯失敗。**留給有 Xcode 在手邊的人透過編輯器 UI 執行**，不建議之後也用純文字/腳本方式硬改；已寫成家族報告 `_JD2-family/reports/R-2026-07-25-多語系Vary_by_Plural規則需求.md`（含是否值得抽共用層的三個選項供總指揮評估），登錄進 `F-00-文件登錄表.md` |
 | 14 | 移除 `project.pbxproj` 的 `ar`（阿拉伯語）殭屍註冊 | ✅ 完成 | 使用者要求移除，查證 `Localizable.xcstrings` 裡完全沒有任何 `"ar"` 翻譯內容、也沒有 `ar.lproj` 資料夾——`ar` 只出現在 `project.pbxproj` 的 `knownRegions` 建置設定裡（疑似 Xcode 專案範本殘留，非刻意加入的語言支援），移除該行。iOS + macOS build 皆通過 |
 | 15 | 語系 CSV 追加審閱：僅輸出 v1.2 這輪新增的 key | ✅ 完成 | 使用者要求只給「上次定版送審後新增」的 key，避免重新審核已經審過的 260 個。用 `git show 65c3be1:.../Localizable.xcstrings`（v1.2 這輪開工前最後一次 commit，即上次送審後的基準狀態）跟目前版本做 key 集合差異比對，精確抓出 13 個新增 key（皆為這輪新增功能的翻譯字串：單位系統 accessibility label、Import 多潛水提示、trimix 說明文字、警示標記文案等），非用猜測/日期範圍框列。已交付 `JD2-Logbook_v1.2新增key_0725.csv` |
-| 16 | 語系全審核：rev05 套用 + 4 家 AI 交叉審核 + 資料損毀修復 | 🔄 完成，5 項待使用者裁定 | 套用 `..._260筆_0725_v2-rev05.csv`（115 key／432 儲存格）。用 4 份 AI 審核建議（`語系修正建議彙整.xlsx`，ms/ppl/op46/gem31p 四個分頁，591 筆建議，432 筆已被 rev05 涵蓋）交叉驗證，**發現並修復 rev05 本身帶進來的資料損毀**：3 處英文（源語言）格式參數字串損毀（如 `%@, %@` 的 en 值變成裸露的 `%2$`，會在畫面顯示亂碼或漏參數）、3 句德文/越南文長句被從中間截斷（只剩後半句）、1 格審核者的編輯備註（`it 維持 kg`）被誤存成正式翻譯值——皆已修復並用自動化腳本掃過全部 260 個 key 驗證格式參數與截斷情況，確認乾淨。另外套用 4 項可獨立驗證成立的建議（zh-Hans 用「设备」非「装置」、「条」非「笔」；hr「uron」與全 App 既有用法一致）。**5 項有疑慮/難以自行裁定，需使用者確認**（見下方詳列），已列出但未套用 |
+| 16 | 語系全審核：rev05 套用 + 4 家 AI 交叉審核 + 資料損毀修復 | ✅ 完成（3 項使用者裁定已套用） | 套用 `..._260筆_0725_v2-rev05.csv`（115 key／432 儲存格）。用 4 份 AI 審核建議（`語系修正建議彙整.xlsx`，ms/ppl/op46/gem31p 四個分頁，591 筆建議，432 筆已被 rev05 涵蓋）交叉驗證，**發現並修復 rev05 本身帶進來的資料損毀**：3 處英文（源語言）格式參數字串損毀（如 `%@, %@` 的 en 值變成裸露的 `%2$`，會在畫面顯示亂碼或漏參數）、3 句德文/越南文長句被從中間截斷（只剩後半句）、1 格審核者的編輯備註（`it 維持 kg`）被誤存成正式翻譯值——皆已修復並用自動化腳本掃過全部 260 個 key 驗證格式參數與截斷情況，確認乾淨。另外套用 4 項可獨立驗證成立的建議（zh-Hans 用「设备」非「装置」、「条」非「笔」；hr「uron」與全 App 既有用法一致）。**5 項待使用者裁定，已於 2026-07-26 由使用者裁定 3 項＋提供 `Translation_Review_Report.md`（見下方詳列），全數套用完畢，iOS + macOS build 皆通過** |
 
-### 待使用者裁定的翻譯疑慮（V1_2_BACKLOG #16）
+### 翻譯疑慮裁定紀錄（V1_2_BACKLOG #16，2026-07-26 完成套用）
 
-1. **"Min NDL"（zh-Hant/zh-Hans）**：3 個 AI 審核者都認為現有「最短免停留極限」不夠精確，但各自建議不同：ms 提「最低免停留極限」、op46 提「最小免減壓極限」、ppl 提「最低 NDL」（保留英文縮寫）。三個都有道理，需要你選一個或提供你偏好的版本。
-2. **Trimix 說明文字精簡（zh-Hant/zh-Hans）**：目前「Trimix 混合氣體潛水暫不支援組織氮負荷計算 — 此為已知限制，非錯誤。」，ppl 建議簡化成「Trimix 潛水暫不支援組織氮負荷計算——此為已知限制，並非錯誤。」（理由：Trimix 本身已含「混合氣」語意，「混合氣體」三字冗餘；破折號建議改全形）。這是風格取捨，不是錯誤，要不要簡化由你決定。
-3. **"Visibility"（id/ms 印尼文/馬來文）**：gem31p 建議把「Visibilitas」改成「Jarak pandang」(id)／「Jarak penglihatan」(ms)，理由是「其他 Visibility 相關字串已經這樣翻」——**這個理由查證後是假的**，App 裡目前完全沒有這兩個詞的既有用法。建議本身不一定錯（Visibilitas 確實像是外來語直接音譯，不一定是印尼文/馬來文潛水標準用語），但既然審核者提供的佐證是編造的，我對這條建議的可信度打了折扣，加上我對這兩個語言的母語判斷力有限，不敢自己裁定，需要你確認或找母語者看一下。
+1. **"Min NDL"（zh-Hant/zh-Hans）**：使用者裁定 →「最短 NDL」（兩個中文變體皆同一詞，因為是「最短」+ 英文縮寫的混合寫法，簡繁無差異）。原本 3 個 AI 審核者建議不同（ms「最低免停留極限」/op46「最小免減壓極限」/ppl「最低 NDL」），皆未採用。
+2. **Trimix 說明文字精簡（zh-Hant/zh-Hans）**：使用者裁定 → 移除冗餘的「混合氣體/混合气体」字樣，改為「Trimix 潛水暫不支援組織氮負荷計算 — 此為已知限制，非錯誤。」（zh-Hant）／「Trimix 潜水暂不支持组织氮负荷计算 — 这是已知限制，不是错误。」（zh-Hans），沿用半形" — "破折號（非 ppl 原建議的全形「——」）。**已核對其餘亞洲語系（ja/ko/th/vi）同一句翻譯**：這幾個語言原本就直接用「Trimix」一詞帶過、沒有「混合氣體」這類冗餘修飾語，不存在同樣問題，故不需要比照修改，只有 zh-Hant/zh-Hans 兩個中文變體受影響。
+3. **"Visibility"（id/ms 印尼文/馬來文）**：使用者提供專門委託的 `Translation_Review_Report.md`（校對重點含 id/ms 查證），裁定採用該報告建議 → id「Jarak pandang」／ms「Jarak penglihatan」（理由：PADI 教材與當地導潛慣用「視線距離」表達能見度，"Visibilitas" 是生硬音譯）。
 
-（其餘 462 筆審核建議中，432 筆已被 rev05 涵蓋、剩下的多為審核者自己資料損毀或建議本身有誤——如 ppl 對 `%lld dive%@ imported` 跟 `kg`(it) 的建議都是格式錯誤或誤存編輯備註，已核實駁回不採用，不影響上述 5 項）
+**該報告另外提出 6 項 id/ms 建議，一併評估後全數採用**（同批套用，2026-07-26）：
+- **Weight**（id/ms）：「Berat」→「Pemberat」——**已用 App 內既有字串驗證**：「Weight Total」「Weight: %.1f kilograms」兩個既有 key 的 id/ms 翻譯本來就已經用「Pemberat」，原本「Weight」單獨用「Berat」是既有的內部不一致，此次修正後統一。
+- **Ascent Rate Alert**（id/ms）：「Peringatan Laju Ascent」/「Amaran Kadar Ascent」→「Peringatan Kecepatan Naik」/「Amaran Kadar Naik」——**已用 App 內既有字串驗證**：同一支 App 的「Safety stop became mandatory...」句子已用「kecepatan naik」(id)／「kadar naik」(ms) 翻譯上升速度，原字串把「Ascent」原文直接混雜進印尼文/馬來文是既有的內部不一致，此次修正後統一。
+- **Wetsuit**（id/ms）：「Pakaian Menyelam」→「Wetsuit」——**已用 App 內既有字串驗證**：「Wetsuit Thickness」的 id/ms 翻譯本來就已經用「wetsuit」一詞（`Ketebalan wetsuit`），此次統一沿用英文專有名詞，不再用冗長的「Pakaian Menyelam」。
+- **Ceiling**（id/ms）：「Plafon dekompresi」/「Siling deko」→「Batas dekompresi」/「Had deko」——採用報告建議，理由是「Plafon」「Siling」在印尼文/馬來文字面上專指建築物天花板（false friend，非潛水減壓上限語境），App 內無既有對照字串可交叉驗證，屬於信任報告專業判斷的套用，非內部一致性修正。
+- **Cylinder Material**（id/ms）：「Material silinder」/「Bahan silinder」→「Bahan tabung」/「Bahan tangki」——採用報告建議（當地潛水圈慣用 tabung(id)/tangki(ms) 稱氣瓶，非 silinder），同樣屬信任報告專業判斷，App 內無既有對照可驗證。
+- **Cylinder Size**（id/ms）：「Ukuran silinder」→「Ukuran tabung」(id)／「Saiz tangki」(ms)——理由同上，信任報告專業判斷套用。
+
+**⚠️ 提醒**：後 3 項（Ceiling／Cylinder Material／Cylinder Size）屬於「信任報告專業判斷」而非「App 內部一致性驗證」，与前 3 項（Weight／Ascent Rate Alert／Wetsuit）的驗證強度不同——若日後有印尼文/馬來文母語潛水員可覆核，建議優先看這 3 個 key。
+
+以上共 18 個儲存格套用，`git diff --stat` 確認改動範圍精確對應（18 行變更），iOS + macOS build 皆通過。
+
+**2026-07-26 事後複查（使用者主動要求「再做一遍翻譯品質審核」）**：套用完 18 個儲存格後，沒有直接收尾，改用程式掃描全檔案找「這次改的詞，有沒有姊妹 key 忘記一起改」，抓出 **3 個真的漏改的姊妹 key**（都是同一批 18 個儲存格套用時，只改了 report 明確點名的 key，沒有連帶檢查同語意但不同 key 的其他出現位置）：
+- `Max Ceiling`（id/ms）：跟 `Ceiling` 同樣的「Plafon/Siling」false friend 問題，`Ceiling` 已修但 `Max Ceiling` 漏了 → 改為 `Batas maks.`(id)／`Had maks.`(ms)，跟 `Ceiling` 的新譯法一致。
+- `Ascent rate exceeded 10 m/min (32.8 ft/min).`（僅 id）：跟 `Ascent Rate Alert` 同樣的「Ascent 原文直接混雜進印尼文」問題，`Ascent Rate Alert` 已修但這句內文漏了 → `Laju ascent melebihi...` 改為 `Laju naik melebihi...`。（ms 版本 `Kadar menaik melebihi...` 本身沒有這個問題，不需要改。）
+- `Visibility: %.1f metres` / `Visibility: %@` / `Visibility: Not recorded`（id/ms，共 6 個儲存格）：跟裸 key `Visibility` 同樣用「Visibilitas」，這 3 個帶前綴/格式參數的姊妹 key 完全沒被檢查到，一樣改為 `Jarak pandang:`(id)／`Jarak penglihatan:`(ms) 開頭，格式參數（`%.1f m`／`%@`）位置與數量已用腳本核對與 en 版一致。
+
+修完後再次全檔案掃描確認：id/ms 已無殘留的 `silinder`／`Ascent`／`Plafon`／`Siling`／`Visibilitas`／`Pakaian Menyelam`；格式參數驗證器（同先前用於 rev05 損毀修復的邏輯）掃過全部 260 個 key，0 個問題。iOS + macOS build 再次皆通過。**累計本輪（#16 尾聲）共套用 27 個儲存格**（18 + 9），`git diff --stat` 確認為 27 行變更、無額外異動。**教訓記入 HANDOFF「陷阱提醒」**：改術語時要連帶 grep 同一詞在其他 key 的出現位置，不能只改報告明確點名的 key。
+
+（其餘 462 筆審核建議中，432 筆已被 rev05 涵蓋、剩下的多為審核者自己資料損毀或建議本身有誤——如 ppl 對 `%lld dive%@ imported` 跟 `kg`(it) 的建議都是格式錯誤或誤存編輯備註，已核實駁回不採用，不影響上述項目）
 
 ## 使用方式
 

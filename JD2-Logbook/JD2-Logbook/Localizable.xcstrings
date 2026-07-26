@@ -3289,7 +3289,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Peringatan Laju Ascent"
+            "value" : "Peringatan Kecepatan Naik"
           }
         },
         "it" : {
@@ -3313,7 +3313,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Amaran Kadar Ascent"
+            "value" : "Amaran Kadar Naik"
           }
         },
         "nl" : {
@@ -3401,7 +3401,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laju ascent melebihi 10 m/menit (32.8 ft/menit)."
+            "value" : "Laju naik melebihi 10 m/menit (32.8 ft/menit)."
           }
         },
         "it" : {
@@ -4638,7 +4638,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Plafon dekompresi"
+            "value" : "Batas dekompresi"
           }
         },
         "it" : {
@@ -4662,7 +4662,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Siling deko"
+            "value" : "Had deko"
           }
         },
         "nl" : {
@@ -5313,7 +5313,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Material silinder"
+            "value" : "Bahan tabung"
           }
         },
         "it" : {
@@ -5337,7 +5337,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bahan silinder"
+            "value" : "Bahan tangki"
           }
         },
         "nl" : {
@@ -5425,7 +5425,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ukuran silinder"
+            "value" : "Ukuran tabung"
           }
         },
         "it" : {
@@ -5449,7 +5449,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ukuran silinder"
+            "value" : "Saiz tangki"
           }
         },
         "nl" : {
@@ -14570,7 +14570,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Plafon maks."
+            "value" : "Batas maks."
           }
         },
         "it" : {
@@ -14594,7 +14594,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Siling maks."
+            "value" : "Had maks."
           }
         },
         "nl" : {
@@ -15302,13 +15302,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最短免停留极限"
+            "value" : "最短 NDL"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最短免停留極限"
+            "value" : "最短 NDL"
           }
         }
       }
@@ -26143,13 +26143,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trimix 混合气体潜水暂不支持组织氮负荷计算 — 这是已知限制，不是错误。"
+            "value" : "Trimix 潜水暂不支持组织氮负荷计算 — 这是已知限制，不是错误。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trimix 混合氣體潛水暫不支援組織氮負荷計算 — 此為已知限制，非錯誤。"
+            "value" : "Trimix 潛水暫不支援組織氮負荷計算 — 此為已知限制，非錯誤。"
           }
         }
       }
@@ -27442,7 +27442,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Visibilitas"
+            "value" : "Jarak pandang"
           }
         },
         "it" : {
@@ -27466,7 +27466,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Visibilitas"
+            "value" : "Jarak penglihatan"
           }
         },
         "nl" : {
@@ -27555,7 +27555,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Visibilitas: %.1f m"
+            "value" : "Jarak pandang: %.1f m"
           }
         },
         "it" : {
@@ -27579,7 +27579,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Visibilitas: %.1f m"
+            "value" : "Jarak penglihatan: %.1f m"
           }
         },
         "nl" : {
@@ -27667,7 +27667,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Visibilitas: %@"
+            "value" : "Jarak pandang: %@"
           }
         },
         "it" : {
@@ -27691,7 +27691,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Visibilitas: %@"
+            "value" : "Jarak penglihatan: %@"
           }
         },
         "nl" : {
@@ -27779,7 +27779,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Visibilitas: Tidak tercatat"
+            "value" : "Jarak pandang: Tidak tercatat"
           }
         },
         "it" : {
@@ -27803,7 +27803,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Visibilitas: Tidak direkodkan"
+            "value" : "Jarak penglihatan: Tidak direkodkan"
           }
         },
         "nl" : {
@@ -28568,7 +28568,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Berat"
+            "value" : "Pemberat"
           }
         },
         "it" : {
@@ -28592,7 +28592,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Berat"
+            "value" : "Pemberat"
           }
         },
         "nl" : {
@@ -28905,7 +28905,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pakaian Menyelam"
+            "value" : "Wetsuit"
           }
         },
         "it" : {
@@ -28929,7 +28929,7 @@
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pakaian Menyelam"
+            "value" : "Wetsuit"
           }
         },
         "nl" : {
