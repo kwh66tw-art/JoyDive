@@ -42,6 +42,12 @@ struct DiveLogEditSheet: View {
     @State private var gasMixType: GasMixPickerType
     @State private var nitroxO2Percent: Double  // 22–40
 
+    // ⚠️ Trimix 目前不支援手動編輯（picker 只有 Air/Nitrox 兩個選項），原本 save()
+    // 一律用 gasMixType/nitroxO2Percent 重新組字串寫回 dive.gasMixJSON，導致只是
+    // 想改地點/備註的使用者，儲存後 Trimix 氣體資料被靜默且不可逆地覆寫成 Air。
+    // 記住原始 gasMixJSON 是否為 trimix，save() 時比照處理：不動這個欄位，維持原樣。
+    private let originalTrimixGasMixJSON: String?
+
     // MARK: - Environment Details（Optional：nil = 未記錄）
     @State private var weather: String?
     @State private var airTemperature: Double?
@@ -76,13 +82,17 @@ struct DiveLogEditSheet: View {
         case .new:
             let now = Date()
             _location           = State(initialValue: "")
-            _maxDepth           = State(initialValue: 18.0)
+            // maxDepth 不給預設值：0 是唯一在潛水裡真正「不可能」的深度（沒有人潛到
+            // 表面等於沒下潛），沿用既有 isSaveEnabled（maxDepth > 0）擋掉未填就存檔，
+            // 不會把假的英制換算數字（原本 18.0m→59.1ft）誤植成使用者沒填過的資料。
+            _maxDepth           = State(initialValue: 0)
             _durationMinutes    = State(initialValue: 45)
             _waterTemperature   = State(initialValue: 28.0)
             _environmentType    = State(initialValue: "seawater")
             _notes              = State(initialValue: "")
             _gasMixType         = State(initialValue: .air)
             _nitroxO2Percent    = State(initialValue: 32.0)
+            originalTrimixGasMixJSON = nil
 
             // Environment Details（新增潛水：nil = 使用者尚未填入）
             _weather            = State(initialValue: nil)
@@ -97,11 +107,16 @@ struct DiveLogEditSheet: View {
 
             // Equipment Details
             _wetsuitThickness   = State(initialValue: "3")
-            _weightTotal        = State(initialValue: 0)
+            // weightTotal 不給預設值：0 沒辦法區分「使用者還沒填」跟「真的配重 0」
+            // （例如乾式衣配重靠身體浮力調整），比照 cylinderStartPressure 同一批修正。
+            _weightTotal        = State(initialValue: nil)
             _cylinderMaterial   = State(initialValue: "aluminum")
             _cylinderSize       = State(initialValue: "S80(12L)")
-            _cylinderStartPressure  = State(initialValue: 200)
-            _cylinderEndPressure    = State(initialValue: 50)
+            // 不給預設值：200 bar／50 bar 換算成英制會出現 2,901 psi／725 psi 這種
+            // 假精確度的零頭數字，讓使用者誤以為是有意義的量測值。比照 airTemperature／
+            // visibility 的作法，改成 nil = 未填入，由使用者自己輸入。
+            _cylinderStartPressure  = State(initialValue: nil)
+            _cylinderEndPressure    = State(initialValue: nil)
 
         case .edit(let dive):
             _location           = State(initialValue: dive.location)
@@ -118,17 +133,23 @@ struct DiveLogEditSheet: View {
                 case .air:
                     _gasMixType      = State(initialValue: .air)
                     _nitroxO2Percent = State(initialValue: 32.0)
+                    originalTrimixGasMixJSON = nil
                 case .nitrox(let fO2):
                     _gasMixType      = State(initialValue: .nitrox)
                     _nitroxO2Percent = State(initialValue: (fO2 * 100).rounded())
+                    originalTrimixGasMixJSON = nil
                 case .trimix:
-                    // Trimix 目前不支援手動編輯，降級為 Air
+                    // Trimix 目前不支援手動編輯（picker 只有 Air/Nitrox），僅用 Air 當
+                    // picker 顯示佔位；真正存回資料庫時 save() 會維持原始 JSON 不動，
+                    // 不能把這個 .air 顯示值反寫回去。
                     _gasMixType      = State(initialValue: .air)
                     _nitroxO2Percent = State(initialValue: 32.0)
+                    originalTrimixGasMixJSON = dive.gasMixJSON
                 }
             } else {
                 _gasMixType      = State(initialValue: .air)
                 _nitroxO2Percent = State(initialValue: 32.0)
+                originalTrimixGasMixJSON = nil
             }
 
             // Environment Details
@@ -182,13 +203,31 @@ struct DiveLogEditSheet: View {
         )
     }
 
+    private var weightTotalDisplay: Binding<Double?> {
+        Binding(
+            get: { weightTotal.map { unitSystem.convertWeight(kgValue: $0) } },
+            set: { weightTotal = $0.map { unitSystem.kgValue(fromDisplay: $0) } }
+        )
+    }
+
+    private var cylinderStartPressureDisplay: Binding<Double?> {
+        Binding(
+            get: { cylinderStartPressure.map { unitSystem.convertPressure(barValue: $0) } },
+            set: { cylinderStartPressure = $0.map { unitSystem.barValue(fromDisplay: $0) } }
+        )
+    }
+
+    private var cylinderEndPressureDisplay: Binding<Double?> {
+        Binding(
+            get: { cylinderEndPressure.map { unitSystem.convertPressure(barValue: $0) } },
+            set: { cylinderEndPressure = $0.map { unitSystem.barValue(fromDisplay: $0) } }
+        )
+    }
+
     // MARK: - Helpers
 
     private func formatTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
+        languageManager.numericDateTimeFormatter().string(from: date)
     }
 
     // MARK: - Validation
@@ -212,7 +251,7 @@ struct DiveLogEditSheet: View {
                 // ═════════════════════════════════════════════════════════
                 // BLOCK 1: 潛水數據與時間 (Dive Data & Time)
                 // ═════════════════════════════════════════════════════════
-                Section(header: Text("Dive Data & Time")) {
+                Section {
                     // 潛水時間（分鐘）
                     HStack {
                         Text(languageManager.localized("Dive Time"))
@@ -236,11 +275,17 @@ struct DiveLogEditSheet: View {
                     )
 
                     // 入水時間（可編輯，日期 + 時間）
+                    // DatePicker 內部的 VoiceOver 朗讀值不吃 \.environment(\.locale)
+                    // （跟 DateFormatter/Calendar 同一種病，但這次是 Apple 元件內部行為，
+                    // 不是我們的程式碼），畫面顯示正確但 VoiceOver 唸英文——真機走查抓到。
+                    // 用 accessibilityValue 蓋掉系統算出來的朗讀值，強制用我們自己的
+                    // locale-aware formatter。
                     DatePicker(
                         languageManager.localized("Entry Time"),
                         selection: $entryTime,
                         displayedComponents: [.date, .hourAndMinute]
                     )
+                    .accessibilityValue(languageManager.numericDateTimeFormatter().string(from: entryTime))
 
                     // 出水時間（自動計算，唯讀）
                     HStack {
@@ -261,10 +306,11 @@ struct DiveLogEditSheet: View {
                         }
                     }
 
-                    // 最大深度
+                    // 最大深度 —— 必填欄位，紅色星號是通用慣例，不用額外翻譯一整句話
+                    // （之前用整句英文提示，語系切不過去，PM 抓到後改這個做法）。
                     HStack {
-                        Text("Max Depth")
-                            .foregroundStyle(.primary)
+                        Text("Max Depth").foregroundStyle(.primary)
+                            + Text(" *").foregroundStyle(.red)
                         Spacer()
                         TextField(String("0.0"), value: maxDepthDisplay,
                                   format: .number.precision(.fractionLength(1)))
@@ -275,12 +321,15 @@ struct DiveLogEditSheet: View {
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
                             .focused($focusedField, equals: .maxDepth)
+                            .foregroundStyle(maxDepth == 0 ? .secondary : .primary)
                         Text(unitSystem.depthSymbol)
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: languageManager.localized("Max Depth: %@"), unitSystem.formatDepth(maxDepth))
+                        maxDepth == 0
+                            ? "\(languageManager.localized("Max Depth")) (\(languageManager.localized("Required")))"
+                            : String(format: languageManager.localized("Max Depth: %@"), unitSystem.formatDepth(maxDepth))
                     )
 
                     // 水溫
@@ -305,10 +354,21 @@ struct DiveLogEditSheet: View {
                         String(format: languageManager.localized("Water Temperature: %@"),
                                unitSystem.formatTemperature(waterTemperature))
                     )
+                } header: {
+                    Text("Dive Data & Time")
+                } footer: {
+                    // 「儲存」按鈕在 maxDepth == 0 時會靜默停用，沒有任何視覺/VoiceOver
+                    // 提示——真機 VoiceOver 走查回報「無法儲存」，其實是不知道深度必填。
+                    // 用紅色星號（通用慣例，不用翻譯）+ 已 18 語言翻譯的「必填」字樣，
+                    // 不要再用整句英文（PM 指出英文提示不隨語系切換）。
+                    if maxDepth == 0 {
+                        Text("* \(languageManager.localized("Required"))")
+                            .foregroundStyle(.red)
+                    }
                 }
 
                 // ── 氣體混合（Gas Mix 配置在此）─────────────
-                Section(header: Text("Gas Mix")) {
+                Section {
                     Picker(languageManager.localized("Gas"), selection: $gasMixType) {
                         ForEach(GasMixPickerType.allCases) { type in
                             Text(LocalizedStringKey(type.rawValue)).tag(type)
@@ -316,6 +376,7 @@ struct DiveLogEditSheet: View {
                     }
                     .pickerStyle(.segmented)
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .disabled(originalTrimixGasMixJSON != nil)
 
                     if gasMixType == .nitrox {
                         HStack(spacing: 12) {
@@ -338,6 +399,12 @@ struct DiveLogEditSheet: View {
                             String(format: languageManager.localized("Nitrox O2: %d percent"),
                                    Int(nitroxO2Percent))
                         )
+                    }
+                } header: {
+                    Text("Gas Mix")
+                } footer: {
+                    if originalTrimixGasMixJSON != nil {
+                        Text(languageManager.localized("Trimix gas mix isn't editable here — the original mix is preserved."))
                     }
                 }
 
@@ -455,12 +522,12 @@ struct DiveLogEditSheet: View {
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(languageManager.localized("Wetsuit"))
 
-                    // 配重總重量
+                    // 配重總重量（nil = 未填入）
                     HStack {
                         Text(languageManager.localized("Weight"))
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField(String("0"), value: $weightTotal,
+                        TextField(String("–"), value: weightTotalDisplay,
                                   format: .number.precision(.fractionLength(1)))
                             .labelsHidden()
                             #if os(iOS)
@@ -468,12 +535,18 @@ struct DiveLogEditSheet: View {
                             #endif
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
-                        Text("kg")
+                            .foregroundStyle(weightTotal == nil ? .secondary : .primary)
+                        Text(unitSystem.weightSymbol)
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: languageManager.localized("Weight: %.1f kilograms"), weightTotal ?? 0)
+                        weightTotal.map {
+                            unitSystem == .metric
+                                ? String(format: languageManager.localized("Weight: %.1f kilograms"), $0)
+                                : String(format: languageManager.localized("Weight: %.1f pounds"),
+                                         unitSystem.convertWeight(kgValue: $0))
+                        } ?? languageManager.localized("Weight: Not recorded")
                     )
 
                     // 氣瓶材質
@@ -491,12 +564,12 @@ struct DiveLogEditSheet: View {
                         Text("10L (Steel)").tag("10L(Steel)")
                     }
 
-                    // 氣瓶起始壓力（預設 200 bar）
+                    // 氣瓶起始壓力（nil = 未填入，見 init 註解）
                     HStack {
                         Text(languageManager.localized("Start Pressure"))
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField(String("200"), value: $cylinderStartPressure,
+                        TextField(String("–"), value: cylinderStartPressureDisplay,
                                   format: .number.precision(.fractionLength(0)))
                             .labelsHidden()
                             #if os(iOS)
@@ -504,20 +577,26 @@ struct DiveLogEditSheet: View {
                             #endif
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
-                        Text("bar")
+                            .foregroundStyle(cylinderStartPressure == nil ? .secondary : .primary)
+                        Text(unitSystem.pressureSymbol)
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: languageManager.localized("Start Pressure: %.0f bar"), cylinderStartPressure ?? 0)
+                        cylinderStartPressure.map {
+                            unitSystem == .metric
+                                ? String(format: languageManager.localized("Start Pressure: %.0f bar"), $0)
+                                : String(format: languageManager.localized("Start Pressure: %.0f psi"),
+                                         unitSystem.convertPressure(barValue: $0))
+                        } ?? languageManager.localized("Start Pressure: Not recorded")
                     )
 
-                    // 氣瓶結束壓力（預設 50 bar）
+                    // 氣瓶結束壓力（nil = 未填入，見 init 註解）
                     HStack {
                         Text(languageManager.localized("End Pressure"))
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField(String("50"), value: $cylinderEndPressure,
+                        TextField(String("–"), value: cylinderEndPressureDisplay,
                                   format: .number.precision(.fractionLength(0)))
                             .labelsHidden()
                             #if os(iOS)
@@ -525,7 +604,8 @@ struct DiveLogEditSheet: View {
                             #endif
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
-                        Text("bar")
+                            .foregroundStyle(cylinderEndPressure == nil ? .secondary : .primary)
+                        Text(unitSystem.pressureSymbol)
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .combine)
@@ -535,9 +615,9 @@ struct DiveLogEditSheet: View {
                 }
 
                 // ═════════════════════════════════════════════════════════
-                // BLOCK 5: 基本資訊 — 地點（對齊詳情頁：Location 置於 Equipment 後）
+                // BLOCK 5: 地點（對齊詳情頁：Location 置於 Equipment 後）
                 // ═════════════════════════════════════════════════════════
-                Section(header: Text("Basic Info")) {
+                Section(header: Text("Location")) {
                     // 日期改由「入水時間」的 date+time picker 統一選取
                     TextField(languageManager.localized("Dive Site"), text: $location)
                         .textContentType(.addressCity)
@@ -568,6 +648,9 @@ struct DiveLogEditSheet: View {
                     Button(languageManager.localized("Save")) { save() }
                         .disabled(!isSaveEnabled)
                         .fontWeight(.semibold)
+                        .accessibilityHint(
+                            isSaveEnabled ? "" : "\(languageManager.localized("Max Depth")): \(languageManager.localized("Required"))"
+                        )
                 }
             }
         }
@@ -582,7 +665,9 @@ struct DiveLogEditSheet: View {
 
     private func save() {
         let totalSeconds = durationMinutes * 60
-        let gasMixJSON   = buildGasMixJSON()
+        // Trimix 潛水：picker 不支援編輯，維持原始 JSON，不用 Air/Nitrox picker 的
+        // 顯示值覆寫（見 originalTrimixGasMixJSON 宣告處說明）。
+        let gasMixJSON   = originalTrimixGasMixJSON ?? buildGasMixJSON()
 
         // 計算出水時間：基於入水時間 + 潛水時間
         let calculatedExitTime = Calendar.current.date(

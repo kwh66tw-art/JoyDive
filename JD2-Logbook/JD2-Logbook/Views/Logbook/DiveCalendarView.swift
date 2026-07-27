@@ -92,7 +92,9 @@ struct DiveCalendarView: View {
         #endif
     }
 
-    private let calendar = Calendar.current
+    // 不能是 static let Calendar.current 直接存：weekday 縮寫、firstWeekday 都要跟著
+    // App 內語言切換即時更新，不能只認裝置系統 Locale。
+    private var calendar: Calendar { languageManager.calendar }
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
 
     // MARK: - Computed
@@ -223,11 +225,10 @@ struct DiveCalendarView: View {
     // MARK: - 年 stepper + 12 月網格 popover（iOS + macOS 共用）
 
     /// 各語系「短月份」名稱（Jan/Feb… 或 1月/2月…）
-    private static let monthShortSymbols: [String] = {
-        let fmt = DateFormatter()
-        fmt.locale = Locale.current
-        return fmt.shortMonthSymbols
-    }()
+    /// 不能是 static let：要跟著 App 內語言切換即時更新，不能只算一次快取系統 Locale。
+    private var monthShortSymbols: [String] {
+        languageManager.dateFormatter().shortMonthSymbols
+    }
 
     private var yearMonthGridPicker: some View {
         let currentYear  = calendar.component(.year,  from: displayedMonth)
@@ -236,9 +237,11 @@ struct DiveCalendarView: View {
             // ── 年份 stepper（‹ 2026 ›）────────────────────
             HStack {
                 Button { changeDisplayedYear(by: -1) } label: {
-                    Image(systemName: "chevron.left").frame(width: 32, height: 32)
+                    Image(systemName: "chevron.left")
+                        .frame(width: 44, height: 44) // WCAG 2.5.5：觸控目標 ≥ 44×44pt
                 }
                 .buttonStyle(.plain)
+                .contentShape(Rectangle())
                 .disabled(currentYear <= 1980)
                 .accessibilityLabel(languageManager.localized("Previous year"))
 
@@ -248,9 +251,11 @@ struct DiveCalendarView: View {
                 Spacer()
 
                 Button { changeDisplayedYear(by: 1) } label: {
-                    Image(systemName: "chevron.right").frame(width: 32, height: 32)
+                    Image(systemName: "chevron.right")
+                        .frame(width: 44, height: 44) // WCAG 2.5.5：觸控目標 ≥ 44×44pt
                 }
                 .buttonStyle(.plain)
+                .contentShape(Rectangle())
                 .disabled(currentYear >= maxCalendarYear)
                 .accessibilityLabel(languageManager.localized("Next year"))
             }
@@ -259,7 +264,7 @@ struct DiveCalendarView: View {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
                 ForEach(1...12, id: \.self) { month in
                     Button { jumpToMonth(month) } label: {
-                        Text(Self.monthShortSymbols[month - 1])
+                        Text(monthShortSymbols[month - 1])
                             .font(.callout.weight(month == currentMonth ? .semibold : .regular))
                             .frame(maxWidth: .infinity, minHeight: 34)
                             .background(
@@ -501,6 +506,8 @@ struct DiveCalendarView: View {
 // MARK: - Day Cell
 
 private struct DayCell: View {
+    @Environment(AppLanguageManager.self) private var languageManager
+
     let date: Date
     let isSelected: Bool
     let isToday: Bool
@@ -541,8 +548,9 @@ private struct DayCell: View {
         .contentShape(Rectangle())
         .accessibilityLabel(
             hasDives
-                ? "\(date.formatted(.dateTime.day().month())): has dives"
-                : date.formatted(.dateTime.day().month())
+                ? String(format: languageManager.localized("%@: Has dives"),
+                         date.formatted(.dateTime.day().month().locale(languageManager.locale)))
+                : date.formatted(.dateTime.day().month().locale(languageManager.locale))
         )
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }

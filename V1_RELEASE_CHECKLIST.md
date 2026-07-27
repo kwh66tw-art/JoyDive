@@ -31,11 +31,11 @@
 - [x] 匯入失敗時顯示正確錯誤訊息 — 2026-07-25 ITS_04（去重＋3 種壞檔皆正確處理不中斷整批）；⚠️ 過程中發現 `DiveImportKit` 的錯誤訊息內容部分仍為中文技術性描述，非本次範圍，見 `_JD2-family/reports/R-2026-07-25-DiveImportKit錯誤訊息未本地化.md`
 
 ### UI 核心功能
-- [ ] 日誌列表正常顯示、可滑動
-- [ ] 日誌詳情頁所有欄位顯示正確
-- [ ] 新增潛水（手動輸入）可儲存
-- [ ] 編輯潛水可儲存
-- [ ] 刪除潛水有確認 dialog
+- [x] 日誌列表正常顯示、可滑動 — 2026-07-27 模擬器驗證（iPhone 17 Simulator，105 筆假資料，swipe 捲動正常）
+- [x] 日誌詳情頁所有欄位顯示正確 — 2026-07-26 真機截圖確認（繁中，含能見度/入出水時間/配重/備註/原始匯入資料等欄位），修復過程中順便發現並修掉配重/氣瓶壓力英制單位未換算的獨立 bug
+- [x] 新增潛水（手動輸入）可儲存 — 2026-07-27 PM 真機測試 OK（模擬器端到端測試卡在 Mac 主機鍵盤輸入法問題，已改由真機確認）
+- [x] 編輯潛水可儲存 — 2026-07-26 發現並修復一個嚴重 bug：trimix 潛水按 Edit 再 Save（即使只改備註）氣體資料會靜默降級成 Air 且不可逆，已修復；一般編輯可儲存流程 2026-07-27 PM 真機測試 OK
+- [x] 刪除潛水有確認 dialog — 2026-07-27 模擬器驗證：「刪除這筆潛水紀錄？此操作無法復原。」對話框正常彈出，紅色刪除鈕正確標示（測試時取消未實際刪除）
 
 ### 廣告 & IAP（僅 iOS；macOS 無廣告、無 IAP，2026-07-14 起為純免費版）
 - [x] AdMob 廣告在真機上正常載入顯示（Logbook / Import / Settings）— 2026-07-25 真機驗證通過
@@ -45,63 +45,64 @@
 - [x] Restore Purchase 可恢復購買記錄 — 2026-07-25 正向／反向情境（含 Clear Purchase History 後測試）皆 PASS
 
 ### 本地化
-- [ ] 繁體中文顯示正確（主要目標語言）
-- [ ] 英文（en）顯示正確
-- [ ] 簡體中文（zh-Hans）顯示正確
+- [x] 繁體中文顯示正確（主要目標語言） — 2026-07-26 多輪真機截圖確認（Settings/Edit/Detail 頁）
+- [x] 英文（en）顯示正確 — 全程作為原文基準，18 語言 xcstrings 全數以此為源
+- [ ] 簡體中文（zh-Hans）顯示正確 — 內容已審過（含用詞在地化：设备/条 等），未實機截圖確認畫面
 - [ ] 日文（ja）抽樣驗證
 - [ ] 韓文（ko）抽樣驗證
-- [ ] 主要歐洲語言（fr / de / es / it）抽樣驗證
-- [ ] 東南亞語言（id / ms / vi / th）抽樣驗證
+- [ ] 主要歐洲語言（fr / de / es / it）抽樣驗證 — 2026-07-26 德文真機截圖發現並修復 2 處截斷（Wassertemp./Deco-Ceiling），法文/西班牙文內容已審但未實機截圖，義大利文未特別檢查
+- [ ] 東南亞語言（id / ms / vi / th）抽樣驗證 — 2026-07-26 泰文真機截圖發現並修復截斷（No Deco），印尼文/馬來文內容已多輪審過，越南文內容已審但未實機截圖
 - [ ] 日期 / 時間格式隨語言本地化
-- [ ] 數字單位（深度 m/ft、溫度 °C/°F）顯示正確
+- [x] 數字單位（深度 m/ft、溫度 °C/°F、配重 kg/lbs、氣瓶壓力 bar/psi）顯示正確 — 2026-07-26 真機截圖確認英制正確換算（能見度/配重/氣瓶壓力），並修復 `DiveLogDetailView`/`DiveLogListView` 兩處先前遺漏的獨立硬編碼 bug；詳見 `V1_2_BACKLOG.md` #18/#20/#23
 
 ---
 
 ## 🟡 建議完成（強烈建議，影響審核通過率）
 
 ### GPS & 地圖
-- [ ] 新增潛水可記錄 GPS 座標
-- [ ] 地圖正確顯示潛點 pin
-- [ ] 地圖空狀態顯示正常
+- [x] 新增潛水可記錄 GPS 座標 — 2026-07-26 使用者實機確認
+- [x] 地圖正確顯示潛點 pin — 2026-07-26 使用者實機確認
+- [x] 地圖空狀態顯示正常 — 2026-07-26 使用者實機確認
 
 ### 可達性 WCAG 2.1 AA
-- [ ] 色彩對比 ≥ 4.5:1（主要文字）
-- [ ] 所有互動元素 VoiceOver label 正確
-- [ ] 觸控目標 ≥ 44×44pt
-- [ ] Dynamic Type 放大不破版
-- [ ] 詳見 `WCAG_2.1_AA_AUDIT_CHECKLIST.md`
+- [x] 色彩對比 ≥ 4.5:1（主要文字）— 2026-07-26 程式碼複查：沿用 2026-06-01 已修的 `Color.accessibleSecondary`，本輪新增欄位（配重/氣瓶壓力）走既有 `DetailRow`/系統 Form 背景，未發現新退化
+- [x] 所有互動元素 VoiceOver label 正確 — 2026-07-26 程式碼複查：抓到 macOS 3 處只有 `.help()` 沒有 `.accessibilityLabel()` 的工具列按鈕（`MainTabView.swift`），已補齊
+- [x] 觸控目標 ≥ 44×44pt — 2026-07-26 程式碼複查：抓到月曆年份切換 chevron 按鈕僅 32×32pt，已改 44×44pt + `.contentShape`；其餘小尺寸 frame 皆為裝飾性非互動元素
+- [x] Dynamic Type 放大不破版 — 2026-07-26 **模擬器實測**（iPhone 17 Simulator，`xcrun simctl ui content_size accessibility-extra-extra-extra-large`）：字級本身確實會縮放（延續 2026-06-01 結論），但抓到程式碼複查看不出來的真違規——3 處「圖示＋數值＋單位＋標籤」3 欄橫排卡片（日誌列表統計列、詳情頁主要數據、地圖潛點卡片）在 AX5 極限字級下視覺重疊/裁切，`minimumScaleFactor` 保護不住。已修：3 處皆改成 `dynamicTypeSize.isAccessibilitySize` 時改直式排列，模擬器截圖覆測確認正常
+- [x] 詳見 `WCAG_2.1_AA_AUDIT_CHECKLIST.md`（附錄 2 已更新為模擬器實測結果，非純程式碼複查）
+- [x] **真機 VoiceOver 完整工作流測試（第 2.6 節／附錄 3）**— 2026-07-27 PM 實機測試：日誌列表、新增/編輯潛水、詳情頁、語言切換等流程皆通過（含本輪修復的 `DetailRow` 英文殘留、Entry Time 唸英文、Save 鍵無提示、「潛水剖面圖」誤譯 4 項回歸驗證）。**地圖流程未通過**——VoiceOver 下無法縮放/平移/展開聚合/選其他 pin，判斷為 MapKit 固有限制，非本輪退化，見附錄 4/5，暫列已知限制，日誌列表可作為視障使用者瀏覽潛點的替代路徑
 
 ### 性能
-- [ ] 日誌列表滑動流暢（60fps）
-- [ ] 地圖載入 100+ 潛點 < 200ms
-- [ ] 冷啟動時間合理（< 3 秒）
+- [x] 日誌列表滑動流暢（60fps）— 2026-07-26 使用者實機確認
+- [x] 地圖載入 100+ 潛點 < 200ms — 2026-07-26 使用者實機確認
+- [x] 冷啟動時間合理（< 3 秒）— 2026-07-26 使用者實機確認
 
 ### 穩定性
-- [ ] 模擬器連續操作 30 分鐘無閃退
-- [ ] 真機測試無閃退
-- [ ] 記憶體無明顯洩漏
+- [x] 模擬器連續操作 30 分鐘無閃退 — 2026-07-26 使用者實機確認
+- [x] 真機測試無閃退 — 2026-07-26 使用者實機確認
+- [x] 記憶體無明顯洩漏 — 2026-07-26 使用者實機確認
 
 ---
 
 ## 🟢 App Store 提審準備
 
 ### 帳號 & 簽署
-- [ ] Bundle ID 確認（App Store Connect 已建立）
-- [ ] Signing Certificate & Provisioning Profile 正常
+- [x] Bundle ID 確認（App Store Connect 已建立）— `com.jd2logbook.JD2-Logbook`（`project.pbxproj`），v1.0 已用同一 Bundle ID 送審且 macOS 已通過審核，確認有效註冊
+- [x] Signing Certificate & Provisioning Profile 正常 — `DEVELOPMENT_TEAM = 77UHM3NN7J`（HUA SHENG Huang）、`CODE_SIGN_STYLE = Automatic`；2026-07-27 PM 確認 Archive 已成功跑過並安裝到 iPhone 16 實機，簽署鏈正常
 - [x] Version 1.2 (3) 確認 — 2026-07-25 `MARKETING_VERSION`/`CURRENT_PROJECT_VERSION` 已更新，iOS + macOS build 通過
-- [ ] Archive 成功 — 尚未實際跑 Product → Archive
+- [x] Archive 成功 — 2026-07-27 PM 確認已跑過 Product → Archive 並安裝至 iPhone 16
 
 ### App Store Connect
-- [ ] App 名稱、副標題填寫
-- [ ] 描述（繁中 + 英文）
-- [ ] 關鍵字填寫
-- [ ] 截圖（iPhone 6.7"、iPad 可選）上傳
-- [ ] App 圖示 1024×1024 上傳
-- [ ] 隱私政策 URL 填寫
+- [ ] App 名稱、副標題填寫 — 內容已在 `docs/APPSTORE_COPY.md` 寫好（「JoyDive²」／「Log Every Dive, Every Story」），但該檔是 v1.0 時期撰寫（「What's New」段落還是 v1.0 內容），送審前建議快速過一次確認名稱/副標題本身不用改，只有 What's New 需要更新成 v1.2 內容
+- [ ] 描述（繁中 + 英文）— `docs/APPSTORE_COPY.md` 已有完整草稿（繁中/英文，還多附一份日文），內容涵蓋功能/隱私/語言，主體應仍適用；同上，「What's New」段落是 v1.0 內容，送審前要換成 v1.2 的
+- [ ] 關鍵字填寫 — `docs/APPSTORE_COPY.md` 已有草稿：`dive log,scuba,logbook,underwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`；沒有反映 v1.1/v1.2 新增的匯入格式（Shearwater、DAN DL7、Divesoft DLF、Garmin Connect JSON 等），建議送審前補進去
+- [ ] 截圖（iPhone 6.7"、iPad 可選）上傳 — `_ScreenCaptures/` 資料夾有舊截圖（2026-06 v1.0 時期，`docs/reports/R-2026-07-18-總體檢報告.md` 標記為「素材候選、追蹤中」非定案），這輪 UI 有變動（配重/氣瓶壓力必填星號、Trimix footer 等），舊截圖需要重拍；目前完全沒有 iPad 截圖
+- [x] App 圖示 1024×1024 上傳 — `Assets.xcassets/AppIcon.appiconset` 已有 light/dark/tinted/mac 四組 1024px（2026-06-06 建立，v1.0 已用此圖示送審且通過），`V1_2_BACKLOG.md` #2 PM 已明確決定「icon 全盤 review 延後到下一版，非本輪阻塞項」，此輪維持現狀即可
+- [ ] 隱私政策 URL 填寫 — URL 已確認：`https://kwh66tw-art.github.io/JoyDive/logbook/privacy`（`docs/APPSTORE_COPY.md` 記錄），來源 `logbook/privacy.md` 2026-07-25 才因應 ASC 駁回原因修過內容（見 `V1_2_BACKLOG.md` #1），內容是新的，但**這格本身有沒有正確貼回 ASC 表單建議手動確認一次**（駁回原因是隱私權「問卷」誤標，不是 URL 本身，URL 大概率沿用 v1.0 就有效，但值得順手看一眼）
 - [x] 年齡分級填寫 — 2026-07-25 重新填寫（Advertising=Yes，其餘功能性問題如實回答 No），非原本的 4+ 單一勾選，實際等級由問卷結果決定
 - [x] 廣告聲明勾選（含廣告）— 2026-07-25 Age Rating 問卷 Advertising 已改 Yes
 - [x] App Privacy 問卷：Location／Device ID／Usage Data 的「used to track」改為 No — 2026-07-25 完成（原本誤標為 Yes 是這次送審駁回原因之一，見 `V1_2_BACKLOG.md` #1）
-- [ ] IAP 項目在 App Store Connect 建立並審核通過
+- [ ] IAP 項目在 App Store Connect 建立並審核通過 — 沒找到相關文件紀錄，需要 PM 直接在 ASC 後台確認狀態
 
 ---
 

@@ -15,6 +15,7 @@ struct DiveLogDetailView: View {
     @Environment(AppLanguageManager.self) private var languageManager
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var showEditSheet     = false
     @State private var showDeleteConfirm = false
 
@@ -165,7 +166,8 @@ struct DiveLogDetailView: View {
                                   value: w.lowercased().contains("mm") ? w : "\(w) mm")
                     }
                     if let weight = dive.weightTotal {
-                        DetailRow(icon: "scalemass.fill",      label: "Weight",            value: String(format: "%.1f kg", weight))
+                        DetailRow(icon: "scalemass.fill",      label: "Weight",
+                                   value: String(format: "%.1f %@", unitSystem.convertWeight(kgValue: weight), unitSystem.weightSymbol))
                     }
                     if let m = dive.cylinderMaterial, !m.isEmpty {
                         DetailRow(icon: "waterbottle.fill",    label: "Cylinder Material", value: cylinderMaterialDisplayName(m))
@@ -174,10 +176,12 @@ struct DiveLogDetailView: View {
                         DetailRow(icon: "waterbottle.fill",    label: "Cylinder Size",     value: s)
                     }
                     if let sp = dive.cylinderStartPressure {
-                        DetailRow(icon: "gauge",               label: "Start Pressure",    value: String(format: "%.0f bar", sp))
+                        DetailRow(icon: "gauge",               label: "Start Pressure",
+                                   value: String(format: "%.0f %@", unitSystem.convertPressure(barValue: sp), unitSystem.pressureSymbol))
                     }
                     if let ep = dive.cylinderEndPressure {
-                        DetailRow(icon: "gauge",               label: "End Pressure",      value: String(format: "%.0f bar", ep))
+                        DetailRow(icon: "gauge",               label: "End Pressure",
+                                   value: String(format: "%.0f %@", unitSystem.convertPressure(barValue: ep), unitSystem.pressureSymbol))
                     }
                 }
             }
@@ -298,40 +302,65 @@ struct DiveLogDetailView: View {
 
     // MARK: - Key Stats Row (深度 / 時間 / 水溫)
 
+    // WCAG 1.4.10 Reflow：DiveKitUI.DiveStatCell 內建的 minimumScaleFactor 只保證單一
+    // cell 不溢出，擋不住 accessibility 級 Dynamic Type 下 3 欄硬擠成一列造成的視覺重疊
+    // （2026-07-26 模擬器 AX5 實測抓到）。DiveStatCell 是 DiveKit 共用元件，不在本 App
+    // 動；改成 App 層自己決定排列方式——一般字級維持 HStack 三欄，accessibility 字級
+    // 改直式排列，元件本身不變。
     private var keyStatsRow: some View {
-        HStack(spacing: 0) {
-            DiveKitUI.DiveStatCell(
-                value: String(format: "%.1f", unitSystem.convertDepth(metersValue: dive.maxDepth)),
-                unit: unitSystem.depthSymbol,
-                label: "Max Depth",
-                icon: "arrow.down.to.line",
-                color: .accentColor,
-                secondaryColor: .accessibleSecondary
-            )
-
-            Divider().frame(height: 48)
-
-            DiveKitUI.DiveStatCell(
-                value: durationFormatted,
-                unit: "",
-                label: "Dive Time",
-                icon: "timer",
-                color: .orange,
-                secondaryColor: .accessibleSecondary
-            )
-
-            Divider().frame(height: 48)
-
-            DiveKitUI.DiveStatCell(
-                value: String(format: "%.0f", unitSystem.convertTemperature(celsiusValue: dive.waterTemperature)),
-                unit: unitSystem.temperatureSymbol,
-                label: "Water Temp",
-                icon: "thermometer.medium",
-                color: .cyan,
-                secondaryColor: .accessibleSecondary
-            )
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: 12) {
+                    depthStatCell
+                    Divider()
+                    timeStatCell
+                    Divider()
+                    tempStatCell
+                }
+            } else {
+                HStack(spacing: 0) {
+                    depthStatCell
+                    Divider().frame(height: 48)
+                    timeStatCell
+                    Divider().frame(height: 48)
+                    tempStatCell
+                }
+            }
         }
         .padding(.vertical, 8)
+    }
+
+    private var depthStatCell: some View {
+        DiveKitUI.DiveStatCell(
+            value: String(format: "%.1f", unitSystem.convertDepth(metersValue: dive.maxDepth)),
+            unit: unitSystem.depthSymbol,
+            label: "Max Depth",
+            icon: "arrow.down.to.line",
+            color: .accentColor,
+            secondaryColor: .accessibleSecondary
+        )
+    }
+
+    private var timeStatCell: some View {
+        DiveKitUI.DiveStatCell(
+            value: durationFormatted,
+            unit: "",
+            label: "Dive Time",
+            icon: "timer",
+            color: .orange,
+            secondaryColor: .accessibleSecondary
+        )
+    }
+
+    private var tempStatCell: some View {
+        DiveKitUI.DiveStatCell(
+            value: String(format: "%.0f", unitSystem.convertTemperature(celsiusValue: dive.waterTemperature)),
+            unit: unitSystem.temperatureSymbol,
+            label: "Water Temp",
+            icon: "thermometer.medium",
+            color: .cyan,
+            secondaryColor: .accessibleSecondary
+        )
     }
 
     // MARK: - Delete
@@ -347,10 +376,7 @@ struct DiveLogDetailView: View {
     // MARK: - Helpers
 
     private func formatTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
+        languageManager.numericDateTimeFormatter().string(from: date)
     }
 
     private func weatherDisplayName(_ raw: String) -> String {
@@ -442,6 +468,8 @@ struct DiveLogDetailView: View {
 // MARK: - Detail Row
 
 private struct DetailRow: View {
+    @Environment(AppLanguageManager.self) private var languageManager
+
     let icon: String
     let label: String
     let value: String
@@ -463,7 +491,7 @@ private struct DetailRow: View {
         }
         .font(.subheadline)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(label): \(value)")
+        .accessibilityLabel("\(languageManager.localized(label)): \(value)")
     }
 }
 

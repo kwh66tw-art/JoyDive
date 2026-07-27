@@ -31,6 +31,63 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-26 — v1.2 (Build 3)：語系全域掃除、Trimix 存檔資料損毀修復、單位換算補完、稽核報告雙輪查核
+
+- **語言切換殘留問題全域掃除**：確認舊病根因——`String(localized:)` 讀系統
+  `Locale.current`，語言切換後不重開 App 不會反映；`Text(LocalizedStringKey)`／
+  `languageManager.localized(_:)` 才會即時跟隨。全專案掃過 `SettingsView`／
+  `DiveLogEditSheet`／`DiveLogDetailView`／`DiveCalendarView`／`MapView`／
+  `DiveAnalysisView`／`DiveLogListView`／`MainTabView`／`LogbookContainerView`／
+  `DiveMapRepresentable`／`DiveSiteAnnotation`（非 View 型別，改吃呼叫端已解析
+  字串）／`GasMix+LocalizedDisplay.swift`，全部改對，實際呼叫 0 處殘留。
+- **`ImportWizardView` 進度/結果畫面完全未走在地化機制（v1.1 port 就存在的舊
+  bug，非本次回歸）**：`"File X of Y"`／`"N dive(s) imported"`／`"N skipped
+  (duplicates)"` 原本是純字串插值，永遠顯示英文；旁邊早已有 18 語言完整翻譯的
+  key 閒置沒被呼叫。已重新接回既有 key，不需要新翻譯。
+- **Trimix 潛水編輯後靜默資料損毀（🚨 confirmed real bug）**：`DiveLogEditSheet`
+  的 Gas picker 不支援編輯 trimix，但 `save()` 原本無條件用 picker 顯示值（固定
+  降級成 Air）覆寫 `dive.gasMixJSON`——只要對任何 trimix 潛水按 Edit 再 Save
+  （哪怕只改備註），氣體資料就不可逆遺失成 Air。已修：記住原始 trimix JSON，
+  save() 時維持不動；Gas picker 對 trimix 潛水加 `.disabled()` + 說明文字避免
+  誤導。
+- **配重／氣瓶壓力英制單位換算補完**：`UnitSystem` 新增 `convertWeight`/
+  `convertPressure`（kg↔lbs、bar↔psi），修復 `DiveLogEditSheet`（v1.2 #4 的
+  漏網之魚）與**獨立寫死的 `DiveLogDetailView`**（唯讀詳情頁自己另外硬編碼
+  `"%.1f kg"`/`"%.0f bar"`，跟編輯表單的問題各自獨立、互不相關）；`DiveLogListView`
+  的「Deepest」統計卡片同樣硬編碼 `%.1fm` 一併修掉。
+- **新增潛水表單移除不合理的假預設值**：氣瓶起始/結束壓力原本預設 200/50 bar，
+  換算成英制出現「2,901 psi」「725 psi」這種假精確度零頭數字；配重原本預設 0
+  （無法區分「沒填」跟「真的配重 0」）。比照既有 `airTemperature`/`visibility`
+  的「nil = 未記錄」寫法統一處理。`maxDepth` 因是必填欄位改用 0 當「不可能值」
+  哨兵（借用既有 `isSaveEnabled` 驗證關卡）；`waterTemperature` 因沒有安全的
+  「不可能值」可借用，維持原預設（PM 確認）。
+- **剖面圖互動列多語系版面問題**：分兩輪處理，第一輪只查到部分語言的「英文
+  詞＋當地語」複合字串過長（de/nl 的 Ceiling、ms/id/el 的 No Deco）；真機截圖
+  回報後改成不設長度門檻、逐一核對全部 5 個欄位 × 18 語言，額外抓到法文（28
+  字）／越南文／泰文／克羅埃西亞文的同類問題，以及德文 Temp「Wassertemp.」
+  單獨超長。修法：`calloutCell` label 加 `.minimumScaleFactor` 當版面保底（過長
+  文字縮小字級而非省略號截斷成看不懂的內容）；能在同檔案內找到既有先例的（如
+  西班牙文 Ceiling 比照葡萄牙文「Teto」、法文 No Deco 比照西/葡/義的
+  「[without]+deco」模式）直接移除冗餘用詞，不硬猜的留給母語審核（僅剩希臘文/
+  克羅埃西亞文 No Deco）。
+- **死碼清理**：`JD2Core/Utilities/Extensions.swift` 整個檔案（21 個符號，逐一
+  驗證含測試目標皆 0 呼叫端後確認是 v1.0 舊架構遺留）連同 `DiveLog.averageAscentRate`
+  一併移除，不留 `// removed` 註解。
+- **`DiveReplayEngine.tissueLoadPercent` 效能修正**：原本每次呼叫都重建一個
+  `Buhlmann` 實例，只為了讀兩個跟 environment 無關的常數欄位（`gfHigh`／
+  `compartments[].aN2/bN2`）；互動拖曳剖面時每個拖曳幀都觸發，等於每幀都重新
+  配置一次 16 隔室陣列。改為快取，只有 environment 真的變了才重建。
+- **兩輪第三方 AI 稽核報告逐項查核**（非官方稽核，PM 提供給 Claude 交叉驗證）：
+  第一輪（`code_audit_report-0726.md`）主要問題屬實，如上已修復；第二輪
+  （`audit_report-0726-R2.md` 及其修訂版 `-rev3.md`）發現多項報告本身的幻覺
+  內容（例如宣稱只支援「6 種語言」，實際 18 種；多個「未本地化」的具體指控
+  查證後其實是透過 SwiftUI 自動 `Text(LocalizedStringKey)` 正確運作，報告作者
+  不理解這個機制；部分程式碼片段直接編造、檔案裡查無此行），逐項記錄查證結果
+  於 `V1_2_BACKLOG.md`，不照單全收。
+- **本地端 Debug/Release 效能落差釐清**：真機回報「開啟或互動經常卡住」，追查
+  懷疑是 Debug build（未優化、除錯器連線）而非程式邏輯問題，指導 PM 用 Xcode
+  Release Testing 匯出＋直接裝置安裝測試（非 TestFlight 上傳）排除變因。
+
 ### 2026-07-25 — v1.2 (Build 3)：單位系統全面套用、Game Mode 修復、真機廣告/IAP 驗證、匯入情境測試
 
 - **公制／英制單位系統全面套用**（V1_2_BACKLOG.md #4 收尾）：先前只做了 Settings

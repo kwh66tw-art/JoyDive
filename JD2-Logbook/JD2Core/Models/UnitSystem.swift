@@ -30,6 +30,20 @@ public enum UnitSystem: String, CaseIterable, Codable, Sendable {
         }
     }
 
+    public var weightSymbol: String {
+        switch self {
+        case .metric:   return "kg"
+        case .imperial: return "lbs"
+        }
+    }
+
+    public var pressureSymbol: String {
+        switch self {
+        case .metric:   return "bar"
+        case .imperial: return "psi"
+        }
+    }
+
     // MARK: - 顯示層換算（儲存值 → 顯示值）
 
     /// 深度換算（輸入永遠是公尺，換算成此單位系統對應的顯示值）
@@ -45,6 +59,22 @@ public enum UnitSystem: String, CaseIterable, Codable, Sendable {
         switch self {
         case .metric:   return celsiusValue
         case .imperial: return celsiusValue * 9.0 / 5.0 + 32.0
+        }
+    }
+
+    /// 配重換算（輸入永遠是公斤，換算成此單位系統對應的顯示值）
+    public func convertWeight(kgValue: Double) -> Double {
+        switch self {
+        case .metric:   return kgValue
+        case .imperial: return kgValue * 2.20462
+        }
+    }
+
+    /// 氣瓶壓力換算（輸入永遠是 bar，換算成此單位系統對應的顯示值）
+    public func convertPressure(barValue: Double) -> Double {
+        switch self {
+        case .metric:   return barValue
+        case .imperial: return barValue * 14.5038
         }
     }
 
@@ -73,6 +103,22 @@ public enum UnitSystem: String, CaseIterable, Codable, Sendable {
         switch self {
         case .metric:   return displayValue
         case .imperial: return (displayValue - 32.0) * 5.0 / 9.0
+        }
+    }
+
+    /// 使用者在目前單位系統下輸入的配重值，反推回公斤（供寫入 DiveLog 儲存欄位）
+    public func kgValue(fromDisplay displayValue: Double) -> Double {
+        switch self {
+        case .metric:   return displayValue
+        case .imperial: return displayValue / 2.20462
+        }
+    }
+
+    /// 使用者在目前單位系統下輸入的氣瓶壓力值，反推回 bar（供寫入 DiveLog 儲存欄位）
+    public func barValue(fromDisplay displayValue: Double) -> Double {
+        switch self {
+        case .metric:   return displayValue
+        case .imperial: return displayValue / 14.5038
         }
     }
 }

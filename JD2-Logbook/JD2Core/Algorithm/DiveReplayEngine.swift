@@ -164,12 +164,29 @@ enum DiveReplayEngine {
 
     /// 隔室載荷百分比：pN2 / 水面 M-value（gfHigh 收緊後）×100。
     /// >100% = 超出該 GF 下水面允許值（出水即有減壓義務的視覺訊號）。
+    ///
+    /// ⚠️ 這裡只讀 `probe.gfHigh` 與 `probe.compartments[].aN2/bN2`——這幾個欄位
+    /// 只由 `Buhlmann.zhl16cTable`（靜態常數表）決定，跟 `environment` 無關（`reset()`
+    /// 只有 `pN2` 用到 environment，這裡完全不讀 `pN2`）。原本每次呼叫都重建一個
+    /// `Buhlmann` 純粹是為了讀這兩個不變的欄位，互動拖曳剖面時（`selectedIndex`
+    /// 每次變動都會呼叫這裡）等於每個拖曳幀都重新配置一次 16 隔室陣列。改成快取，
+    /// 只有 environment 真的變了才重建，避免不必要的配置。
+    @MainActor private static var cachedProbe: Buhlmann?
+    @MainActor private static var cachedEnvironment: DiveEnvironment?
+
     @MainActor
     static func tissueLoadPercent(
         pN2: [Double],
         environment: DiveEnvironment = .seaLevel
     ) -> [Double] {
-        let probe = Buhlmann(environment: environment)
+        let probe: Buhlmann
+        if let cached = cachedProbe, cachedEnvironment == environment {
+            probe = cached
+        } else {
+            probe = Buhlmann(environment: environment)
+            cachedProbe = probe
+            cachedEnvironment = environment
+        }
         let gf = probe.gfHigh
         let surfaceBar = environment.surfacePressureBar
         return zip(pN2, probe.compartments).map { p, c in

@@ -83,4 +83,41 @@ final class AppLanguageManager {
         }
         return NSLocalizedString(key, comment: "")
     }
+
+    /// ⑤ `DateFormatter()`／`Calendar.current` 都不吃 `\.locale`（Foundation 型別，
+    /// 不是 SwiftUI environment-aware），各處各自手動 `DateFormatter()` 很容易忘記
+    /// 設 locale，症狀跟①②③一樣：語言切換後不生效，只是這次咬的是日期而不是字串
+    /// （2026-07-26 一次抓到 7 處）。日期／月曆一律經這裡拿，不要再手動生。
+    ///
+    /// ⚠️ 強制 `.calendar = Calendar(identifier: .gregorian)`：泰文 `Locale(identifier: "th")`
+    /// 預設曆法是佛曆（`identifier: buddhist`），不設會顯示「2569」而非「2026」——
+    /// 潛水日誌一律要西元年，跟其他 17 語言一致，不能因為語言不同就換算年份
+    /// （2026-07-26 真機截圖抓到，逐一測過全部 18 語言確認只有泰文受影響）。
+    func dateFormatter(dateStyle: DateFormatter.Style = .none, timeStyle: DateFormatter.Style = .none) -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.locale = locale
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.dateStyle = dateStyle
+        formatter.timeStyle = timeStyle
+        return formatter
+    }
+
+    /// 潛水記錄的日期時間顯示（Entry/Exit Time 等）：純數字日期，不夾雜語意月份字詞
+    /// （越南文「ngày 4 thg 6, 2026」量測到全語系最長 24 字元，UI 卡片寬度會裁切/換行；
+    /// 改用數字後跟其他語言一致，也更短）。12/24 小時制仍尊重各語系自然慣例
+    /// （英文 AM/PM、韓文 오전/오후 等不受影響，那是時制慣例不是月份字詞問題）。
+    /// 一樣強制 Gregorian 曆法，理由同 `dateFormatter(dateStyle:timeStyle:)`。
+    func numericDateTimeFormatter() -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.locale = locale
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.setLocalizedDateFormatFromTemplate("yMdjm")
+        return formatter
+    }
+
+    var calendar: Calendar {
+        var cal = Calendar(identifier: .gregorian)
+        cal.locale = locale
+        return cal
+    }
 }

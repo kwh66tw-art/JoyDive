@@ -86,7 +86,7 @@ struct DiveRowView: View {
     /// - Thai：有自己月份縮寫（ม.ค. / ก.พ. 等），字短不折行，保留本地習慣
     /// - 其餘（歐洲、越南等）：日/月/年習慣，純數字已足夠清楚
     private var useAbbreviatedMonth: Bool {
-        let code = Locale.current.language.languageCode?.identifier ?? ""
+        let code = languageManager.locale.language.languageCode?.identifier ?? ""
         return ["zh", "ja", "ko", "en", "th"].contains(code)
     }
 
@@ -98,22 +98,26 @@ struct DiveRowView: View {
                 .monospacedDigit()
 
             // CJK + 英文：縮寫月份；其他語系：純數字
+            // 用 accessibleSecondary 不用系統 .secondary：Dark Mode 真機截圖用 WCAG
+            // 公式實測 .secondary 在這個 caption 字級只有 3.91:1，低於 4.5:1 門檻
+            // （2026-06-01 稽核已在 DetailRow/StatsHeader 等處修過同款問題，這個
+            // dateBlock 當時漏掉，2026-07-27 模擬器像素取色複查抓到）。
             if useAbbreviatedMonth {
                 Text(dive.dateTime, format: .dateTime.month(.abbreviated))
                     .font(.caption.uppercaseSmallCaps())
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.accessibleSecondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             } else {
                 Text(String(Calendar.current.component(.month, from: dive.dateTime)))
                     .font(.caption.uppercaseSmallCaps())
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.accessibleSecondary)
             }
 
             // 純數字年份，避免各語系「年」後綴折行
             Text(String(Calendar.current.component(.year, from: dive.dateTime)))
                 .font(.caption2)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.accessibleSecondary)
         }
         .frame(width: 46)
     }
@@ -170,9 +174,7 @@ struct DiveRowView: View {
     // MARK: - Accessibility
 
     private var accessibilityDescription: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .medium
-        let dateStr = dateFormatter.string(from: dive.dateTime)
+        let dateStr = languageManager.dateFormatter(dateStyle: .medium).string(from: dive.dateTime)
         return "\(dateStr), \(locationText), \(unitSystem.formatDepth(dive.maxDepth)), \(durationText)"
     }
 

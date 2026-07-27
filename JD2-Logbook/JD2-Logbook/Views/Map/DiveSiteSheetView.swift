@@ -27,6 +27,7 @@ struct DiveSiteSheetView: View {
     // AppLanguageManager.swift 文件註解的「四段式解法」③，全面改走
     // languageManager.localized(_:) 手動查表。
     @Environment(AppLanguageManager.self) private var languageManager
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     // MARK: - Computed helpers
 
@@ -136,41 +137,29 @@ struct DiveSiteSheetView: View {
 
     // MARK: - Key Stats Row
 
+    // WCAG 1.4.10 Reflow：.compact style 的 DiveStatCell 連 minimumScaleFactor 都沒有
+    // （scalesToFit: false），accessibility 級 Dynamic Type 下 3 欄硬擠一列比 .hero
+    // 版本更容易溢出重疊。DiveStatCell 是 DiveKit 共用元件，不在本 App 動；App 層
+    // 自己決定排列方式，一般字級維持 HStack 三欄，accessibility 字級改直式。
     private var keyStatsRow: some View {
-        HStack(spacing: 0) {
-            DiveKitUI.DiveStatCell(
-                value: String(format: "%.1f", unitSystem.convertDepth(metersValue: dive.maxDepth)),
-                unit:  unitSystem.depthSymbol,
-                label: "Max Depth",
-                icon:  "arrow.down.to.line",
-                color: .accentColor,
-                secondaryColor: .accessibleSecondary,
-                style: .compact
-            )
-
-            Divider().frame(height: 44)
-
-            DiveKitUI.DiveStatCell(
-                value: durationFormatted,
-                unit:  "",
-                label: "Dive Time",
-                icon:  "timer",
-                color: .orange,
-                secondaryColor: .accessibleSecondary,
-                style: .compact
-            )
-
-            Divider().frame(height: 44)
-
-            DiveKitUI.DiveStatCell(
-                value: String(format: "%.0f", unitSystem.convertTemperature(celsiusValue: dive.waterTemperature)),
-                unit:  unitSystem.temperatureSymbol,
-                label: "Water Temp",
-                icon:  "thermometer.medium",
-                color: .cyan,
-                secondaryColor: .accessibleSecondary,
-                style: .compact
-            )
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: 10) {
+                    depthStatCell
+                    Divider()
+                    timeStatCell
+                    Divider()
+                    tempStatCell
+                }
+            } else {
+                HStack(spacing: 0) {
+                    depthStatCell
+                    Divider().frame(height: 44)
+                    timeStatCell
+                    Divider().frame(height: 44)
+                    tempStatCell
+                }
+            }
         }
         .padding(.vertical, 6)
         #if os(iOS)
@@ -179,6 +168,42 @@ struct DiveSiteSheetView: View {
         .background(Color(NSColor.controlBackgroundColor))
         #endif
         .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+
+    private var depthStatCell: some View {
+        DiveKitUI.DiveStatCell(
+            value: String(format: "%.1f", unitSystem.convertDepth(metersValue: dive.maxDepth)),
+            unit:  unitSystem.depthSymbol,
+            label: "Max Depth",
+            icon:  "arrow.down.to.line",
+            color: .accentColor,
+            secondaryColor: .accessibleSecondary,
+            style: .compact
+        )
+    }
+
+    private var timeStatCell: some View {
+        DiveKitUI.DiveStatCell(
+            value: durationFormatted,
+            unit:  "",
+            label: "Dive Time",
+            icon:  "timer",
+            color: .orange,
+            secondaryColor: .accessibleSecondary,
+            style: .compact
+        )
+    }
+
+    private var tempStatCell: some View {
+        DiveKitUI.DiveStatCell(
+            value: String(format: "%.0f", unitSystem.convertTemperature(celsiusValue: dive.waterTemperature)),
+            unit:  unitSystem.temperatureSymbol,
+            label: "Water Temp",
+            icon:  "thermometer.medium",
+            color: .cyan,
+            secondaryColor: .accessibleSecondary,
+            style: .compact
+        )
     }
 
     // MARK: - Full Details Section

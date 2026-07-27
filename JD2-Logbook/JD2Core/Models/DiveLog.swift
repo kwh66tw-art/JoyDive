@@ -212,14 +212,6 @@ final class DiveLog {
         return samples
     }
 
-    /// 深度與時間的平均下潛速率 (m/min)
-    var averageAscentRate: Double {
-        guard diveTimeSeconds > 0 else { return 0 }
-        // 簡化計算：假設潛水時間內均勻上升
-        let timeInMinutes = Double(diveTimeSeconds) / 60.0
-        return maxDepth / timeInMinutes
-    }
-
     /// 解碼後的匯入原始資料（Detail view「原始資料」區塊用）
     var importExtras: [String: String] {
         guard let data = importExtrasJSON.data(using: .utf8),

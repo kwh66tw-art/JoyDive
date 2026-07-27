@@ -115,42 +115,45 @@ struct DiveAnalysisView: View {
                     // 一個刻度標籤寬度，深度夠大（三位數字寬度變寬）時偏移更明顯——
                     // 對照 JD2-Ultra companion 的同款程式碼，是同一個從未被抓到的 bug，
                     // 已記錄到 SYNC_TO_JD2-ULTRA.md。這裡統一用 plotFrame.minX 校正。
-                    let plotFrame = geo[proxy.plotAreaFrame]
-
-                    Rectangle()
-                        .fill(Color.clear)
-                        .contentShape(Rectangle())
-                        .gesture(
-                            DragGesture(minimumDistance: 0)
-                                .onChanged { value in
-                                    select(atX: value.location.x, proxy: proxy, plotFrame: plotFrame)
+                    // plotFrame（iOS 17 起取代已棄用的 plotAreaFrame）是 Anchor<CGRect>?，
+                    // 用 if let 而非強制解包，理論上 chartOverlay 觸發時圖表已完成佈局、
+                    // 這裡幾乎不會是 nil，但沒必要冒非必要的強制解包崩潰風險。
+                    if let plotFrame = proxy.plotFrame.map({ geo[$0] }) {
+                        Rectangle()
+                            .fill(Color.clear)
+                            .contentShape(Rectangle())
+                            .gesture(
+                                DragGesture(minimumDistance: 0)
+                                    .onChanged { value in
+                                        select(atX: value.location.x, proxy: proxy, plotFrame: plotFrame)
+                                    }
+                                // 放開後保留選取（不自動收回），讓使用者能停下來仔細看
+                                // callout／組織艙圖；下次點選其他時間點時才會更新。
+                            )
+                        // v1.2 #3：曲線警示標示（紅點＝上升過速、橘點＝強制安全停留）——
+                        // 暫時關閉（showWarningEvents，見型別開頭註解），同樣要用 plotFrame
+                        // 校正，否則會踩到跟選取線一樣的偏移 bug，重新開放時保留這段校正邏輯。
+                        if showWarningEvents {
+                            ForEach(Array(replay.warnings.enumerated()), id: \.offset) { _, warning in
+                                if let wx = proxy.position(forX: warning.timeSeconds / 60.0),
+                                   let wy = proxy.position(forY: -warning.depthMeters) {
+                                    Circle()
+                                        .fill(warningColor(warning.kind))
+                                        .frame(width: 11, height: 11)
+                                        .overlay(Circle().stroke(.white, lineWidth: 1.5))
+                                        .position(x: plotFrame.minX + wx, y: plotFrame.minY + wy)
                                 }
-                            // 放開後保留選取（不自動收回），讓使用者能停下來仔細看
-                            // callout／組織艙圖；下次點選其他時間點時才會更新。
-                        )
-                    // v1.2 #3：曲線警示標示（紅點＝上升過速、橘點＝強制安全停留）——
-                    // 暫時關閉（showWarningEvents，見型別開頭註解），同樣要用 plotFrame
-                    // 校正，否則會踩到跟選取線一樣的偏移 bug，重新開放時保留這段校正邏輯。
-                    if showWarningEvents {
-                        ForEach(Array(replay.warnings.enumerated()), id: \.offset) { _, warning in
-                            if let wx = proxy.position(forX: warning.timeSeconds / 60.0),
-                               let wy = proxy.position(forY: -warning.depthMeters) {
-                                Circle()
-                                    .fill(warningColor(warning.kind))
-                                    .frame(width: 11, height: 11)
-                                    .overlay(Circle().stroke(.white, lineWidth: 1.5))
-                                    .position(x: plotFrame.minX + wx, y: plotFrame.minY + wy)
                             }
                         }
-                    }
 
-                    // 選取豎線
-                    if let point = selectedPoint,
-                       let x = proxy.position(forX: point.timeSeconds / 60.0) {
-                        Rectangle()
-                            .fill(Color.accentColor.opacity(0.6))
-                            .frame(width: 1.5, height: plotFrame.height)
-                            .position(x: plotFrame.minX + x, y: plotFrame.midY)
+                        // 選取豎線
+                        if let point = selectedPoint,
+                           let x = proxy.position(forX: point.timeSeconds / 60.0) {
+                            Rectangle()
+                                .fill(Color.accentColor.opacity(0.6))
+                                .frame(width: 1.5, height: plotFrame.height)
+                                .position(x: plotFrame.minX + x, y: plotFrame.midY)
+                        }
                     }
                 }
             }
@@ -228,11 +231,19 @@ struct DiveAnalysisView: View {
         // 對不齊。先加 `.lineLimit(1)` 讓過長的 label 用省略號截斷、不折行，維持列高
         // 一致；翻譯內容本身是否要縮短（跟數值一樣改成單一絕對字級或改語意）留給
         // 翻譯校對決定，這裡只處理版面不會壞掉。
+        //
+        // ⚠️ 2026-07-26 真機回報：泰文 "No Deco" 被截斷成看不懂的 "No Deco..."——這是
+        // "No Deco" 這個 label 本身是安全相關資訊（免減壓時間），單純省略號截斷等於
+        // 讓使用者看不到內容，比縮小字級更糟。額外補 `.minimumScaleFactor`，讓過長的
+        // label 優先縮小字級塞進去、真的塞不下才觸發 lineLimit 省略號（雙重保險）。
+        // 這是翻譯內容長度無關的通用版面修法，另外也同一批把翻譯內容本身的多餘雙語
+        // 冗字修掉（見 V1_2_BACKLOG）。
         VStack(spacing: 3) {
             label
                 .font(.caption2)
                 .foregroundStyle(Color.accessibleSecondary)
                 .lineLimit(1)
+                .minimumScaleFactor(0.65)
             Text(verbatim: value)
                 .font(.footnote.weight(.semibold).monospacedDigit())
                 .foregroundStyle(accent.textColor)

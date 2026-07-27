@@ -225,6 +225,10 @@ struct DiveLogListView: View {
 struct StatsHeaderView: View {
     let dives: [DiveLog]
 
+    // v1.2 #4 遺漏的欄位：deepestDive 原本寫死 "%.1fm"，英制模式下數字/單位都沒換算。
+    @AppStorage(UnitSystem.storageKey) private var unitSystem = UnitSystem.metric
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var totalDives: Int { dives.count }
 
     /// 總時間以「Xh Ym」呈現（不足 1 小時只顯示 Ym），比小數點時數直覺
@@ -239,31 +243,45 @@ struct StatsHeaderView: View {
         dives.map(\.maxDepth).max() ?? 0
     }
 
+    // WCAG 1.4.10 Reflow：accessibility 級 Dynamic Type 下 3 欄硬擠一列會視覺重疊
+    // （2026-07-26 模擬器 AX5 實測抓到，同款問題見 DiveLogDetailView/DiveSiteSheetView）。
     var body: some View {
-        HStack(spacing: 0) {
-            StatCell(
-                value: "\(totalDives)",
-                label: "Dives",
-                icon: "figure.pool.swim"
-            )
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: 10) {
+                    StatCell(value: "\(totalDives)", label: "Dives", icon: "figure.pool.swim")
+                    Divider()
+                    StatCell(value: totalTimeText, label: "Total Time", icon: "timer")
+                    Divider()
+                    StatCell(value: unitSystem.formatDepth(deepestDive), label: "Deepest", icon: "arrow.down.to.line")
+                }
+            } else {
+                HStack(spacing: 0) {
+                    StatCell(
+                        value: "\(totalDives)",
+                        label: "Dives",
+                        icon: "figure.pool.swim"
+                    )
 
-            Divider()
-                .frame(height: 32)
+                    Divider()
+                        .frame(height: 32)
 
-            StatCell(
-                value: totalTimeText,
-                label: "Total Time",
-                icon: "timer"
-            )
+                    StatCell(
+                        value: totalTimeText,
+                        label: "Total Time",
+                        icon: "timer"
+                    )
 
-            Divider()
-                .frame(height: 32)
+                    Divider()
+                        .frame(height: 32)
 
-            StatCell(
-                value: String(format: "%.1fm", deepestDive),
-                label: "Deepest",
-                icon: "arrow.down.to.line"
-            )
+                    StatCell(
+                        value: unitSystem.formatDepth(deepestDive),
+                        label: "Deepest",
+                        icon: "arrow.down.to.line"
+                    )
+                }
+            }
         }
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity)
