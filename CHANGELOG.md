@@ -31,6 +31,48 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-28 — v1.2 (Build 3)：iOS 送審駁回二次核查與修正、App Store 文案定版、iOS + macOS 雙平台送出審核
+
+- **5.1.2(i) 隱私追蹤聲明二次核查，發現「已修復」記錄與 ASC 實際狀態不符**：
+  `V1_2_BACKLOG.md` #1 先前記錄 2026-07-25 已在 ASC 後台將 Coarse
+  Location／Device ID／Usage Data 的追蹤用途改為 No，但本次直接在 ASC 網頁
+  逐格點開確認，三格的「Purpose」問卷實際仍勾選著「Third-Party
+  Advertising」（Apple 定義下這個勾選即等同宣告追蹤，與先前記錄的「used to
+  track: No」是不同的問卷欄位，先前的操作大概率是改到後面的追蹤問題但漏了
+  前面的用途勾選）。程式碼面複查結果不變（全專案無 ATT 實作、無 IDFA 存取、
+  AdMob 用預設 `Request()` 未傳遞定位/裝置資料、CoreLocation 僅本機一次性
+  `requestLocation()`、無任何網路請求程式碼），確認 App 本身沒有追蹤行為，
+  問題出在宣告本身。三格皆改為僅勾選「App Functionality」，逐一走完
+  Linked-to-identity（No）與 Tracking（No）兩個子問題後 Publish，並重新整理
+  頁面截圖驗證三格摘要皆顯示「Used for App Functionality」。
+- **2.3.6 Age Rating Advertising 二次確認**：先前記錄的「Advertising = Yes」
+  在 ASC 問卷內直接開啟確認為真，未變更。
+- **Declare Your Regulated Medical Device 新增聲明**（Apple 新增的強制欄位，
+  2027 年前 EU/EEA/UK/US 上架皆須回答）：判定 JoyDive² 不構成醫療器材（不
+  診斷/治療/監測疾病，組織艙飽和度為估算功能且文案已明確聲明「僅供參考，
+  不能取代你的潛水電腦錶」），回答 No。
+- **Build 3 (v1.2) 正式上傳並綁定**：iOS 端先前多次 Archive／上傳皆卡在
+  ASC 尚未收到新 build（先前挂著的是 Build 2／v1.0）；本次完成 Xcode
+  Archive → Distribute App → Upload（過程遇到 GoogleMobileAds／
+  UserMessagingPlatform 缺 dSYM 的無害警告，及一次可重試排除的 App Store
+  Connect Credentials Error 逾時），Build 3 上傳成功後在 ASC 移除舊 Build 2、
+  綁定 Build 3，Export Compliance 回答「None of the algorithms mentioned
+  above」。macOS 端另外走一次相同 Archive／Distribute 流程（macOS 1.0 為
+  已核准狀態，需先用 macOS App 旁的「+」建立全新 1.2 版本才能編輯欄位）。
+- **App Store 文案三語（English／Chinese Traditional／Japanese）定版套用**：
+  依 `docs/APPSTORE_COPY.md` 最終版本，將 Description／Keywords／
+  Promotional Text 套用到 iOS App 1.2 三語頁面；套用日文時一度誤操作
+  （語言下拉選單點擊未即時生效，文字打進了尚未真正切換過去的繁中頁面），
+  幸好尚未存檔即發現並改用重新整理捨棄，改以逐次確認下拉選單勾選狀態後才
+  輸入文字的方式修正流程。macOS App 1.2 另建版本後，比照套用同一份三語
+  文案＋新版 Screenshots（含使用者自行調整過的正確尺寸）＋What's New
+  文案。
+- **Review Notes**：iOS 版註明本次修正的兩項駁回理由（2.3.6／5.1.2(i)）
+  對應說明；macOS 版因非重審（1.0 為核准狀態的正常升級），改寫簡述本次
+  功能更新內容。
+- **兩平台皆已送出審核**：iOS App 1.2 (3)、macOS App 1.2 (3) 皆為
+  Waiting for Review。
+
 ### 2026-07-26 — v1.2 (Build 3)：語系全域掃除、Trimix 存檔資料損毀修復、單位換算補完、稽核報告雙輪查核
 
 - **語言切換殘留問題全域掃除**：確認舊病根因——`String(localized:)` 讀系統

@@ -93,16 +93,23 @@
 - [x] Archive 成功 — 2026-07-27 PM 確認已跑過 Product → Archive 並安裝至 iPhone 16
 
 ### App Store Connect
-- [ ] App 名稱、副標題填寫 — 內容已在 `docs/APPSTORE_COPY.md` 寫好（「JoyDive²」／「Log Every Dive, Every Story」），但該檔是 v1.0 時期撰寫（「What's New」段落還是 v1.0 內容），送審前建議快速過一次確認名稱/副標題本身不用改，只有 What's New 需要更新成 v1.2 內容
-- [ ] 描述（繁中 + 英文）— `docs/APPSTORE_COPY.md` 已有完整草稿（繁中/英文，還多附一份日文），內容涵蓋功能/隱私/語言，主體應仍適用；同上，「What's New」段落是 v1.0 內容，送審前要換成 v1.2 的
-- [ ] 關鍵字填寫 — `docs/APPSTORE_COPY.md` 已有草稿：`dive log,scuba,logbook,underwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`；沒有反映 v1.1/v1.2 新增的匯入格式（Shearwater、DAN DL7、Divesoft DLF、Garmin Connect JSON 等），建議送審前補進去
-- [ ] 截圖（iPhone 6.7"、iPad 可選）上傳 — `_ScreenCaptures/` 資料夾有舊截圖（2026-06 v1.0 時期，`docs/reports/R-2026-07-18-總體檢報告.md` 標記為「素材候選、追蹤中」非定案），這輪 UI 有變動（配重/氣瓶壓力必填星號、Trimix footer 等），舊截圖需要重拍；目前完全沒有 iPad 截圖
+- [x] App 名稱、副標題填寫 — 「JoyDive²」／「Log Every Dive, Every Story」沿用不變，確認正確
+- [x] 描述（繁中 + 英文 + 日文）— 2026-07-28 依 `docs/APPSTORE_COPY.md` 最終版套用至 iOS + macOS 兩平台三語頁面
+- [x] What's New（版本說明）— 2026-07-28 三語套用（iOS 因非升級版本無此欄位；macOS 因 1.0 為已核准版本、算正常升級，故有此欄位）
+- [x] 關鍵字填寫 — 2026-07-28 三語套用最終版（`dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`，`underwater` 已換成 `Shearwater`），iOS + macOS 兩平台皆已套用
+- [x] 截圖（iPhone、Mac）上傳 — 三語（EN/繁中/日文）皆已重拍並確認尺寸正確，iOS + macOS 兩平台皆已上傳
 - [x] App 圖示 1024×1024 上傳 — `Assets.xcassets/AppIcon.appiconset` 已有 light/dark/tinted/mac 四組 1024px（2026-06-06 建立，v1.0 已用此圖示送審且通過），`V1_2_BACKLOG.md` #2 PM 已明確決定「icon 全盤 review 延後到下一版，非本輪阻塞項」，此輪維持現狀即可
-- [ ] 隱私政策 URL 填寫 — URL 已確認：`https://kwh66tw-art.github.io/JoyDive/logbook/privacy`（`docs/APPSTORE_COPY.md` 記錄），來源 `logbook/privacy.md` 2026-07-25 才因應 ASC 駁回原因修過內容（見 `V1_2_BACKLOG.md` #1），內容是新的，但**這格本身有沒有正確貼回 ASC 表單建議手動確認一次**（駁回原因是隱私權「問卷」誤標，不是 URL 本身，URL 大概率沿用 v1.0 就有效，但值得順手看一眼）
-- [x] 年齡分級填寫 — 2026-07-25 重新填寫（Advertising=Yes，其餘功能性問題如實回答 No），非原本的 4+ 單一勾選，實際等級由問卷結果決定
-- [x] 廣告聲明勾選（含廣告）— 2026-07-25 Age Rating 問卷 Advertising 已改 Yes
-- [x] App Privacy 問卷：Location／Device ID／Usage Data 的「used to track」改為 No — 2026-07-25 完成（原本誤標為 Yes 是這次送審駁回原因之一，見 `V1_2_BACKLOG.md` #1）
+- [x] 隱私政策 URL 填寫 — `https://kwh66tw-art.github.io/JoyDive/logbook/privacy`，2026-07-28 於 ASC App Privacy 頁面現場確認存在且正確
+- [x] 年齡分級填寫 — Advertising=Yes，其餘功能性問題如實回答 No，2026-07-28 於 ASC 現場重新開啟問卷逐項確認仍然正確
+- [x] 廣告聲明勾選（含廣告）— Age Rating 問卷 Advertising=Yes，2026-07-28 現場確認
+- [x] App Privacy 問卷：Location／Device ID／Usage Data 的追蹤宣告 — **2026-07-25 記錄「已改為 No」但實為誤記**：2026-07-28 送審前逐格重新核對 ASC 現況，發現三格的「Purpose」問卷實際仍勾著「Third-Party Advertising」（與程式碼查核結果不符，App 本身無 ATT/IDFA/追蹤行為），2026-07-25 的操作應是漏改了這一格。2026-07-28 已重新逐格取消「Third-Party Advertising」、改勾「App Functionality」，Linked-to-identity／Tracking 兩問確認皆為 No，Publish 後重新整理頁面截圖驗證三格皆顯示「Used for App Functionality」。詳見 `docs/reports/R-2026-07-28-iOS送審駁回二次核查與修正.md`
+- [x] Declare Regulated Medical Device 聲明 — 2026-07-28 新增欄位，回答 No（App 不構成醫療器材）
+- [x] Export Compliance — 2026-07-28 iOS + macOS Build 3 皆回答「None of the algorithms mentioned above」
 - [ ] IAP 項目在 App Store Connect 建立並審核通過 — 沒找到相關文件紀錄，需要 PM 直接在 ASC 後台確認狀態
+
+### 送審提交
+- [x] **iOS App 1.2 (Build 3) 已送出審核** — 2026-07-28，狀態 Waiting for Review（修正 2.3.6／5.1.2(i) 兩項駁回理由後 Resubmit）
+- [x] **macOS App 1.2 (Build 3) 已送出審核** — 2026-07-28，狀態 Waiting for Review（macOS 1.0 為已核准狀態，此為正常升級非重審）
 
 ---
 

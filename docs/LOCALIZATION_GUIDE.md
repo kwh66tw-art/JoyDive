@@ -76,15 +76,30 @@ Text("Max Depth")
 
 ## 語言切換方式
 
-本 App 使用 **iOS 系統語言設定**（App Language per-app setting，iOS 13+），不在 App 內自行實作切換。
+> **2026-07-28 更正**：本節原描述 v1.0 規劃階段的做法（導向 iOS 系統設定），
+> **v1.1 起已改為 App 內建切換器**，以下為現況。
 
-Settings → App Language 入口已在 `SettingsView` 中實作：
+本 App 使用 **App 內建語言切換器**（`Services/AppLanguageManager.swift`），
+獨立於系統設定，SettingsView 有語言 Picker，切換後**立即生效、不需要重開
+App**。做法比照 JD2-ultra 的「四段式解法」，四件事同時成立才能涵蓋所有文字
+（純 SwiftUI 內容 + navigationTitle/tabItem 等系統層 chrome 都要換）：
 
-```swift
-Link(destination: URL(string: UIApplication.openSettingsURLString)!) {
-    Label("App Language", systemImage: "globe")
-}
-```
+1. 行程級 `AppleLanguages` UserDefaults override（涵蓋分享面板等系統殘餘，
+   下次啟動 100% 生效）
+2. root 掛 `.environment(\.locale, ...)`（一般 `Text`/`Label` 立即切換）
+3. `AppLanguageManager.localized(_:)` 手動查表（`navigationTitle`／`tabItem`
+   這類 `\.locale` 蓋不到的地方）
+4. `UserDefaults` 持久化（下次啟動記住選擇）
+
+⚠️ **`String(localized:)` 讀系統 `Locale.current`，不會跟著即時切換**——新寫
+的 View 一律用 `Text(LocalizedStringKey)` 或 `languageManager.localized(_:)`，
+不要用 `String(localized:)`。組字串/`accessibilityLabel`/`TextField`
+placeholder 尤其容易誤用，這是專案裡反覆發生的病灶（詳見
+`docs/KNOWN_ISSUES.md`「語言切換不生效」章節）。非 SwiftUI View 的型別（無
+Environment 可用）要嘛把已解析字串從呼叫端傳進去，要嘛整個型別改吃
+`AppLanguageManager` 當參數。`DateFormatter`/`Calendar`/裸 `.formatted()`
+同樣不吃 `\.environment(\.locale)`，一律改用 `AppLanguageManager` 的
+`dateFormatter(dateStyle:timeStyle:)`／`calendar` helper。
 
 ---
 

@@ -1,6 +1,7 @@
 # JD2-Logbook 架構設計
 
-**最後更新**：2026-07-18（反映 v1.1：JD2Core 整包替換、State/ 新資料夾、10 個新格式解析器、ImportCoordinator/MinimalZipReader）
+**最後更新**：2026-07-28（反映 F5/F6 遷移後 + v1.2：DiveKit/DiveImportKit 改為家族共用
+SPM 套件外部引用，本地 JD2Core/Algorithm 僅存 DiveReplayEngine.swift，State/ 資料夾已移除）
 
 ---
 
@@ -14,16 +15,20 @@
                    │ @Query / @Environment
 ┌──────────────────▼──────────────────────┐
 │              JD2Core                    │
-│ ┌────────┐┌─────────┐┌────────┐┌───────┐│
-│ │ Models ││Importers││Algorithm││ State ││
-│ │SwiftData││Parsers ││(部分死碼)││(快照) ││
-│ └────────┘└─────────┘└────────┘└───────┘│
+│ ┌────────┐┌──────────┐┌────────────────┐│
+│ │ Models ││Importers ││Algorithm       ││
+│ │SwiftData││(Adapter)││(DiveReplayEngine││
+│ │        ││         ││ 僅此一檔)       ││
+│ └────────┘└──────────┘└────────────────┘│
 │              Utilities                   │
-└──────────────────┬──────────────────────┘
-                   │
-┌──────────────────▼──────────────────────┐
-│           SwiftData / SQLite            │
-└─────────────────────────────────────────┘
+└──────────────────┬───────────┬──────────┘
+                   │           │ SPM local path
+┌──────────────────▼──────┐ ┌──▼───────────────────┐
+│    SwiftData / SQLite   │ │ DiveKit / DiveKitUI   │
+└──────────────────────────┘ │ DiveImportKit         │
+                              │（_JD2-family/，家族   │
+                              │ 三個 App 共用）        │
+                              └───────────────────────┘
 ```
 
 ---
@@ -42,57 +47,29 @@
 | `DiveEnvironment.swift` | 潛水環境枚舉（海水、淡水、高鹽）。 |
 | `SimulatedDiveProfile.swift` | 匯入時若來源無逐秒剖面樣本，用於合成模擬剖面（v1.1 新增）。 |
 
-### JD2Core/State（v1.1 新增資料夾）
+### ~~JD2Core/State~~（F5 已移除，2026-07-18）
 
-| 檔案 | 說明 |
-|------|------|
-| `DiveComputerState.swift` | 潛水電腦運算狀態快照（與 DiveKit 同源檔，見下方「與 DiveKit 的關係」）。 |
-| `SurfaceStatus.swift` | 水面狀態（禁飛、系列潛水）快照。 |
-| `LogSummary.swift` | 日誌摘要持久化。 |
+v1.1 曾新增此資料夾（`DiveComputerState.swift`／`SurfaceStatus.swift`／
+`LogSummary.swift`，潛水電腦運算狀態/水面狀態/日誌摘要快照），F5 遷移時
+這三個型別已上收進統一 `DiveKit` 套件本體（`DiveKit/Sources/DiveKit/
+{DiveComputerState,SurfaceStatus,LogSummary}.swift`，供三個 App 共用），
+本地資料夾已完全移除，改為 `import DiveKit` 直接使用。
 
-> 這三個檔案是 DiveKit 演算法核心的資料模型層，隨 Algorithm/ 一併凍結（見下）。
+### JD2Core/Importers（F6 已完成遷移，2026-07-19：全部解析器搬遷至 DiveImportKit）
 
-### JD2Core/Importers（v1.1 大幅擴充：新增 10 個格式解析器）
+現在只有 3 個檔案，v1.1 時代 9+9 個 struct 內嵌解析器＋`MinimalZipReader` 等
+全部已搬遷到家族共用套件 `DiveImportKit`（15 種格式，本 repo 已無任何本地
+解析器/去重邏輯拷貝）：
 
-#### DiveLogImporter Protocol
+| 檔案 | 行數 | 說明 |
+|---|---|---|
+| `DiveImportKitAdapter.swift` | ~454 行 | **全 App 唯一 import DiveImportKit 的進入點**。把家族層 `DiveImportKit.DiveLogImporter`/`DiveLogFormat` 轉接成 App 本地型別。 |
+| `DiveLogImporter.swift` | ~308 行 | 本地 `DiveLogImportError` enum（與 `DiveImportKit.DiveLogImportError` 同名同結構，errorDescription 樣板文字需與 Kit 保持同步，見 `SYNC_TO_JD2-ULTRA.md` #8 記錄的維護陷阱）＋本地 `DiveLogImporter` protocol 定義。 |
+| `ImportCoordinator.swift` | ~322 行 | 統一匯入流程協調器：檔案驗證、格式自動偵測、解析、資料庫儲存、批次去重（App 層邏輯，非 Kit 範圍）。 |
 
-```swift
-protocol DiveLogImporter {
-    static var supportedExtensions: [String] { get }
-    func canImport(fileURL: URL) -> Bool
-    func importDives(from fileURL: URL) throws -> [DiveLog]
-}
-```
-
-#### 格式支援現況（`DiveLogFormat` enum，22 格式宣告）
-
-**舊架構遺留**——9 個解析器以 struct 內嵌在單一巨檔 `DiveLogImporter.swift`（2,482 行）：
-UDDF、Peregrine、Subsurface CSV、Garmin FIT（Descent）、Garmin Connect JSON、Subsurface XML、
-Suunto JSON、Oceanic、Seabear CSV。
-
-**v1.1 新增**——9 個解析器獨立成檔（`file_format_research` 18 格式盤點的產出）：
-
-| 解析器 | 格式 | 副檔名 | 備註 |
-|---|---|---|---|
-| `SuuntoDM5XMLParser` | Suunto DM5 | `.xml` | DM4/DM5 桌面軟體、D4i 錶款匯出 WCF XML |
-| `SuuntoSMLParser` | Suunto SML | `.xml` | Moveslink/Moveslink2 快取 |
-| `SuuntoSDEParser` | Suunto SDE | `.zip` 內含 | DM5 加密備份包，需 `MinimalZipReader` 解壓 |
-| `DANDL7Parser` | DAN DL7 | 純文字 | Divers Alert Network 管線分隔格式 |
-| `DivesoftDLFParser` | Divesoft DLF | 二進位 | Freedom/Liberty 專有格式 |
-| `ReefnetSensusParser` | Reefnet Sensus | `.csv`/`.dat` | Sensus 採樣格式 |
-| `DivingLogSQLiteParser` | Diving Log 6.0 | `.sql`/`.sqlite`/`.db` | 實際為 SQLite 資料庫 |
-| `ShearwaterXMLParser` | Shearwater | `.xml` | 取代舊版內嵌解析器 |
-
-**已宣告未實作**（`DiveLogFormat` 有 case、副檔名、優先權，但無對應 parser struct）：
-Scubapro（LogTRAK）、Mares（Dive Organizer）、HW OSTC、Cressi（PC Interface）——
-研究樣本在 `_JD2-family/dive-log-samples/_未實作格式研究樣本/`，供未來實作參考。
-
-#### 支援工具（v1.1 新增）
-
-| 檔案 | 說明 |
-|---|---|
-| `MinimalZipReader.swift` | 純 Swift 跨平台 ZIP 讀取器（僅讀單一具名條目）。取代原本 UDDF 靠 `Process` 呼叫系統 `unzip` 的作法——iOS 沙盒無法執行任意可執行檔，此為 iOS 平台的關鍵缺口修復，Suunto SDE 亦共用此能力。 |
-| `ImportCoordinator.swift` | 統一匯入流程協調器：檔案驗證、格式自動偵測、解析、資料庫儲存的完整流程；批次匯入的去重邏輯所在（SYNC #2 已修復同批次互相漏檢問題）。 |
+發現匯入解析器 bug（格式解析錯誤、去重邏輯問題）一律回 `DiveImportKit`
+（`_JD2-family/DiveImportKit`，獨立 git repo）修，不得在本 repo 本地修改
+繞道（家族鐵律 3，單一戰場）。目前引用版本見 `_JD2-family/F-02-COMPAT_MATRIX.md`。
 
 #### 測試樣本統一管理（2026-07-18）
 
@@ -100,23 +77,21 @@ Scubapro（LogTRAK）、Mares（Dive Organizer）、HW OSTC、Cressi（PC Interf
 已集中至家族共用目錄 `_JD2-family/dive-log-samples/`（供 ultra 等其他專案未來重用），
 測試檔的 fixture 路徑已同步更新。詳見 `_JD2-family/F-00-文件登錄表.md`。
 
-### JD2Core/Algorithm ⚠️ 部分死碼，勿修改
+### JD2Core/Algorithm（F5 已完成遷移，2026-07-18）
 
-```
-Buhlmann.swift / DiveEngine.swift / DecoCalculator.swift / DivePlanner.swift /
-FreeDive.swift / GuidanceBanner.swift / OxygenToxicity.swift
-```
+現在**僅存 `DiveReplayEngine.swift`** 一個檔案。原本 v1.1 曾有的本地 fork
+（`Buhlmann.swift`／`DiveEngine.swift`／`DecoCalculator.swift`／
+`DivePlanner.swift`／`FreeDive.swift`／`GuidanceBanner.swift`／
+`OxygenToxicity.swift`，與 Ultra 側稽核已知 9 項安全級問題同源）已於 F5
+里程碑**整包刪除**，改為 `import DiveKit` 使用家族統一套件（SPM local
+path 引用 `../../_JD2-family/DiveKit`，見下方「SPM 依賴」）。演算法問題
+發現後一律回統一 DiveKit 修（單一戰場，見 `../CLAUDE.md` 家族鐵律），
+**不得在本 repo 繞道本地修改**。
 
-這些檔案與 `AppProject/DiveKit`（家族統一演算法核心）同源，但**目前無任何呼叫端引用，
-是休眠死碼**，且對應 Ultra 側稽核已知 **9 項安全級問題尚未修復**（見 `V1_1_BACKLOG.md`
-#4/#5）。一旦被 UI 接上會全部從休眠變成活的風險程式碼。
-
-**F5 里程碑**（Logbook v1.1 送審後）會把這整組檔案換成 SPM 引用 `../DiveKit`，
-詳見 `_JD2-family/F-01-FAMILY_ROADMAP.md`。**在 F5 之前，這些檔案凍結、不得修改**
-（家族決策 `_JD2-family/decisions/2026-07-17_F4-JD2Core評估結論.md`）。
-
-`DiveReplayEngine.swift` 是例外——它是本 repo**現行使用**的日誌回放引擎（匯入後計算
-NDL/減壓狀態摘要），語意與即時電腦不同，**不隨 F5 遷移**，繼續留在 JD2Core。
+`DiveReplayEngine.swift` 是**本 repo 專屬、現行使用**的日誌回放引擎（匯入後
+計算 NDL/減壓狀態摘要），語意與即時電腦不同，`import DiveKit` 呼叫
+`Buhlmann`/`AlgorithmConstants` 等家族核心型別，本身不隨家族遷移（非演算法
+本體，是 Logbook 特有的剖面重放邏輯）。
 
 ### JD2Core/Utilities
 
@@ -133,31 +108,43 @@ NDL/減壓狀態摘要），語意與即時電腦不同，**不隨 F5 遷移**�
 
 ## SwiftData Schema
 
-目前版本（v1.1）欄位（節錄；完整定義見 `DiveLog.swift`，v1.1 additive 新增數個欄位＋預設值，
-lightweight migration 即足夠，無需額外 migration 指引）：
+實際欄位（核對 `DiveLog.swift` 現況，非 embedded 型別而是多數以字串/JSON 存儲，
+供匯入器彈性寫入不同來源格式）：
 
 ```
-DiveLog
-├── id: UUID
+DiveLog（@Model）
 ├── dateTime: Date
-├── duration: TimeInterval        (秒)
-├── maxDepth: Double              (公尺)
-├── avgDepth: Double?             (v1.1 新增)
-├── waterTemperature: Double?     (攝氏)
+├── location: String
+├── latitude / longitude: Double?
+├── maxDepth: Double                    (公尺)
+├── avgDepth: Double                    (公尺；0 = 未記錄，additive 欄位)
+├── diveTimeSeconds: Int
+├── entryTime / exitTime: Date?
+├── gasMixJSON: String                  (GasMix enum 的 JSON 編碼，非 embedded)
+├── waterTemperature: Double            (攝氏)
 ├── airTemperature: Double?
-├── location: String?
-├── latitude: Double?
-├── longitude: Double?
-├── gasMix: GasMix               (embedded)
-├── diveEnvironment: DiveEnvironment
-├── notes: String?
-├── importExtrasJSON: String?     (v1.1 新增：非標準欄位保留，供匯入格式擴充)
-├── sourceDevice: String?         (v1.1 新增：裝置欄位)
-└── profileSamples: Data?        (JSON 編碼的 [DiveProfileSample])
+├── environmentType: String             ("seawater"/"freshwater"/"altitude")
+├── surfacePressureBar: Double = 1.0    (高海拔環境用)
+├── metersPerBar: Double = 10.0
+├── weather / surfaceCondition / waterflow: String?
+├── visibility: Double?                 (公尺)
+├── wetsuitThickness: String?
+├── weightTotal: Double?                (公斤)
+├── cylinderMaterial / cylinderSize: String?
+├── cylinderStartPressure / cylinderEndPressure: Double?  (bar)
+├── notes: String = ""
+├── profileSamplesJSON: String = "[]"   (JSON 編碼 [DiveProfileSample]，短 key t/d/w)
+├── sourceFormat: String = "manual"     (匯入來源格式標記)
+├── importExtrasJSON: String = "{}"     (匯入來源無對應欄位的原始資料 dump)
+├── createdAt / updatedAt: Date
 ```
+
+`DiveProfileSample`（非 `@Model`，profileSamplesJSON 內嵌結構）：
+`timeSeconds` (t) / `depthMeters` (d) / `waterTemp?` (w)。
 
 > ⚠️ `buddy` 欄位已於 commit `56dc1a3` 移除（v1.0 schema breaking change）。
-> 模擬器如有舊資料需 Erase All Content and Settings。
+> 模擬器如有舊資料需 Erase All Content and Settings。所有 v1.1 新增欄位皆為
+> additive + 有預設值，lightweight migration 即足夠。
 
 ---
 
@@ -205,27 +192,43 @@ MainTabView (NavigationSplitView)
 
 - 使用 `Localizable.xcstrings`（String Catalog，Xcode 15+）
 - 18 種語言：`zh-Hant`、`zh-Hans`、`en`、`en-GB`、`ja`、`ko`、`fr`、`de`、`es`、`it`、`nl`、`pt-PT`、`id`、`ms`、`vi`、`th`、`el`、`hr`
-- 語言切換：導向系統 iOS Settings（App Language）
+- 語言切換：v1.1 起改為 **App 內建切換器**（`Services/AppLanguageManager.swift`，
+  獨立於系統設定，SettingsView 內 Picker 選擇即時生效不需重開 App）。並非早期
+  v1.0 規劃的「導向系統 iOS Settings」做法——採「四段式解法」（行程級
+  `AppleLanguages` override／`.environment(\.locale)`／`localized(_:)` 手動查表／
+  `UserDefaults` 持久化）同時涵蓋 SwiftUI 內容與 navigationTitle/tabItem 等系統
+  層文字
 - 空字串問題根治：改用 `Text(verbatim: "")` 避免產生空 key
 
 ---
 
 ## SPM 依賴
 
-| 套件 | URL | 用途 |
+| 套件 | 來源 | 用途 |
 |------|-----|------|
-| `FitFileParser` | https://github.com/roznet/FitFileParser | Garmin FIT 二進位格式解析 |
-| `GoogleMobileAds` | https://github.com/googleads/swift-package-manager-google-mobile-ads | AdMob SDK v11 |
-| `GoogleUserMessagingPlatform` | https://github.com/googleads/swift-package-manager-google-user-messaging-platform.git | AdMob 同意框架（UMP） |
+| `DiveKit` | local path `../../_JD2-family/DiveKit`（家族共用，policy `.full`） | 減壓演算法核心（Buhlmann/DiveEngine/DecoCalculator 等），現行版本見 `_JD2-family/F-02-COMPAT_MATRIX.md` |
+| `DiveKitUI` | 同上 local path | 共用 UI 元件（`DiveProfileChartView`／`DiveStatCell` 等剖面圖/統計格） |
+| `DiveImportKit` | local path `../../_JD2-family/DiveImportKit`（家族共用） | 全部 15 種格式解析器＋去重邏輯，本 repo 僅保留 `DiveImportKitAdapter.swift` 作為唯一 import 進入點 |
+| `FitFileParser` | https://github.com/roznet/FitFileParser | Garmin FIT 二進位格式解析（DiveImportKit 內部依賴） |
+| `GoogleMobileAds` | https://github.com/googleads/swift-package-manager-google-mobile-ads | AdMob SDK |
+| `GoogleUserMessagingPlatform` | https://github.com/googleads/swift-package-manager-google-user-messaging-platform.git | AdMob 同意框架（UMP，目前已引入但程式碼未實際使用） |
 
 ---
 
-## 與 DiveKit／家族的關係
+## 與 DiveKit／DiveImportKit／家族的關係
 
-本專案是 JD2 家族三個 App 之一。共用演算法核心事實來源是 `AppProject/DiveKit`
-（ultra／immersion 已引用，見 `_JD2-family/F-02-COMPAT_MATRIX.md`）。Logbook 的
-`JD2Core/Algorithm/`＋`JD2Core/State/` 是**尚未遷移的凍結 fork**——詳見上方
-「JD2Core/Algorithm ⚠️」一節與 `_JD2-family/decisions/2026-07-17_F4-JD2Core評估結論.md`。
+本專案是 JD2 家族三個 App 之一。共用演算法核心與匯入解析器的事實來源分別是
+`_JD2-family/DiveKit`／`_JD2-family/DiveImportKit`（ultra／immersion 亦引用，
+見 `_JD2-family/F-02-COMPAT_MATRIX.md`）。
+
+- **F5（2026-07-18）已完成**：`JD2Core/Algorithm/` 的本地 fork 整包刪除，改為
+  `import DiveKit` 外部引用；`JD2Core/State/` 資料夾移除，三個型別上收進
+  DiveKit 本體。本 repo 目前**無任何演算法拷貝**。
+- **F6（2026-07-19）已完成**：全部 15 種格式解析器搬遷至 `DiveImportKit`，本
+  repo 僅留 `JD2Core/Importers/DiveImportKitAdapter.swift` 作為唯一 import
+  進入點。
+- 發現演算法或解析器問題一律回對應 Kit 修（單一戰場，見 `../CLAUDE.md` 家族
+  鐵律 3），不得在本 repo 繞道本地修改。
 
 ---
 

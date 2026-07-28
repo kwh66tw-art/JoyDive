@@ -152,10 +152,18 @@ struct PremiumAwareAdBanner: View {
     let adUnitID: String
     @State private var purchase = PurchaseManager.shared
 
+    private var shouldShowAd: Bool {
+        #if DEBUG
+        !purchase.isPremium && !purchase.debugForceHideAds
+        #else
+        !purchase.isPremium
+        #endif
+    }
+
     var body: some View {
         // macOS 無 AdMob 支援，廣告版位完全不渲染
         #if os(iOS)
-        if !purchase.isPremium {
+        if shouldShowAd {
             AdBannerView(adUnitID: adUnitID)
                 .frame(height: adBannerHeight)  // 固定高度，防止 BannerView 壓縮上方內容
                 .accessibilityHidden(true)  // 廣告對 VoiceOver 不具意義

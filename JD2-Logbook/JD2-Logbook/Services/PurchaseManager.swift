@@ -55,6 +55,24 @@ final class PurchaseManager {
     // MARK: Transaction Listener
     private var transactionListenerTask: Task<Void, Never>?
 
+    #if DEBUG
+    // MARK: - Debug-only ad override（僅供截圖/開發測試用）
+    //
+    // ⚠️ 不要綁在 isPremium 本身：先前版本的 Toggle getter 直接讀 isPremium，
+    // 但 refreshPurchaseStatus() 每次啟動都會用 Transaction.currentEntitlements
+    // 覆寫 isPremium，一旦這台裝置的 Apple ID 真的購買過（含 sandbox），
+    // 開關會被強制打回 true 且永遠關不掉（見 docs/ADMOB_IAP_SETUP.md）。
+    // 這裡改用完全獨立的 UserDefaults key + property，不經過 setIsPremium()，
+    // refreshPurchaseStatus() 不會碰到它。
+    private static let debugForceHideAdsKey = "DEBUG_forceHideAds"
+    private(set) var debugForceHideAds: Bool = UserDefaults.standard.bool(forKey: debugForceHideAdsKey)
+
+    func setDebugForceHideAds(_ value: Bool) {
+        debugForceHideAds = value
+        UserDefaults.standard.set(value, forKey: Self.debugForceHideAdsKey)
+    }
+    #endif
+
     // MARK: - Init
 
     private init() {

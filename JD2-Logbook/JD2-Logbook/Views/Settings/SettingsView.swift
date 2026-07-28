@@ -257,6 +257,15 @@ struct SettingsView: View {
                     #if os(macOS)
                     .buttonStyle(.borderless)
                     #endif
+
+                    // 獨立於真正的 isPremium/StoreKit 狀態，只影響廣告顯示，
+                    // 不會被 refreshPurchaseStatus() 覆寫回去（見 PurchaseManager 註解）。
+                    Toggle(isOn: Binding(
+                        get: { purchaseManager.debugForceHideAds },
+                        set: { purchaseManager.setDebugForceHideAds($0) }
+                    )) {
+                        Label("Simulate Premium (Hide Ads)", systemImage: "star.fill")
+                    }
                 }
                 #endif
 

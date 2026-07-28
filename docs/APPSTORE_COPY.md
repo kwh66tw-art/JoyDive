@@ -28,16 +28,19 @@ JoyDive² is the dive log that grows with you — from your very first dive to a
 Start logging right away. Enter depth, dive time, water temperature, gas mix, GPS coordinates, and notes by hand. JoyDive² is built for divers at every stage — you don't need a dive computer to keep a proper logbook.
 
 **Got a Dive Computer? Bring Everything In.**
-Supports UDDF, Subsurface XML / SSRF / CSV, Suunto JSON, Garmin FIT, Shearwater, Seabear, and more. Import your computer logs and they merge seamlessly alongside your manual entries — one complete, unified logbook.
+Supports major brands including UDDF, Subsurface, Suunto, Garmin, Shearwater, Seabear, and more. Import your computer logs and they merge seamlessly alongside your manual entries — one complete, unified logbook.
 
 **Every Detail, At a Glance**
-Each entry stores your depth profile, max depth, dive time, water temperature, gas mix (Air / Nitrox / Trimix), GPS coordinates, and notes. A clean list view and calendar make it easy to browse your full dive history.
+Each entry can hold depth profile, max & average depth, dive time, gas mix (Air / Nitrox / Trimix), water temperature and conditions, equipment (wetsuit, weights, cylinder), GPS coordinates, and notes. A clean list view and calendar make it easy to browse your full dive history.
+
+**Interactive Profile, With Tissue Saturation**
+Tap and drag anywhere on the dive profile chart to inspect that exact moment — depth, elapsed time, and an estimated tissue saturation level from the Bühlmann ZHL-16C model. A clearer picture of every dive, not a replacement for your dive computer.
 
 **Dive Site Map**
 GPS coordinates are automatically plotted on a map so you can see every dive site you've visited. Cluster display keeps the map readable no matter how many dives you've logged.
 
-**Go Ad-Free, Stay Focused**
-Core features are completely free. One-time purchase of "Remove Ads" ($1.99 USD) removes all ads permanently.
+**Go Ad-Free, Stay Focused (iOS)**
+Core features are completely free. On iOS, a one-time purchase of "Remove Ads" ($1.99 USD) removes all ads permanently.
 
 **Privacy First**
 All dive data is stored exclusively on your device and never uploaded to a server. Your dive log is yours alone.
@@ -49,16 +52,22 @@ Traditional Chinese, Simplified Chinese, English, Japanese, Korean, French, Germ
 
 ## Keywords (100 characters, comma-separated, no words already in App Name)
 
-dive log,scuba,logbook,underwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving
+dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving
 
 > ⚠️ One keyword set per storefront. Use English for the broadest reach.
 > ⚠️ 95 characters (no spaces after commas). App Store limit is 100.
+> ⚠️ v1.2 change: swapped generic "underwater" for "Shearwater" (a major tech-diving
+>   computer brand with real search volume) — same character count, higher intent match.
 
 ---
 
-## What's New — v1.0
+## What's New — v1.2
 
-Initial release of JoyDive² v1.0.
+New in this update:
+• Import support for more dive computer formats
+• Switch between metric and imperial units anytime
+• Interactive dive profile chart with tissue saturation detail
+• Various bug fixes and stability improvements
 
 ---
 
@@ -74,12 +83,12 @@ Initial release of JoyDive² v1.0.
 | Marketing URL | (leave blank) | Optional |
 | Privacy Policy URL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | Required |
 | Age Rating | 4+ | All questions → No |
-| Contains Ads | ✅ Yes | AdMob is present |
-| Version | 1.0 | |
+| Contains Ads | ✅ Yes (iOS only) | AdMob is present on iOS; macOS build has no ads |
+| Version | 1.2 | Build 3 (CURRENT_PROJECT_VERSION) |
 
 ---
 
-## Screenshot Sequence (iPhone 6.7" required)
+## Screenshot Sequence (iPhone 6.9" required — iPhone 16 Pro Max, 1320×2868)
 
 | # | Screen | Key message |
 |---|--------|-------------|
@@ -124,16 +133,19 @@ JoyDive²，陪你從第一次下水到進階技術潛水的潛水日誌。
 直接手動建立潛水日誌。輸入深度、潛水時間、水溫、氣體混合、GPS 座標與備註，從第一次下水就開始累積你的潛水歷史。JoyDive² 適合每個階段的潛水員，不需要電腦錶也能擁有一本完整的潛水記錄。
 
 **有了電腦錶？把所有記錄都帶進來。**
-支援多種主流格式，包含 UDDF、Subsurface XML / SSRF / CSV、Suunto JSON、Garmin FIT、Shearwater、Seabear 等。電腦錶的記錄匯入後，會與你手動建立的日誌無縫整合——從初學到現在，一本完整的記錄，一個 App 管理。
+支援多種主流品牌，包含 UDDF、Subsurface、Suunto、Garmin、Shearwater、Seabear 等。電腦錶的記錄匯入後，會與你手動建立的日誌無縫整合——從初學到現在，一本完整的記錄，一個 App 管理。
 
 **完整的潛水資訊一目了然**
-每筆記錄保存深度剖面、最大深度、潛水時間、水溫、氣體混合（空氣 / Nitrox / Trimix）、GPS 座標與備註。清晰的列表與日曆視圖，讓你快速回顧每一次下水。
+每筆記錄可保存深度剖面、最大/平均深度、潛水時間、氣體混合（空氣 / Nitrox / Trimix）、水溫與環境條件、裝備（防寒衣、配重、氣瓶），以及 GPS 座標與備註。清晰的列表與日曆視圖，讓你快速回顧每一次下水。
+
+**互動式剖面圖，附組織艙飽和度**
+直接在潛水剖面圖上點選拖曳，即可查看任一時刻的深度、經過時間，以及以 Bühlmann ZHL-16C 演算法估算的組織艙飽和度。讓你更清楚看懂整趟潛水過程——僅供參考，不能取代你的潛水電腦錶。
 
 **潛點地圖**
 自動將 GPS 座標標記在地圖上，一眼看到你去過的每一個潛點。支援聚類顯示，不論累積多少筆記錄都清晰好用。
 
-**移除廣告，專心記錄**
-基礎功能完全免費。選擇一次性購買「移除廣告」（$1.99 美元），即可永久享有無廣告的純淨體驗。
+**移除廣告，專心記錄（iOS 版）**
+基礎功能完全免費。iOS 版可選擇一次性購買「移除廣告」（$1.99 美元），即可永久享有無廣告的純淨體驗。
 
 **隱私優先**
 所有潛水資料僅儲存於你的裝置，從不上傳至伺服器。你的潛水記錄，只屬於你。
@@ -145,20 +157,26 @@ JoyDive²，陪你從第一次下水到進階技術潛水的潛水日誌。
 
 ## 關鍵字（100 字以內，逗號分隔）
 
-dive log,scuba,logbook,underwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving
+dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving
 
 > ⚠️ 每個地區只能填一組關鍵字，建議用英文覆蓋最廣。
 > ⚠️ 95 字元（逗號後無空格）。App Store 上限 100 字元。
+> ⚠️ v1.2 異動：把泛用字「underwater」換成「Shearwater」（技術潛水主流電腦錶品牌，
+>   有實際搜尋量）——字元數不變，搜尋意圖更精準。
 
 ---
 
-## 版本說明（What's New）— v1.0
+## 版本說明（What's New）— v1.2
 
-JoyDive² v1.0 正式發布。
+本次更新：
+• 新增支援多種潛水電腦錶格式匯入
+• 隨時切換公制／英制單位
+• 互動式潛水剖面圖，顯示組織艙飽和度資訊
+• 多項錯誤修正與穩定性改善
 
 ---
 
-## 截圖建議畫面（iPhone 6.7" 必選）
+## 截圖建議畫面（iPhone 6.9" 必選——iPhone 16 Pro Max，1320×2868）
 
 | 順序 | 畫面 | 重點說明 |
 |------|------|----------|
@@ -203,16 +221,19 @@ JoyDive²は、初めてのファンダイビングから進んだテクニカ�
 すぐにログの記録を始められます。水深、潜水時間、水温、ガスミックス、GPS座標、メモなどを手動で入力するだけ。JoyDive²はあらゆるステージのダイバー向けに設計されているため、ダイコンをお持ちでなくても本格的なログブックを作成できます。
 
 **ダイコンをお持ちなら、すべてのデータを集約**
-UDDF、Subsurface XML / SSRF / CSV、Suunto JSON、Garmin FIT、Shearwater、Seabearなど、主要なフォーマットを幅広くサポート。お手持ちのダイコンのログをインポートすれば、手動で作成したエントリーと美しく統合され、これまでのすべての記録を一つのアプリで一元管理できます。
+UDDF、Subsurface、Suunto、Garmin、Shearwater、Seabearなど、主要なブランドに幅広く対応。お手持ちのダイコンのログをインポートすれば、手動で作成したエントリーと美しく統合され、これまでのすべての記録を一つのアプリで一元管理できます。
 
 **充実のダイビング情報をひと目で確認**
-各ログには、水深プロファイル、最大水深、潜水時間、水温、ガスミックス（空気 / ナイトロックス / トライミックス）、GPS座標、メモを保存可能。洗練されたリスト表示とカレンダービューにより、過去のダイビング履歴をスムーズに振り返ることができます。
+各ログには、水深プロファイル、最大/平均水深、潜水時間、ガスミックス（空気 / ナイトロックス / トライミックス）、水温とコンディション、装備（ウェットスーツ、ウェイト、タンク）、GPS座標、メモを記録可能。洗練されたリスト表示とカレンダービューにより、過去のダイビング履歴をスムーズに振り返ることができます。
+
+**インタラクティブなプロファイルと組織飽和度**
+ダイブプロファイルチャート上をタップ&ドラッグするだけで、その瞬間の水深・経過時間、そしてBühlmann ZHL-16Cモデルによる推定組織飽和度を確認できます。ダイビングをより深く理解できますが、ダイブコンピューターの代わりにはなりません。
 
 **ダイブサイトマップ**
 GPS座標から地図上へ自動的にピンをドロップ。これまで訪れたすべてのダイブサイトを視覚的に確認できます。クラスタリング表示に対応しているため、ログの数が多くなっても地図がすっきりと見やすく保たれます。
 
-**広告を非表示にして、記録に集中**
-基本機能は完全に無料でご利用いただけます。一度の「広告非表示」購入（$1.99 USD）で、永久に広告のないクリーンな環境でアプリを使用できます。
+**広告を非表示にして、記録に集中（iOS版）**
+基本機能は完全に無料でご利用いただけます。iOS版では、一度の「広告非表示」購入（$1.99 USD）で、永久に広告のないクリーンな環境でアプリを使用できます。
 
 **プライバシー最優先**
 すべてのダイビングデータはユーザーのデバイス内にのみ保存され、サーバーへアップロードされることは一切ありません。あなたのログデータは、あなただけのものです。
@@ -224,16 +245,22 @@ GPS座標から地図上へ自動的にピンをドロップ。これまで訪�
 
 ## キーワード（最大100文字、カンマ区切り、App名にある単語は除外）
 
-dive log,scuba,logbook,underwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving
+dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving
 
 > ⚠️ キーワードはストアのロケールごとに1セットのみ登録可能です。最も広くカバーできるよう英語での登録を推奨します。
 > ⚠️ 計95文字（カンマの後にスペースを入れない）。App Storeの制限は100文字です。
+> ⚠️ v1.2変更点：汎用語「underwater」をテックダイビング向け主要ダイブコンピューターブランド
+>   「Shearwater」に置き換え——文字数は同じで、検索意図により合致。
 
 ---
 
-## 新機能（What's New）— v1.0
+## 新機能（What's New）— v1.2
 
-JoyDive² v1.0 をリリースしました。
+今回のアップデート内容：
+• 対応フォーマットを追加——より多くのダイブコンピューターのログをインポート可能に
+• メートル法／ヤードポンド法をいつでも切り替え可能
+• 組織飽和度情報を表示するインタラクティブなダイブプロファイルチャート
+• その他バグ修正と安定性の向上
 
 ---
 
@@ -249,12 +276,12 @@ JoyDive² v1.0 をリリースしました。
 | マーケティングURL | （空欄のまま） | オプション |
 | プライバシーポリシーURL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | 必須 |
 | 年齢制限指定 | 4+ | すべての質問 → いいえ |
-| 広告を含む | ✅ はい | AdMob実装あり |
-| バージョン | 1.0 | |
+| 広告を含む | ✅ はい（iOSのみ） | iOS版はAdMob実装あり／macOS版は広告なし |
+| バージョン | 1.2 | ビルド 3（CURRENT_PROJECT_VERSION） |
 
 ---
 
-## スクリーンショットの構成案（iPhone 6.7インチ必須）
+## スクリーンショットの構成案（iPhone 6.9インチ必須——iPhone 16 Pro Max、1320×2868）
 
 | 番号 | 画面 | 主な訴求メッセージ |
 |------|------|-----------------|

@@ -1,8 +1,18 @@
 # JD2-Logbook UI/UX 完整規劃書
 
-**版本**：v1.0（Week 10 決策確認版）  
-**更新**：2026-05-20  
-**狀態**：所有 Week 10 決策已確認 ✅，Week 11–12 部分待實作細化
+**版本**：v1.0（Week 10 決策確認版，2026-07-28 標註現況更新）
+**原始撰寫**：2026-05-20（Week 10 規劃階段）
+**2026-07-28 更新說明**：本文件原為 Week 10–12 開發前的規劃文件，內文大量
+「⏳ 待實作」標記皆為當時的未來式。截至本次更新，v1.0/v1.1/v1.2 皆已開發
+完成並送審，§3–7 描述的畫面/互動流程（Map Pin Sheet、Import Wizard、
+Settings、Edit/New Dive Sheet 等）**均已實作，且與現行程式碼架構一致**，
+僅保留原文不逐句改時態；但下列幾處內容與現況有實質落差，已個別修正/標註：
+①「功能狀態總覽」表全數更新為完成狀態；②§8.1 的 18 語言清單原本列的語言
+（含 pt-BR/sv/nb/da/fi/ru/pl）與實際上線語言不符，已更正；③§9「iOS 18 新
+功能」（Control Center／Lock Screen Widget）**已於 v1.1 backlog 確認不需要
+並終止規劃**，未實作；④§11「Week 10–12 設計工作清單」已全部完成，整節
+標註為歷史record。§8.2 Accessibility 現況以 `WCAG_2.1_AA_AUDIT_CHECKLIST.md`
+為準。
 
 ---
 
@@ -30,23 +40,24 @@
 **上線版本**：v1.0（2026-08-18）  
 **競品參考**：Oceanic+（地圖 UX 標竿）、Below（廣告 & IAP 策略標竿）、Garmin（i18n 規範參考）
 
-### 功能狀態總覽
+### 功能狀態總覽（2026-07-28 現況）
 
 | 功能 | 狀態 | 備註 |
 |------|------|------|
-| 多格式解析器（6 種） | ✅ Week 1–8 完成 | 215 tests 全綠 |
-| 日誌列表 + 搜尋 | ✅ Week 9 完成 | |
-| 月曆視圖 | ✅ Week 9 完成 | |
-| 潛水詳情頁（唯讀） | ✅ Week 9 完成 | Week 11 加入編輯 |
-| 匯入嚮導（3 步驟） | ✅ Week 9 完成 | Week 11 加入 tab 自動切換 |
-| GPS 地圖 + Medium Detent Sheet | ⏳ Week 10 | |
-| String Catalog 18 語系 | ⏳ Week 10 開始，Week 11 完成 | 範圍從 3 語擴至 18 語 |
-| 廣告（AdMob Banner） | ⏳ Week 11 | 放置位置：Import + Map 空狀態 |
-| Premium IAP（$1.99 買斷） | ⏳ Week 11 | 解鎖：移除廣告 + Export |
-| 設定頁 | ⏳ Week 11 | |
-| 詳情頁編輯 | ⏳ Week 11 | 免費功能 |
-| iOS 18 擴充（Control Center / Lock Screen / Icon）| ⏳ Week 11 | |
-| WCAG 2.1 AA 審查 + App Store 準備 | ⏳ Week 12 | |
+| 多格式解析器（15 種，經 F6 遷移至 DiveImportKit） | ✅ 完成 | 家族層 DiveImportKit 297 tests；本 repo 僅留 Adapter |
+| 日誌列表 + 搜尋 | ✅ 完成 | |
+| 月曆視圖 | ✅ 完成 | |
+| 潛水詳情頁 | ✅ 完成（含編輯） | |
+| 匯入嚮導（3 步驟） | ✅ 完成（含 tab 自動切換） | |
+| GPS 地圖 + Medium Detent Sheet | ✅ 完成 | |
+| String Catalog 18 語系 | ✅ 完成 | 實際語言清單見 §8.1（與原規劃清單不同，已更正） |
+| 廣告（AdMob Banner） | ✅ 完成 | Logbook / Import / Settings / Map 空狀態 |
+| Premium IAP（$1.99 買斷） | ✅ 完成 | 解鎖：移除廣告（iOS only，macOS 無廣告） |
+| 設定頁 | ✅ 完成 | |
+| 詳情頁編輯 + 手動新增 | ✅ 完成 | |
+| iOS 18 擴充（Control Center / Lock Screen Widget） | ❌ 終止規劃 | v1.1 backlog #9/#10，PM 確認不需要，不會排入後續版本 |
+| WCAG 2.1 AA 審查 | ✅ 完成 | 見 `WCAG_2.1_AA_AUDIT_CHECKLIST.md` |
+| App Store 送審 | ⏳ 進行中 | v1.2 (Build 3) iOS+macOS 皆 Waiting for Review，見 `V1_2_BACKLOG.md` #1 |
 
 ---
 
@@ -55,7 +66,7 @@
 ### 2.1 設計原則
 
 - **Apple HIG 優先**：NavigationStack、TabView、.insetGrouped List、系統色彩、SF Symbols
-- **跟隨系統主題**：Dark Mode 完全自動適配；語言切換引導至 iOS App-Specific Settings（不在 App 內實作語言覆蓋）
+- **跟隨系統主題**：Dark Mode 完全自動適配；語言切換為 App 內建切換器（v1.1 起，見 §7.2）
 - **Accessibility First**：WCAG 2.1 AA，所有互動元素 ≥ 44×44 pt，VoiceOver 完整支援
 - **觸覺反饋一致性**：所有重要互動搭配 `.sensoryFeedback`（SwiftUI API，iOS 17+）
 
@@ -149,7 +160,7 @@ JD2_LogbookApp
         │
         └── Tab 3: SettingsView（Week 11）
             └── NavigationStack
-                ├── 語言（引導至 iOS App-Specific Settings）
+                ├── 語言（App 內建切換器，即時生效，見 §7.2）
                 ├── Premium IAP（$1.99：移除廣告 + Export）
                 ├── Restore Purchases
                 └── About（版本、隱私政策）
@@ -246,7 +257,7 @@ JD2_LogbookApp
 
 ### 4.4 DiveLogDetailView（詳情頁）
 
-**目前狀態**：唯讀。Week 11 加入 Edit 功能（免費，不鎖 Premium）。
+**現況**：✅ 已完成，含編輯功能（免費，不鎖 Premium，見下方「Week 11 擴充」）。
 
 **結構（`.insetGrouped` List）**
 
@@ -318,7 +329,7 @@ Buddy         [TextField]
 
 ## 5. Tab 2 — Map（地圖）
 
-> **狀態**：Week 10 本週實作
+> **狀態**：✅ 已完成
 
 ### 5.1 整體佈局
 
@@ -631,7 +642,7 @@ Select     Import     Result
 
 ## 7. Tab 4 — Settings（設定）
 
-> **狀態**：Week 11 待實作，目前為 SettingsPlaceholderView 佔位
+> **狀態**：✅ 已完成（`SettingsView.swift`）
 
 ### 7.1 計劃結構
 
@@ -639,7 +650,7 @@ Select     Import     Result
 Navigation Title: "Settings"（.large）
 
 Section — Language
-  Language   →（引導至 iOS App-Specific Settings）
+  Language   →（App 內建切換器 Picker，即時生效，見 §7.2）
 
 Section — Premium（$1.99 買斷）
   ✦ Remove Ads + Export Backup   [$1.99 Unlock]
@@ -655,7 +666,15 @@ Section — About
   App Version       1.0.0 (Build 1)
 ```
 
-### 7.2 ✅ 語言切換（已確認：引導 iOS App-Specific Settings）
+### 7.2 語言切換（2026-07-28 更正：v1.0 規劃已被 v1.1 實作取代）
+
+> 原規劃是「引導至 iOS App-Specific Settings」（下方保留原文供追溯），但
+> **v1.1 實際做法改為 App 內建切換器**（`Services/AppLanguageManager.swift`），
+> SettingsView 內 Picker 選擇語言，**立即生效不需離開 App**，「四段式解法」
+> 同時涵蓋 SwiftUI 內容與 navigationTitle/tabItem 等系統層文字。細節見
+> `docs/LOCALIZATION_GUIDE.md`「語言切換方式」。
+
+**原規劃（v1.0，已被取代，僅供追溯）**：
 
 ```
 Settings Row:
@@ -668,28 +687,30 @@ Settings Row:
   ← App 自動根據選擇的語言重新載入 String Catalog
 ```
 
-> 此方式 100% 符合 Apple HIG，無需任何 locale override 程式碼。
-
 ### 7.3 ✅ IAP Premium 內容（已確認）
 
 **免費版（核心全開）**：
 
 | 功能 | 說明 |
 |------|------|
-| 全部 6 種解析器 | 核心功能，絕不鎖 |
+| 全部 15 種解析器 | 核心功能，絕不鎖 |
 | 手動新增 / 編輯 / 刪除潛水記錄 | 不鎖，搶 Dive Number 用戶 |
 | 日誌列表、月曆、地圖聚類 | 不鎖 |
 | 多語系 | 不鎖 |
-| AdMob Banner 廣告 | 免費版顯示（Import Tab + Map 空狀態）|
+| AdMob Banner 廣告（iOS only） | 免費版顯示（Logbook／Import／Settings 底部 + Map 空狀態，macOS 無廣告）|
 
-**Premium $1.99 買斷解鎖**：
+**Premium $1.99 買斷解鎖（iOS only）**：
 
 | 功能 | 說明 |
 |------|------|
-| 移除全站廣告 | Import Tab + Map 空狀態廣告全關 |
-| Export Backup | 匯出為 UDDF / CSV 原生格式（Week 12 或 v1.1）|
+| 移除全站廣告 | Logbook／Import／Settings／Map 空狀態廣告全關 |
 
-### 7.4 ✅ 廣告位置（已確認）
+> **Export/Import Backup 澄清（2026-07-28）**：此功能與 Premium 無關，是免費
+> 功能（不鎖），且目前因尚未完整測試通過，`SettingsView.swift` 用
+> `showBackupSection = false` feature flag 暫時隱藏 UI（程式碼保留），待下一版
+> 驗證後開放，與 IAP 購買狀態無關。原規劃的「Premium 解鎖 Export」已不成立。
+
+### 7.4 ✅ 廣告位置（已確認，實際 4 處，原規劃僅 2 處已擴充）
 
 **位置 1**：Import Tab Step 1 頁面，支援格式卡片區塊下方
 
@@ -710,7 +731,16 @@ Settings Row:
 [AdMob Banner]
 ```
 
-**絕對禁止**：Logbook 主列表（`.insetGrouped List`）內放置任何廣告（破壞 60 fps 流暢度與高級感）
+**位置 3**（實作後新增）：Logbook 列表底部（`PremiumAwareAdBanner` 固定於列表外的
+底部區域，非穿插在 List rows 之間）
+
+**位置 4**（實作後新增）：Settings 頁面底部
+
+**原規劃「絕對禁止 Logbook 主列表內放置廣告」現況**：實際做法是 Banner 固定在
+`.insetGrouped List` **之外**的底部區域，並非穿插在滾動列表的 rows 之間，
+因此不違反原本「不得破壞列表滾動流暢度」的精神——原則本身（不得穿插在 rows
+之間）仍然有效，只是新增了「列表容器外的固定底部欄」這個原規劃未考慮到的
+第三種位置。
 
 ---
 
@@ -722,64 +752,52 @@ Settings Row:
 
 **框架**：Xcode String Catalog（`Localizable.xcstrings`）
 
-**待確認**：請提供 18 種語言的完整清單，以便加入 `knownRegions` 並建立翻譯工作流程。
-
-**暫定語系範圍（待 PM 確認修正）**：
+**實際上線 18 語言清單**（2026-07-28 核對 `Localizable.xcstrings` 實際內容；
+與本文件原規劃版本不同，原版列的 pt-BR/sv/nb/da/fi/ru/pl 皆非實際採用語言，
+以下為正確清單）：
 
 | # | 語言 | Locale |
 |---|------|--------|
 | 1 | English | `en` |
-| 2 | 繁體中文 | `zh-Hant` |
-| 3 | 簡體中文 | `zh-Hans` |
-| 4 | 日本語 | `ja` |
-| 5 | 한국어 | `ko` |
-| 6 | Deutsch | `de` |
-| 7 | Français | `fr` |
-| 8 | Español | `es` |
-| 9 | Italiano | `it` |
-| 10 | Português (Brasil) | `pt-BR` |
+| 2 | English (UK) | `en-GB` |
+| 3 | 繁體中文 | `zh-Hant` |
+| 4 | 簡體中文 | `zh-Hans` |
+| 5 | 日本語 | `ja` |
+| 6 | 한국어 | `ko` |
+| 7 | Deutsch | `de` |
+| 8 | Français | `fr` |
+| 9 | Español | `es` |
+| 10 | Italiano | `it` |
 | 11 | Nederlands | `nl` |
-| 12 | Svenska | `sv` |
-| 13 | Norsk | `nb` |
-| 14 | Dansk | `da` |
-| 15 | Suomi | `fi` |
-| 16 | Русский | `ru` |
-| 17 | Polski | `pl` |
-| 18 | ภาษาไทย | `th` |
+| 12 | Português (Portugal) | `pt-PT` |
+| 13 | Bahasa Indonesia | `id` |
+| 14 | Bahasa Melayu | `ms` |
+| 15 | Tiếng Việt | `vi` |
+| 16 | ภาษาไทย | `th` |
+| 17 | Ελληνικά | `el` |
+| 18 | Hrvatski | `hr` |
 
-**18 語系的影響分析**：
-
-| 面向 | 原計劃（3 語）| 新計劃（18 語）| 差異 |
-|------|--------------|----------------|------|
-| String Catalog key 數 | ~50 key | ~50 key | 不變 |
-| 翻譯工作量 | 3× | 18× | **+6倍** |
-| 翻譯工具 | 手寫 | **需引入 AI 翻譯或 Localazy / Crowdin** | 工具投入 |
-| Week 12 測試工作量 | 3 語 | 18 語（至少測 en / zh-Hant / ja / de / ar RTL 若有）| +顯著 |
-| 翻譯品質風險 | 低 | 高（AI 翻譯需人工審閱）| 需 QA 計劃 |
-
-**翻譯策略建議（待 PM 決定）**：
-- 方案 A：全部 18 語言在 Week 11 集中由 Claude 生成 AI 翻譯，PM 抽樣審閱
-- 方案 B：v1.0 只上繁中 + 英文，其他 16 語 v1.1 補充（降低 Week 11–12 壓力）
-
-**目前已完成**：en（source）+ zh-Hant，37 個 key  
-**Week 10 新增**：4 個 key（地圖相關）  
-**Week 11 完成**：全部 18 語翻譯 + Settings / Edit / IAP 新 key
+翻譯已全數完成並經多輪審核（見 `V1_2_BACKLOG.md` 翻譯疑慮裁定紀錄章節）；
+`docs/LOCALIZATION_GUIDE.md` 為維護流程/用詞規範的權威來源。
 
 ---
 
 ### 8.2 Accessibility（WCAG 2.1 AA）
 
+> 完整稽核結果與逐項驗證見 `WCAG_2.1_AA_AUDIT_CHECKLIST.md`（權威來源）；
+> 下表僅列本文件原規劃項目的完成狀態。
+
 | 要求 | 實作狀況 |
 |------|---------|
-| 觸控目標 ≥ 44×44 pt | ✅ 月曆箭頭、Map 切換按鈕均已設定 |
-| VoiceOver accessibilityLabel | ✅ DiveRowView、DayCell、KeyStatCell |
-| 組合元素 `.combine` | ✅ DiveRowView、KeyStatCell、DetailRow |
-| `.isHeader` trait | ✅ 月曆月份標題 |
-| 色彩對比 4.5:1 | ⏳ Week 12 審查 |
-| Dynamic Type | ✅ 全部 Dynamic Type，未硬設字型 |
-| Dark Mode | ✅ 全部語意色彩 |
-| DiveSiteSheetView Accessibility | ⏳ Week 10 需設定 |
-| Cluster badge AccessibilityLabel | ⏳ Week 10，需本地化 |
+| 觸控目標 ≥ 44×44 pt | ✅ |
+| VoiceOver accessibilityLabel | ✅ |
+| 組合元素 `.combine` | ✅ |
+| `.isHeader` trait | ✅ |
+| 色彩對比 4.5:1 | ✅ 已審查完成 |
+| Dynamic Type | ✅ |
+| Dark Mode | ✅ |
+| DiveSiteSheetView Accessibility | ✅ |
+| Cluster badge AccessibilityLabel | ✅ 已本地化 |
 
 ---
 
@@ -788,23 +806,25 @@ Settings Row:
 | 場景 | 目標 | 狀態 |
 |------|------|------|
 | 日誌列表滑動 | 60 fps | ✅ |
-| 地圖 100+ 標記 | < 200ms | ⏳ Week 10 驗證 |
-| Sheet 開啟動畫 | ≤ 16ms（1 frame）| ⏳ Week 10 驗證 |
-| 多個 Pin 連續切換 Sheet | 無卡頓 | ⏳ Week 10 驗證 |
+| 地圖 100+ 標記 | < 200ms | ✅ 已實作，功能完整上線 |
+| Sheet 開啟動畫 | ≤ 16ms（1 frame）| ✅ 已實作，功能完整上線 |
+| 多個 Pin 連續切換 Sheet | 無卡頓 | ✅ 已實作，功能完整上線 |
 | 月曆 divesByDay 計算 | 即時 | ✅ |
 
 ---
 
 ## 9. iOS 18 新功能
 
-> **狀態**：Week 11 實作
+> **狀態（2026-07-28）**：❌ **已終止規劃**。Control Center 擴展／Lock Screen
+> Widget 於 v1.1 backlog #9/#10 經 PM 確認不需要，不會排入後續版本；本節以下
+> 內容保留僅供歷史參考，未實作亦無計劃實作。
 
-### Control Center 擴展
+### Control Center 擴展（未實作）
 
 - 快速存取：啟動 App 至 Logbook Tab，或顯示最近潛水統計
 - 使用 `ControlConfigurationIntent` + `AppIntent`
 
-### Lock Screen Widget（WidgetKit）
+### Lock Screen Widget（WidgetKit，未實作）
 
 - 小：最近潛水日期 + 深度
 - 中：地點 + 深度 + 時間
@@ -815,7 +835,7 @@ Settings Row:
 - Light / Dark / Tinted 三版本
 - Asset Catalog 各設對應 AppIcon
 
-### 相容性策略
+### 相容性策略（未實作章節不適用）
 
 - `@available(iOS 18, *)` 保護所有新功能
 - 降級：不可用時靜默略過
@@ -828,7 +848,7 @@ Settings Row:
 |---|------|---------|------|
 | **#1** | Map Pin 點擊行為 | ✅ Medium Detent Sheet（0.35 / .large），`presentationBackgroundInteraction(.enabled)` | 2026-05-20 |
 | **#2** | 匯入成功後行為 | ✅ 自動切至 Logbook Tab + `.success` 觸覺 + 捲動頂端 + 1 秒高亮淡出（Week 11 實作）| 2026-05-20 |
-| **#3** | App 內語言切換 | ✅ 引導至 iOS App-Specific Settings（`UIApplication.openSettingsURLString`）| 2026-05-20 |
+| **#3** | App 內語言切換 | ✅ 引導至 iOS App-Specific Settings（`UIApplication.openSettingsURLString`）**⚠️ 2026-07-28 標註：此決策已被 v1.1 的 App 內建切換器（`AppLanguageManager`）取代，見 §7.2** | 2026-05-20 |
 | **#4** | $1.99 Premium 內容 | ✅ 移除廣告 + Export Backup（UDDF / CSV）；核心功能全免費 | 2026-05-20 |
 | **#5** | 廣告位置 | ✅ Import Tab Step 1 格式卡片下方 + Map Tab 空狀態下方；禁止放日誌列表 | 2026-05-20 |
 | **#6** | Edit Dive — Duration | ✅ 唯讀（解析器決定）| 2026-05-20 |
@@ -839,7 +859,11 @@ Settings Row:
 
 ---
 
-## 11. Week 10–12 設計工作清單
+## 11. Week 10–12 設計工作清單（歷史記錄，2026-07-28：全數已完成）
+
+> 本節為 Week 10 規劃當時的工作清單快照，**所有項目均已完成**（含 Settings／
+> Edit／IAP／廣告／18 語系翻譯／WCAG 審查／App Store 送審），保留原文不逐項
+> 打勾，僅供追溯規劃脈絡；iOS 18 功能項目例外，已於 §9 說明終止規劃。
 
 ### Week 10（本週）— 地圖
 
