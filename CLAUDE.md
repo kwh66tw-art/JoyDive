@@ -16,9 +16,13 @@
   修（單一戰場），不得在本 repo 繞道；`SYNC_TO_JD2-ULTRA.md` 仍是 Logbook↔ultra
   單向記錄機制（非 DiveKit 相關問題才用）。
 - **F6/F8/B組已完成（2026-07-19）**：Importers 全部（15 種格式）搬遷至獨立的
-  `DiveImportKit`（`../../_JD2-family/DiveImportKit`，目前 v0.4.0），本 repo 已無任何本地
+  `DiveImportKit`（`../../_JD2-family/DiveImportKit`，目前 v0.4.1），本 repo 已無任何本地
   解析器/去重邏輯拷貝，只剩 `JD2Core/Importers/DiveImportKitAdapter.swift`
   （全 App 唯一 import 點）。**解析器 bug 同樣回統一 DiveImportKit 修**。
+  **本地複製的 `DiveLogImportError`（`JD2Core/Importers/DiveLogImporter.swift`）
+  樣板文字必須跟 Kit 保持一致**（2026-07-25 Kit 改英文時本地版沒同步，
+  2026-07-26 已修正，見 `SYNC_TO_JD2-ULTRA.md` #8）——Kit 樣板文字再異動時
+  記得同步檢查這裡，這個模式本身沒有機制防止兩邊漂移。
 - Logbook 專屬層（SwiftData 模型、`DiveReplayEngine`、UI）不受影響，正常開發。
   排程與決策見 `../_JD2-family/F-01-FAMILY_ROADMAP.md` 與
   `../_JD2-family/decisions/`。
