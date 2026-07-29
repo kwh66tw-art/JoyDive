@@ -135,3 +135,18 @@
 - Export/Import Backup 功能 — v1.1 已實作但本輪未完整測試，先隱藏 UI（`showBackupSection = false`），下一版驗證後開放，見 `V1_2_BACKLOG.md` #11
 - App 內 icon 全盤 review — 延後到下一版，見 `V1_2_BACKLOG.md` #2
 - 剖面圖警示標記／狀態列第二列（上升速度警示） — 已實作但先隱藏（`showWarningEvents = false`），呈現方式待改版再定案，見 `V1_2_BACKLOG.md` #3
+
+## 🟡 下一版重點工作（v1.2 審核通過後排入，2026-07-28 使用者指示）
+
+- **匯入結果動態數量字串的 Vary-by-Plural 修復**（`ImportWizardView.swift`
+  `"%lld dive%@ imported"`／`"%lld skipped (duplicates)"`）——**這是現在就
+  能看到的顯示 bug**：18 種語言裡 count≠1 時畫面會混進一個字面英文 "s"
+  （手動判斷單複數後綴的寫法對非英語式複數規則完全沒有對應機制），不是
+  單純的翻譯精緻度問題。已有完整技術方案：`_JD2-family/
+  F-09-PLURAL_LOCALIZATION_GUIDE.md` §3「兩個 App 的技術路徑不同」——
+  Logbook 因為用自訂 `AppLanguageManager.localized()`＋`String(format:)`
+  支援 App 內建語言切換器，繞過 Apple 原生 stringsdict 解析機制，需要
+  改用 `String(localized:locale:)`（明確傳 `languageManager.locale`）並在
+  模擬器切換至少 en/hr/ja 三種語言實測，確認沒有破壞四段式語言切換機制。
+  ultra 端同款字串已修復（commit `a689836`）可參考做法差異。
+  **使用者明確指示**：v1.2 審核通過後、下次改版前找時間處理，本輪不動。
