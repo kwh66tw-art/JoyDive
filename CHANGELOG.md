@@ -31,6 +31,16 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-29 — v1.2 (Build 3) 審核通過上架、發現關鍵字策略失敗
+
+- **iOS + macOS 皆通過審核並上架**（2.3.6／5.1.2(i) 兩項拒絕理由修正後過關）。
+- **上架後實測發現關鍵字策略失敗**：App Store 搜尋除非直接打「JD2」「JoyDive」
+  等品牌詞，否則找不到本產品。現行 Keywords（`dive log,scuba,logbook,
+  Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`）
+  被電腦錶品牌名稱佔掉大半版位，一般用戶的「潛水日誌」核心搜尋意圖詞沒有
+  被覆蓋到。已記入 `V1_RELEASE_CHECKLIST.md`「下一版重點工作」列為首要
+  任務，下次改版送審前需重新設計三語各自的關鍵字策略。
+
 ### 2026-07-28 — v1.2 (Build 3)：iOS 送審駁回二次核查與修正、App Store 文案定版、iOS + macOS 雙平台送出審核
 
 - **5.1.2(i) 隱私追蹤聲明二次核查，發現「已修復」記錄與 ASC 實際狀態不符**：

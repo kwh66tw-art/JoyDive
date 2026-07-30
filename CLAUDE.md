@@ -38,14 +38,12 @@
 - **Apple Team**：HUA SHENG Huang（77UHM3NN7J）
 - **最新 commit**：以 `git log` 為準（本檔不寫死 commit 資訊）
 
-### 審核狀態（截至 2026-07-28）
-- **iOS App 1.0**：❌ 已被拒絕（2.3.6 Advertising Age Rating、5.1.2(i) Privacy 追蹤宣告不符）
-- **macOS App 1.0**：✅ 已通過審核（Ready for Distribution）
-- **iOS App 1.2 (Build 3)**：⏳ Waiting for Review（2026-07-28 送出，已修正上述兩項拒絕理由；詳見
-  `V1_2_BACKLOG.md` #1、`docs/reports/R-2026-07-28-iOS送審駁回二次核查與修正.md`）
-- **macOS App 1.2 (Build 3)**：⏳ Waiting for Review（2026-07-28 送出，macOS 1.0 為已核准狀態，此為
-  正常升級非重審）
-- **IAP**：`com.jd2logbook.premium`，Non-Consumable，$1.99，已隨 v1.2 版本送審
+### 審核狀態（截至 2026-07-29）
+- **iOS App 1.2 (Build 3)**：✅ **已通過審核並上架**（2026-07-29，修正 2.3.6/5.1.2(i) 兩項拒絕理由後過關）
+- **macOS App 1.2 (Build 3)**：✅ **已通過審核並上架**（2026-07-29）
+- **IAP**：`com.jd2logbook.premium`，Non-Consumable，$1.99，隨 v1.2 版本上架
+- **⚠️ 上架後發現重大問題（2026-07-29）**：App Store 關鍵字策略失敗，非品牌詞搜尋完全找不到本產品，
+  下次改版列為首要修正任務，見 `V1_RELEASE_CHECKLIST.md`「下一版重點工作」第一項
 
 ### v1.1 開發（2026-07-14 啟動，2026-07-17 完工 13/14 項）
 - 詳細紀錄見 `V1_1_BACKLOG.md`、`CHANGELOG.md` 2026-07-17 條目

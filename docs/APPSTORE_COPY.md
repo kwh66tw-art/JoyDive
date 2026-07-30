@@ -58,6 +58,14 @@ dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive comp
 > ⚠️ 95 characters (no spaces after commas). App Store limit is 100.
 > ⚠️ v1.2 change: swapped generic "underwater" for "Shearwater" (a major tech-diving
 >   computer brand with real search volume) — same character count, higher intent match.
+> 🔴 **2026-07-29 POST-LAUNCH FINDING — this keyword set failed**: after v1.2 went
+>   live, the product is unfindable in App Store search unless users type brand terms
+>   like "JD2"/"JoyDive" directly. Root cause: brand-name computer keywords (Shearwater/
+>   UDDF/Garmin/Suunto/Subsurface) crowded out generic high-intent search terms like
+>   "dive log"/"diving log"/"scuba diving app" that ordinary users actually type. **Top
+>   priority for next version**: redesign keywords around "潛水日誌"/"dive log" core
+>   intent, move brand-compatibility mentions into the Description body instead of
+>   burning Keywords budget on them. See `V1_RELEASE_CHECKLIST.md` 下一版重點工作.
 
 ---
 
@@ -163,6 +171,12 @@ dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive comp
 > ⚠️ 95 字元（逗號後無空格）。App Store 上限 100 字元。
 > ⚠️ v1.2 異動：把泛用字「underwater」換成「Shearwater」（技術潛水主流電腦錶品牌，
 >   有實際搜尋量）——字元數不變，搜尋意圖更精準。
+> 🔴 **2026-07-29 上架後發現：這組關鍵字策略失敗**——除非直接搜「JD2」「JoyDive」
+>   品牌詞，否則在 App Store 搜尋找不到本產品。根因是品牌電腦錶名稱（Shearwater／
+>   UDDF／Garmin／Suunto／Subsurface）佔掉大半版位，一般用戶會打的「潛水日誌」
+>   核心意圖詞完全沒覆蓋到。**下次改版首要任務**：以「潛水日誌／dive log」為主軸
+>   重新設計關鍵字，品牌相容性留給 Description 內文提，不要佔 Keywords 版位。
+>   詳見 `V1_RELEASE_CHECKLIST.md`「下一版重點工作」。
 
 ---
 
@@ -251,6 +265,13 @@ dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive comp
 > ⚠️ 計95文字（カンマの後にスペースを入れない）。App Storeの制限は100文字です。
 > ⚠️ v1.2変更点：汎用語「underwater」をテックダイビング向け主要ダイブコンピューターブランド
 >   「Shearwater」に置き換え——文字数は同じで、検索意図により合致。
+> 🔴 **2026-07-29 リリース後の発見：このキーワード戦略は失敗**——「JD2」「JoyDive」など
+>   ブランド名で検索しない限り、App Store検索で見つからない。原因はブランド名
+>   （Shearwater／UDDF／Garmin／Suunto／Subsurface）が枠の大半を占め、一般ユーザーが
+>   実際に検索する「潜水日誌／dive log」といったコア意図語をカバーできていないこと。
+>   **次バージョンの最優先課題**：「潜水日誌／dive log」を軸にキーワードを再設計し、
+>   ブランド互換性への言及はDescription本文に移す。詳細は
+>   `V1_RELEASE_CHECKLIST.md`「下一版重點工作」を参照。
 
 ---
 

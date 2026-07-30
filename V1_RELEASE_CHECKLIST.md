@@ -138,6 +138,21 @@
 
 ## 🟡 下一版重點工作（v1.2 審核通過後排入，2026-07-28 使用者指示）
 
+- **🔴 首要任務（2026-07-29 使用者指示）：App Store 關鍵字策略全面失敗，
+  重新聚焦「潛水日誌」相關搜尋詞**——v1.2 上架後實測發現，App Store 搜尋
+  除非直接打「JD2」「JoyDive」等品牌詞，否則完全找不到本產品。根因：目前
+  關鍵字 `docs/APPSTORE_COPY.md`（三語共用同一組）——
+  `dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,
+  dive computer,freediving` ——被特定電腦錶品牌名稱（Shearwater／UDDF／
+  Garmin／Suunto／Subsurface）佔掉大半版位，這些是只有已經知道自己在找
+  什麼的技術潛水玩家才會搜尋的詞，一般用戶搜尋「潛水日誌」「dive log」
+  「scuba diving app」這類通用意圖詞的動線完全沒有覆蓋到。**下次改版
+  送審前列為首要任務**：關鍵字策略要以「潛水日誌／dive log」核心意圖詞
+  為主軸重新設計，品牌名稱格式相容性可以留在 Description 內文提及，
+  不該佔用寶貴的 100 字元 Keywords 欄位。三語（EN/繁中/日文）Keywords
+  欄位需要各自依語言搜尋習慣重新規劃，不能像這次一樣三語共用同一組
+  英文詞。
+
 - **匯入結果動態數量字串的 Vary-by-Plural 修復**（`ImportWizardView.swift`
   `"%lld dive%@ imported"`／`"%lld skipped (duplicates)"`）——**這是現在就
   能看到的顯示 bug**：18 種語言裡 count≠1 時畫面會混進一個字面英文 "s"
