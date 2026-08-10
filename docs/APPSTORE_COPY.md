@@ -87,7 +87,7 @@ New in this update:
 | Subtitle | Log Every Dive, Every Story | Optional |
 | Description | See above | |
 | Keywords | See above | 100 chars max |
-| Support URL | mailto:joydive.app@gmail.com | Required |
+| Support URL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | Required |
 | Marketing URL | (leave blank) | Optional |
 | Privacy Policy URL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | Required |
 | Age Rating | 4+ | All questions → No |
@@ -293,7 +293,7 @@ dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive comp
 | 副題 | Log Every Dive, Every Story | オプション |
 | 説明 | 上記を参照 | |
 | キーワード | 上記を参照 | 最大100文字 |
-| サポートURL | mailto:joydive.app@gmail.com | 必須 |
+| サポートURL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | 必須 |
 | マーケティングURL | （空欄のまま） | オプション |
 | プライバシーポリシーURL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | 必須 |
 | 年齢制限指定 | 4+ | すべての質問 → いいえ |
