@@ -56,9 +56,6 @@ struct DiveAnalysisView: View {
             interactiveChart
 
             if let point = selectedPoint {
-                // v1.2：Time/Depth/Temp 對 trimix 潛水一樣有效（回放本來就有算），
-                // 只有 Ceiling/No Deco（需要減壓生理計算）跟組織艙才是 trimix 缺的部分，
-                // 所以狀態列本身要照常顯示，不能整列被 trimix 免責聲明取代。
                 // v1.2：狀態列文字不跟著外層 .animation(value: selectedIndex) 做隱式動畫
                 // ——原本整個 VStack 共用同一個 easeInOut，狀態列在「插入」瞬間會跟著
                 // 淡入/版面過渡一起跑，若剛好在動畫還沒跑完時被截圖，數值文字會停在
@@ -70,20 +67,10 @@ struct DiveAnalysisView: View {
                 if !selectedWarnings.isEmpty {
                     warningEventsSection(selectedWarnings)
                 }
-                if replay.decoDataUnavailable {
-                    // F5：trimix 潛水——DiveKit 尚未支援氦氣組織負荷計算，只有組織艙圖不顯示。
-                    // 加 info 圖示＋明確措辭，告知這是已知限制而非 app 故障。
-                    Label {
-                        Text("Tissue nitrogen loading isn't available for trimix dives yet — this is a known limitation, not an error.")
-                    } icon: {
-                        Image(systemName: "info.circle")
-                    }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                } else {
-                    TissueBarsView(loadPercents: DiveReplayEngine.tissueLoadPercent(pN2: point.tissuePressures))
-                }
+                TissueBarsView(loadPercents: DiveReplayEngine.tissueLoadPercent(
+                    pN2: point.tissuePressures,
+                    pHe: point.tissueHePressures
+                ))
             } else {
                 Text("Touch and drag the profile to inspect any moment of the dive.")
                     .font(.caption)
@@ -175,8 +162,9 @@ struct DiveAnalysisView: View {
     // （減壓中 / NDL 逼近）數值才用填色膠囊強調，其餘為一般深色文字。
 
     private func calloutRow(_ point: DiveReplayEngine.ReplayPoint) -> some View {
-        // v1.2：畫面一致性——固定 5 欄排版，不因資料缺漏（trimix 沒有溫度樣本／
-        // 沒有減壓生理重放）而增減欄位數，缺的欄位一律用「—」佔位，不隱藏欄位本身。
+        // v1.2：畫面一致性——固定 5 欄排版，不因資料缺漏（例如沒有溫度樣本）而增減
+        // 欄位數，缺的欄位一律用「—」佔位，不隱藏欄位本身。Ceiling/No Deco 現在對
+        // 所有氣體（含 trimix）皆為真實計算值，不再有「資料不可用」的情況。
         HStack(spacing: 0) {
             calloutCell(label: Text("Time"), value: timeLabel(point.timeSeconds))
             calloutCell(label: Text("Depth"), value: unitSystem.formatDepth(point.depthMeters))
@@ -186,14 +174,13 @@ struct DiveAnalysisView: View {
             )
             calloutCell(
                 label: Text("Ceiling"),
-                value: replay.decoDataUnavailable ? "—"
-                    : (point.ceilingDepth > 0 ? unitSystem.formatDepth(point.ceilingDepth, decimals: 0) : "—"),
-                accent: (!replay.decoDataUnavailable && point.ceilingDepth > 0) ? .deco : .neutral
+                value: point.ceilingDepth > 0 ? unitSystem.formatDepth(point.ceilingDepth, decimals: 0) : "—",
+                accent: point.ceilingDepth > 0 ? .deco : .neutral
             )
             calloutCell(
                 label: Text("No Deco"),
-                value: replay.decoDataUnavailable ? "—" : ndlText(point.ndlSeconds),
-                accent: (!replay.decoDataUnavailable && point.ndlSeconds < 10 * 60) ? .warning : .neutral
+                value: ndlText(point.ndlSeconds),
+                accent: point.ndlSeconds < 10 * 60 ? .warning : .neutral
             )
         }
     }

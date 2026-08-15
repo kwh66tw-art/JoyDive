@@ -31,6 +31,45 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-07-30 — 解除 trimix 減壓分析繞過（F5 暫時方案正式結束）
+
+- **背景**：F5 遷移期間（2026-07-18）因 DiveKit 的 `Buhlmann` 尚未支援氦氣，
+  `DiveReplayEngine.replay()` 對 trimix 潛水繞過整個減壓生理計算，只顯示
+  深度剖面；`DiveAnalysisView` 隱藏 Ceiling/No-Deco/組織艙 UI。前置條件
+  （DiveKit v1.5.0 雙氣體 Buhlmann、v1.6.0 DecoCalculator ASC TIME 正式修復、
+  v1.7.0 N2 隔室常數修正）皆已完成並經黑盒交叉驗證，家族總指揮正式派工解除
+  繞過，詳見 `_JD2-family/decisions/2026-07-18_trimix減壓計算缺口.md`。
+- **`DiveReplayEngine.replay()`**：移除 trimix 短路分支，trimix 與 air/nitrox
+  走完全相同的 Buhlmann 重放路徑；`ReplayPoint` 新增 `tissueHePressures`
+  欄位（air/nitrox 全程為 0，回歸不受影響）；移除已不再需要的
+  `ReplayResult.decoDataUnavailable` 旗標。
+- **`tissueLoadPercent`（組織艙飽和度視覺化）**：新增 `pHe` 參數，M-value
+  改用 N2/He 依分壓比例加權合併（沿用 DiveKit `Buhlmann.combinedAB()`
+  同一套規則），避免 trimix 潛水顯示忽略氦氣貢獻、誤導性偏低的組織負荷
+  百分比；`pHe` 為 0 時公式退化為原本的純 N2 版本，air/nitrox 逐位元不變。
+- **`DiveAnalysisView`**：移除「trimix 尚不支援」的隱藏邏輯與免責聲明文字，
+  Ceiling/No-Deco/組織艙長條對所有氣體（含 trimix）皆正常顯示真實計算值。
+- **`F5DiveKitMigrationE2ETests.swift`**：原本鎖定「trimix 走短路路徑」的
+  測試改為驗證「trimix 走完整路徑、不崩潰、產出合理數字」——用真實 trimix
+  樣本（TMx 16/45，Lake Coleridge，max depth 38.97m／時長 83min）端到端
+  驗證，健全性檢查（不得 NaN/負值/Infinite）＋確認組織隔室出現非零 He 分壓
+  （證明真的有算氦氣，不是繞過殘留）。實測數字：全程 maxCeiling ≈6.16m，
+  末端 ceiling ≈1.11m（對應 NDL=0，已進入減壓義務），16 隔室 He 分壓
+  0.24–0.84 bar 有意義分布，量級與決策文件記錄的 DiveKit 自有黑盒交叉驗證
+  （OVM Dive Planner）范圍一致，未發現失控數值。
+- **驗證**：`xcodebuild test`（iOS Simulator，iPhone 17）JD2-LogbookTests
+  全套件 78 測試全綠，含新的 trimix E2E 測試；`xcodebuild build`（macOS
+  arm64）成功。⚠️ macOS *測試* target 透過 CLI（`xcodebuild test`/
+  `build-for-testing`）目前無法執行——`@testable import JoyDive_` 在 macOS
+  destination 下回報 "unable to resolve module dependency"，經 `git stash`
+  比對確認**此問題在本次改動之前就存在**（未改任何程式碼一樣重現），非
+  trimix 改動引入的回歸。`DiveReplayEngine`／`DiveAnalysisView` 皆為無
+  `#if os()` 平台分支的共用檔案，iOS 測試套件已完整覆蓋其邏輯；macOS CLI
+  測試 infra 缺口記錄為獨立待辦，不阻塞本次任務。
+- **家族層待辦**：確認 ultra／immersion 的即時/計劃路徑是否受影響——依決策
+  文件記錄，ultra 目前無法建構 `fHe>0` 的 GasMix（已查證結案），immersion
+  結構性不用 trimix（已查證結案），本次解除繞過僅影響 Logbook。
+
 ### 2026-07-29 — v1.2 (Build 3) 審核通過上架、發現關鍵字策略失敗
 
 - **iOS + macOS 皆通過審核並上架**（2.3.6／5.1.2(i) 兩項拒絕理由修正後過關）。
