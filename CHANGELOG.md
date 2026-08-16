@@ -31,6 +31,40 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-08-16 — 升版 DiveKit v1.8.0 + DiveImportKit v0.4.2
+
+家族總指揮（`JD2-Fami_01`）跨 session 通知兩個獨立修復，PM 同意升版驗證：
+
+- **DiveKit v1.8.0**（`c433427`，隔室1 N2/He 配對一致性修正，"1"→"1b" 變體）：
+  影響範圍窄（30-45m 深度轉折的短暫瞬態窗口），穩態最大差異 ceiling +0.65m／
+  NDL -46s／ASC TIME -66s，52 筆真實剖面裡 41 筆完全零差異、其餘方向皆為安全
+  方向、零反例。額外釐清一個既有的 GF 階梯跳躍時機位移現象（非本次改動引入，
+  是既有 `currentGF()` clamp 邏輯對常數微調的通用敏感特徵）。
+- **DiveImportKit v0.4.2**（`781a2b7`）：`SubsurfaceXMLParser` 修復一個安全攸關
+  的靜默資料錯誤——先前完全不解析 `<cylinder he='...'>` 屬性與
+  `<event name='gaschange'>` 換氣事件，代表用 Subsurface XML 格式匯入的 trimix
+  潛水，氦氣分率會被靜默丟棄、誤判為 nitrox/air，不會報錯。**這個 bug 對
+  Logbook 影響直接**：F5 trimix 繞過已於 2026-07-30 解除、使用者現在會看到
+  完整減壓分析，若氦氣從匯入階段就被丟棄，DiveKit 本體修好的雙氣體計算會
+  拿到錯的輸入，且方向不安全（氦氣被忽略會讓減壓計算顯示得比實際更寬鬆）。
+
+**驗證**：清 DerivedData 後完整重新 build+test。iOS 測試套件 **81 passed／
+5 skipped／0 failed**（86 total，含新增的一項端到端測試）；macOS App build（CLI）
+綠；macOS CLI `xcodebuild test` 仍是既有 infra 缺口（`@testable import JoyDive_`
+模組解析失敗），沿用先前記錄，非本次改動引入。
+
+新增 `F5DiveKitMigrationE2ETests.testRealSubsurfaceXMLSample_TrimixHeliumSurvivesToAnalysis`：
+走 Logbook 自己的完整鏈路（`DiveLogImporterFactory` → `SubsurfaceXMLParser` 本地
+薄包裝 → `makeDiveLog` → `JSONDecoder` 解碼 `GasMix` → `DiveReplayEngine.replay`），
+用真實 Subsurface 官方測試資料集樣本 dive333（Trimix 18/28→EAN46，
+`_JD2-family/dive-log-samples/Subsurface/abitofeverything.ssrf`）驗證：解碼出的
+`GasMix.fHe == 0.28`（修復前會是 0），且驅動出非零 He 組織隔室負荷——證明
+v0.4.2 的修復真的從真實檔案一路傳到 Logbook 的分析結果，不只是 DiveImportKit
+repo 自己的單元測試通過。
+
+`_JD2-family/F-02-COMPAT_MATRIX.md` 已同步更新 Logbook 列（DiveKit v1.8.0／
+DiveImportKit v0.4.2／測試數字）。
+
 ### 2026-07-30 — 解除 trimix 減壓分析繞過（F5 暫時方案正式結束）
 
 - **背景**：F5 遷移期間（2026-07-18）因 DiveKit 的 `Buhlmann` 尚未支援氦氣，

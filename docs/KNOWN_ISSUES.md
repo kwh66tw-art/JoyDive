@@ -26,6 +26,7 @@
 | ATMOS UDDF 假預設氣瓶資料 | ATMOS 匯出 UDDF 時，若無實際記錄，仍填入預設值（200/50 bar、110L）。JD2 只負責單位換算，值的正確性由使用者自行確認，匯入後可手動清除。 | 低，使用者知情即可 | 不排入（資料來源問題） |
 | 地圖在 VoiceOver 下無法縮放/平移/展開聚合/選其他 pin | 2026-07-27 真機 VoiceOver 完整走查發現（`WCAG_2.1_AA_AUDIT_CHECKLIST.md` 附錄 4/5）。查過 `DiveMapRepresentable.swift`/`DiveSiteAnnotation.swift` 沒有設定錯誤或手勢衝突，判斷為 MapKit 在 VoiceOver 下的固有限制（雙指縮放手勢被 VoiceOver 自己接管）。需要獨立的縮放按鈕＋逐一切換 pin 機制才能解，範圍明確但工程量中等，非小修。 | 中，視障使用者無法用地圖瀏覽潛點，但日誌列表可完全 VoiceOver 操作作為替代路徑 | 排入下一版 backlog（地圖無障礙改造） |
 | `DiveRowView.dateBlock` 月/年標籤 Dark Mode 對比不足（已修） | 2026-07-27 用模擬器截圖＋Python/PIL 實測 WCAG 對比公式（非目測）掃過 Dark Mode 主要畫面，抓到日誌列表卡片的「7月/2026」用系統 `.secondary` 只有 3.91:1（低於 4.5:1 門檻），是 2026-06-01 稽核修 `DetailRow`/`StatsHeader` 等處時漏掉的同款元件。已改用 `Color.accessibleSecondary`，複測 9.25:1 通過。同一行的「26°C」水溫標籤有一併複查，實測 5.20:1 本來就過，沒有動。 | 已解決 | 已解決 |
+| `DiveReplayEngine.replay()` 整趟潛水只吃單一 `GasMix`，不支援依時間切換氣體 | 家族總指揮 2026-08-16 查證回報：技術潛水常見操作（底部背氣、上升到減壓停留切換高氧氣體如 EAN50）會讓重放引擎在換氣後繼續用底氣組成計算——Interactive Tissue Loading／Ceiling／NDL 在換氣後那段顯示的數字是用錯誤氣體算出來的，不是精細度不足，是答案錯誤。DiveImportKit v0.4.2 新增的 `gasSwitches`（換氣序列，存在 `importExtras`）目前沒有消費端讀取，正是因為這個限制。`docs/APPSTORE_COPY.md` 第25/34/138/147行宣稱支援「advanced technical diving」與 Trimix，未註明此限制，對技術潛水使用者（多氣體換氣是常態操作）現況宣稱不夠準確。 | 高（顯示錯誤的減壓分析數字，非邊緣案例），但屬既有架構限制非本輪改動引入 | 待 PM 排優先序：(a) 若要修，需 Logbook 自行讀取 `gasSwitches` 並讓分析路徑依時間軸切換氣體（新功能，工程量不小）；(b) 若暫不修，行銷文案應加註但書或調整措辭範圍；(c) 短期可比照舊 trimix 免責聲明模式，偵測到 `gasSwitches` 非空時顯示提示 |
 
 ---
 

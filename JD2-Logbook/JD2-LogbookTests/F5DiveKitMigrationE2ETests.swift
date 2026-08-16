@@ -31,6 +31,14 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
         (samplesDir as NSString).appendingPathComponent("dive_2026-06-20.uddf")
     }
 
+    private var subsurfaceSamplePath: String {
+        let here = (#filePath as NSString).deletingLastPathComponent
+        let repoRoot = (((here as NSString).deletingLastPathComponent) as NSString).deletingLastPathComponent
+        let familyRoot = (((repoRoot as NSString).deletingLastPathComponent) as NSString)
+            .appendingPathComponent("_JD2-family/dive-log-samples/Subsurface")
+        return (familyRoot as NSString).appendingPathComponent("abitofeverything.ssrf")
+    }
+
     /// 真實 trimix 樣本（TMx 16/45，Lake Coleridge，max depth ≈39m，時長 ≈83min）：
     /// 匯入 → 解出 trimix GasMix → 重放走完整 Buhlmann 雙氣體路徑，不崩潰、
     /// 產出合理的 ceiling／NDL／組織艙（N2+He）數字。黑盒對照量級見
@@ -104,6 +112,64 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
         // 用寬鬆上界（100m）只排除明顯失控的計算結果，不鎖定精確值（精確值的黑盒
         // 交叉驗證屬於 DiveKit repo 職責，已於決策文件記錄，App 層不重複驗證公式本身）。
         XCTAssertLessThan(maxCeilingSeen, 100, "ceiling 深度應在物理合理範圍內")
+    }
+
+    /// DiveImportKit v0.4.2：`SubsurfaceXMLParser` 修復 `<cylinder he='...'>` 與
+    /// `<event name='gaschange'>` 完全未解析的安全攸關 bug（trimix 潛水的氦氣分率
+    /// 先前會被靜默丟棄、誤判為 nitrox/air，減壓分析因此偏樂觀）。此測試走 Logbook
+    /// 自己的完整鏈路——`DiveLogImporterFactory` → `SubsurfaceXMLParser`（本地薄
+    /// 包裝）→ `makeDiveLog`（gasMixJSON 逐位元透傳）→ `JSONDecoder` 解碼
+    /// `GasMix`（`DiveLogDetailView.diveGasMix` 用的同一套解碼）→
+    /// `DiveReplayEngine.replay`——證明修復後的氦氣分率真的能從真實 Subsurface XML
+    /// 樣本一路傳到分析結果，不只是 DiveImportKit repo 自己的單元測試通過。
+    /// 樣本 dive333（Trimix 18/28→EAN46）與驗證方法見 DiveImportKit
+    /// `SubsurfaceXMLParserTests.testParseRealSample_AbitOfEverything_Dive333_Trimix1828ToEAN46`。
+    func testRealSubsurfaceXMLSample_TrimixHeliumSurvivesToAnalysis() throws {
+        try XCTSkipUnless(FileManager.default.fileExists(atPath: subsurfaceSamplePath),
+                          "_JD2-family/dive-log-samples/Subsurface/abitofeverything.ssrf 不存在")
+
+        guard let importer = DiveLogImporterFactory.selectImporter(for: subsurfaceSamplePath) else {
+            XCTFail("Factory 未能為真實 Subsurface XML 樣本選出解析器"); return
+        }
+        XCTAssertTrue(importer is SubsurfaceXMLParser)
+
+        let dives = try importer.parse(from: subsurfaceSamplePath)
+        guard let dive333 = dives.first(where: { $0.importExtras["diveNumber"] == "333" }) else {
+            XCTFail("找不到 dive number=333"); return
+        }
+
+        let gasMix: GasMix
+        if let data = dive333.gasMixJSON.data(using: .utf8),
+           let decoded = try? JSONDecoder().decode(GasMix.self, from: data) {
+            gasMix = decoded
+        } else {
+            gasMix = .air
+        }
+        XCTAssertTrue(gasMix.isTrimix, "dive333 起始氣體應為 trimix（修復前的 bug 會誤判為 nitrox 18%）")
+        XCTAssertEqual(gasMix.fO2, 0.18, accuracy: 0.001)
+        XCTAssertEqual(gasMix.fHe, 0.28, accuracy: 0.001,
+                       "fHe 應為 0.28；修復前 he 屬性完全未解析，這裡會是 0（等同氦氣被靜默丟棄）")
+
+        // 走一段合成的深度剖面（真實樣本的 profileSamples 對這支合併雙電腦紀錄的潛水
+        // 較複雜，這裡只需證明「解碼出的 GasMix 能餵進 DiveReplayEngine 並產生非零 He
+        // 組織負荷」，不重複驗證真實剖面數字——那部分已由 UDDF trimix 樣本測試涵蓋）。
+        let samples = [
+            JoyDive_.DiveProfileSample(timeSeconds: 0, depthMeters: 0),
+            JoyDive_.DiveProfileSample(timeSeconds: 60, depthMeters: 30),
+            JoyDive_.DiveProfileSample(timeSeconds: 1200, depthMeters: 30),
+            JoyDive_.DiveProfileSample(timeSeconds: 1260, depthMeters: 0),
+        ]
+        let replay = DiveReplayEngine.replay(samples: samples, gasMix: gasMix)
+        XCTAssertFalse(replay.points.isEmpty)
+
+        var sawNonZeroHe = false
+        for p in replay.points {
+            XCTAssertEqual(p.tissueHePressures.count, 16)
+            for pHe in p.tissueHePressures where pHe > 0 { sawNonZeroHe = true }
+        }
+        XCTAssertTrue(sawNonZeroHe,
+                      "從真實 Subsurface XML 樣本解出的 trimix GasMix 應驅動出非零 He 組織負荷——" +
+                      "若為零，代表 v0.4.2 的 he 屬性修復沒有真的傳到 Logbook 分析這一端")
     }
 
     /// 對照組：合成的空氣潛水應正常跑完整減壓生理重放，且 He 全程為 0（air 路徑
