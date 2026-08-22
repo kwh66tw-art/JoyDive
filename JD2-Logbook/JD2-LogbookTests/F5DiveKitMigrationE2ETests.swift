@@ -71,7 +71,7 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
         let samples = dive.profileSamples
         try XCTSkipIf(samples.count < 2, "剖面樣本不足 2 筆")
         let profileSamples = samples.map {
-            JoyDive_.DiveProfileSample(timeSeconds: $0.timeSeconds, depthMeters: $0.depthMeters)
+            DiveKit.DiveProfileSample(timeSeconds: $0.timeSeconds, depthMeters: $0.depthMeters)
         }
 
         let replay = DiveReplayEngine.replay(samples: profileSamples, gasMix: gasMix)
@@ -84,21 +84,21 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
         for p in replay.points {
             // 健全性：不得為負值、不得為 NaN/Inf（靜默錯誤數字比崩潰更危險，
             // 見決策文件記載的「Debug 崩潰 vs Release 靜默顯示錯誤數字」教訓）。
-            XCTAssertGreaterThanOrEqual(p.ceilingDepth, 0)
-            XCTAssertFalse(p.ceilingDepth.isNaN)
-            XCTAssertFalse(p.ceilingDepth.isInfinite)
+            XCTAssertGreaterThanOrEqual(p.ceilingMeters, 0)
+            XCTAssertFalse(p.ceilingMeters.isNaN)
+            XCTAssertFalse(p.ceilingMeters.isInfinite)
             XCTAssertGreaterThanOrEqual(p.ndlSeconds, 0)
-            XCTAssertEqual(p.tissuePressures.count, 16, "應有 16 組織隔室 N2 資料（ZHL-16C）")
-            XCTAssertEqual(p.tissueHePressures.count, 16, "應有 16 組織隔室 He 資料（trimix 雙氣體）")
-            for pHe in p.tissueHePressures {
+            XCTAssertEqual(p.tissuePN2.count, 16, "應有 16 組織隔室 N2 資料（ZHL-16C）")
+            XCTAssertEqual(p.tissuePHe.count, 16, "應有 16 組織隔室 He 資料（trimix 雙氣體）")
+            for pHe in p.tissuePHe {
                 XCTAssertFalse(pHe.isNaN)
                 XCTAssertGreaterThanOrEqual(pHe, 0)
                 if pHe > 0 { sawNonZeroHe = true }
             }
-            maxCeilingSeen = max(maxCeilingSeen, p.ceilingDepth)
+            maxCeilingSeen = max(maxCeilingSeen, p.ceilingMeters)
 
             // 組織艙飽和度（含 He 貢獻）同樣不得為 NaN/負值。
-            let loads = DiveReplayEngine.tissueLoadPercent(pN2: p.tissuePressures, pHe: p.tissueHePressures)
+            let loads = DiveReplayEngine.tissueLoadPercent(pN2: p.tissuePN2, pHe: p.tissuePHe)
             XCTAssertEqual(loads.count, 16)
             for l in loads {
                 XCTAssertFalse(l.isNaN)
@@ -154,18 +154,18 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
         // 較複雜，這裡只需證明「解碼出的 GasMix 能餵進 DiveReplayEngine 並產生非零 He
         // 組織負荷」，不重複驗證真實剖面數字——那部分已由 UDDF trimix 樣本測試涵蓋）。
         let samples = [
-            JoyDive_.DiveProfileSample(timeSeconds: 0, depthMeters: 0),
-            JoyDive_.DiveProfileSample(timeSeconds: 60, depthMeters: 30),
-            JoyDive_.DiveProfileSample(timeSeconds: 1200, depthMeters: 30),
-            JoyDive_.DiveProfileSample(timeSeconds: 1260, depthMeters: 0),
+            DiveKit.DiveProfileSample(timeSeconds: 0, depthMeters: 0),
+            DiveKit.DiveProfileSample(timeSeconds: 60, depthMeters: 30),
+            DiveKit.DiveProfileSample(timeSeconds: 1200, depthMeters: 30),
+            DiveKit.DiveProfileSample(timeSeconds: 1260, depthMeters: 0),
         ]
         let replay = DiveReplayEngine.replay(samples: samples, gasMix: gasMix)
         XCTAssertFalse(replay.points.isEmpty)
 
         var sawNonZeroHe = false
         for p in replay.points {
-            XCTAssertEqual(p.tissueHePressures.count, 16)
-            for pHe in p.tissueHePressures where pHe > 0 { sawNonZeroHe = true }
+            XCTAssertEqual(p.tissuePHe.count, 16)
+            for pHe in p.tissuePHe where pHe > 0 { sawNonZeroHe = true }
         }
         XCTAssertTrue(sawNonZeroHe,
                       "從真實 Subsurface XML 樣本解出的 trimix GasMix 應驅動出非零 He 組織負荷——" +
@@ -176,19 +176,19 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
     /// 不受 trimix 雙氣體改動影響，回歸驗證）。
     func testSyntheticAirDive_RunsFullDecoReplayThroughDiveKit() {
         let samples = [
-            JoyDive_.DiveProfileSample(timeSeconds: 0, depthMeters: 0),
-            JoyDive_.DiveProfileSample(timeSeconds: 60, depthMeters: 18),
-            JoyDive_.DiveProfileSample(timeSeconds: 1800, depthMeters: 18),
-            JoyDive_.DiveProfileSample(timeSeconds: 1860, depthMeters: 0),
+            DiveKit.DiveProfileSample(timeSeconds: 0, depthMeters: 0),
+            DiveKit.DiveProfileSample(timeSeconds: 60, depthMeters: 18),
+            DiveKit.DiveProfileSample(timeSeconds: 1800, depthMeters: 18),
+            DiveKit.DiveProfileSample(timeSeconds: 1860, depthMeters: 0),
         ]
         let replay = DiveReplayEngine.replay(samples: samples, gasMix: .air)
 
         XCTAssertFalse(replay.points.isEmpty, "DiveReplayEngine（DiveKit Buhlmann 驅動）應產出重放點")
         for p in replay.points {
             XCTAssertGreaterThanOrEqual(p.ndlSeconds, 0)
-            XCTAssertEqual(p.tissuePressures.count, 16, "應有 16 組織隔室資料（ZHL-16C）")
-            XCTAssertEqual(p.tissueHePressures.count, 16)
-            XCTAssertTrue(p.tissueHePressures.allSatisfy { $0 == 0 }, "air 潛水 He 分壓全程應為 0")
+            XCTAssertEqual(p.tissuePN2.count, 16, "應有 16 組織隔室資料（ZHL-16C）")
+            XCTAssertEqual(p.tissuePHe.count, 16)
+            XCTAssertTrue(p.tissuePHe.allSatisfy { $0 == 0 }, "air 潛水 He 分壓全程應為 0")
         }
         XCTAssertGreaterThan(Buhlmann.ndlUnlimitedMarker, 0, "型別確實來自 DiveKit")
     }

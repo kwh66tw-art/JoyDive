@@ -92,7 +92,9 @@ struct DiveLogDetailView: View {
                         : nil
                 ) {
                     if profileSamples.count >= 2 {
-                        DiveAnalysisView(samples: profileSamples, gasMix: diveGasMix)
+                        // 2026-08-22：改用 DiveKit 共用重放引擎的鏈式重放，需要 dive
+                        // 本身（時間戳/時長/maxDepth/環境）才能串起連續潛水殘氮。
+                        DiveAnalysisView(dive: dive, samples: profileSamples, gasMix: diveGasMix)
                             .id(dive.persistentModelID)   // 換一筆 dive 時強制重建，選取狀態不跨潛水殘留
                             .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
                     } else {

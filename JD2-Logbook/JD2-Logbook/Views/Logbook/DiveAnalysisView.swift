@@ -12,10 +12,15 @@
 // 兩者才能隨拖曳同步反應（先前 bug：選取狀態關在 DiveProfileChartView
 // 內部，同層的組織艙 section 讀不到，畫面完全不動）。
 //
-// 資料來源＝DiveReplayEngine（DiveKit 重放）。事後估算，非即時裝置讀數，
-// 免責聲明見呼叫端 DiveLogDetailView 的 Section footer。
+// 資料來源＝DiveKit `DiveReplayEngine`（2026-08-22 起改用家族共用重放引擎，
+// Logbook 原本那份 `JD2Core/Algorithm/DiveReplayEngine.swift` 已刪除——原為稽核
+// 模式2 的獨立複製，見 `_JD2-family/decisions/2026-08-22_重放連續潛水殘氮與前置
+// 判斷-設計.md`）。改用 `replayChain(...)` 後，同一串連續潛水的殘氮會延續進來，
+// 不再每支都由水面飽和組織起算。事後估算，非即時裝置讀數，免責聲明見呼叫端
+// DiveLogDetailView 的 Section footer。
 
 import SwiftUI
+import SwiftData
 import Charts
 import DiveKit
 
@@ -25,6 +30,8 @@ struct DiveAnalysisView: View {
     // 之後要重新開放：把這個常數改回 true 即可，不需要改動其他任何地方。
     private let showWarningEvents = false
 
+    /// 目標潛水本身——鏈式重放需要它的時間戳/時長/maxDepth/環境，光有樣本不夠
+    let dive: DiveLog
     let samples: [DiveProfileSample]
     let gasMix: GasMix
 
@@ -36,26 +43,38 @@ struct DiveAnalysisView: View {
     // 目前這段被 showWarningEvents=false 藏起來，先修正避免功能重開時繼承舊 bug。
     @Environment(AppLanguageManager.self) private var languageManager
 
-    @State private var replay = DiveReplayEngine.ReplayResult()
+    @Environment(\.modelContext) private var modelContext
+
+    // ⚠️ Optional 而非預設值：DiveKit `ReplayResult` 是 public struct，但成員逐一
+    // 初始化器維持 internal，App 層造不出空實例（已回報總指揮，非本 repo 可修）。
+    // nil ＝尚未算完或被前置判斷攔下。
+    @State private var replay: DiveReplayEngine.ReplayResult?
+    /// 前置判斷 P1–P6 攔下來的原因（nil = 通過，正常顯示組織艙/ceiling/NDL）
+    @State private var anomaly: DiveReplayEngine.Anomaly?
     @State private var selectedIndex: Int?
 
+    private var replayPoints: [DiveReplayEngine.ReplayPoint] { replay?.points ?? [] }
+    private var replayWarnings: [DiveReplayEngine.ReplayWarning] { replay?.warnings ?? [] }
+
     private var selectedPoint: DiveReplayEngine.ReplayPoint? {
-        guard let idx = selectedIndex, replay.points.indices.contains(idx) else { return nil }
-        return replay.points[idx]
+        guard let idx = selectedIndex, replayPoints.indices.contains(idx) else { return nil }
+        return replayPoints[idx]
     }
 
     /// v1.2 #3：目前選取的樣本點附近命中的警示事件（可能 0～2 筆：上升過速／強制安全停留）
     /// showWarningEvents=false 時強制回傳空陣列，UI 端不需要另外判斷開關。
     private var selectedWarnings: [DiveReplayEngine.ReplayWarning] {
         guard showWarningEvents, let idx = selectedIndex else { return [] }
-        return replay.warnings.filter { $0.sampleIndex == idx }
+        return replayWarnings.filter { $0.sampleIndex == idx }
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             interactiveChart
 
-            if let point = selectedPoint {
+            if let anomaly {
+                anomalyNotice(anomaly)
+            } else if let point = selectedPoint {
                 // v1.2：狀態列文字不跟著外層 .animation(value: selectedIndex) 做隱式動畫
                 // ——原本整個 VStack 共用同一個 easeInOut，狀態列在「插入」瞬間會跟著
                 // 淡入/版面過渡一起跑，若剛好在動畫還沒跑完時被截圖，數值文字會停在
@@ -68,8 +87,9 @@ struct DiveAnalysisView: View {
                     warningEventsSection(selectedWarnings)
                 }
                 TissueBarsView(loadPercents: DiveReplayEngine.tissueLoadPercent(
-                    pN2: point.tissuePressures,
-                    pHe: point.tissueHePressures
+                    pN2: point.tissuePN2,
+                    pHe: point.tissuePHe,
+                    environment: dive.replayEnvironment
                 ))
             } else {
                 Text("Touch and drag the profile to inspect any moment of the dive.")
@@ -80,9 +100,49 @@ struct DiveAnalysisView: View {
         }
         .animation(.easeInOut(duration: 0.15), value: selectedIndex)
         .task {
-            // 重放（樣本 ≤300、步長 10s——主執行緒毫秒級）
-            replay = DiveReplayEngine.replay(samples: samples, gasMix: gasMix)
+            // 鏈式重放（樣本 ≤300、步長 10s；鏈長實務上 1–3 筆——主執行緒毫秒級）。
+            // 候選前導潛水給 96h 內全部，窗口過濾／排序／保守上界截斷由 Kit 自理。
+            let outcome = DiveReplayEngine.replayChain(
+                target: dive.replayInput,
+                precedingDives: DiveReplayChainQuery
+                    .precedingDives(of: dive, in: modelContext)
+                    .map(\.replayInput)
+            )
+            switch outcome {
+            case .replayed(let result):
+                replay = result
+                anomaly = nil
+            case .anomaly(let reason):
+                // 深度剖面照常顯示（chart 不吃重放結果）；只有組織艙/ceiling/NDL
+                // 這些「事後推算」的部分改成說明訊息。
+                replay = nil
+                selectedIndex = nil
+                anomaly = reason
+            }
         }
+    }
+
+    // MARK: - 前置判斷異常說明
+    // 設計文件第四節：P1–P6 任一成立 → 整個 tissue loading 重放不計算，原本放
+    // 組織艙飽和度／ceiling／NDL 的區塊改顯示說明訊息，**深度剖面照常顯示**。
+    //
+    // ⚠️ 文案為 PM 暫訂（英文，之後定版再改），刻意只講「不可用」這一件事：
+    //    設計文件第七節提到的一般性揭露（GF 收緊近似、Logbook 因為沒有
+    //    `diveNumberInSeries` 而偵測強度較弱）文案尚未由 PM 定調，**不得自行
+    //    發明**，已登錄 V1_2_BACKLOG。
+    //
+    // ⚠️ 目前六種 Anomaly 共用同一段文字（PM 暫訂文案就是這樣寫的）；Kit 的
+    //    `Anomaly` 是具型別的，日後 PM 要細分文案時直接 switch 即可，不需要改
+    //    演算法層。
+
+    private func anomalyNotice(_ anomaly: DiveReplayEngine.Anomaly) -> some View {
+        Text(verbatim: languageManager.localized(
+            "Interactive Tissue/Saturation is not available in case of Trimix Dive or improper data import..."
+        ))
+        .font(.caption)
+        .foregroundStyle(.secondary)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityIdentifier("replayAnomalyNotice")
     }
 
     // MARK: - 互動剖面圖
@@ -121,7 +181,7 @@ struct DiveAnalysisView: View {
                         // 暫時關閉（showWarningEvents，見型別開頭註解），同樣要用 plotFrame
                         // 校正，否則會踩到跟選取線一樣的偏移 bug，重新開放時保留這段校正邏輯。
                         if showWarningEvents {
-                            ForEach(Array(replay.warnings.enumerated()), id: \.offset) { _, warning in
+                            ForEach(Array(replayWarnings.enumerated()), id: \.offset) { _, warning in
                                 if let wx = proxy.position(forX: warning.timeSeconds / 60.0),
                                    let wy = proxy.position(forY: -warning.depthMeters) {
                                     Circle()
@@ -174,8 +234,8 @@ struct DiveAnalysisView: View {
             )
             calloutCell(
                 label: Text("Ceiling"),
-                value: point.ceilingDepth > 0 ? unitSystem.formatDepth(point.ceilingDepth, decimals: 0) : "—",
-                accent: point.ceilingDepth > 0 ? .deco : .neutral
+                value: point.ceilingMeters > 0 ? unitSystem.formatDepth(point.ceilingMeters, decimals: 0) : "—",
+                accent: point.ceilingMeters > 0 ? .deco : .neutral
             )
             calloutCell(
                 label: Text("No Deco"),
@@ -385,6 +445,12 @@ struct TissueBarsView: View {
         .init(timeSeconds: 2400, depthMeters: 5, waterTemp: 27),
         .init(timeSeconds: 2700, depthMeters: 0, waterTemp: 28),
     ]
-    DiveAnalysisView(samples: samples, gasMix: .air)
+    let dive = DiveLog(
+        dateTime: Date(),
+        location: "Preview Site",
+        maxDepth: 30,
+        diveTimeSeconds: 2700
+    )
+    DiveAnalysisView(dive: dive, samples: samples, gasMix: .air)
         .padding()
 }

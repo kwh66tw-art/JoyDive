@@ -12387,6 +12387,23 @@
         }
       }
     },
+    "Interactive Tissue/Saturation is not available in case of Trimix Dive or improper data import..." : {
+      "comment" : "Shown in place of the tissue saturation / ceiling / NDL readout when the replay pre-check rejects the dive chain. PM-provisional English wording (2026-08-22); final copy and the general disclosure sentence are pending — see V1_2_BACKLOG.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interactive Tissue/Saturation is not available in case of Trimix Dive or improper data import..."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interactive Tissue/Saturation is not available in case of Trimix Dive or improper data import..."
+          }
+        }
+      }
+    },
     "iOS Settings" : {
       "comment" : "Settings row trailing label",
       "localizations" : {

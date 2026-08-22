@@ -31,6 +31,51 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-08-22 — 採用 DiveKit 共用剖面重放引擎，移除本 repo 的獨立複製
+
+家族總指揮派工（Phase 2 App 採用；Phase 1 DiveKit 端已完成）。規格見
+`_JD2-family/decisions/2026-08-22_重放連續潛水殘氮與前置判斷-設計.md`。
+
+**移除**
+- `JD2Core/Algorithm/DiveReplayEngine.swift`（原為 ultra `DiveReplay.swift` 的獨立
+  複製，稽核模式2）。全部呼叫端改用 `DiveKit.DiveReplayEngine`。警示事件、He 分壓、
+  trimix 支援都在共用版本裡，功能無損。
+
+**新增**
+- `JD2Core/Algorithm/DiveReplayInput.swift`：`DiveLog` → `DiveReplayEngine.DiveInput`
+  的一次性映射（Kit 內不出現 App 型別，家族鐵律 4），加上 96h 前導潛水查詢
+  （`DiveReplayChainQuery`，窗口過濾／排序／保守上界截斷由 Kit 自理）。
+  - `maxDepthMeters` 有帶——它是保守上界截斷的方形剖面估算依據，正是讓幾天前
+    那筆手動輸入、無剖面樣本的紀錄不會誤觸 P6 的關鍵。
+  - `recordedSeriesIndex` 恆為 `nil`：Logbook 沒有 `diveNumberInSeries` 欄位，
+    P4 交叉比對會被 Kit 跳過。這是與 ultra／immersion 之間**真實的偵測強度落差**，
+    刻意不假造值填補。
+- `JD2-LogbookTests/DiveReplayChainAdoptionTests.swift`（5 個測試：映射、淡水環境
+  帶入、連續潛水殘氮真的延續、trimix 被 P1 攔下、96h 前導查詢窗口）。
+
+**行為變更**
+- `DiveAnalysisView` 改走 `replayChain`：同一串連續潛水的殘氮會延續進來，不再每支
+  都由水面飽和組織起算（同日第二趟以後的 ceiling/NDL 先前系統性偏樂觀）。
+- 重放環境改讀該筆紀錄自己的 `surfacePressureBar`／`metersPerBar`（先前一律用
+  `.seaLevel`，淡水／高海拔紀錄的環境被忽略）。
+- 前置判斷 P1–P6 攔下時，組織艙飽和度／Ceiling／NDL 區塊改顯示說明訊息，
+  **深度剖面照常顯示**。文案為 PM 暫訂英文稿；設計文件第七節提到的一般性揭露
+  （GF 收緊近似、Logbook 偵測強度較弱）文案**尚未由 PM 定調，未自行發明**，
+  已登錄 `V1_2_BACKLOG.md` #24。
+- `showWarningEvents = false` 維持不變（PM 當初明確決定先隱藏）。
+
+**驗證**
+- iOS Simulator（iPhone 17, iOS 26.5）與 macOS build 皆綠。
+- unit test（`-only-testing:JD2-LogbookTests`，沿用既有 `ImportCoordinatorTests`
+  排除）：**48 passed → 53 passed，0 failed**（+5 為本次新增，既有測試零回歸；
+  基線數字由 `git stash` 回到改動前實測，非推算）。
+- 模擬器實際安裝＋啟動，行程存活。
+
+**已回報總指揮的 Kit 面觀察（未自行修改 DiveKit）**：`DiveReplayEngine.ReplayResult`
+是 `public struct`，但成員逐一初始化器仍是 internal，消費端造不出空實例；App 層
+改用 `Optional` 迴避。ultra 端採用時會踩到同一點，已登錄 `SYNC_TO_JD2-ULTRA.md` #9。
+
+
 ### 2026-08-16 — 升版 DiveKit v1.8.0 + DiveImportKit v0.4.2
 
 家族總指揮（`JD2-Fami_01`）跨 session 通知兩個獨立修復，PM 同意升版驗證：
