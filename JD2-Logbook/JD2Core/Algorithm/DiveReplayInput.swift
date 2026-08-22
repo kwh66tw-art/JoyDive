@@ -48,6 +48,14 @@ extension DiveLog {
     /// `maxDepthMeters` 一定要帶：它是保守上界截斷的方形剖面估算依據，正是讓
     /// 「幾天前那筆手動輸入、沒有剖面樣本的紀錄」不會誤觸 P6 把整個組織艙顯示
     /// 關掉的關鍵（設計文件第六之二節）。真正的重放仍以 `profileSamples` 為準。
+    ///
+    /// `isBreathHold` 由 `diveMode`（自由潛水／浮潛）決定：Bühlmann 假設潛水者在深度
+    /// 持續呼吸環境氣體，閉氣潛水只有下水前那一口氣，算進殘氮鏈會產生物理上錯誤的
+    /// 高估（設計文件第六之三節）。Kit 會把閉氣的前導潛水濾出鏈外、目標潛水本身為
+    /// 閉氣則回報 `Anomaly.breathHoldTarget`。
+    /// ⚠️ **已知限制**：匯入路徑帶不進 dive mode（DiveImportKit `ParsedDiveLog` 沒有
+    /// 此欄位，需改 Kit，不在本 repo 範圍），匯入紀錄一律是 `.scuba`，見
+    /// `DiveLog.diveMode` 說明與 `V1_2_BACKLOG.md`。
     var replayInput: DiveReplayEngine.DiveInput {
         DiveReplayEngine.DiveInput(
             startedAt: dateTime,
@@ -60,7 +68,8 @@ extension DiveLog {
             maxDepthMeters: maxDepth,
             gasMix: replayGasMix,
             environment: replayEnvironment,
-            recordedSeriesIndex: nil
+            recordedSeriesIndex: nil,
+            isBreathHold: diveModeValue.isBreathHold
         )
     }
 }

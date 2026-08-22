@@ -33,6 +33,11 @@ struct DiveLogEditSheet: View {
     @State private var environmentType: String
     @State private var notes: String
 
+    /// 潛水類型（水肺／自由潛水／浮潛）。預設水肺——Logbook 是水肺日誌。
+    /// 影響重放：自由潛水／浮潛為閉氣潛水，會被 DiveKit 排除在殘氮鏈之外
+    /// （見 `DiveLogMode` 與 `DiveLog.replayInput` 的說明）。
+    @State private var diveMode: DiveLogMode
+
     // Gas mix
     private enum GasMixPickerType: String, CaseIterable, Identifiable {
         case air    = "Air"
@@ -90,6 +95,7 @@ struct DiveLogEditSheet: View {
             _waterTemperature   = State(initialValue: 28.0)
             _environmentType    = State(initialValue: "seawater")
             _notes              = State(initialValue: "")
+            _diveMode           = State(initialValue: .scuba)
             _gasMixType         = State(initialValue: .air)
             _nitroxO2Percent    = State(initialValue: 32.0)
             originalTrimixGasMixJSON = nil
@@ -125,6 +131,7 @@ struct DiveLogEditSheet: View {
             _waterTemperature   = State(initialValue: dive.waterTemperature)
             _environmentType    = State(initialValue: dive.environmentType)
             _notes              = State(initialValue: dive.notes)
+            _diveMode           = State(initialValue: dive.diveModeValue)
 
             // 解析已儲存的 gas mix JSON
             if let data = dive.gasMixJSON.data(using: .utf8),
@@ -252,6 +259,15 @@ struct DiveLogEditSheet: View {
                 // BLOCK 1: 潛水數據與時間 (Dive Data & Time)
                 // ═════════════════════════════════════════════════════════
                 Section {
+                    // 潛水類型（水肺／自由潛水／浮潛）
+                    // 匯入紀錄一律落在 scuba（DiveImportKit 的 ParsedDiveLog 沒有
+                    // dive mode 欄位，見 V1_2_BACKLOG.md），使用者要在這裡手動改。
+                    Picker(languageManager.localized("Dive Mode"), selection: $diveMode) {
+                        Text(LocalizedStringKey("Scuba")).tag(DiveLogMode.scuba)
+                        Text(LocalizedStringKey("Freedive")).tag(DiveLogMode.free)
+                        Text(LocalizedStringKey("Snorkel")).tag(DiveLogMode.snorkel)
+                    }
+
                     // 潛水時間（分鐘）
                     HStack {
                         Text(languageManager.localized("Dive Time"))
@@ -689,6 +705,7 @@ struct DiveLogEditSheet: View {
             dive.environmentType = environmentType
             dive.notes  = notes.trimmingCharacters(in: .whitespaces)
             dive.sourceFormat = "manual"
+            dive.diveModeValue = diveMode
 
             // Environment Details
             dive.weather = weather
@@ -720,6 +737,7 @@ struct DiveLogEditSheet: View {
             dive.waterTemperature = waterTemperature
             dive.environmentType  = environmentType
             dive.notes  = notes.trimmingCharacters(in: .whitespaces)
+            dive.diveModeValue    = diveMode
 
             // Environment Details
             dive.weather = weather

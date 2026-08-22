@@ -31,6 +31,41 @@ struct DiveProfileSample: Codable {
     }
 }
 
+// MARK: - 潛水類型
+
+/// 潛水類型（dive mode）。
+///
+/// **為什麼需要這個欄位**：Bühlmann 模型假設潛水者在深度**持續呼吸環境氣體**
+/// （Schreiner 方程的 Palv 就是這樣定義的）；閉氣潛水（自由潛水／浮潛）只有下水前
+/// 的那一口氣。若把一筆有完整剖面樣本的自由潛水當成一般前導潛水放進殘氮鏈，模型會
+/// 以為「這個人在 20m 持續呼吸了兩分鐘」，算出物理上錯誤且嚴重高估的氮負荷並顯示
+/// 給使用者。DiveKit `DiveReplayEngine` 因此提供 `DiveInput.isBreathHold`：前導潛水
+/// 為閉氣潛水時在建鏈階段直接濾掉，目標潛水本身為閉氣潛水則回報
+/// `Anomaly.breathHoldTarget`。規格見
+/// `_JD2-family/decisions/2026-08-22_重放連續潛水殘氮與前置判斷-設計.md` 第六之三節。
+///
+/// **rawValue 與 ultra 對齊**：ultra 的 `DiveLogEntry.diveMode` 使用
+/// `"air"/"nitrox"/"gauge"/"free"/"snorkel"`。閉氣的兩個值（`free`／`snorkel`）
+/// **字面完全相同**，未來跨 App 同步不需轉換。水肺側 Logbook 只用單一 `"scuba"`
+/// ——ultra 的 air/nitrox/gauge 三者在 Logbook 是由 `gasMixJSON` 表達的，若在此
+/// 再存一份氣體資訊會出現兩個可以互相矛盾的真相來源（例如 nitrox 潛水的
+/// diveMode 寫成 "air"）。同步時 ultra 的 air/nitrox/gauge 一律收斂成 `.scuba`。
+///
+/// ⚠️ 型別名刻意是 `DiveLogMode` 而非 `DiveMode`：DiveKit 已有 public 的
+/// `DiveMode`（潛水電腦設定模式 air/nitrox/free/gauge/snorkel/off，即 ultra
+/// `diveMode` 字串的來源）。本檔 `import DiveKit`，同名會造成全 App 的解析歧義。
+enum DiveLogMode: String, CaseIterable, Codable, Sendable {
+    /// 水肺潛水（Logbook 的預設與絕大多數紀錄）
+    case scuba
+    /// 自由潛水
+    case free
+    /// 浮潛
+    case snorkel
+
+    /// 是否為閉氣潛水（→ DiveKit `DiveInput.isBreathHold`）
+    var isBreathHold: Bool { self != .scuba }
+}
+
 @Model
 final class DiveLog {
 
@@ -131,6 +166,22 @@ final class DiveLog {
     /// 源檔案格式: "UDDF", "SHEARWATER", "Garmin" 等
     var sourceFormat: String = "manual"
 
+    /// 潛水類型（`DiveLogMode` 的 rawValue："scuba" / "free" / "snorkel"）
+    ///
+    /// v1.2：additive 欄位，SwiftData lightweight migration 自動補預設值 `"scuba"`
+    /// ——Logbook 是水肺日誌，**既有資料一律視為水肺**，預設值使既有紀錄語意不變、
+    /// `isBreathHold` 維持 false，重放行為與加欄位前完全相同。
+    ///
+    /// ⚠️ **已知限制：匯入路徑帶不進這個資訊。** DiveImportKit 的 `ParsedDiveLog`
+    /// 目前沒有 dive mode 欄位，要接得改那個 Kit 與各解析器（家族鐵律：不得在本
+    /// repo 修 Kit），因此**所有匯入紀錄一律落在預設值 `"scuba"`**，匯入的自由潛水
+    /// 紀錄仍需使用者手動改成 free/snorkel 才會被排除在殘氮鏈之外。
+    /// 已登錄 `V1_2_BACKLOG.md`「匯入自動帶入 dive mode」。
+    ///
+    /// 以 String 而非 enum 儲存：未知值（未來新增類型／他版本備份還原）解碼時由
+    /// `diveModeValue` 優雅退回 `.scuba`，不會讓整筆紀錄讀不出來。
+    var diveMode: String = DiveLogMode.scuba.rawValue
+
     /// 平均深度（公尺）。0 = 未記錄（匯入來源無此欄位）
     /// v1.1 #8：additive 欄位，SwiftData lightweight migration 自動補 0
     var avgDepth: Double = 0
@@ -210,6 +261,12 @@ final class DiveLog {
               let samples = try? JSONDecoder().decode([DiveProfileSample].self, from: data)
         else { return [] }
         return samples
+    }
+
+    /// 潛水類型（型別化存取；未知 rawValue 一律退回 `.scuba`，見 `diveMode` 說明）
+    var diveModeValue: DiveLogMode {
+        get { DiveLogMode(rawValue: diveMode) ?? .scuba }
+        set { diveMode = newValue.rawValue }
     }
 
     /// 解碼後的匯入原始資料（Detail view「原始資料」區塊用）

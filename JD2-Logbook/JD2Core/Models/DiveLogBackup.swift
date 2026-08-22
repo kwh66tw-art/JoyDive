@@ -35,6 +35,11 @@ struct DiveLogBackupEntry: Codable {
     var notes: String
     var profileSamplesJSON: String
     var sourceFormat: String
+    /// 潛水類型（`DiveLogMode` rawValue）。
+    /// **Optional 是刻意的**：Codable 合成的 `init(from:)` 對缺鍵的非 Optional 欄位會
+    /// 直接 throw，v1.1/v1.2 產出的既有備份檔沒有這個 key，宣告成 Optional 才能讓
+    /// 舊備份繼續還原（additive-only，家族 F-04）。還原時 nil → `.scuba`。
+    var diveMode: String?
     var avgDepth: Double
     var importExtrasJSON: String
     var createdAt: Date
@@ -68,6 +73,7 @@ struct DiveLogBackupEntry: Codable {
         notes                 = dive.notes
         profileSamplesJSON    = dive.profileSamplesJSON
         sourceFormat          = dive.sourceFormat
+        diveMode              = dive.diveMode
         avgDepth              = dive.avgDepth
         importExtrasJSON      = dive.importExtrasJSON
         createdAt             = dive.createdAt
@@ -105,6 +111,7 @@ struct DiveLogBackupEntry: Codable {
         dive.notes                 = notes
         dive.profileSamplesJSON    = profileSamplesJSON
         dive.sourceFormat          = sourceFormat
+        dive.diveMode              = diveMode ?? DiveLogMode.scuba.rawValue
         dive.avgDepth              = avgDepth
         dive.importExtrasJSON      = importExtrasJSON
         dive.createdAt             = createdAt

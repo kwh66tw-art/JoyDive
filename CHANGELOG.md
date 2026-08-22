@@ -31,6 +31,61 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-08-22 — `DiveLog` 新增潛水類型欄位，接上 DiveKit 閉氣潛水排除
+
+家族總指揮派工。DiveKit v1.9.0-rc3 把閉氣潛水（自由潛水／浮潛）排除在殘氮鏈之外
+（`DiveInput.isBreathHold`），但 Logbook 的 `DiveLog` 完全沒有潛水類型欄位，
+`replayInput` 只能恆傳 `false`。規格見
+`_JD2-family/decisions/2026-08-22_重放連續潛水殘氮與前置判斷-設計.md` 第六之三節。
+
+**為什麼是物理問題，不是資料品質問題**：Bühlmann 假設潛水者在深度**持續呼吸環境
+氣體**（Schreiner 的 Palv 就是這樣定義的），閉氣潛水只有下水前的那一口氣。有完整
+剖面樣本的自由潛水**不會**被 P6（前導潛水無剖面樣本）擋下，也通常不會被保守上界
+截斷（時間太近），於是被正常算進殘氮鏈——模型以為「這個人在 20m 持續呼吸了兩分鐘」。
+**這不是「顯示被關掉」，是算出物理上錯誤的數字並顯示給使用者。**
+
+**新增**
+- `DiveLogMode`（`JD2Core/Models/DiveLog.swift`）：`scuba` / `free` / `snorkel`，
+  `isBreathHold` 計算屬性。型別名刻意不叫 `DiveMode`——DiveKit 已有同名 public 型別
+  （潛水電腦設定模式 air/nitrox/free/gauge/snorkel/off），同名會造成解析歧義。
+  閉氣兩個 rawValue 與 ultra `DiveLogEntry.diveMode` **字面完全相同**，未來跨 App
+  同步不需轉換；水肺側 Logbook 收斂成單一 `"scuba"`（ultra 的 air/nitrox/gauge 在
+  Logbook 是由 `gasMixJSON` 表達，再存一份會出現兩個可互相矛盾的真相來源）。
+- `DiveLog.diveMode: String = "scuba"` ＋ `diveModeValue: DiveLogMode`（未知 rawValue
+  優雅退回 `.scuba`）。**additive-only**（家族 F-04）：有預設值 → SwiftData
+  lightweight migration 自動補，既有紀錄一律維持水肺語意、`isBreathHold` 維持 false，
+  重放行為與加欄位前完全相同。
+- `DiveLogBackupEntry.diveMode: String?`：備份 round-trip 帶得到。**Optional 是刻意
+  的**——Codable 合成的 `init(from:)` 對缺鍵的非 Optional 欄位會直接 throw，v1.1/v1.2
+  產出的既有備份檔沒有這個 key，宣告成 Optional 舊備份才還原得了（nil → `.scuba`）。
+- `DiveLogEditSheet` BLOCK 1 新增 Dive Mode picker（Scuba／Freedive／Snorkel）。
+- `Localizable.xcstrings` 新增 4 個 key × 18 語言（`Dive Mode` / `Scuba` /
+  `Freedive` / `Snorkel`）。**F-10 查核**：`Scuba` 已收錄於家族術語表
+  （immersion／ultra-watch，ja「スクーバ」／zh-Hant「水肺」），`Freedive`／`Snorkel`
+  沿用 ultra-watch 既有寫法（ja「フリーダイビング」「スノーケル」／zh-Hant
+  「自由潛水」「浮潛」），**不另創新譯**；其餘 15 語言為本次新增。
+
+**修改**
+- `DiveLog.replayInput`：`isBreathHold` 由 `diveModeValue.isBreathHold` 決定
+  （原本恆為 false）。
+
+**已知限制（刻意保留，非疏漏）**
+- **匯入路徑帶不進 dive mode**：DiveImportKit 的 `ParsedDiveLog` 沒有這個欄位，要接
+  得改那個 Kit 與各解析器（家族鐵律：不得在本 repo 修 Kit）。匯入紀錄一律落在預設值
+  `scuba`，使用者需手動改。已登錄 `V1_2_BACKLOG.md` #26 待家族層處理，並在
+  `DiveLog.swift`／`DiveReplayInput.swift`／`DiveLogEditSheet.swift` 三處註解標明。
+- 依 PM 裁示（「JD2 系列以休閒水肺為主，太複雜且遠離核心的功能就簡單處理」），
+  **不為自由潛水另外開發任何專屬顯示／統計／篩選，不動日誌列表分類架構**。
+
+**驗證**
+- 新增 `JD2-LogbookTests/DiveModeTests.swift`（14 案例）：預設值／未知值退回／
+  SwiftData 既有資料讀回來不壞且落在預設值／備份 round-trip／**沒有 diveMode key 的
+  舊備份仍能還原**／三種模式的 `isBreathHold` 映射／目標為閉氣潛水真的走到 P7
+  `breathHoldTarget`／閉氣的前導潛水被濾出鏈外且逐隔室數值與「沒有那筆」相同／
+  **對照組：同一筆標記為水肺時確實進鏈（chainDiveCount 2）**，證明前一項不是空轉通過。
+- unit test **53 → 67 passed**（`-only-testing:JD2-LogbookTests`，依既有慣例
+  `-skip-testing` 排除 `ImportCoordinatorTests`），iOS + macOS build 皆通過。
+
 ### 2026-08-22 — 採用 DiveKit 共用剖面重放引擎，移除本 repo 的獨立複製
 
 家族總指揮派工（Phase 2 App 採用；Phase 1 DiveKit 端已完成）。規格見
