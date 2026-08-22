@@ -544,4 +544,59 @@ final class ImportCoordinatorTests: XCTestCase {
 
         XCTAssertEqual(result.count, 1, "3 筆幾乎相同的日誌應只保留第一筆")
     }
+
+    // MARK: - 稽核修復 2026-08-22：dedupe 深度精確 == 比對缺容差
+
+    /// 稽核報告中風險 B：不同來源格式對同一支潛水的深度換算/顯示精度不同
+    /// （例如 41.0m vs. 41.04m），原本的 `==` 精確比對會判定為不重複，
+    /// 造成同一支潛水被重複匯入。改用 `abs(a-b) < depthMatchToleranceMeters`
+    /// （0.1m）容差比對後，容差內的微小深度差異應被視為同一支潛水。
+    func testDedupeTreatsSmallDepthDifferenceWithinToleranceAsDuplicate() {
+        let base = Date(timeIntervalSince1970: 1_700_000_000)
+        let existingDive = makeDive(depth: 41.0, location: "Blue Hole")
+        existingDive.dateTime = base
+
+        let incoming = makeDive(depth: 41.04, location: "Blue Hole")
+        incoming.dateTime = base.addingTimeInterval(5)
+
+        let result = ImportCoordinator.dedupe([incoming], against: [existingDive])
+
+        XCTAssertEqual(result.count, 0,
+            "深度差 0.04m 遠小於 0.1m 容差，應視為同一支潛水的重複匯入而過濾")
+    }
+
+    /// 邊界案例：深度差恰好等於容差值（0.1m）。比對條件是開區間 `< tolerance`，
+    /// 所以差值「恰好等於」容差應視為不重複（容差邊界本身不算在容差內）。
+    func testDedupeTreatsDepthDifferenceExactlyAtToleranceBoundaryAsNotDuplicate() {
+        let base = Date(timeIntervalSince1970: 1_700_000_000)
+        let existingDepth = 41.0
+        let existingDive = makeDive(depth: existingDepth, location: "Blue Hole")
+        existingDive.dateTime = base
+
+        // 用容差常數本身算出邊界值，避免十進位字面值在 Double 下的浮點誤差
+        // 讓「差值是否恰好等於容差」這件事變得不確定。
+        let incoming = makeDive(depth: existingDepth + ImportCoordinator.depthMatchToleranceMeters,
+                                 location: "Blue Hole")
+        incoming.dateTime = base.addingTimeInterval(5)
+
+        let result = ImportCoordinator.dedupe([incoming], against: [existingDive])
+
+        XCTAssertEqual(result.count, 1,
+            "深度差恰好等於容差值（開區間 <），不應被視為重複")
+    }
+
+    /// 深度差略大於容差值時，應視為兩支不同的潛水，不誤判為重複。
+    func testDedupeTreatsDepthDifferenceBeyondToleranceAsNotDuplicate() {
+        let base = Date(timeIntervalSince1970: 1_700_000_000)
+        let existingDive = makeDive(depth: 41.0, location: "Blue Hole")
+        existingDive.dateTime = base
+
+        let incoming = makeDive(depth: 41.2, location: "Blue Hole")
+        incoming.dateTime = base.addingTimeInterval(5)
+
+        let result = ImportCoordinator.dedupe([incoming], against: [existingDive])
+
+        XCTAssertEqual(result.count, 1,
+            "深度差 0.2m 明顯超出容差，應視為不同潛水而保留")
+    }
 }
