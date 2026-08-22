@@ -33,8 +33,8 @@ Supports major brands including UDDF, Subsurface, Suunto, Garmin, Shearwater, Se
 **Every Detail, At a Glance**
 Each entry can hold depth profile, max & average depth, dive time, gas mix (Air / Nitrox / Trimix), water temperature and conditions, equipment (wetsuit, weights, cylinder), GPS coordinates, and notes. A clean list view and calendar make it easy to browse your full dive history.
 
-**Interactive Profile, With Tissue Saturation**
-Tap and drag anywhere on the dive profile chart to inspect that exact moment — depth, elapsed time, and an estimated tissue saturation level from the Bühlmann ZHL-16C model. A clearer picture of every dive, not a replacement for your dive computer.
+**Interactive Profile, With Tissue Loading (Limited Support)**
+Tap and drag anywhere on the dive profile chart to inspect that exact moment — depth, elapsed time, and an estimated tissue loading level from the Bühlmann ZHL-16C model. A clearer picture of every dive, not a replacement for your dive computer. Tissue loading isn't available for technical (multi-gas) dives or logs with discontinuous imported data — the depth profile itself always displays normally.
 
 **Dive Site Map**
 GPS coordinates are automatically plotted on a map so you can see every dive site you've visited. Cluster display keeps the map readable no matter how many dives you've logged.
@@ -74,7 +74,7 @@ dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive comp
 New in this update:
 • Import support for more dive computer formats
 • Switch between metric and imperial units anytime
-• Interactive dive profile chart with tissue saturation detail
+• Interactive dive profile chart with tissue loading detail
 • Various bug fixes and stability improvements
 
 ---

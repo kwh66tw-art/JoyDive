@@ -97,6 +97,8 @@ struct DiveAnalysisView: View {
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
+
+            replayLimitationsNotice
         }
         .animation(.easeInOut(duration: 0.15), value: selectedIndex)
         .task {
@@ -126,23 +128,44 @@ struct DiveAnalysisView: View {
     // 設計文件第四節：P1–P6 任一成立 → 整個 tissue loading 重放不計算，原本放
     // 組織艙飽和度／ceiling／NDL 的區塊改顯示說明訊息，**深度剖面照常顯示**。
     //
-    // ⚠️ 文案為 PM 暫訂（英文，之後定版再改），刻意只講「不可用」這一件事：
-    //    設計文件第七節提到的一般性揭露（GF 收緊近似、Logbook 因為沒有
-    //    `diveNumberInSeries` 而偵測強度較弱）文案尚未由 PM 定調，**不得自行
-    //    發明**，已登錄 V1_2_BACKLOG。
-    //
-    // ⚠️ 目前六種 Anomaly 共用同一段文字（PM 暫訂文案就是這樣寫的）；Kit 的
-    //    `Anomaly` 是具型別的，日後 PM 要細分文案時直接 switch 即可，不需要改
-    //    演算法層。
+    // 文案已由 PM 於 2026-08-22 定版（V1_2_BACKLOG #24），取代先前的英文暫訂稿。
+    // 目前六種 Anomaly 共用同一段文字；Kit 的 `Anomaly` 是具型別的，日後 PM 要
+    // 細分文案時直接 switch 即可，不需要改演算法層。
 
     private func anomalyNotice(_ anomaly: DiveReplayEngine.Anomaly) -> some View {
         Text(verbatim: languageManager.localized(
-            "Interactive Tissue/Saturation is not available in case of Trimix Dive or improper data import..."
+            "This feature does not support technical dives or logs with discontinuous imported data."
         ))
         .font(.caption)
         .foregroundStyle(.secondary)
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityIdentifier("replayAnomalyNotice")
+    }
+
+    // MARK: - 一般性重放限制揭露
+    // 設計文件第七節（`_JD2-family/decisions/2026-08-22_重放連續潛水殘氮與前置
+    // 判斷-設計.md`）：這兩項是 DiveKit 共用重放引擎／Logbook 資料模型的固有限制，
+    // **永遠顯示**在組織艙飽和度／ceiling 區塊附近，不論這次重放有沒有觸發 P1–P6
+    // 異常——因為就算重放正常算出結果，這兩項限制依然成立。文案由 PM 於
+    // 2026-08-22 定版（V1_2_BACKLOG #24）：
+    //   1. GF 樂觀偏差：重放全程以 gfHigh 為基準，不模擬即時裝置 ascent 中的
+    //      GF 收緊，ceiling 因此可能比裝置當時實際顯示更淺（更樂觀）。
+    //   2. 偵測強度較弱：Logbook 沒有 `diveNumberInSeries` 欄位（ultra／immersion
+    //      有），P4 交叉比對會被跳過，不得暗示偵測強度與另外兩者相同。
+    // 比異常訊息（anomalyNotice）更不顯眼——那是狀況警示，這是固定揭露。
+    private var replayLimitationsNotice: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(verbatim: languageManager.localized(
+                "Replay is simulated using the conservative GF High ceiling baseline, so the ceiling shown may be more optimistic (shallower) than what your dive computer displayed at the time."
+            ))
+            Text(verbatim: languageManager.localized(
+                "This app can't read the original device's dive-series index, so replay-anomaly detection here has narrower coverage than in ultra or immersion."
+            ))
+        }
+        .font(.caption2)
+        .foregroundStyle(.tertiary)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityIdentifier("replayLimitationsNotice")
     }
 
     // MARK: - 互動剖面圖

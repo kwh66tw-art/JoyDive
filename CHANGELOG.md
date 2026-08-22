@@ -31,6 +31,33 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [開發階段紀錄]
 
+### 2026-08-23 — 重放揭露文案定版（異常訊息＋兩項一般性限制揭露）
+
+PM 定版裁示。取代 2026-08-22 那批英文暫訂稿，處理 `V1_2_BACKLOG.md` 項目 24：
+
+1. **異常訊息定版**：`DiveAnalysisView.anomalyNotice(_:)`（P1–P6 前置判斷觸發時取代
+   組織艙飽和度／Ceiling／NDL 區塊的說明文字）string catalog key 換成
+   「This feature does not support technical dives or logs with discontinuous
+   imported data.」（en/en-GB 同文，新增 zh-Hant「本功能暫不支援技術潛水與匯入
+   資料不連續的日誌紀錄。」）。
+2. **新增兩項一般性揭露**（獨立於異常訊息，永遠顯示在 Interactive Tissue
+   Loading/Ceiling 區塊下方——因為這是 DiveKit 共用重放引擎／Logbook 資料模型的
+   固有限制，不論本次重放是否觸發 P1–P6 異常都成立，源自設計文件
+   `_JD2-family/decisions/2026-08-22_重放連續潛水殘氮與前置判斷-設計.md` 第七節）：
+   ① GF 樂觀偏差——重放以保守 GF High 為基準，ceiling 可能比裝置當時實際顯示更淺；
+   ② 偵測強度較弱——Logbook 無 `diveNumberInSeries`，P4 交叉比對被跳過，涵蓋範圍
+   較 ultra／immersion 弱。新增 `DiveAnalysisView.replayLimitationsNotice` view
+   （`.caption2`/`.tertiary`，比異常訊息更不顯眼），`accessibilityIdentifier
+   ("replayLimitationsNotice")`；en/en-GB/zh-Hant 三語，其餘語言暫時回退英文。
+3. **行銷文案修正**（`docs/APPSTORE_COPY.md`）：標題「Interactive Profile, With
+   Tissue Saturation」→「Interactive Profile, With Tissue Loading (Limited
+   Support)」，內文 "tissue saturation"→"tissue loading" 並加註限制說明句——
+   一併修正誤用的非家族標準術語（F-10 `dive-terminology-glossary.json` 已收錄
+   "Tissue Loading" 為家族標準詞，"Saturation" 未收錄）。
+
+單純文案/UI 層變更，未觸碰 DiveKit。unit test 101 → 101 passed（0 failed，5 個
+既有 `ImportCoordinatorTests` skip 不變），iOS + macOS build 皆通過。
+
 ### 2026-08-22 — `DiveLog` 新增潛水類型欄位，接上 DiveKit 閉氣潛水排除
 
 家族總指揮派工。DiveKit v1.9.0-rc3 把閉氣潛水（自由潛水／浮潛）排除在殘氮鏈之外

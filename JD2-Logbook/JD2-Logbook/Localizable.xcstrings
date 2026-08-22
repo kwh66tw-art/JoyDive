@@ -12839,19 +12839,71 @@
         }
       }
     },
-    "Interactive Tissue/Saturation is not available in case of Trimix Dive or improper data import..." : {
-      "comment" : "Shown in place of the tissue saturation / ceiling / NDL readout when the replay pre-check rejects the dive chain. PM-provisional English wording (2026-08-22); final copy and the general disclosure sentence are pending — see V1_2_BACKLOG.",
+    "Replay is simulated using the conservative GF High ceiling baseline, so the ceiling shown may be more optimistic (shallower) than what your dive computer displayed at the time." : {
+      "comment" : "General disclosure (always shown near the Interactive Tissue Loading/Ceiling section, independent of P1-P6 anomaly state): DiveKit's shared replay engine models the ceiling using the conservative GF High baseline rather than the live ascent-time GF tightening a real dive computer applies, so the displayed ceiling can read shallower/more optimistic than the device's own reading at the time. PM-finalized wording, 2026-08-22 — see V1_2_BACKLOG #24 and _JD2-family/decisions/2026-08-22_重放連續潛水殘氮與前置判斷-設計.md 第七節.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Interactive Tissue/Saturation is not available in case of Trimix Dive or improper data import..."
+            "value" : "Replay is simulated using the conservative GF High ceiling baseline, so the ceiling shown may be more optimistic (shallower) than what your dive computer displayed at the time."
           }
         },
         "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Interactive Tissue/Saturation is not available in case of Trimix Dive or improper data import..."
+            "value" : "Replay is simulated using the conservative GF High ceiling baseline, so the ceiling shown may be more optimistic (shallower) than what your dive computer displayed at the time."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重放以保守飽和度上限（GF High）為基準模擬，天花板深度可能較潛水當下裝置實際顯示更樂觀（較淺）。"
+          }
+        }
+      }
+    },
+    "This app can't read the original device's dive-series index, so replay-anomaly detection here has narrower coverage than in ultra or immersion." : {
+      "comment" : "General disclosure (always shown near the Interactive Tissue Loading/Ceiling section, independent of P1-P6 anomaly state): Logbook has no `diveNumberInSeries` field (unlike ultra/immersion), so the P4 cross-check in DiveKit's shared replay pre-check is skipped here — detection coverage is intentionally weaker than the sibling apps, and this must not be implied to be equivalent. PM-finalized wording, 2026-08-22 — see V1_2_BACKLOG #24 and _JD2-family/decisions/2026-08-22_重放連續潛水殘氮與前置判斷-設計.md 第七節.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This app can't read the original device's dive-series index, so replay-anomaly detection here has narrower coverage than in ultra or immersion."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This app can't read the original device's dive-series index, so replay-anomaly detection here has narrower coverage than in ultra or immersion."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本App無法讀取原始裝置的潛水序號，重放前置異常偵測的涵蓋範圍較 ultra／immersion 弱。"
+          }
+        }
+      }
+    },
+    "This feature does not support technical dives or logs with discontinuous imported data." : {
+      "comment" : "Shown in place of the tissue loading / ceiling / NDL readout when the replay pre-check rejects the dive chain (P1-P6 anomaly). PM-finalized wording, 2026-08-22 — see V1_2_BACKLOG #24.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This feature does not support technical dives or logs with discontinuous imported data."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This feature does not support technical dives or logs with discontinuous imported data."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本功能暫不支援技術潛水與匯入資料不連續的日誌紀錄。"
           }
         }
       }
