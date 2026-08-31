@@ -9,9 +9,11 @@ import XCTest
 
 final class JD2_LogbookUITestsLaunchTests: XCTestCase {
 
-    override class var runsForEachTargetApplicationUIConfiguration: Bool {
-        true
-    }
+    // 2026-08-30 PM 裁示：功能測試只驗證功能，不需要對全部語系跑（截圖存證
+    // 需求另計）。移除 runsForEachTargetApplicationUIConfiguration=true，
+    // 改回預設（只跑一次，base 語系）——原設定讓這支不含任何斷言的樣板
+    // 測試對 18 個語系重複啟動，膨脹成 800+ 次執行，是 UITests suite
+    // 70 分鐘跑不完的主因。
 
     override func setUpWithError() throws {
         continueAfterFailure = false
