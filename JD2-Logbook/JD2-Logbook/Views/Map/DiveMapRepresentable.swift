@@ -241,11 +241,19 @@ private extension DiveMapRepresentable {
             }
         }
 
-        // ── Zoom-to-fit on first load（coordinator 同步旗標，杜絕重複 async fit）──
+        // ── Zoom-to-fit on first load ──
+        // ⚠️ 旗標必須在「動作真正執行完」之後才設 true，不能在派送 async 之前就設。
+        // 舊寫法在 guard 通過後立刻設 true，再 DispatchQueue.main.async 執行實際 fit；
+        // 冷啟動時若該次 async 執行時 annotations 仍是空的（資料尚未載入完成），
+        // 內層 guard !all.isEmpty 會直接 return，但旗標早已卡死在 true，
+        // 導致地圖永遠不會自動 zoom-to-fit。改為：旗標只在 async 區塊內、
+        // 確認真的有 annotation 可以 fit 並執行完 setRegion/showAnnotations 之後才設 true，
+        // 且仍在 main.async 開頭做旗標檢查以避免同一次 layout pass 內重複排入 fit。
         guard !coordinator.hasZoomedToFit else { return }
-        coordinator.hasZoomedToFit = true
 
         DispatchQueue.main.async {
+            guard !coordinator.hasZoomedToFit else { return }
+
             let all = mapView.annotations.filter { !($0 is MKUserLocation) }
             guard !all.isEmpty else { return }
 
@@ -259,6 +267,9 @@ private extension DiveMapRepresentable {
             } else {
                 mapView.showAnnotations(all, animated: false)
             }
+
+            // 動作真正執行完後才標記完成，避免旗標卡死在「尚未真的 fit 過」的 true。
+            coordinator.hasZoomedToFit = true
         }
     }
 }
