@@ -386,7 +386,7 @@ struct ImportWizardView: View {
 
             if !allFailed {
                 VStack(spacing: 6) {
-                    Text(String(format: languageManager.localized("%lld dive%@ imported"), count, count == 1 ? "" : "s"))
+                    Text(String(format: languageManager.localized("Dives imported: %lld"), count))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     if skipped > 0 {

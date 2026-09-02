@@ -263,7 +263,7 @@ struct DiveAnalysisView: View {
             calloutCell(
                 label: Text("No Deco"),
                 value: ndlText(point.ndlSeconds),
-                accent: point.ndlSeconds < 10 * 60 ? .warning : .neutral
+                accent: point.ndlSeconds < AlgorithmConstants.ndlWarnMinutes * 60 ? .warning : .neutral
             )
         }
     }
@@ -395,11 +395,15 @@ struct DiveAnalysisView: View {
     }
 
     private func warningDetail(_ kind: DiveReplayEngine.ReplayWarningKind) -> String {
+        // 門檻讀自 DiveKit AlgorithmConstants，不寫死，避免 Kit 端常數異動後
+        // 這裡（含 18 語言翻譯）不會跟著動（R-060 附帶發現）。
+        let mpm = AlgorithmConstants.maxAscentRateWarn
+        let fpm = mpm * 3.28084
         switch kind {
         case .ascentRateExceeded:
-            return languageManager.localized("Ascent rate exceeded 10 m/min (32.8 ft/min).")
+            return String(format: languageManager.localized("Ascent rate exceeded %1$.0f m/min (%2$.1f ft/min)."), mpm, fpm)
         case .mandatorySafetyStop:
-            return languageManager.localized("Safety stop became mandatory: ascent rate stayed above 10 m/min (32.8 ft/min) for 10 seconds.")
+            return String(format: languageManager.localized("Safety stop became mandatory: ascent rate stayed above %1$.0f m/min (%2$.1f ft/min) for %3$d seconds."), mpm, fpm, AlgorithmConstants.ascentSustainedWarnSec)
         }
     }
 
