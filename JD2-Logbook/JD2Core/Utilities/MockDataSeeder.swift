@@ -59,9 +59,9 @@ final class MockDataSeeder {
     
     private static let mockGases = [
         "\"air\"",
-        "{\"o2Percent\":32,\"heliumPercent\":0}", // Nitrox 32%
-        "{\"o2Percent\":36,\"heliumPercent\":0}", // Nitrox 36%
-        "{\"o2Percent\":21,\"heliumPercent\":35}" // Trimix 21/35 (用於深潛測試)
+        "{\"nitrox\":{\"fO2\":0.32}}", // Nitrox 32%
+        "{\"nitrox\":{\"fO2\":0.36}}", // Nitrox 36%
+        "{\"trimix\":{\"fO2\":0.21,\"fHe\":0.35}}" // Trimix 21/35 (用於深潛測試)
     ]
 
     /// 注入大量 Mock 數據
