@@ -127,16 +127,64 @@ func parseAndValidateForBackground(filePath: String) throws -> [DiveImportKit.Pa
     }
 }
 
+/// R-070 App 半（2026-09-03）：從 `importExtrasJSON`（既有 sortedKeys JSON dict
+/// 字串，見 `makeDiveLog(from:)` 註解／`DiveLog.importExtras`）解碼出 round-trip
+/// 指紋 ID（`DiveImportKit.jd2RoundtripIDKey`）。與 `DiveLog.importExtras` 用
+/// 同一套解碼慣例，這裡直接吃原始 JSON 字串是為了同時供 `DiveLog` 與
+/// `DiveLogBackupEntry`（兩者皆有 `importExtrasJSON` 欄位，但後者沒有前者那個
+/// 型別化的 `importExtras` computed property）共用同一份抽取邏輯，不重複寫。
+/// 找不到欄位或欄位不存在的舊資料（Kit round-trip 機制導入前匯入的記錄）
+/// 一律回傳 nil——`DiveFingerprint.matches` 任一邊為 nil 時完全退回既有模糊
+/// 比對，向後相容不受影響。
+func roundtripID(fromImportExtrasJSON json: String) -> String? {
+    guard let data = json.data(using: .utf8),
+          let dict = try? JSONDecoder().decode([String: String].self, from: data)
+    else { return nil }
+    return dict[DiveImportKit.jd2RoundtripIDKey]
+}
+
 /// 去重：候選記錄 vs 資料庫既有記錄（修復 SYNC #2，邏輯與 Kit 內建測試一致，
 /// 兩邊 App 共用同一份，不再各自維護容易走鐘的版本）。
+/// R-070：既有記錄的指紋帶上已儲存的 round-trip ID（若有），讓 UDDF round-trip
+/// 匯入（ultra/immersion → Logbook）優先走精確 ID 比對，不再 100% 依賴地點/
+/// 時間/深度模糊比對——後者在 UDDF 匯出改寫地點名稱等情況下會失效。
 func dedupeAgainstExisting(
     _ dives: [DiveImportKit.ParsedDiveLog],
     existing: [DiveLog]
 ) -> (kept: [DiveImportKit.ParsedDiveLog], skippedCount: Int) {
     let fingerprints = existing.map {
-        DiveImportKit.DiveFingerprint(dateTime: $0.dateTime, location: $0.location, maxDepth: $0.maxDepth)
+        DiveImportKit.DiveFingerprint(
+            dateTime: $0.dateTime, location: $0.location, maxDepth: $0.maxDepth,
+            roundtripID: roundtripID(fromImportExtrasJSON: $0.importExtrasJSON)
+        )
     }
     return DiveImportKit.ImportBatchProcessor.dedupe(dives, against: fingerprints)
+}
+
+/// R-070 測試專用建構器（2026-09-03）：讓測試能建構帶／不帶 round-trip ID 的
+/// `DiveImportKit.ParsedDiveLog` 候選記錄，驗證 `dedupeAgainstExisting` 的精確
+/// ID 比對，同時不必讓測試檔自己 `import DiveImportKit`——本檔頭已明文「全 App
+/// 唯一 import DiveImportKit 的檔案」；經實測，讓 App target 以外的檔案（含測試
+/// target）也直接 `import DiveImportKit` 會在 macOS（Mac Catalyst／原生 macOS）
+/// destination 的 explicit module build 下觸發 `unable to resolve module
+/// dependency: 'JoyDive_'`（iOS Simulator 不受影響，只有 macOS 目的地重現），
+/// 靠回傳型別推斷讓呼叫端完全不需要拼出 `DiveImportKit.` 前綴即可繞開。
+func makeTestParsedDiveLog(
+    dateTime: Date,
+    location: String,
+    maxDepth: Double,
+    diveTimeSeconds: Int,
+    roundtripID: String?
+) -> DiveImportKit.ParsedDiveLog {
+    DiveImportKit.ParsedDiveLog(
+        dateTime: dateTime,
+        location: location,
+        maxDepth: maxDepth,
+        diveTimeSeconds: diveTimeSeconds,
+        importExtras: roundtripID.map {
+            [DiveImportKit.ImportExtra(key: DiveImportKit.jd2RoundtripIDKey, value: $0)]
+        } ?? []
+    )
 }
 
 /// 格式顯示名稱（供 log 訊息用，不需要讓呼叫端知道 Kit 的 DiveLogFormat 型別存在）。
@@ -147,15 +195,26 @@ func formatDisplayName(for filePath: String) -> String? {
 /// 去重：備份還原候選項 vs 資料庫既有記錄（家族層共用抽取 B 組，2026-07-19）。
 /// 跟匯入流程用的是同一套 Kit 比對規則（地點+深度+60秒），供
 /// `DiveLogDatabase.importFromJSON` 呼叫，不再手寫一份物理重複的邏輯。
+/// R-070：`DiveLogBackupEntry` 也帶有 `importExtrasJSON`（`DiveLogBackup.swift`
+/// 逐欄位對拷自 `DiveLog`），兩邊指紋都接上 round-trip ID——只接 `existing`
+/// 側會讓 `DiveFingerprint.matches` 因為 `other.roundtripID` 恆為 nil 而永遠
+/// 走不到精確比對分支，等於白接；備份／還原資料完整保留 `importExtrasJSON`
+/// 原樣（非重新產生的匯出），ID 本來就在，接上沒有向後相容疑慮。
 func dedupeBackupEntries(
     _ entries: [DiveLogBackupEntry],
     against existing: [DiveLog]
 ) -> (kept: [DiveLogBackupEntry], skippedCount: Int) {
     let fingerprints = existing.map {
-        DiveImportKit.DiveFingerprint(dateTime: $0.dateTime, location: $0.location, maxDepth: $0.maxDepth)
+        DiveImportKit.DiveFingerprint(
+            dateTime: $0.dateTime, location: $0.location, maxDepth: $0.maxDepth,
+            roundtripID: roundtripID(fromImportExtrasJSON: $0.importExtrasJSON)
+        )
     }
     return DiveImportKit.ImportBatchProcessor.dedupe(entries, against: fingerprints) {
-        DiveImportKit.DiveFingerprint(dateTime: $0.dateTime, location: $0.location, maxDepth: $0.maxDepth)
+        DiveImportKit.DiveFingerprint(
+            dateTime: $0.dateTime, location: $0.location, maxDepth: $0.maxDepth,
+            roundtripID: roundtripID(fromImportExtrasJSON: $0.importExtrasJSON)
+        )
     }
 }
 
