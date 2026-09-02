@@ -228,6 +228,47 @@ final class DiveLog {
 
     // MARK: - 計算屬性
 
+    /// 解碼 `gasMixJSON` → `GasMix`；解碼失敗回傳 nil（R-058：唯一負責判斷「這是不是
+    /// 真的解碼失敗」的地方，供顯示層與重放輸入層共用，不再各自重覆 `try?` 邏輯）。
+    ///
+    /// ⚠️ 呼叫端**不得**把 nil 靜默當成 `.air` 顯示或計算——v1.6.0 解除 trimix 繞過後，
+    /// 這裡的實際後果已經不是「不算」，是「用空氣去算一支可能是 trimix 的潛水」，畫面
+    /// 上還同時寫著「Air」互相佐證，使用者完全無從察覺這是解碼失敗、不是真的空氣潛水
+    /// （R-058）。顯示層要顯示明確的「氣體資料錯誤」狀態；重放輸入層要標記
+    /// `gasMixConfidence: .unknown`，讓 DiveKit `DiveReplayEngine` 的 precheck（R-008
+    /// 同一機制）保守拒算，不得放行休閒演算法把 nil 當空氣算出一堆看似正常的數字。
+    var decodedGasMix: GasMix? {
+        guard let data = gasMixJSON.data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(GasMix.self, from: data)
+    }
+
+    /// R-052：`DiveAnalysisView` 重放結果（Ceiling／No Deco／Tissue Loading）的快取失效
+    /// 指紋。呼叫端原本只用 `.id(dive.persistentModelID)` 防止「切換到不同潛水」時舊
+    /// 資料殘留，但 `persistentModelID` 在**同一筆潛水被就地編輯**時不會變——使用者把
+    /// 氣體從 Air 改成 EANx32 存檔後，「Dive Info → Gas」欄位因為直接讀資料庫會立刻
+    /// 更新，但下方這些**衍生自 `replayInput` 的重放結果**仍是用編輯前的舊值算出來的，
+    /// 畫面上沒有任何提示告訴使用者數字已經過期（模擬器重現：25m/20min 空氣潛水本已
+    /// 進入減壓、Ceiling=0m／No Deco=0'，改成 EANx32 存檔後兩者維持不變，即使
+    /// 「Dive Info → Gas」已正確顯示 EANx32）。
+    ///
+    /// 只組合會實際餵進 `DiveReplayEngine.DiveInput`（見 `replayInput`）、且使用者能
+    /// 透過 `DiveLogEditSheet` 編輯到的欄位：氣體、深度、時長、入水時間、潛水模式
+    /// （影響 `isBreathHold`）、環境氣壓／深度換算係數。**刻意不含**
+    /// `profileSamplesJSON`——剖面樣本只在匯入當下寫入、編輯畫面不會改到它，納入只會
+    /// 讓每次呼叫端重新計算這個指紋時多雜湊一段可能數百筆樣本的大字串，沒有對應的
+    /// 「防止殘留」效益。
+    var replayInputsFingerprint: Int {
+        var hasher = Hasher()
+        hasher.combine(gasMixJSON)
+        hasher.combine(maxDepth)
+        hasher.combine(diveTimeSeconds)
+        hasher.combine(dateTime)
+        hasher.combine(diveMode)
+        hasher.combine(surfacePressureBar)
+        hasher.combine(metersPerBar)
+        return hasher.finalize()
+    }
+
     /// 潛水時間（分鐘）
     var diveTimeMinutes: Int {
         diveTimeSeconds / 60

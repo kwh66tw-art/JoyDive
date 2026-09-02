@@ -48,10 +48,11 @@ struct DiveLogDetailView: View {
         }
     }
 
+    /// R-058：解碼失敗時不再靜默顯示「Air」——那會讓一支解碼失敗的 trimix 潛水
+    /// 看起來像是真的空氣潛水，使用者完全無從察覺。見 `DiveLog.decodedGasMix` 說明。
     private var gasMixText: String {
-        guard let data = dive.gasMixJSON.data(using: .utf8),
-              let gas = try? JSONDecoder().decode(GasMix.self, from: data) else {
-            return languageManager.localized("Air")
+        guard let gas = dive.decodedGasMix else {
+            return languageManager.localized("Unknown Gas")
         }
         return gas.localizedDisplayName(languageManager)
     }
@@ -62,11 +63,12 @@ struct DiveLogDetailView: View {
     }
 
     /// v1.1 #4/#5：解碼氣體配置供 DiveAnalysisView 重放使用
+    /// R-058：解碼失敗時退回 `.air` 這件事本身沒有安全後果——`DiveAnalysisView`
+    /// 目前並未實際讀取這個 `gasMix` 參數（重放走的是 `dive.replayInput` →
+    /// `replayGasMix`／`replayGasMixConfidence`，兩者已各自標記 `.unknown` 保守拒算），
+    /// 這裡維持 fallback 只是為了滿足這個目前未被使用的參數的型別要求。
     private var diveGasMix: GasMix {
-        guard let data = dive.gasMixJSON.data(using: .utf8),
-              let decoded = try? JSONDecoder().decode(GasMix.self, from: data)
-        else { return .air }
-        return decoded
+        dive.decodedGasMix ?? .air
     }
 
     // MARK: - Body
@@ -95,7 +97,12 @@ struct DiveLogDetailView: View {
                         // 2026-08-22：改用 DiveKit 共用重放引擎的鏈式重放，需要 dive
                         // 本身（時間戳/時長/maxDepth/環境）才能串起連續潛水殘氮。
                         DiveAnalysisView(dive: dive, samples: profileSamples, gasMix: diveGasMix)
-                            .id(dive.persistentModelID)   // 換一筆 dive 時強制重建，選取狀態不跨潛水殘留
+                            // R-052：persistentModelID 防「換一筆 dive」時舊資料殘留；
+                            // replayInputsFingerprint 防「同一筆被就地編輯」時舊的
+                            // Ceiling/No Deco/Tissue Loading 沒有跟著氣體/深度/時長等
+                            // 變動重新計算。兩者缺一都會有對應的殘留 bug，見
+                            // `DiveLog.replayInputsFingerprint` 說明。
+                            .id("\(dive.persistentModelID)-\(dive.replayInputsFingerprint)")
                             .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
                     } else {
                         DiveProfileChartView(samples: profileSamples)

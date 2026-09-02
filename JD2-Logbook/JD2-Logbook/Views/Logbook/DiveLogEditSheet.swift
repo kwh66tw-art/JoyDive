@@ -269,6 +269,18 @@ struct DiveLogEditSheet: View {
                     }
 
                     // 潛水時間（分鐘）
+                    // ⚠️ R-052 已知待辦（2026-09-02 稽核，範圍評估後決定不在本批次一併修，
+                    // 記錄清楚待辦範圍）：這裡改的 `durationMinutes` 只寫回
+                    // `dive.diveTimeSeconds`（見 `save()`），**不會**連動重算
+                    // `dive.avgDepth`——後者是匯入當下用剖面樣本梯形近似算出來的
+                    // （`DiveImportKitAdapter.swift:70` / `DiveProfileSample
+                    // .reconstructedAvgDepth`），跟樣本本身的真實時間跨度綁定，不是跟
+                    // `diveTimeSeconds` 這個欄位連動。使用者在這裡把時長改短/改長後，
+                    // Dive Info 顯示的「Avg Depth」仍是舊時長下的樣本平均值，兩者會不
+                    // 自洽（且剖面圖本身仍照真實樣本時間軸繪製，跟新填的 Dive Time 也
+                    // 對不上）。修法需要先決定「剖面樣本存在時是否該讓 Dive Time 唯讀、
+                    // 改用樣本重建」這個更上層的產品決策，不是單純加一行重算就能收尾，
+                    // 故本次僅記錄不動代碼；追蹤見統一修復計畫 R-052 列。
                     HStack {
                         Text(languageManager.localized("Dive Time"))
                             .foregroundStyle(.primary)

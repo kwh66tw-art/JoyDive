@@ -30,12 +30,19 @@ extension DiveLog {
         )
     }
 
-    /// 解碼氣體配置（解不出來時退回 air，與 Detail view 既有行為一致）
+    /// 解碼氣體配置。**⚠️ R-058 修復前**這裡解不出來時直接退回 `.air`——`DiveInput.gasMix`
+    /// 是 non-optional，重放引擎拿到的就是「確定是空氣」，會用空氣去算一支可能是
+    /// trimix 的潛水且沒有任何但書。修復後：仍然要回傳一個具體值（型別要求），但真正的
+    /// 「是否可信」訊號改由 `replayGasMixConfidence` 攜帶，`replayInput` 一併帶給
+    /// DiveKit，讓 precheck（R-008 同一機制，`GasMixConfidence.unknown` →
+    /// `Anomaly.unknownGasMix`）保守拒算，不再靜默算出一堆看似正常的數字。
     var replayGasMix: GasMix {
-        guard let data = gasMixJSON.data(using: .utf8),
-              let decoded = try? JSONDecoder().decode(GasMix.self, from: data)
-        else { return .air }
-        return decoded
+        decodedGasMix ?? .air
+    }
+
+    /// R-058／R-008：`replayGasMix` 這個具體值是否真的可信。
+    var replayGasMixConfidence: DiveReplayEngine.GasMixConfidence {
+        decodedGasMix != nil ? .confirmed : .unknown
     }
 
     /// 攤平成 Kit 的中性輸入。
@@ -69,7 +76,8 @@ extension DiveLog {
             gasMix: replayGasMix,
             environment: replayEnvironment,
             recordedSeriesIndex: nil,
-            isBreathHold: diveModeValue.isBreathHold
+            isBreathHold: diveModeValue.isBreathHold,
+            gasMixConfidence: replayGasMixConfidence
         )
     }
 }

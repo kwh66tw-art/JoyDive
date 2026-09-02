@@ -43,10 +43,10 @@ struct DiveSiteSheetView: View {
         return "\(minutes) min"
     }
 
+    /// R-058：解碼失敗時不再靜默顯示「Air」，見 `DiveLog.decodedGasMix` 說明。
     private var gasMixText: String {
-        guard let data = dive.gasMixJSON.data(using: .utf8),
-              let gas  = try? JSONDecoder().decode(GasMix.self, from: data) else {
-            return languageManager.localized("Air")
+        guard let gas = dive.decodedGasMix else {
+            return languageManager.localized("Unknown Gas")
         }
         return gas.localizedDisplayName(languageManager)
     }

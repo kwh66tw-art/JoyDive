@@ -36,8 +36,12 @@ struct DiveRowView: View {
         }
     }
 
+    /// R-058：解碼失敗時不再靜默顯示「Air」，見 `DiveLog.decodedGasMix` 說明。
     var gasMixText: String {
-        gasMixDisplayName(dive.gasMixJSON)
+        guard let gasMix = dive.decodedGasMix else {
+            return languageManager.localized("Unknown Gas")
+        }
+        return gasMix.localizedDisplayName(languageManager)
     }
 
     // MARK: - Body
@@ -176,16 +180,6 @@ struct DiveRowView: View {
     private var accessibilityDescription: String {
         let dateStr = languageManager.dateFormatter(dateStyle: .medium).string(from: dive.dateTime)
         return "\(dateStr), \(locationText), \(unitSystem.formatDepth(dive.maxDepth)), \(durationText)"
-    }
-
-    // MARK: - Gas Mix Helpers
-
-    private func gasMixDisplayName(_ json: String) -> String {
-        guard let data = json.data(using: .utf8),
-              let gasMix = try? JSONDecoder().decode(GasMix.self, from: data) else {
-            return languageManager.localized("Air")
-        }
-        return gasMix.localizedDisplayName(languageManager)
     }
 }
 
