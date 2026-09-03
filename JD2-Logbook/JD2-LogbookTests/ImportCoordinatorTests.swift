@@ -272,6 +272,34 @@ final class ImportCoordinatorTests: XCTestCase {
         XCTAssertNil(importer, "不存在的 JSON 檔案應返回 nil（canHandle 檔案讀取失敗）")
     }
 
+    // MARK: - 路徑存在性斷言（CH-3：家族層路徑解析稽核）
+    //
+    // 本檔案其餘測試對缺檔一律 XCTSkip（見上／下方各處），這是刻意的：CI／不同
+    // 開發者機器上 _JD2-family/dive-log-samples/ 不一定簽出完整。但這代表若一次
+    // repo 搬遷／改名讓 repoRoot／testFilePath() 的相對路徑算式本身算錯（而非「檔案
+    // 剛好沒簽出」），所有依賴它的測試會集體靜默 skip、綠燈掩蓋真正的路徑斷裂
+    // ——這正是家族稽核點名的 T-01（`RealDiveSimulationTests` 上溯層數對不上、
+    // 缺檔優雅跳過、空轉六週）同一種失效形狀。這支測試不 skip，直接斷言，
+    // 用來把「路徑算式本身壞了」和「單純沒簽出樣本檔」分開：本機（樣本已簽出）
+    // 執行本測試理應必過；若失敗，代表 testFilePath() 的路徑解析算式壞了，
+    // 不是樣本檔案問題。
+    func testFixturePathsResolveToExistingFiles() {
+        let fixtures = [
+            "UDDF/test42.uddf",
+            "CSV/test41.csv",
+            "Suunto/suunto_ocean_air.json",
+            "Suunto/suunto_eon_core_nitrox.json",
+        ]
+        for relativePath in fixtures {
+            let path = testFilePath(relativePath)
+            XCTAssertTrue(
+                FileManager.default.fileExists(atPath: path),
+                "樣本檔案應存在於 \(path)——若失敗，代表 repoRoot／testFilePath() 的相對路徑" +
+                "解析算式與目前 repo 目錄結構不符（例如 repo 被搬移／改名），而非單純缺少樣本檔"
+            )
+        }
+    }
+
     // MARK: - 跨格式整合：各解析器 parse(from:) 回傳合理結果
 
     func testUDDFParserProducesDives() throws {

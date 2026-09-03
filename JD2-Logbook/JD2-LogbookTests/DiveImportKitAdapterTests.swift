@@ -33,6 +33,21 @@ final class DiveImportKitAdapterTests: XCTestCase {
                           "測試檔案不存在，略過：\((path as NSString).lastPathComponent)")
     }
 
+    // MARK: - 路徑存在性斷言（CH-3：家族層路徑解析稽核）
+    //
+    // 下方 skipIfMissing() 對缺檔一律 XCTSkip——刻意保留，因為不同機器上樣本
+    // 檔可能沒簽出。但這支測試不 skip，直接斷言：若 test42Path 的三層
+    // deletingLastPathComponent() 相對路徑算式因 repo 搬遷／改名而算錯，這支
+    // 測試會失敗（不是被靜默略過），與家族稽核點名的 T-01 失效形狀
+    // （路徑算式壞了卻被優雅跳過掩蓋）明確區分開。
+    func testFixturePathResolvesToExistingFile() {
+        XCTAssertTrue(
+            FileManager.default.fileExists(atPath: test42Path),
+            "樣本檔案應存在於 \(test42Path)——若失敗，代表 test42Path 的相對路徑解析" +
+            "算式與目前 repo 目錄結構不符（例如 repo 被搬移／改名），而非單純缺少樣本檔"
+        )
+    }
+
     // MARK: - 工廠選擇（factory → adapter 包裝版）
 
     func testFactorySelectsAdapterBackedUDDFParser() throws {

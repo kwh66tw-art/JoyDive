@@ -39,6 +39,28 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
         return (familyRoot as NSString).appendingPathComponent("abitofeverything.ssrf")
     }
 
+    // MARK: - 路徑存在性斷言（CH-3：家族層路徑解析稽核）
+    //
+    // 下方兩支 E2E 測試對缺檔一律 XCTSkipUnless——刻意保留（樣本檔不一定簽出到
+    // 每台機器）。但這支測試不 skip，直接斷言 samplesDir／trimixSamplePath／
+    // subsurfaceSamplePath 三組相對路徑算式（各自四層 deletingLastPathComponent()
+    // 回溯到 AppProject 根目錄）目前都解得到真實檔案。若 repo 被搬移／改名導致
+    // 回溯層數對不上，這支測試會失敗，而不是任由上面兩支測試集體靜默 skip
+    // 掩蓋路徑斷裂——即家族稽核點名的 T-01 失效形狀（六週空轉、缺檔優雅跳過）
+    // 在本檔案的對應防線。
+    func testFixturePathsResolveToExistingFiles() {
+        XCTAssertTrue(
+            FileManager.default.fileExists(atPath: trimixSamplePath),
+            "樣本檔案應存在於 \(trimixSamplePath)——若失敗，代表 samplesDir／" +
+            "trimixSamplePath 的相對路徑解析算式與目前 repo 目錄結構不符"
+        )
+        XCTAssertTrue(
+            FileManager.default.fileExists(atPath: subsurfaceSamplePath),
+            "樣本檔案應存在於 \(subsurfaceSamplePath)——若失敗，代表 subsurfaceSamplePath " +
+            "的相對路徑解析算式與目前 repo 目錄結構不符"
+        )
+    }
+
     /// 真實 trimix 樣本（TMx 16/45，Lake Coleridge，max depth ≈39m，時長 ≈83min）：
     /// 匯入 → 解出 trimix GasMix → 重放走完整 Buhlmann 雙氣體路徑，不崩潰、
     /// 產出合理的 ceiling／NDL／組織艙（N2+He）數字。黑盒對照量級見
