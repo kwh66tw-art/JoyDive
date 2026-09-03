@@ -401,14 +401,14 @@ struct DiveAnalysisView: View {
         let fpm = mpm * 3.28084
         switch kind {
         case .ascentRateExceeded:
-            return String(format: languageManager.localized("Ascent rate exceeded %1$.0f m/min (%2$.1f ft/min)."), mpm, fpm)
+            return String(format: languageManager.localized("Ascent rate exceeded %1$.0f m/min (%2$.1f ft/min)."), locale: languageManager.locale, mpm, fpm)
         case .mandatorySafetyStop:
-            return String(format: languageManager.localized("Safety stop became mandatory: ascent rate stayed above %1$.0f m/min (%2$.1f ft/min) for %3$d seconds."), mpm, fpm, AlgorithmConstants.ascentSustainedWarnSec)
+            return String(format: languageManager.localized("Safety stop became mandatory: ascent rate stayed above %1$.0f m/min (%2$.1f ft/min) for %3$d seconds."), locale: languageManager.locale, mpm, fpm, AlgorithmConstants.ascentSustainedWarnSec)
         }
     }
 
     private func timeLabel(_ seconds: Double) -> String {
-        "\(Int(seconds) / 60)'\(String(format: "%02d", Int(seconds) % 60))\""
+        "\(Int(seconds) / 60)'\(String(format: "%02d", locale: languageManager.locale, Int(seconds) % 60))\""
     }
 
     /// 與 Ultra companion PlanModel.ndlText 相同的顯示規則（99+ / 分鐘）

@@ -30,9 +30,9 @@ struct DiveRowView: View {
         let hours   = minutes / 60
         let mins    = minutes % 60
         if hours > 0 {
-            return String(format: "%dh %02dm", hours, mins)
+            return String(format: "%dh %02dm", locale: languageManager.locale, hours, mins)
         } else {
-            return String(format: "%d min", mins)
+            return String(format: "%d min", locale: languageManager.locale, mins)
         }
     }
 

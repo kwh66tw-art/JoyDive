@@ -299,7 +299,7 @@ struct DiveLogEditSheet: View {
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: languageManager.localized("Duration: %d minutes"), durationMinutes)
+                        String(format: languageManager.localized("Duration: %d minutes"), locale: languageManager.locale, durationMinutes)
                     )
 
                     // 入水時間（可編輯，日期 + 時間）
@@ -357,7 +357,7 @@ struct DiveLogEditSheet: View {
                     .accessibilityLabel(
                         maxDepth == 0
                             ? "\(languageManager.localized("Max Depth")) (\(languageManager.localized("Required")))"
-                            : String(format: languageManager.localized("Max Depth: %@"), unitSystem.formatDepth(maxDepth))
+                            : String(format: languageManager.localized("Max Depth: %@"), locale: languageManager.locale, unitSystem.formatDepth(maxDepth))
                     )
 
                     // 水溫
@@ -380,6 +380,7 @@ struct DiveLogEditSheet: View {
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
                         String(format: languageManager.localized("Water Temperature: %@"),
+                               locale: languageManager.locale,
                                unitSystem.formatTemperature(waterTemperature))
                     )
                 } header: {
@@ -425,6 +426,7 @@ struct DiveLogEditSheet: View {
                         .accessibilityElement(children: .combine)
                         .accessibilityLabel(
                             String(format: languageManager.localized("Nitrox O2: %d percent"),
+                                   locale: languageManager.locale,
                                    Int(nitroxO2Percent))
                         )
                     }
@@ -476,7 +478,7 @@ struct DiveLogEditSheet: View {
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
                         airTemperature.map {
-                            String(format: languageManager.localized("Air Temperature: %@"), unitSystem.formatTemperature($0))
+                            String(format: languageManager.localized("Air Temperature: %@"), locale: languageManager.locale, unitSystem.formatTemperature($0))
                         } ?? languageManager.localized("Air Temperature: Not recorded")
                     )
 
@@ -519,7 +521,7 @@ struct DiveLogEditSheet: View {
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
                         visibility.map {
-                            String(format: languageManager.localized("Visibility: %@"), unitSystem.formatDepth($0))
+                            String(format: languageManager.localized("Visibility: %@"), locale: languageManager.locale, unitSystem.formatDepth($0))
                         } ?? languageManager.localized("Visibility: Not recorded")
                     )
                 }
@@ -571,8 +573,9 @@ struct DiveLogEditSheet: View {
                     .accessibilityLabel(
                         weightTotal.map {
                             unitSystem == .metric
-                                ? String(format: languageManager.localized("Weight: %.1f kilograms"), $0)
+                                ? String(format: languageManager.localized("Weight: %.1f kilograms"), locale: languageManager.locale, $0)
                                 : String(format: languageManager.localized("Weight: %.1f pounds"),
+                                         locale: languageManager.locale,
                                          unitSystem.convertWeight(kgValue: $0))
                         } ?? languageManager.localized("Weight: Not recorded")
                     )
@@ -613,8 +616,9 @@ struct DiveLogEditSheet: View {
                     .accessibilityLabel(
                         cylinderStartPressure.map {
                             unitSystem == .metric
-                                ? String(format: languageManager.localized("Start Pressure: %.0f bar"), $0)
+                                ? String(format: languageManager.localized("Start Pressure: %.0f bar"), locale: languageManager.locale, $0)
                                 : String(format: languageManager.localized("Start Pressure: %.0f psi"),
+                                         locale: languageManager.locale,
                                          unitSystem.convertPressure(barValue: $0))
                         } ?? languageManager.localized("Start Pressure: Not recorded")
                     )

@@ -61,7 +61,7 @@ struct DiveSiteSheetView: View {
 
     private var coordinatesText: String? {
         guard let lat = dive.latitude, let lon = dive.longitude else { return nil }
-        return String(format: "%.5f°, %.5f°", lat, lon)
+        return String(format: "%.5f°, %.5f°", locale: languageManager.locale, lat, lon)
     }
 
     private var sourceFormatText: String {
@@ -172,7 +172,7 @@ struct DiveSiteSheetView: View {
 
     private var depthStatCell: some View {
         DiveKitUI.DiveStatCell(
-            value: String(format: "%.1f", unitSystem.convertDepth(metersValue: dive.maxDepth)),
+            value: String(format: "%.1f", locale: languageManager.locale, unitSystem.convertDepth(metersValue: dive.maxDepth)),
             unit:  unitSystem.depthSymbol,
             label: "Max Depth",
             icon:  "arrow.down.to.line",
@@ -196,7 +196,7 @@ struct DiveSiteSheetView: View {
 
     private var tempStatCell: some View {
         DiveKitUI.DiveStatCell(
-            value: String(format: "%.0f", unitSystem.convertTemperature(celsiusValue: dive.waterTemperature)),
+            value: String(format: "%.0f", locale: languageManager.locale, unitSystem.convertTemperature(celsiusValue: dive.waterTemperature)),
             unit:  unitSystem.temperatureSymbol,
             label: "Water Temp",
             icon:  "thermometer.medium",

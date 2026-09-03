@@ -160,6 +160,7 @@ struct SettingsView: View {
                         .foregroundStyle(.primary)
                         .accessibilityLabel(
                             String(format: languageManager.localized("Buy Premium for %@"),
+                                   locale: languageManager.locale,
                                    purchaseManager.premiumPriceString)
                         )
 
@@ -220,7 +221,7 @@ struct SettingsView: View {
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: languageManager.localized("Version %@"), appVersion)
+                        String(format: languageManager.localized("Version %@"), locale: languageManager.locale, appVersion)
                     )
 
                     NavigationLink {
@@ -469,6 +470,7 @@ struct PremiumUpgradeSheet: View {
                                     .tint(.white)
                             } else {
                                 Text(String(format: languageManager.localized("Unlock for %@"),
+                                           locale: languageManager.locale,
                                            purchaseManager.premiumPriceString))
                                     .font(.headline)
                             }

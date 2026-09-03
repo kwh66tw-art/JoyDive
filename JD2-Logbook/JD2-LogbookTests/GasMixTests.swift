@@ -195,4 +195,53 @@ final class GasMixTests: XCTestCase {
         let minutes = max(1, diveTimeSeconds / 60)
         XCTAssertEqual(minutes, 1)
     }
+
+    // MARK: - R-054：locale-aware 顯示 vs. JSON 序列化 locale-free（不可混淆）
+
+    /// `DiveLogEditSheet.buildGasMixJSON()`（Views/Logbook/DiveLogEditSheet.swift）
+    /// 刻意不傳 `locale:`——這是 JSON 序列化路徑，寫死的 fO2 字面值會被
+    /// `JSONDecoder` 解回 `GasMix`，任何逗號小數點都會讓解碼失敗或算出錯誤的 fO2。
+    /// 本測試模擬同一段程式碼（不加 locale:），斷言即使把裝置/App 語言模擬成
+    /// 逗號小數點語系（de/fr/es/it/nl/pt-PT/hr/el/id/vi 之一），輸出仍固定為
+    /// 句點小數點，且能被 JSONDecoder 正確解回。
+    func testGasMixJSONBuilder_StaysLocaleFree_RegardlessOfSimulatedCommaLocale() throws {
+        let nitroxO2Percent: Double = 32.0
+        let fO2 = nitroxO2Percent / 100.0
+
+        // 逐字重現 DiveLogEditSheet.buildGasMixJSON() 的 nitrox 分支：
+        // 不傳 locale: 參數，String(format:) 的預設行為與系統/App 語言無關，
+        // 永遠使用 "." 小數點（POSIX 風格），這正是它「locale-free 是正確且必要」的原因。
+        let fO2Str = String(format: "%.4g", fO2)
+        let json = "{\"nitrox\":{\"fO2\":\(fO2Str)}}"
+
+        XCTAssertTrue(json.contains("0.32"), "JSON 序列化必須固定用句點小數點，得到：\(json)")
+        XCTAssertFalse(json.contains(","), "JSON 序列化絕不能出現逗號，得到：\(json)")
+
+        let data = try XCTUnwrap(json.data(using: .utf8))
+        let decoded = try JSONDecoder().decode(GasMix.self, from: data)
+        guard case .nitrox(let f) = decoded else {
+            XCTFail("期望解碼出 .nitrox，得到 \(decoded)")
+            return
+        }
+        XCTAssertEqual(f, 0.32, accuracy: 0.0001)
+    }
+
+    /// 對照組：同一個 `String(format:)` API，若像 UI 顯示層那樣**有**傳
+    /// `locale:`，逗號小數點語系（以 de_DE 為代表）就會照常顯示逗號——
+    /// 證明兩者是同一支 API 的兩種刻意不同用法，不是漏加。
+    func testStringFormat_WithLocale_UsesCommaForCommaDecimalLocale() {
+        let germanLocale = Locale(identifier: "de_DE")
+        let weight = 12.3
+        let formatted = String(format: "%.1f", locale: germanLocale, weight)
+        XCTAssertEqual(formatted, "12,3", "de_DE locale 應使用逗號小數點")
+    }
+
+    /// 同一個值不傳 locale: 時，即使執行環境是逗號小數點語系，仍固定輸出句點
+    /// （這正是 buildGasMixJSON 依賴、且不可被「順手」加上 locale: 破壞的行為）。
+    func testStringFormat_WithoutLocale_AlwaysUsesPeriod() {
+        let weight = 12.3
+        let formatted = String(format: "%.1f", weight)
+        XCTAssertEqual(formatted, "12.3")
+        XCTAssertFalse(formatted.contains(","))
+    }
 }

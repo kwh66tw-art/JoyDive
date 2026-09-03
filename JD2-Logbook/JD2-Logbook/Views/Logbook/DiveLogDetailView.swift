@@ -59,7 +59,7 @@ struct DiveLogDetailView: View {
 
     private var coordinatesText: String? {
         guard let lat = dive.latitude, let lon = dive.longitude else { return nil }
-        return String(format: "%.5f°, %.5f°", lat, lon)
+        return String(format: "%.5f°, %.5f°", locale: languageManager.locale, lat, lon)
     }
 
     /// v1.1 #4/#5：解碼氣體配置供 DiveAnalysisView 重放使用
@@ -176,7 +176,7 @@ struct DiveLogDetailView: View {
                     }
                     if let weight = dive.weightTotal {
                         DetailRow(icon: "scalemass.fill",      label: "Weight",
-                                   value: String(format: "%.1f %@", unitSystem.convertWeight(kgValue: weight), unitSystem.weightSymbol))
+                                   value: String(format: "%.1f %@", locale: languageManager.locale, unitSystem.convertWeight(kgValue: weight), unitSystem.weightSymbol))
                     }
                     if let m = dive.cylinderMaterial, !m.isEmpty {
                         DetailRow(icon: "waterbottle.fill",    label: "Cylinder Material", value: cylinderMaterialDisplayName(m))
@@ -186,11 +186,11 @@ struct DiveLogDetailView: View {
                     }
                     if let sp = dive.cylinderStartPressure {
                         DetailRow(icon: "gauge",               label: "Start Pressure",
-                                   value: String(format: "%.0f %@", unitSystem.convertPressure(barValue: sp), unitSystem.pressureSymbol))
+                                   value: String(format: "%.0f %@", locale: languageManager.locale, unitSystem.convertPressure(barValue: sp), unitSystem.pressureSymbol))
                     }
                     if let ep = dive.cylinderEndPressure {
                         DetailRow(icon: "gauge",               label: "End Pressure",
-                                   value: String(format: "%.0f %@", unitSystem.convertPressure(barValue: ep), unitSystem.pressureSymbol))
+                                   value: String(format: "%.0f %@", locale: languageManager.locale, unitSystem.convertPressure(barValue: ep), unitSystem.pressureSymbol))
                     }
                 }
             }
@@ -341,7 +341,7 @@ struct DiveLogDetailView: View {
 
     private var depthStatCell: some View {
         DiveKitUI.DiveStatCell(
-            value: String(format: "%.1f", unitSystem.convertDepth(metersValue: dive.maxDepth)),
+            value: String(format: "%.1f", locale: languageManager.locale, unitSystem.convertDepth(metersValue: dive.maxDepth)),
             unit: unitSystem.depthSymbol,
             label: "Max Depth",
             icon: "arrow.down.to.line",
@@ -363,7 +363,7 @@ struct DiveLogDetailView: View {
 
     private var tempStatCell: some View {
         DiveKitUI.DiveStatCell(
-            value: String(format: "%.0f", unitSystem.convertTemperature(celsiusValue: dive.waterTemperature)),
+            value: String(format: "%.0f", locale: languageManager.locale, unitSystem.convertTemperature(celsiusValue: dive.waterTemperature)),
             unit: unitSystem.temperatureSymbol,
             label: "Water Temp",
             icon: "thermometer.medium",

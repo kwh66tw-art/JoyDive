@@ -321,7 +321,7 @@ struct ImportWizardView: View {
                         .tint(.accentColor)
 
                     VStack(spacing: 6) {
-                        Text(String(format: languageManager.localized("File %lld of %lld"), current, total))
+                        Text(String(format: languageManager.localized("File %lld of %lld"), locale: languageManager.locale, current, total))
                             .font(.headline)
                             .monospacedDigit()
 
@@ -359,7 +359,7 @@ struct ImportWizardView: View {
         .frame(minHeight: 300)
         .accessibilityLabel(
             total > 0
-                ? String(format: languageManager.localized("Importing file %lld of %lld: %@"), current, total, fileName)
+                ? String(format: languageManager.localized("Importing file %lld of %lld: %@"), locale: languageManager.locale, current, total, fileName)
                 : languageManager.localized("Scanning files")
         )
     }
@@ -386,11 +386,11 @@ struct ImportWizardView: View {
 
             if !allFailed {
                 VStack(spacing: 6) {
-                    Text(String(format: languageManager.localized("Dives imported: %lld"), count))
+                    Text(String(format: languageManager.localized("Dives imported: %lld"), locale: languageManager.locale, count))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     if skipped > 0 {
-                        Text(String(format: languageManager.localized("%lld skipped (duplicates)"), skipped))
+                        Text(String(format: languageManager.localized("%lld skipped (duplicates)"), locale: languageManager.locale, skipped))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

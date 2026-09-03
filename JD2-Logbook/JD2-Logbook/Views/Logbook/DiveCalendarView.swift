@@ -549,6 +549,7 @@ private struct DayCell: View {
         .accessibilityLabel(
             hasDives
                 ? String(format: languageManager.localized("%@: Has dives"),
+                         locale: languageManager.locale,
                          date.formatted(.dateTime.day().month().locale(languageManager.locale)))
                 : date.formatted(.dateTime.day().month().locale(languageManager.locale))
         )
