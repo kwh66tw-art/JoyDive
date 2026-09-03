@@ -165,4 +165,62 @@ final class DiveLogModelTests: XCTestCase {
         XCTAssertEqual(decoded.dives[0].avgDepth, 12.3, accuracy: 0.001)
         XCTAssertEqual(decoded.appVersion, "1.1")
     }
+
+    // MARK: - R-022 Bug 2：diveTimeMinutes 捨去，不四捨五入
+    //
+    // 稽核發現同一支潛水（3570 秒＝59.5 分）在列表（DiveRowView，整數除法捨去）顯示
+    // 「59 min」，在詳情頁（DiveLogDetailView，原本用 `.rounded()`）卻顯示「60 min」。
+    // 修法：詳情頁／地圖頁改用 `DiveLog.diveTimeMinutes`（本測試鎖定的捨去語意）取代
+    // 各自手刻的四捨五入，兩處統一。
+
+    func testDiveTimeMinutesTruncatesNotRounds() {
+        // 3570s = 59.5 分鐘：捨去應為 59，若誤用四捨五入會變 60（回歸稽核發現的落差）。
+        let dive = makeDive(diveTimeSeconds: 3570)
+        XCTAssertEqual(dive.diveTimeMinutes, 59)
+    }
+
+    func testDiveTimeMinutesTruncatesJustUnderNextMinute() {
+        // 3599s = 59分59秒，仍應顯示 59（未滿 60 分鐘不進位）。
+        let dive = makeDive(diveTimeSeconds: 3599)
+        XCTAssertEqual(dive.diveTimeMinutes, 59)
+    }
+
+    func testDiveTimeMinutesExactMinuteUnaffected() {
+        let dive = makeDive(diveTimeSeconds: 3600)
+        XCTAssertEqual(dive.diveTimeMinutes, 60)
+    }
+}
+
+// MARK: - R-022 Bug 1：UnitSystem.formatDepthConservative 永遠不比真實 ceiling 淺
+
+final class UnitSystemCeilingRoundingTests: XCTestCase {
+
+    func testConservativeRoundingRoundsUpNotToNearest() {
+        // 5.4m 若用一般四捨五入（%.0f）會捨去成 5m——比真實 ceiling 淺，是安全問題。
+        // 保守進位必須無條件進位到 6m，絕不能比真實值淺。
+        XCTAssertEqual(UnitSystem.metric.formatDepthConservative(5.4), "6 m")
+    }
+
+    func testConservativeRoundingRoundsUpEvenForSmallFraction() {
+        // 5.01m 一般四捨五入也會捨去成 5m；保守進位一樣要進到 6m。
+        XCTAssertEqual(UnitSystem.metric.formatDepthConservative(5.01), "6 m")
+    }
+
+    func testConservativeRoundingLeavesExactIntegerUnchanged() {
+        // 剛好整數深度不該被多加 1（.rounded(.up) 對整數值是恆等變換）。
+        XCTAssertEqual(UnitSystem.metric.formatDepthConservative(6.0), "6 m")
+    }
+
+    func testConservativeRoundingAppliesAfterUnitConversion() {
+        // 換算到英制後再進位，確保換算誤差不會把進位後的值又拉回下一個整數以下。
+        // 5.4m ≈ 17.717ft，保守進位應為 18ft（比真實英尺值深或相等，絕不淺）。
+        let result = UnitSystem.imperial.formatDepthConservative(5.4)
+        XCTAssertEqual(result, "18 ft")
+    }
+
+    func testOrdinaryFormatDepthStillRoundsToNearestForNonCeilingUses() {
+        // 確認本次修復沒有動到既有 formatDepth(decimals:) 的一般四捨五入行為
+        // （非 ceiling 用途，例如警示事件深度、最大深度等，維持原行為）。
+        XCTAssertEqual(UnitSystem.metric.formatDepth(5.4, decimals: 0), "5 m")
+    }
 }

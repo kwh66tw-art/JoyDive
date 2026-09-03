@@ -257,7 +257,7 @@ struct DiveAnalysisView: View {
             )
             calloutCell(
                 label: Text("Ceiling"),
-                value: point.ceilingMeters > 0 ? unitSystem.formatDepth(point.ceilingMeters, decimals: 0) : "—",
+                value: point.ceilingMeters > 0 ? unitSystem.formatDepthConservative(point.ceilingMeters) : "—",
                 accent: point.ceilingMeters > 0 ? .deco : .neutral
             )
             calloutCell(

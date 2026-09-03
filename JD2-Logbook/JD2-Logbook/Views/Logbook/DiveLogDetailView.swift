@@ -25,9 +25,13 @@ struct DiveLogDetailView: View {
     // MARK: - Computed
 
     private var durationFormatted: String {
-        // 一律以總分鐘顯示（捨棄時/秒），例如 1h15m → 75 min
-        let minutes = Int((Double(dive.diveTimeSeconds) / 60.0).rounded())
-        return "\(minutes) min"
+        // 一律以總分鐘顯示（捨棄時/秒），例如 1h15m → 75 min。
+        // R-022 Bug 2：這裡原本用四捨五入（`.rounded()`），跟 DiveRowView（列表）用
+        // 整數除法捨去是兩套不同的進位方向——同一支潛水（例如 3570 秒＝59.5 分）在
+        // 列表顯示「59 min」、在這裡卻顯示「60 min」，同一個數字換一個畫面就不一樣，
+        // 使用者會懷疑資料本身變了。改用跟 DiveRowView 一致的捨去（`diveTimeMinutes`
+        // 本身就是 `diveTimeSeconds / 60` 整數除法），兩處統一。
+        "\(dive.diveTimeMinutes) min"
     }
 
     /// 是否有任何裝備欄位有值（皆無則整個 Equipment 區塊隱藏）

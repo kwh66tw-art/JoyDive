@@ -38,9 +38,10 @@ struct DiveSiteSheetView: View {
     }
 
     private var durationFormatted: String {
-        // 一律以總分鐘顯示（捨棄時/秒），例如 1h15m → 75 min
-        let minutes = Int((Double(dive.diveTimeSeconds) / 60.0).rounded())
-        return "\(minutes) min"
+        // 一律以總分鐘顯示（捨棄時/秒），例如 1h15m → 75 min。
+        // R-022 Bug 2：跟 DiveLogDetailView／DiveRowView 統一用捨去（`diveTimeMinutes`），
+        // 避免同一支潛水在不同畫面顯示不同分鐘數，詳見 DiveLogDetailView.durationFormatted 註解。
+        "\(dive.diveTimeMinutes) min"
     }
 
     /// R-058：解碼失敗時不再靜默顯示「Air」，見 `DiveLog.decodedGasMix` 說明。

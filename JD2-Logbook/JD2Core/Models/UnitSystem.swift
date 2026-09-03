@@ -83,6 +83,22 @@ public enum UnitSystem: String, CaseIterable, Codable, Sendable {
         String(format: "%.\(decimals)f %@", convertDepth(metersValue: metersValue), depthSymbol)
     }
 
+    /// 減壓 ceiling 專用的保守進位顯示（R-022 Bug 1）。
+    ///
+    /// Ceiling 是潛水員「必須停留在此深度（或更深）直到清除」的下限深度，安全的
+    /// 顯示方向是**絕不比真實值淺**。一般 `formatDepth(decimals: 0)` 用 `%.0f`
+    /// 四捨五入，約有一半機率把 ceiling 無條件捨去到較淺的整數（例如真實 5.4m
+    /// 顯示成 5m），潛水員若照著顯示值上升，會提前離開真正需要的停留深度——
+    /// 這是安全問題，不是單純的美觀問題。
+    ///
+    /// 換算順序：先用 `convertDepth` 轉成顯示單位（公尺或英尺），**再**對顯示值
+    /// 無條件進位（`.rounded(.up)`），而不是對公尺值進位後才換算——避免公制轉
+    /// 英制時，換算誤差又把進位後的值拉回顯示單位的下一個整數以下。
+    public func formatDepthConservative(_ metersValue: Double) -> String {
+        let displayValue = convertDepth(metersValue: metersValue).rounded(.up)
+        return String(format: "%.0f %@", displayValue, depthSymbol)
+    }
+
     /// 溫度顯示字串（含單位符號），例如 "27°C" / "81°F"
     public func formatTemperature(_ celsiusValue: Double) -> String {
         String(format: "%.0f%@", convertTemperature(celsiusValue: celsiusValue), temperatureSymbol)
