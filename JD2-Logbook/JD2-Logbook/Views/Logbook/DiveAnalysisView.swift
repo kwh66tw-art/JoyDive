@@ -411,8 +411,16 @@ struct DiveAnalysisView: View {
         "\(Int(seconds) / 60)'\(String(format: "%02d", locale: languageManager.locale, Int(seconds) % 60))\""
     }
 
-    /// 與 Ultra companion PlanModel.ndlText 相同的顯示規則（99+ / 分鐘）
-    private func ndlText(_ seconds: Int) -> String {
+    /// 與 Ultra companion PlanModel.ndlText 相同的顯示規則（99+ / 分鐘）。
+    ///
+    /// CH-18（顯示取整方向常駐檢查）：NDL 是「還剩多少免減壓時間」，安全的顯示
+    /// 方向是**絕不比真實值多**——`seconds / 60` 對非負 `Int` 是無條件捨去
+    /// （truncation towards zero == floor），例如真實 9'59" 顯示「9'」而非「10'」，
+    /// 潛水員不會因為看到的剩餘時間比實際多而多待。這裡故意保留 internal（非
+    /// private）存取層級，讓 `DiveAnalysisViewNDLRoundingTests`（見
+    /// JD2-LogbookTests/DiveLogModelTests.swift）能直接 `@testable import` 呼叫，
+    /// 鎖定這個捨去方向，不再只靠人工檢查程式碼。
+    func ndlText(_ seconds: Int) -> String {
         seconds >= Buhlmann.ndlUnlimitedMarker ? "99+" : "\(seconds / 60)'"
     }
 }
