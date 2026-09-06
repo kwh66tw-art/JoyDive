@@ -253,47 +253,38 @@ final class ImportCoordinator {
     // 改為逐筆比對＋動態把已確認非重複的日誌併入比對陣列，與 DiveLogDatabase.
     // importFromJSON 的既有正確做法一致（見該檔案備份還原邏輯）。
     //
-    // 現況（2026-08-22 稽核）：此方法（連同下方 static dedupe）**非生產匯入路徑**
-    // 呼叫——正式匯入流程（`importFile`）走 `DiveImportKitAdapter.dedupeAgainstExisting`
-    // → `DiveImportKit.ImportBatchProcessor.dedupe`（Kit 內建 `DiveFingerprint`
-    // 邏輯，屬 DiveImportKit 稽核範疇，非本檔案）。這裡保留供既有單元測試／未來
-    // 若有本地 SwiftData DiveLog 陣列直接呼叫的場景使用，故仍修復其精確浮點數
-    // 比對問題，避免日後被誤用時重現同一個 bug class。
+    // 現況（2026-09-06 更新，R-074 收斂）：此方法（連同下方 static dedupe）**非
+    // 生產匯入路徑**呼叫——正式匯入流程（`importFile`）走
+    // `DiveImportKitAdapter.dedupeAgainstExisting` → `DiveImportKit.
+    // ImportBatchProcessor.dedupe`。這裡保留供既有單元測試／未來若有本地
+    // SwiftData DiveLog 陣列直接呼叫的場景使用。
+    //
+    // 2026-08-22 稽核曾在此手寫一份獨立的「地點＋深度容差＋60秒時間窗」比對
+    // 規則（含獨立 `depthMatchToleranceMeters = 0.1` 常數），註解自陳「與
+    // DiveImportKit `depthEpsilonMeters` 數值獨立訂定僅剛好一致」——2026-09-06
+    // 查證：**該自陳站不住腳**。兩邊的 0.1m 修復 commit 同一天、相隔僅 31
+    // 分鐘、同一作者（DiveImportKit `c047fad` 09:32 → Logbook `e8c294e`
+    // 10:03），且 Logbook 該次 commit message 自己就寫「epsilon 與
+    // DiveImportKit 同批修復一致採 0.1m」——「同批」與「各自獨立推導」是
+    // 矛盾的措辭。這是本檔案自己踩到 CLAUDE.md 那條「不得用『獨立訂定』掩蓋
+    // 實際上互相參照」的紅線，而非單純巧合。
+    //
+    // 本次修復：徹底移除那份手寫比對規則與獨立常數，改呼叫
+    // `dedupeLocalDivesAgainstExisting`（`DiveImportKitAdapter.swift`）→ Kit
+    // 的泛型 `ImportBatchProcessor.dedupe<T>`，與 `dedupeAgainstExisting`／
+    // `dedupeBackupEntries`（生產路徑／備份還原路徑）共用同一套比對邏輯，
+    // 不再各自維護一份容易走鐘的規則。與 JD2-ultra 現況（`ImportCoordinator.
+    // deduplicateDives` 已呼叫同名 `dedupeLocalDivesAgainstExisting`）一致。
     func deduplicateDives(_ dives: [DiveLog]) async throws -> [DiveLog] {
         let existing = try database.fetchAllDives()
         return Self.dedupe(dives, against: existing)
     }
 
-    /// 深度比對容差（公尺）。不同來源格式/解析器對同一支潛水的深度換算精度不同
-    /// （例如原廠 41.0m vs. 四捨五入過的 CSV 41.04m，或不同格式對同一支潛水的
-    /// 取樣/顯示精度差異），用精確 `==` 比對會讓這類「其實是同一支潛水」的紀錄
-    /// 被判定為不重複而重複匯入。
-    /// 訂為 0.1m（10 公分）：對應消費性/技術潛水電腦深度感測器實務解析度
-    /// （多數在 0.1m～0.5m 之間），遠大於 Double 浮點雜訊與單次換算捨入誤差，
-    /// 但仍遠小於同地點、60 秒內兩支「真的是不同潛水」在深度上的合理差距
-    /// （通常至少數公尺），不會把不同潛水誤判為重複。與同批稽核修復
-    /// DiveImportKit `DiveFingerprint.matches` 的 `depthEpsilonMeters`（同樣
-    /// 0.1m）採同數量級，維持跨 Kit／App 行為一致——惟該處是獨立 repo，非本
-    /// 檔案管轄，此處數值獨立訂定僅剛好一致，不是共用常數。
-    static let depthMatchToleranceMeters: Double = 0.1
-
-    /// 純邏輯版本，不碰資料庫，方便單元測試（與上面 deduplicateDives 共用）
+    /// 純邏輯版本，不碰資料庫，方便單元測試（與上面 deduplicateDives 共用）。
+    /// 委派給 `dedupeLocalDivesAgainstExisting`（Kit 內建比對規則），本檔案不再
+    /// 自行實作比對邏輯或維護容差常數。
     static func dedupe(_ dives: [DiveLog], against existing: [DiveLog]) -> [DiveLog] {
-        var existing = existing
-        var newDives: [DiveLog] = []
-
-        for dive in dives {
-            let isDuplicate = existing.contains { ex in
-                abs(ex.dateTime.timeIntervalSince(dive.dateTime)) < 60
-                    && ex.location == dive.location
-                    && abs(ex.maxDepth - dive.maxDepth) < depthMatchToleranceMeters
-            }
-            guard !isDuplicate else { continue }
-            newDives.append(dive)
-            existing.append(dive)   // 避免同一批次內的重複條目互相漏檢
-        }
-
-        return newDives
+        dedupeLocalDivesAgainstExisting(dives, existing: existing).kept
     }
 
     // MARK: - 統計與報告

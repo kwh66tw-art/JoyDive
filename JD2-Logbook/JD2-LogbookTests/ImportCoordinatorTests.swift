@@ -595,15 +595,22 @@ final class ImportCoordinatorTests: XCTestCase {
 
     /// 邊界案例：深度差恰好等於容差值（0.1m）。比對條件是開區間 `< tolerance`，
     /// 所以差值「恰好等於」容差應視為不重複（容差邊界本身不算在容差內）。
+    ///
+    /// R-074 收斂（2026-09-06）：`ImportCoordinator.dedupe` 現在委派給 Kit 的
+    /// `DiveFingerprint.matches`，本檔案不再持有本地容差常數可供測試引用
+    /// （`DiveFingerprint.depthEpsilonMeters` 是 Kit 內部 `internal`，非
+    /// `public`，App 端本來就拿不到）——這裡改用黑盒字面值 0.1，只驗證
+    /// `ImportCoordinator.dedupe` 這個公開介面的邊界行為，不再假設／複製
+    /// Kit 內部實作的確切數值來源（該數值本身的正確性是 DiveImportKit 稽核
+    /// 範疇，見該 repo `ImportBatchProcessor.swift` 內注解）。
     func testDedupeTreatsDepthDifferenceExactlyAtToleranceBoundaryAsNotDuplicate() {
         let base = Date(timeIntervalSince1970: 1_700_000_000)
         let existingDepth = 41.0
         let existingDive = makeDive(depth: existingDepth, location: "Blue Hole")
         existingDive.dateTime = base
 
-        // 用容差常數本身算出邊界值，避免十進位字面值在 Double 下的浮點誤差
-        // 讓「差值是否恰好等於容差」這件事變得不確定。
-        let incoming = makeDive(depth: existingDepth + ImportCoordinator.depthMatchToleranceMeters,
+        let toleranceMeters = 0.1  // 鏡射 DiveImportKit.DiveFingerprint.depthEpsilonMeters
+        let incoming = makeDive(depth: existingDepth + toleranceMeters,
                                  location: "Blue Hole")
         incoming.dateTime = base.addingTimeInterval(5)
 

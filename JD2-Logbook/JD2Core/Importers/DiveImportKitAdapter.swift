@@ -161,6 +161,33 @@ func dedupeAgainstExisting(
     return DiveImportKit.ImportBatchProcessor.dedupe(dives, against: fingerprints)
 }
 
+/// 去重：候選記錄 vs 資料庫既有記錄，本地 `DiveLog` 版本（R-074 收斂，2026-09-06）。
+/// 供 `ImportCoordinator.deduplicateDives`/`dedupe`（現況：非生產匯入路徑呼叫，
+/// 保留供既有單元測試／未來若有本地 SwiftData DiveLog 陣列直接呼叫的場景使用）
+/// 呼叫，取代原本手寫的「地點＋深度容差＋60秒時間窗」比對規則與獨立
+/// `depthMatchToleranceMeters` 常數——兩者是同一條 Kit `DiveFingerprint.matches`
+/// 規則的影子複製（見 `_JD2-family/decisions/DRAFT_2026-08-31_全盤稽核統一修復
+/// 計畫.md` R-074）。與 JD2-ultra `DiveImportKitAdapter.dedupeLocalDivesAgainstExisting`
+/// 同款寫法，改呼叫 Kit 的泛型 `ImportBatchProcessor.dedupe<T>`，不再各自維護
+/// 比對邏輯與容差數值。
+func dedupeLocalDivesAgainstExisting(
+    _ dives: [DiveLog],
+    existing: [DiveLog]
+) -> (kept: [DiveLog], skippedCount: Int) {
+    let fingerprints = existing.map {
+        DiveImportKit.DiveFingerprint(
+            dateTime: $0.dateTime, location: $0.location, maxDepth: $0.maxDepth,
+            roundtripID: roundtripID(fromImportExtrasJSON: $0.importExtrasJSON)
+        )
+    }
+    return DiveImportKit.ImportBatchProcessor.dedupe(dives, against: fingerprints) {
+        DiveImportKit.DiveFingerprint(
+            dateTime: $0.dateTime, location: $0.location, maxDepth: $0.maxDepth,
+            roundtripID: roundtripID(fromImportExtrasJSON: $0.importExtrasJSON)
+        )
+    }
+}
+
 /// R-070 測試專用建構器（2026-09-03）：讓測試能建構帶／不帶 round-trip ID 的
 /// `DiveImportKit.ParsedDiveLog` 候選記錄，驗證 `dedupeAgainstExisting` 的精確
 /// ID 比對，同時不必讓測試檔自己 `import DiveImportKit`——本檔頭已明文「全 App
