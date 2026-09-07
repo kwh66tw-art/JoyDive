@@ -145,6 +145,12 @@ struct SettingsView: View {
 
                     } else {
                         // ── 未購買：購買按鈕 + 回復購買 ──
+                        // 價格未載入前（premiumPriceString == nil）不顯示任何幣別數字
+                        // ——原本 `?? "$1.99"` 對非美元區使用者是錯的幣別＋錯的數字，
+                        // 且與真實結帳價格無從區分（送審合規風險，見
+                        // PurchaseManager.premiumPriceString 說明）。改用 loading
+                        // indicator 佔位；accessibility label 同步退回不含價格的版本，
+                        // 避免「Buy Premium for —」這種讀不通的組合句。
                         Button {
                             showPremiumSheet = true
                         } label: {
@@ -152,16 +158,22 @@ struct SettingsView: View {
                                 Label("Remove Ads",
                                       systemImage: "star.fill")
                                 Spacer()
-                                Text(purchaseManager.premiumPriceString)
-                                    .foregroundStyle(.tint)
-                                    .font(.subheadline.weight(.semibold))
+                                if let price = purchaseManager.premiumPriceString {
+                                    Text(price)
+                                        .foregroundStyle(.tint)
+                                        .font(.subheadline.weight(.semibold))
+                                } else {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                }
                             }
                         }
                         .foregroundStyle(.primary)
                         .accessibilityLabel(
-                            String(format: languageManager.localized("Buy Premium for %@"),
-                                   locale: languageManager.locale,
-                                   purchaseManager.premiumPriceString)
+                            purchaseManager.premiumPriceString.map {
+                                String(format: languageManager.localized("Buy Premium for %@"),
+                                       locale: languageManager.locale, $0)
+                            } ?? languageManager.localized("Remove Ads")
                         )
 
                         // 回復購買
@@ -461,17 +473,18 @@ struct PremiumUpgradeSheet: View {
 
                 // 購買按鈕
                 VStack(spacing: 12) {
+                    // 價格未載入時（premiumPriceString == nil）比照 isLoading 顯示
+                    // loading indicator、按鈕停用——不顯示任何寫死的幣別數字。
                     Button {
                         Task { await purchaseManager.purchase() }
                     } label: {
                         Group {
-                            if purchaseManager.isLoading {
+                            if purchaseManager.isLoading || purchaseManager.premiumPriceString == nil {
                                 ProgressView()
                                     .tint(.white)
-                            } else {
+                            } else if let price = purchaseManager.premiumPriceString {
                                 Text(String(format: languageManager.localized("Unlock for %@"),
-                                           locale: languageManager.locale,
-                                           purchaseManager.premiumPriceString))
+                                           locale: languageManager.locale, price))
                                     .font(.headline)
                             }
                         }
@@ -479,7 +492,7 @@ struct PremiumUpgradeSheet: View {
                         .frame(height: 50)
                     }
                     .buttonStyle(.borderedProminent)
-                    .disabled(purchaseManager.isLoading)
+                    .disabled(purchaseManager.isLoading || purchaseManager.premiumPriceString == nil)
                     .padding(.horizontal, 24)
 
                     Button(languageManager.localized("Restore Purchase")) {
