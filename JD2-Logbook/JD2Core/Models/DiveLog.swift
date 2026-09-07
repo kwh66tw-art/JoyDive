@@ -94,8 +94,13 @@ final class DiveLog {
     /// 氣體配置（JSON 編碼的 GasMix enum）
     var gasMixJSON: String  // 臨時方案：存儲 GasMix 的 JSON 表示
 
-    /// 水溫（攝氏度）
-    var waterTemperature: Double
+    /// 水溫（攝氏度）。nil = 未記錄（本專案決定：語意＝真實樣本的最小值，零個真實
+    /// 樣本 → nil；不得回填假預設值）。C2（2026-09-07）：本欄位原為非 optional，
+    /// 沒有「未記錄」狀態可用，任何寫入路徑都必須生出一個數字（手動表單預填 28.0／
+    /// init 預設 15.0／匯入繼承 Kit 常數），三者皆已隨本次變更移除或改為 nil 傳遞。
+    /// 既有已儲存紀錄的舊編造值（15／28 等）**不做回溯清理**（PM 裁示，見
+    /// `_JD2-family/decisions/2026-09-07_PM裁示-水溫序列與摘要分層處理.md` 五之二(c)）。
+    var waterTemperature: Double?
 
     // MARK: - 環境信息
 
@@ -205,14 +210,14 @@ final class DiveLog {
     ///   - maxDepth: 最大深度（公尺）
     ///   - diveTimeSeconds: 潛水時間（秒）
     ///   - gasMixJSON: 氣體配置（GasMix 的 JSON 表示）
-    ///   - waterTemperature: 水溫（攝氏度）
+    ///   - waterTemperature: 水溫（攝氏度）。nil = 未記錄
     init(
         dateTime: Date,
         location: String,
         maxDepth: Double,
         diveTimeSeconds: Int,
         gasMixJSON: String = "\"air\"",
-        waterTemperature: Double = 15.0
+        waterTemperature: Double? = nil
     ) {
         self.dateTime = dateTime
         self.location = location
@@ -381,7 +386,7 @@ final class DiveLog {
           location: \(location),
           depth: \(maxDepth)m,
           time: \(diveTimeFormatted),
-          temp: \(waterTemperature)°C
+          temp: \(waterTemperature.map { "\($0)" } ?? "—")°C
         )
         """
     }

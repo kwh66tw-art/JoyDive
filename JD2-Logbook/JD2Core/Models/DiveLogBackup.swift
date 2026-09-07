@@ -15,7 +15,10 @@ struct DiveLogBackupEntry: Codable {
     var maxDepth: Double
     var diveTimeSeconds: Int
     var gasMixJSON: String
-    var waterTemperature: Double
+    /// 水溫（攝氏度）。nil = 未記錄（C2，2026-09-07）。**Optional 是刻意的**：
+    /// 舊備份檔（C2 之前匯出）一律帶非 nil 數字，新備份檔可能帶 nil——兩者都要能
+    /// 正確還原，型別必須跟 `DiveLog.waterTemperature` 同步保持 optional。
+    var waterTemperature: Double?
     var environmentType: String
     var surfacePressureBar: Double
     var metersPerBar: Double

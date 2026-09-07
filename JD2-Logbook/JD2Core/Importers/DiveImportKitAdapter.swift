@@ -196,18 +196,23 @@ func dedupeLocalDivesAgainstExisting(
 /// destination 的 explicit module build 下觸發 `unable to resolve module
 /// dependency: 'JoyDive_'`（iOS Simulator 不受影響，只有 macOS 目的地重現），
 /// 靠回傳型別推斷讓呼叫端完全不需要拼出 `DiveImportKit.` 前綴即可繞開。
+/// C2（2026-09-07）：新增 `waterTemperature` 參數（預設 nil，與 Kit 側
+/// `ParsedDiveLog.init` 的預設一致），供 `WaterTemperatureOptionalTests` 驗證
+/// `makeDiveLog(from:)` 對水溫的 nil/非 nil 都原樣傳遞、不重新填入編造值。
 func makeTestParsedDiveLog(
     dateTime: Date,
     location: String,
     maxDepth: Double,
     diveTimeSeconds: Int,
-    roundtripID: String?
+    roundtripID: String?,
+    waterTemperature: Double? = nil
 ) -> DiveImportKit.ParsedDiveLog {
     DiveImportKit.ParsedDiveLog(
         dateTime: dateTime,
         location: location,
         maxDepth: maxDepth,
         diveTimeSeconds: diveTimeSeconds,
+        waterTemperature: waterTemperature,
         importExtras: roundtripID.map {
             [DiveImportKit.ImportExtra(key: DiveImportKit.jd2RoundtripIDKey, value: $0)]
         } ?? []
