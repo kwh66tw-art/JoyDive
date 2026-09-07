@@ -29,7 +29,11 @@ struct DiveLogEditSheet: View {
     @State private var location: String
     @State private var maxDepth: Double
     @State private var durationMinutes: Int     // 儲存為整數分鐘（精度足夠手動輸入）
-    @State private var waterTemperature: Double
+    /// nil = 未記錄。C2（2026-09-07）：原預填 28.0（一個「合理的熱帶水溫」，使用者
+    /// 不會覺得需要改它，於是預設值悄悄變成記錄值）。比照 `airTemperature`／
+    /// `weightTotal`／`cylinderStartPressure` 既有作法，改為 nil 起始，使用者不填
+    /// 就存 nil。
+    @State private var waterTemperature: Double?
     @State private var environmentType: String
     @State private var notes: String
 
@@ -92,7 +96,9 @@ struct DiveLogEditSheet: View {
             // 不會把假的英制換算數字（原本 18.0m→59.1ft）誤植成使用者沒填過的資料。
             _maxDepth           = State(initialValue: 0)
             _durationMinutes    = State(initialValue: 45)
-            _waterTemperature   = State(initialValue: 28.0)
+            // 不給預設值（C2）：28.0 是一個合理的熱帶水溫，使用者不會覺得需要改
+            // 它，於是預設值就變成了記錄值。比照 airTemperature 等既有欄位。
+            _waterTemperature   = State(initialValue: nil)
             _environmentType    = State(initialValue: "seawater")
             _notes              = State(initialValue: "")
             _diveMode           = State(initialValue: .scuba)
@@ -189,10 +195,10 @@ struct DiveLogEditSheet: View {
         )
     }
 
-    private var waterTemperatureDisplay: Binding<Double> {
+    private var waterTemperatureDisplay: Binding<Double?> {
         Binding(
-            get: { unitSystem.convertTemperature(celsiusValue: waterTemperature) },
-            set: { waterTemperature = unitSystem.celsiusValue(fromDisplay: $0) }
+            get: { waterTemperature.map { unitSystem.convertTemperature(celsiusValue: $0) } },
+            set: { waterTemperature = $0.map { unitSystem.celsiusValue(fromDisplay: $0) } }
         )
     }
 
@@ -360,12 +366,12 @@ struct DiveLogEditSheet: View {
                             : String(format: languageManager.localized("Max Depth: %@"), locale: languageManager.locale, unitSystem.formatDepth(maxDepth))
                     )
 
-                    // 水溫
+                    // 水溫（nil = 未記錄，C2）
                     HStack {
                         Text("Water Temp")
                             .foregroundStyle(.primary)
                         Spacer()
-                        TextField(String("0.0"), value: waterTemperatureDisplay,
+                        TextField(String("–"), value: waterTemperatureDisplay,
                                   format: .number.precision(.fractionLength(1)))
                             .labelsHidden()
                             #if os(iOS)
@@ -374,14 +380,15 @@ struct DiveLogEditSheet: View {
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
                             .focused($focusedField, equals: .waterTemp)
+                            .foregroundStyle(waterTemperature == nil ? .secondary : .primary)
                         Text(unitSystem.temperatureSymbol)
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(
-                        String(format: languageManager.localized("Water Temperature: %@"),
-                               locale: languageManager.locale,
-                               unitSystem.formatTemperature(waterTemperature))
+                        waterTemperature.map {
+                            String(format: languageManager.localized("Water Temperature: %@"), locale: languageManager.locale, unitSystem.formatTemperature($0))
+                        } ?? languageManager.localized("Water Temperature: Not recorded")
                     )
                 } header: {
                     Text("Dive Data & Time")

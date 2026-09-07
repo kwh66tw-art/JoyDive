@@ -44,9 +44,14 @@ final class PurchaseManager {
     private(set) var isLoading     = false
     private(set) var premiumProduct: Product?
 
-    /// 顯示用價格字串（含幣別符號）；商品未載入前顯示預設值
-    var premiumPriceString: String {
-        premiumProduct?.displayPrice ?? "$1.99"
+    /// 顯示用價格字串（含幣別符號、依 App Store 帳號所在地區）。
+    /// nil = StoreKit 商品尚未載入完成——**本專案決定**：不回填任何寫死的幣別/金額
+    /// （原本 `?? "$1.99"` 對非美元區使用者顯示的是錯的幣別＋錯的數字，且與真實
+    /// 價格無從區分，屬送審合規風險，見 `app-store-submission-guide` skill §2.2／
+    /// Guideline 2.3 Accurate Metadata）。呼叫端未載入時應顯示 loading 狀態或
+    /// 「—」佔位，不得顯示任何幣別數字。
+    var premiumPriceString: String? {
+        premiumProduct?.displayPrice
     }
 
     // MARK: Constants
