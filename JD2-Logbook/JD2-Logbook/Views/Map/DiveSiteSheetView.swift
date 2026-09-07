@@ -195,10 +195,13 @@ struct DiveSiteSheetView: View {
         )
     }
 
+    // nil = 未記錄（C2，2026-09-07）——留空，不回填假數字。
     private var tempStatCell: some View {
         DiveKitUI.DiveStatCell(
-            value: String(format: "%.0f", locale: languageManager.locale, unitSystem.convertTemperature(celsiusValue: dive.waterTemperature)),
-            unit:  unitSystem.temperatureSymbol,
+            value: dive.waterTemperature.map {
+                String(format: "%.0f", locale: languageManager.locale, unitSystem.convertTemperature(celsiusValue: $0))
+            } ?? "—",
+            unit:  dive.waterTemperature == nil ? "" : unitSystem.temperatureSymbol,
             label: "Water Temp",
             icon:  "thermometer.medium",
             color: .cyan,

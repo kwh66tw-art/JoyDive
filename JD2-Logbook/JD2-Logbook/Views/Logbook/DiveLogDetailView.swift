@@ -365,10 +365,14 @@ struct DiveLogDetailView: View {
         )
     }
 
+    // nil = 未記錄（C2，2026-09-07）——留空而非回填假數字，比照
+    // DiveAnalysisView.calloutRow 的既有「—」佔位樣式（不隱藏整個 cell）。
     private var tempStatCell: some View {
         DiveKitUI.DiveStatCell(
-            value: String(format: "%.0f", locale: languageManager.locale, unitSystem.convertTemperature(celsiusValue: dive.waterTemperature)),
-            unit: unitSystem.temperatureSymbol,
+            value: dive.waterTemperature.map {
+                String(format: "%.0f", locale: languageManager.locale, unitSystem.convertTemperature(celsiusValue: $0))
+            } ?? "—",
+            unit: dive.waterTemperature == nil ? "" : unitSystem.temperatureSymbol,
             label: "Water Temp",
             icon: "thermometer.medium",
             color: .cyan,
