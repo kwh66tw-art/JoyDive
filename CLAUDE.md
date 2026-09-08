@@ -10,7 +10,7 @@
 
 - **F5 已完成（2026-07-18）**：`JD2Core/Algorithm/` 的 DiveKit-fork（`Buhlmann`／
   `DiveEngine`／`AlgorithmConstants`／`GasMix`／`DiveEnvironment` 等）已整包刪除，
-  改用統一 DiveKit 外部引用（`../../_JD2-family/DiveKit`，SPM local path，**目前v1.27.1**）。
+  改用統一 DiveKit 外部引用（`../../_JD2-family/DiveKit`，SPM local path，**目前v1.27.2**）。
   **本 repo 已無任何演算法拷貝**。**2026-09-02修正**：本條原寫「`JD2Core/Algorithm/`
   僅留`DiveReplayEngine.swift`」——該檔已不存在，DiveKit v1.9.0（2026-08-22）把
   剖面重放引擎本體上收為`DiveReplay.swift`後，本repo已改用DiveKit的版本，
