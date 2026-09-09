@@ -12,7 +12,7 @@
 // 測試與生產是兩份長得一樣、各自獨立的實作，所以它永遠不會紅（家族陷阱 19）。
 // 把運算式收斂到本檔的具名函式、讓 View 呼叫它之後，測試才真的在測產品。
 //
-// 放在 App 層而非 DiveKit 是 PM 2026-09-09 裁示：這是顯示層慣例、不是演算法，
+// 放在 App 層而非 DiveKit 是 PM 2026-09-09 裁示（本專案決定）：這屬顯示層、不是演算法，
 // 為了消除三個 App 的三行重複而動 Kit 並連帶三個 App 升版，代價不成比例。
 
 import Foundation
@@ -27,7 +27,7 @@ enum WaterTemperatureDisplay {
     /// 三者在不同字型下寬度差異明顯，混用會讓列表對不齊。
     static let placeholder = "—"
 
-    /// 日誌列表用：交給 `UnitSystem` 的標準溫度格式化。
+    /// 日誌列表用：交給 `UnitSystem.formatTemperature` 格式化。
     static func rowValue(_ celsius: Double?, unitSystem: UnitSystem) -> String {
         guard let celsius else { return placeholder }
         return unitSystem.formatTemperature(celsius)
