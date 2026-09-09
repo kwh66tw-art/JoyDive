@@ -159,7 +159,7 @@ struct DiveRowView: View {
                 HStack(spacing: 4) {
                     Image(systemName: "thermometer.medium")
                     // nil = 未記錄（C2，2026-09-07）——留空，不回填假數字。
-                    Text(dive.waterTemperature.map { unitSystem.formatTemperature($0) } ?? "—")
+                    Text(WaterTemperatureDisplay.rowValue(dive.waterTemperature, unitSystem: unitSystem))
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)

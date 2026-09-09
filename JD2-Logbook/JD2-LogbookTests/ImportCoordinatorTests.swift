@@ -521,6 +521,18 @@ final class ImportCoordinatorTests: XCTestCase {
     /// 稽核報告風險 #2：原本的 .filter 只對照資料庫既有記錄，同一批次（甚至單一檔案）
     /// 內部彼此重複的日誌會互相漏檢、全數通過。改用純邏輯版本 Self.dedupe 測試，
     /// 不碰資料庫。
+    // MARK: - ⚠️ 以下 dedupe 測試覆蓋的是「非生產匯入路徑」（2026-09-09 稽核發現④ 標示）
+    //
+    // `ImportCoordinator.dedupe` 只被 `deduplicateDives`（**全 repo 零呼叫點**）
+    // 與本檔測試呼叫。**生產匯入去重走的是 `dedupeAgainstExisting`**
+    // （`ImportCoordinator.swift:108`），由 `DiveImportKitAdapterRoundtripDedupeTests` 覆蓋。
+    //
+    // 保留理由見 `DiveImportKitAdapter.swift` 檔頭：本地 `[DiveLog]` 陣列版本，
+    // 與 JD2-ultra 同名函式對稱，供未來場景使用——**是刻意保留，不是遺留死碼**。
+    //
+    // 🔴 加這段標示的理由：這幾支全綠時，很容易被讀成「匯入去重已被測過」。
+    // 它們測的是同一條 Kit 規則的另一個輸入型別，**不涵蓋使用者實際走的匯入路徑**。
+
     func testDedupeFiltersDuplicatesWithinSameBatch() {
         let base = Date(timeIntervalSince1970: 1_700_000_000)
         let dive1 = makeDive(depth: 20.0, location: "Reef A")

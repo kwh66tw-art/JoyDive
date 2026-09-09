@@ -108,9 +108,15 @@ final class WaterTemperatureOptionalTests: XCTestCase {
             maxDepth: 20.0,
             diveTimeSeconds: 3600
         )
+        // 🔴 2026-09-09 修正（稽核發現③）：本測試原本把 View 裡的運算式**重打一遍**
+        // 再斷言自己那份拷貝——測試與生產是兩份獨立實作，改 View 對它零影響，
+        // 注入編造值時 140 支全綠。現在改為呼叫生產程式碼實際使用的具名函式。
         let unitSystem = UnitSystem.metric
-        let displayed = dive.waterTemperature.map { unitSystem.formatTemperature($0) } ?? "—"
-        XCTAssertEqual(displayed, "—")
+        XCTAssertEqual(
+            WaterTemperatureDisplay.rowValue(dive.waterTemperature, unitSystem: unitSystem),
+            "—",
+            "未記錄水溫時必須顯示佔位符，不得顯示任何編造的度數"
+        )
     }
 
     func testWaterTemperatureDisplayFormatShowsValueWhenPresent() {
@@ -165,5 +171,27 @@ final class WaterTemperatureOptionalTests: XCTestCase {
         XCTAssertEqual(decoded.dives.count, 1)
         XCTAssertNil(decoded.dives[0].waterTemperature,
             "JSON round-trip（匯出/匯入備份檔）不應把 nil 憑空變成一個數字")
+    }
+
+    // MARK: - 統計格：數值與單位的 nil 規則必須一致（稽核發現③）
+
+    func testStatCellShowsPlaceholderAndBlankUnitWhenNotRecorded() {
+        let u = UnitSystem.metric
+        XCTAssertEqual(
+            WaterTemperatureDisplay.statValue(nil, unitSystem: u, locale: Locale(identifier: "en_US")),
+            "—")
+        XCTAssertEqual(
+            WaterTemperatureDisplay.statUnit(nil, unitSystem: u), "",
+            "未記錄時單位必須留空——否則畫面會顯示「— °C」，那是看起來像有讀數的組合")
+    }
+
+    func testStatCellShowsValueAndUnitWhenRecorded() {
+        let u = UnitSystem.metric
+        XCTAssertEqual(
+            WaterTemperatureDisplay.statValue(28.0, unitSystem: u, locale: Locale(identifier: "en_US")),
+            "28")
+        XCTAssertFalse(
+            WaterTemperatureDisplay.statUnit(28.0, unitSystem: u).isEmpty,
+            "有讀數時單位不得留空")
     }
 }
