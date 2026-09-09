@@ -44,8 +44,18 @@ final class PurchasePriceDisplayTests: XCTestCase {
 
     /// 未載入時（`premiumProduct == nil`）明確斷言 `premiumPriceString == nil`，
     /// 不是某個看起來合法的價格字串。若 `premiumProduct` 在本次測試執行時已經
-    /// 載入完成（StoreKit sandbox 回應夠快），本斷言略過——上面那支不變量測試
-    /// 才是不受載入時序影響、恆定有效的規格測試。
+    /// 載入完成（StoreKit sandbox 回應夠快），本斷言略過。
+    ///
+    /// 🔴 **2026-09-09 更正**：此處原本寫「上面那支不變量測試才是不受載入時序
+    /// 影響、恆定有效的規格測試」——**那句話是錯的**。商品**已載入**時，
+    /// `premiumPriceString == premiumProduct?.displayPrice` 這個等式在有無
+    /// `?? "寫死值"` 分支下都成立（`??` 根本不觸發），所以它同樣抓不到。
+    /// **兩支測試的盲區是同一個狀態**，在該狀態下防護是 0 而不是 2。
+    /// 稽核實測：注入 `?? "$1.99"` ⇒ 140 支全綠。
+    /// 真正守住這條規格的是下方 `testPriceStringIsNilWhenDisplayPriceMissing`
+    /// ——它測純函式 `PurchaseManager.priceString(displayPrice:)`，**不依賴
+    /// StoreKit 執行期狀態、不帶任何 XCTSkip**。本檔兩支既有測試保留作為
+    /// 端到端佐證，但它們不是這條規格的守門人。
     func testPremiumPriceStringIsNilWhenProductNotYetLoaded() throws {
         let pm = PurchaseManager.shared
         try XCTSkipUnless(pm.premiumProduct == nil,
@@ -65,4 +75,23 @@ final class PurchasePriceDisplayTests: XCTestCase {
     //       變成 XCTAssertEqual("$1.99", nil) ⇒ 失敗（紅）。
     // 綠：還原為 `premiumProduct?.displayPrice`（nil 傳遞）⇒ 兩側同為 nil ⇒ 通過。
     // 兩次執行紀錄見本次 C2 執行者的驗證報告（build/test 輸出）。
+
+    // MARK: - 🔴 這條規格真正的守門人（2026-09-09，稽核發現② 修復）
+    //
+    // 上面兩支都依賴 StoreKit 執行期狀態：商品載入到就一支 skip、一支失明。
+    // 下面兩支測純函式，**確定性執行、無 XCTSkip、不碰 singleton**。
+
+    func testPriceStringIsNilWhenDisplayPriceMissing() {
+        XCTAssertNil(
+            PurchaseManager.priceString(displayPrice: nil),
+            "商品未載入時必須是 nil。任何寫死的幣別/金額字串（例如 \"$1.99\"）" +
+            "都會讓非美元區使用者看到錯誤價格——這是送審合規風險，不只是顯示瑕疵"
+        )
+    }
+
+    func testPriceStringPassesThroughLoadedDisplayPrice() {
+        // 已載入時必須原樣透傳，不得改寫成任何自家格式
+        XCTAssertEqual(PurchaseManager.priceString(displayPrice: "NT$60"), "NT$60")
+        XCTAssertEqual(PurchaseManager.priceString(displayPrice: "€1,99"), "€1,99")
+    }
 }

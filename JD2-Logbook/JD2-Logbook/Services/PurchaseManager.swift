@@ -51,7 +51,26 @@ final class PurchaseManager {
     /// Guideline 2.3 Accurate Metadata）。呼叫端未載入時應顯示 loading 狀態或
     /// 「—」佔位，不得顯示任何幣別數字。
     var premiumPriceString: String? {
-        premiumProduct?.displayPrice
+        Self.priceString(displayPrice: premiumProduct?.displayPrice)
+    }
+
+    /// 由商品的 `displayPrice` 決定要顯示的價格字串。
+    ///
+    /// 🔴 **抽成純函式的唯一理由是可測性**（2026-09-09，稽核發現②）。
+    /// 這條規格真正危險的狀態是**商品尚未載入**（`displayPrice == nil`）——
+    /// 此時若回傳任何寫死字串（例如舊版的 `?? "$1.99"`），非美元區使用者會看到
+    /// 錯誤價格，屬送審合規風險。
+    ///
+    /// 但 `Product` 是 StoreKit 型別、**單元測試無法建構**，所以原本守這條規格的
+    /// 測試只能寫成 `XCTSkipUnless(premiumProduct == nil)`——**StoreKit 一旦載入到
+    /// 商品就整支跳過**。稽核實測：注入 `?? "$1.99"` 後 140 支測試全綠，
+    /// 因為那支被 skip、而另一支「不變量」測試在商品已載入時 `??` 分支根本不觸發。
+    /// **兩支測試的盲區是同一個狀態**，所以在該狀態下防護是 0 而不是 2。
+    ///
+    /// 把判斷抽到只吃 `String?` 的純函式後，「未載入」這個危險狀態
+    /// **可以被直接、確定地測到**，不再依賴 StoreKit 的執行期行為。
+    static func priceString(displayPrice: String?) -> String? {
+        displayPrice
     }
 
     // MARK: Constants
