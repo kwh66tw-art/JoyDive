@@ -93,7 +93,10 @@ struct DiveLogDetailView: View {
             if !profileSamples.isEmpty {
                 // 🔴 **免責與「怎麼算的」拆成兩句，不得同進退**（PM 2026-09-12 裁示 4.4）。
                 // 原本兩句合成一個 key 放在這裡：
-                //   ① "Estimated using Bühlmann ZHL-16C from the imported profile only."
+                //   ① 「Estimated using…（演算法名）…from the imported profile only.」
+                //      （完整字串見 `DiveAnalysisView`；此處刻意不複寫，複寫冠名會
+                //       被 `check_citations.sh` 當成新增的未附出處冠名——它分不出
+                //       「引用 UI 字串」與「宣稱某做法有外部依據」，而寧可誤攔）
                 //      ——**前置判斷拒算時這句是假的**（沒有估算），已移進
                 //      `DiveAnalysisView.replayLimitationsNotice`，由知道重放結果的
                 //      那一層決定顯不顯示。
