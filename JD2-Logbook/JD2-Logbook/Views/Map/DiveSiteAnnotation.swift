@@ -50,7 +50,7 @@ final class DiveSiteAnnotation: NSObject, MKAnnotation {
 
 // MARK: - DiveSiteAnnotationView
 
-/// 單一潛點的藍色標準地圖釘（乾淨 marker，不帶人形字符）。
+/// 單一潛點的藍色預設地圖釘（乾淨 marker，不帶人形字符）。
 /// `clusteringIdentifier` 啟用 MapKit 原生聚類；`canShowCallout = false`，
 /// 點擊事件完全交由詳情面板處理。
 final class DiveSiteAnnotationView: MKMarkerAnnotationView {
@@ -77,7 +77,7 @@ final class DiveSiteAnnotationView: MKMarkerAnnotationView {
     }
 
     /// MKMarkerAnnotationView 在 reuse 時會把 glyph/tint 重設回預設（紅色）。
-    /// 因此每次顯示都重套樣式，確保所有潛點外觀一致（藍色標準釘）。
+    /// 因此每次顯示都重套樣式，確保所有潛點外觀一致（藍色預設釘）。
     override func prepareForDisplay() {
         super.prepareForDisplay()
         applyStyle()
@@ -89,7 +89,7 @@ final class DiveSiteAnnotationView: MKMarkerAnnotationView {
             clusteringIdentifier = "diveCluster"
         }
         if glyphImage != nil {
-            glyphImage = nil          // 維持乾淨標準釘（無人形字符）
+            glyphImage = nil          // 維持乾淨預設釘（無人形字符）
         }
         if displayPriority != .defaultLow {
             displayPriority = .defaultLow  // 啟用 MapKit 原生聚合

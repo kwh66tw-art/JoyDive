@@ -23,7 +23,7 @@ import Observation
 @Observable
 final class AppLanguageManager {
 
-    /// SettingsView Picker 顯示用：語言名以「該語言自己的文字」顯示，不翻譯（業界慣例）。
+    /// SettingsView Picker 顯示用：語言名以「該語言自己的文字」顯示，不翻譯（通行做法）。
     /// 繁體中文排最前，對齊本專案主要目標語言（V1_RELEASE_CHECKLIST）。
     static let supportedLanguages: [(code: String, nativeName: String)] = [
         ("zh-Hant", "繁體中文"),
@@ -104,8 +104,8 @@ final class AppLanguageManager {
 
     /// 潛水記錄的日期時間顯示（Entry/Exit Time 等）：純數字日期，不夾雜語意月份字詞
     /// （越南文「ngày 4 thg 6, 2026」量測到全語系最長 24 字元，UI 卡片寬度會裁切/換行；
-    /// 改用數字後跟其他語言一致，也更短）。12/24 小時制仍尊重各語系自然慣例
-    /// （英文 AM/PM、韓文 오전/오후 等不受影響，那是時制慣例不是月份字詞問題）。
+    /// 改用數字後跟其他語言一致，也更短）。12/24 小時制仍尊重各語系自然寫法
+    /// （英文 AM/PM、韓文 오전/오후 等不受影響，那是時制習慣不是月份字詞問題）。
     /// 一樣強制 Gregorian 曆法，理由同 `dateFormatter(dateStyle:timeStyle:)`。
     func numericDateTimeFormatter() -> DateFormatter {
         let formatter = DateFormatter()

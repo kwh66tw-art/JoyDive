@@ -130,7 +130,7 @@ func parseAndValidateForBackground(filePath: String) throws -> [DiveImportKit.Pa
 /// R-070 App 半（2026-09-03）：從 `importExtrasJSON`（既有 sortedKeys JSON dict
 /// 字串，見 `makeDiveLog(from:)` 註解／`DiveLog.importExtras`）解碼出 round-trip
 /// 指紋 ID（`DiveImportKit.jd2RoundtripIDKey`）。與 `DiveLog.importExtras` 用
-/// 同一套解碼慣例，這裡直接吃原始 JSON 字串是為了同時供 `DiveLog` 與
+/// 同一套解碼做法，這裡直接吃原始 JSON 字串是為了同時供 `DiveLog` 與
 /// `DiveLogBackupEntry`（兩者皆有 `importExtrasJSON` 欄位，但後者沒有前者那個
 /// 型別化的 `importExtras` computed property）共用同一份抽取邏輯，不重複寫。
 /// 找不到欄位或欄位不存在的舊資料（Kit round-trip 機制導入前匯入的記錄）

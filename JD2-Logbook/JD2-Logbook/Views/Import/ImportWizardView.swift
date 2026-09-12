@@ -622,7 +622,7 @@ struct ImportWizardView: View {
 }
 
 // MARK: - Format Group Section
-// port 自 JD2-Ultra companion DiveComponents.swift 的 SectionHeader／ValueRow 慣例：
+// port 自 JD2-Ultra companion DiveComponents.swift 的 SectionHeader／ValueRow 既有寫法：
 // 大寫小標籤分組標題＋單欄列，取代原本無分類、無法掃視的 2 欄卡片格線。
 
 private struct FormatGroupSection: View {

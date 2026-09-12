@@ -340,7 +340,7 @@ struct DiveLogEditSheet: View {
                         }
                     }
 
-                    // 最大深度 —— 必填欄位，紅色星號是通用慣例，不用額外翻譯一整句話
+                    // 最大深度 —— 必填欄位，紅色星號是通行做法，不用額外翻譯一整句話
                     // （之前用整句英文提示，語系切不過去，PM 抓到後改這個做法）。
                     HStack {
                         Text("Max Depth").foregroundStyle(.primary)
@@ -395,7 +395,7 @@ struct DiveLogEditSheet: View {
                 } footer: {
                     // 「儲存」按鈕在 maxDepth == 0 時會靜默停用，沒有任何視覺/VoiceOver
                     // 提示——真機 VoiceOver 走查回報「無法儲存」，其實是不知道深度必填。
-                    // 用紅色星號（通用慣例，不用翻譯）+ 已 18 語言翻譯的「必填」字樣，
+                    // 用紅色星號（通行做法，不用翻譯）+ 已 18 語言翻譯的「必填」字樣，
                     // 不要再用整句英文（PM 指出英文提示不隨語系切換）。
                     if maxDepth == 0 {
                         Text("* \(languageManager.localized("Required"))")
