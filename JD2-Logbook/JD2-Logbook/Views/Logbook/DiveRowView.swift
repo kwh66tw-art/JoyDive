@@ -139,7 +139,7 @@ struct DiveRowView: View {
             HStack(spacing: 14) {
                 HStack(spacing: 4) {
                     Image(systemName: "arrow.down.to.line")
-                    Text(unitSystem.formatDepth(dive.maxDepth))
+                    Text(unitSystem.formatDepth(dive.maxDepth, locale: languageManager.locale))
                 }
                 .font(.callout.bold())
                 .foregroundStyle(.tint)
@@ -180,7 +180,7 @@ struct DiveRowView: View {
 
     private var accessibilityDescription: String {
         let dateStr = languageManager.dateFormatter(dateStyle: .medium).string(from: dive.dateTime)
-        return "\(dateStr), \(locationText), \(unitSystem.formatDepth(dive.maxDepth)), \(durationText)"
+        return "\(dateStr), \(locationText), \(unitSystem.formatDepth(dive.maxDepth, locale: languageManager.locale)), \(durationText)"
     }
 }
 

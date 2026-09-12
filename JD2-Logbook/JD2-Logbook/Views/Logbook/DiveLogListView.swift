@@ -227,6 +227,8 @@ struct StatsHeaderView: View {
 
     // v1.2 #4 遺漏的欄位：deepestDive 原本寫死 "%.1fm"，英制模式下數字/單位都沒換算。
     @AppStorage(UnitSystem.storageKey) private var unitSystem = UnitSystem.metric
+    // 2026-09-12：數字的小數點寫法要跟著 **App 內** 語言切換走（不是系統語言）。
+    @Environment(AppLanguageManager.self) private var languageManager
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var totalDives: Int { dives.count }
@@ -253,7 +255,7 @@ struct StatsHeaderView: View {
                     Divider()
                     StatCell(value: totalTimeText, label: "Total Time", icon: "timer")
                     Divider()
-                    StatCell(value: unitSystem.formatDepth(deepestDive), label: "Deepest", icon: "arrow.down.to.line")
+                    StatCell(value: unitSystem.formatDepth(deepestDive, locale: languageManager.locale), label: "Deepest", icon: "arrow.down.to.line")
                 }
             } else {
                 HStack(spacing: 0) {
@@ -276,7 +278,7 @@ struct StatsHeaderView: View {
                         .frame(height: 32)
 
                     StatCell(
-                        value: unitSystem.formatDepth(deepestDive),
+                        value: unitSystem.formatDepth(deepestDive, locale: languageManager.locale),
                         label: "Deepest",
                         icon: "arrow.down.to.line"
                     )

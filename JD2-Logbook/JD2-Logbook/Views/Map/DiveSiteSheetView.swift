@@ -103,7 +103,7 @@ struct DiveSiteSheetView: View {
             }
         }
         .accessibilityLabel(
-            "\(locationName), \(unitSystem.formatDepth(dive.maxDepth)), \(durationFormatted)"
+            "\(locationName), \(unitSystem.formatDepth(dive.maxDepth, locale: languageManager.locale)), \(durationFormatted)"
         )
     }
 

@@ -79,8 +79,15 @@ public enum UnitSystem: String, CaseIterable, Codable, Sendable {
     }
 
     /// 深度顯示字串（含單位符號），例如 "41.0 m" / "134.5 ft"
-    public func formatDepth(_ metersValue: Double, decimals: Int = 1) -> String {
-        String(format: "%.\(decimals)f %@", convertDepth(metersValue: metersValue), depthSymbol)
+    /// - Parameter locale: 小數點與千分位要用哪個語系的寫法。
+    ///   🔴 **`String(format:)` 不帶 `locale:` ＝ 一律用 "." 當小數點**（非在地化），
+    ///   在法／德／西等逗號語系會顯示成 "12.5 m" 而非 "12,5 m"。
+    ///   預設 `.current` 跟系統語言走；**App 內語言切換器**的選擇不在系統語言裡，
+    ///   所以呼叫端若拿得到 `languageManager.locale` 就該傳進來（多數 View 都拿得到）。
+    public func formatDepth(_ metersValue: Double, decimals: Int = 1,
+                            locale: Locale = .current) -> String {
+        String(format: "%.\(decimals)f %@", locale: locale,
+               convertDepth(metersValue: metersValue), depthSymbol)
     }
 
     /// 減壓 ceiling 專用的保守進位顯示（R-022 Bug 1）。
@@ -94,14 +101,17 @@ public enum UnitSystem: String, CaseIterable, Codable, Sendable {
     /// 換算順序：先用 `convertDepth` 轉成顯示單位（公尺或英尺），**再**對顯示值
     /// 無條件進位（`.rounded(.up)`），而不是對公尺值進位後才換算——避免公制轉
     /// 英制時，換算誤差又把進位後的值拉回顯示單位的下一個整數以下。
-    public func formatDepthConservative(_ metersValue: Double) -> String {
+    public func formatDepthConservative(_ metersValue: Double,
+                                        locale: Locale = .current) -> String {
         let displayValue = convertDepth(metersValue: metersValue).rounded(.up)
-        return String(format: "%.0f %@", displayValue, depthSymbol)
+        return String(format: "%.0f %@", locale: locale, displayValue, depthSymbol)
     }
 
     /// 溫度顯示字串（含單位符號），例如 "27°C" / "81°F"
-    public func formatTemperature(_ celsiusValue: Double) -> String {
-        String(format: "%.0f%@", convertTemperature(celsiusValue: celsiusValue), temperatureSymbol)
+    public func formatTemperature(_ celsiusValue: Double,
+                                  locale: Locale = .current) -> String {
+        String(format: "%.0f%@", locale: locale,
+               convertTemperature(celsiusValue: celsiusValue), temperatureSymbol)
     }
 
     // MARK: - 輸入層反向換算（使用者輸入的顯示值 → 儲存用公制值）

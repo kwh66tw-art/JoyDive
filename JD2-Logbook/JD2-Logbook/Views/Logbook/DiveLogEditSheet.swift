@@ -793,6 +793,8 @@ struct DiveLogEditSheet: View {
             return "\"air\""
         case .nitrox:
             let fO2 = nitroxO2Percent / 100.0
+            // 🔴 **這裡絕對不能帶 `locale:`**——這是寫進儲存欄位的 JSON，不是畫面文字。
+            // 逗號語系會產生 `{"fO2":0,32}`，解析回來直接壞掉（而且是靜默壞在資料層）。
             return "{\"nitrox\":{\"fO2\":\(String(format: "%.4g", fO2))}}"
         }
     }

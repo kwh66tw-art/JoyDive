@@ -293,6 +293,8 @@ final class ImportCoordinator {
     /// - Parameter statistics: 匯入統計
     /// - Returns: 格式化的報告字串
     func generateReport(_ statistics: ImportStatistics) -> String {
+        // 內部診斷報告（標籤本來就是硬編碼中文，不走在地化）⇒ 數字刻意不帶 `locale:`：
+        // 它不是使用者可見的 UI 文字，格式穩定比在地化重要（貼進 issue 時好比對）。
         var report = """
         ===============================
         匯入完成報告

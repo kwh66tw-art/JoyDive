@@ -284,6 +284,8 @@ final class DiveLog {
         let hours = diveTimeSeconds / 3600
         let minutes = (diveTimeSeconds % 3600) / 60
         let seconds = diveTimeSeconds % 60
+        // 刻意不帶 `locale:`：全是補零整數、沒有小數點也沒有千分位，
+        // 本 App 的 18 個語系又都用西方數字 ⇒ 帶不帶結果完全相同。
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
 

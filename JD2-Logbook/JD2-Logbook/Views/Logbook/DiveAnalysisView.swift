@@ -386,15 +386,15 @@ struct DiveAnalysisView: View {
         // 欄位數，缺的欄位一律用「—」佔位，不隱藏欄位本身。
         HStack(spacing: 0) {
             calloutCell(label: Text("Time"), value: timeLabel(sample.timeSeconds))
-            calloutCell(label: Text("Depth"), value: unitSystem.formatDepth(sample.depthMeters))
+            calloutCell(label: Text("Depth"), value: unitSystem.formatDepth(sample.depthMeters, locale: languageManager.locale))
             calloutCell(
                 label: Text("Temp"),
-                value: sample.waterTemp.map { unitSystem.formatTemperature($0) } ?? "—"
+                value: sample.waterTemp.map { unitSystem.formatTemperature($0, locale: languageManager.locale) } ?? "—"
             )
             calloutCell(
                 label: Text("Ceiling"),
                 value: (point?.ceilingMeters ?? 0) > 0
-                    ? unitSystem.formatDepthConservative(point!.ceilingMeters) : "—",
+                    ? unitSystem.formatDepthConservative(point!.ceilingMeters, locale: languageManager.locale) : "—",
                 accent: (point?.ceilingMeters ?? 0) > 0 ? .deco : .neutral
             )
             calloutCell(
@@ -500,7 +500,7 @@ struct DiveAnalysisView: View {
             Spacer(minLength: 8)
 
             VStack(alignment: .trailing, spacing: 1) {
-                Text(unitSystem.formatDepth(warning.depthMeters, decimals: 0))
+                Text(unitSystem.formatDepth(warning.depthMeters, decimals: 0, locale: languageManager.locale))
                     .font(.subheadline.weight(.semibold).monospacedDigit())
                 Text(timeLabel(warning.timeSeconds))
                     .font(.caption2)
