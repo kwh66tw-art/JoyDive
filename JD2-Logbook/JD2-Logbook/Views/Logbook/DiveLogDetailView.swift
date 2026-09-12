@@ -91,10 +91,21 @@ struct DiveLogDetailView: View {
             // ≥2 個樣本才有意義的重放結果，否則退回純剖面圖（無互動查點）。
             let profileSamples = dive.profileSamples
             if !profileSamples.isEmpty {
+                // 🔴 **免責與「怎麼算的」拆成兩句，不得同進退**（PM 2026-09-12 裁示 4.4）。
+                // 原本兩句合成一個 key 放在這裡：
+                //   ① "Estimated using Bühlmann ZHL-16C from the imported profile only."
+                //      ——**前置判斷拒算時這句是假的**（沒有估算），已移進
+                //      `DiveAnalysisView.replayLimitationsNotice`，由知道重放結果的
+                //      那一層決定顯不顯示。
+                //   ② "Not a substitute for your dive computer or certified decompression
+                //      software." ——**全 App 唯一的免責句**（本 App 無總體免責頁），
+                //      留在這裡恆常顯示。
+                // 綁在一起一定有一句是錯的：一起留 ⇒ ① 說謊；一起消失 ⇒ 在資訊最少的
+                // 那些潛水上，唯一的免責也不見了。
                 Section(
                     header: Text("Dive Profile"),
                     footer: profileSamples.count >= 2
-                        ? Text("Estimated using Bühlmann ZHL-16C from the imported profile only. Not a substitute for your dive computer or certified decompression software.")
+                        ? Text("Not a substitute for your dive computer or certified decompression software.")
                         : nil
                 ) {
                     if profileSamples.count >= 2 {

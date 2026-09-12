@@ -51,14 +51,44 @@ struct DiveAnalysisView: View {
     @State private var replay: DiveReplayEngine.ReplayResult?
     /// 前置判斷 P1–P6 攔下來的原因（nil = 通過，正常顯示組織艙/ceiling/NDL）
     @State private var anomaly: DiveReplayEngine.Anomaly?
+    /// 選取的**原始剖面樣本**索引（不是重放點索引——見 `selectedPoint` 的說明）。
     @State private var selectedIndex: Int?
+    /// ⓘ 限制說明頁（2026-09-12 裁示 4.5：8 種異常 ＋ 2 項一般性限制全部羅列）
+    @State private var showingLimitations = false
+
+    /// 依時間排序後的樣本——**選取索引一律以這個陣列為準**。
+    ///
+    /// 🔴 為什麼要排序：DiveKit 的 `ReplayPoint.sampleIndex` 是它**自己排序後**的
+    /// 列舉索引（`DiveReplay.drive()`：`samples.sorted { ... }.enumerated()`），
+    /// 而本 view 原本用未排序的 `samples` 算選取索引、卻拿去索引 `replay.points`
+    /// ——兩邊順序不一致時就會顯示到別的時間點的 Ceiling／NDL，而且**畫面上看起來
+    /// 完全正常**。排序一次讓兩邊同基準；`init` 只算一次，不在每次 render 重排。
+    private let orderedSamples: [DiveProfileSample]
+
+    init(dive: DiveLog, samples: [DiveProfileSample], gasMix: GasMix) {
+        self.dive = dive
+        self.samples = samples
+        self.gasMix = gasMix
+        self.orderedSamples = samples.sorted { $0.timeSeconds < $1.timeSeconds }
+    }
 
     private var replayPoints: [DiveReplayEngine.ReplayPoint] { replay?.points ?? [] }
     private var replayWarnings: [DiveReplayEngine.ReplayWarning] { replay?.warnings ?? [] }
 
+    /// 選取點的原始樣本——**異常時仍然有值**（Time／Depth／Temp 不需要重放）。
+    private var selectedSample: DiveProfileSample? {
+        guard let idx = selectedIndex, orderedSamples.indices.contains(idx) else { return nil }
+        return orderedSamples[idx]
+    }
+
+    /// 選取點對應的重放結果——可能為 nil（前置判斷拒算，**或**該樣本沒有對應重放點）。
+    ///
+    /// 🔴 用 `sampleIndex` 比對而非陣列位置：`drive()` 對 `span <= 0` 的樣本
+    /// `continue`（同一秒重複樣本）⇒ `points.count` 可能少於樣本數，位置索引會整體
+    /// 錯位。`sampleIndex` 是唯一可靠的對應鍵。
     private var selectedPoint: DiveReplayEngine.ReplayPoint? {
-        guard let idx = selectedIndex, replayPoints.indices.contains(idx) else { return nil }
-        return replayPoints[idx]
+        guard let idx = selectedIndex else { return nil }
+        return replayPoints.first { $0.sampleIndex == idx }
     }
 
     /// v1.2 #3：目前選取的樣本點附近命中的警示事件（可能 0～2 筆：上升過速／強制安全停留）
@@ -72,33 +102,41 @@ struct DiveAnalysisView: View {
         VStack(alignment: .leading, spacing: 8) {
             interactiveChart
 
-            if let anomaly {
-                anomalyNotice(anomaly)
-            } else if let point = selectedPoint {
+            // 🔑 2026-09-12 PM 裁示：callout **不再被異常關掉**。Time／Depth／Temp
+            // 來自原始剖面、與重放無關，異常時照常可拖曳；只有 Ceiling／No Deco
+            // （唯二的重放產物）顯示「—」。原本三欄一起關掉，使
+            // 「inspect any moment of the dive」在這些潛水上變成做不到的承諾。
+            if let sample = selectedSample {
                 // v1.2：狀態列文字不跟著外層 .animation(value: selectedIndex) 做隱式動畫
                 // ——原本整個 VStack 共用同一個 easeInOut，狀態列在「插入」瞬間會跟著
                 // 淡入/版面過渡一起跑，若剛好在動畫還沒跑完時被截圖，數值文字會停在
                 // 過渡中間的狀態，看起來字級／樣式跟穩定後不一致。用 transaction 關掉
                 // 這個子樹的動畫，狀態列一律立即以最終樣式出現，不會有中間態。
-                calloutRow(point)
+                calloutRow(sample, point: selectedPoint)
                     .transaction { $0.animation = nil }
                 // v1.2 #3：狀態資訊列下第二列——選取點命中警示事件時才出現
                 if !selectedWarnings.isEmpty {
                     warningEventsSection(selectedWarnings)
                 }
+            }
+
+            // 組織艙區塊：算得出來就畫長條，算不出來就**在同一個位置**說明為什麼
+            // ——而不是讓這塊空間靜默消失（使用者無從分辨「沒選點」與「不支援」）。
+            if let anomaly {
+                tissueUnavailableNotice(anomaly)
+            } else if let point = selectedPoint {
                 TissueBarsView(loadPercents: DiveReplayEngine.tissueLoadPercent(
                     pN2: point.tissuePN2,
                     pHe: point.tissuePHe,
                     environment: dive.replayEnvironment
                 ))
-            } else {
-                Text("Touch and drag the profile to inspect any moment of the dive.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
             }
 
+            hintRow
             replayLimitationsNotice
+        }
+        .sheet(isPresented: $showingLimitations) {
+            ReplayLimitationsInfoView(activeAnomaly: anomaly)
         }
         .animation(.easeInOut(duration: 0.15), value: selectedIndex)
         .task {
@@ -115,44 +153,109 @@ struct DiveAnalysisView: View {
                 replay = result
                 anomaly = nil
             case .anomaly(let reason):
-                // 深度剖面照常顯示（chart 不吃重放結果）；只有組織艙/ceiling/NDL
-                // 這些「事後推算」的部分改成說明訊息。
+                // 深度剖面照常顯示（chart 不吃重放結果）；**只有**「事後推算」的部分
+                // （組織艙／Ceiling／NDL）改成說明訊息。
                 //
-                // 🔴 **2026-09-12：實作超出上面這句宣告的意圖，已裁示重新設計。**
-                // `selectedIndex = nil` 會讓拖曳完全沒反應，連 Time／Depth／Temp
-                // 也一起關掉——**那三欄來自原始剖面，與重放無關**（`calloutRow` 5 欄
-                // 只有 Ceiling／No Deco 是重放產物）。結果是
-                // 「Touch and drag the profile to inspect any moment of the dive」
-                // 在這些潛水上變成**做不到的承諾**。
-                // ⇒ 新設計：三欄照常可拖曳，Ceiling／No Deco 顯示「—」，
-                //   組織艙位置改為說明文字＋ⓘ。callout 需在 `replay == nil` 時
-                //   改從**原始 samples** 取值（現在從 `ReplayPoint`）。
-                // **動這裡之前請先讀**
+                // ✅ 2026-09-12 PM 裁示已實作：這裡**不再**清掉 `selectedIndex`。
+                // 清掉會讓拖曳完全沒反應，連 Time／Depth／Temp 一起關掉——那三欄
+                // 來自原始剖面、與重放無關，關掉等於讓
+                // 「inspect any moment of the dive」變成做不到的承諾。
+                // 裁示全文（分三類／not available vs not applicable／免責拆兩句）：
                 // `../_JD2-family/decisions/2026-09-12_重放異常的文案細分與UI重新設計-PM裁示.md`
-                // （含異常分三類、not available vs not applicable、免責必須拆兩句）。
                 replay = nil
-                selectedIndex = nil
                 anomaly = reason
             }
         }
     }
 
-    // MARK: - 前置判斷異常說明
-    // 設計文件第四節：P1–P6 任一成立 → 整個 tissue loading 重放不計算，原本放
-    // 組織艙飽和度／ceiling／NDL 的區塊改顯示說明訊息，**深度剖面照常顯示**。
+    // MARK: - 前置判斷異常說明（組織艙區塊的替代內容）
+    // 設計文件第四節：前置判斷任一成立 → 整個 tissue loading 重放不計算，原本放
+    // 組織艙飽和度的區塊改顯示說明訊息，**深度剖面與 Time／Depth／Temp 照常**。
     //
-    // 文案已由 PM 於 2026-08-22 定版（V1_2_BACKLOG #24），取代先前的英文暫訂稿。
-    // 目前六種 Anomaly 共用同一段文字；Kit 的 `Anomaly` 是具型別的，日後 PM 要
-    // 細分文案時直接 switch 即可，不需要改演算法層。
+    // 🔑 文案定版 2026-09-12（PM 全案裁示，取代 V1_2_BACKLOG #24 的 2026-08-22 定版
+    // ——那版是六種異常共用一段，之後 `Anomaly` 變 8 種、其中一種性質也改了）：
+    // `../_JD2-family/decisions/2026-09-12_重放異常的文案細分與UI重新設計-PM裁示.md`
+    //
+    // 🔴 **"available" 與 "applicable" 只差一個字，但它決定使用者覺得
+    // 「app 有問題」還是「這種潛水本來就沒有」**——B／C 都不是故障：模型本來就
+    // 不適用於閉氣潛水，也不能跨大氣基準線做殘氮延續。不要在翻譯或改寫時合併這兩句。
 
-    private func anomalyNotice(_ anomaly: DiveReplayEngine.Anomaly) -> some View {
-        Text(verbatim: languageManager.localized(
-            "This feature does not support technical dives or logs with discontinuous imported data."
-        ))
+    private func tissueUnavailableNotice(_ anomaly: DiveReplayEngine.Anomaly) -> some View {
+        Button {
+            showingLimitations = true
+        } label: {
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(verbatim: languageManager.localized(AnomalyClass(anomaly).tissueNoticeKey))
+                Image(systemName: "info.circle")
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .multilineTextAlignment(.leading)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("replayAnomalyNotice")
+    }
+
+    /// 異常分三類（PM 2026-09-12 裁示 1）。**分類只影響文案語意，不影響是否拒算**。
+    private enum AnomalyClass {
+        /// A 資料問題（6 種）：這筆紀錄的資料無法支持重放 ⇒ "not available"
+        case dataProblem
+        /// B 不適用（`breathHoldTarget`）：模型本來就不適用 ⇒ "not applicable"
+        case notApplicable
+        /// C 環境不同（`inconsistentEnvironment`）：無法跨大氣基準線延續殘氮 ⇒ "not applicable"
+        case differentEnvironment
+
+        init(_ anomaly: DiveReplayEngine.Anomaly) {
+            switch anomaly {
+            case .breathHoldTarget:
+                self = .notApplicable
+            case .inconsistentEnvironment:
+                self = .differentEnvironment
+            case .technicalDive, .unknownGasMix, .overlappingDives,
+                 .implausibleTiming, .seriesIndexMismatch, .precedingProfileSamplesMissing:
+                self = .dataProblem
+            }
+        }
+
+        var tissueNoticeKey: String {
+            switch self {
+            case .dataProblem:
+                return "Interactive tissue loading is not available for this dive — see detail"
+            case .notApplicable, .differentEnvironment:
+                return "Interactive tissue loading is not applicable for this dive — see detail"
+            }
+        }
+    }
+
+    // MARK: - 提示列（PM 2026-09-12 裁示 4.2）
+    // 「Limited support ⓘ」與既有 App Store 文案一致（標題已是 "Interactive Profile,
+    // With Tissue Loading (Limited Support)"），措辭不另外發明。
+    // 🔑 ⓘ **恆常可達**：ⓘ 頁除了 8 種異常，還列 2 項**永遠成立**的一般性限制
+    // （GF 樂觀偏差、本 App 缺 series index 導致偵測覆蓋較窄）——那兩項在重放
+    // 完全正常時同樣適用，所以入口不能只在異常時出現。
+    private var hintRow: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 4) {
+            if selectedIndex == nil {
+                // 走 localized(_:) 而非 Text 字面量：App 內語言切換後才會即時生效（v1.2 #17）
+                Text(verbatim: languageManager.localized("Touch and drag the profile to inspect any moment of the dive."))
+                Text(verbatim: "·")
+            }
+            Button {
+                showingLimitations = true
+            } label: {
+                HStack(alignment: .firstTextBaseline, spacing: 3) {
+                    Text(verbatim: languageManager.localized("Limited support"))
+                    Image(systemName: "info.circle")
+                }
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("replayLimitedSupportButton")
+            Spacer(minLength: 0)
+        }
         .font(.caption)
         .foregroundStyle(.secondary)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .accessibilityIdentifier("replayAnomalyNotice")
     }
 
     // MARK: - 一般性重放限制揭露
@@ -166,11 +269,25 @@ struct DiveAnalysisView: View {
     //   2. 偵測強度較弱：Logbook 沒有 `diveNumberInSeries` 欄位（ultra／immersion
     //      有），P4 交叉比對會被跳過，不得暗示偵測強度與另外兩者相同。
     // 比異常訊息（anomalyNotice）更不顯眼——那是狀況警示，這是固定揭露。
+    //
+    // 🔴 **2026-09-12：兩句不得同進退**（PM 裁示 4.4 的同一原則往下一層套用）。
+    // 第一句描述「這次重放**怎麼算的**」——沒有重放時它宣稱了沒發生的事，必須消失。
+    // 第二句描述「**偵測**覆蓋範圍」——偵測確實跑過（正是它判出異常的），永遠成立。
+    // 綁在一起一定有一句是錯的：一起留 ⇒ 第一句說謊；一起消失 ⇒ 在資訊最少的
+    // 那些潛水上連正確的那句也不見了。
     private var replayLimitationsNotice: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(verbatim: languageManager.localized(
-                "Replay is simulated using the conservative GF High ceiling baseline, so the ceiling shown may be more optimistic (shallower) than what your dive computer displayed at the time."
-            ))
+            if replay != nil {
+                // 從呼叫端 Section footer 搬進來（PM 2026-09-12 裁示 4.4）：這句描述
+                // 「這些數字是怎麼算出來的」，沒有重放時它宣稱了沒發生的事。
+                // 免責那一句（"Not a substitute for…"）留在 footer 恆常顯示。
+                Text(verbatim: languageManager.localized(
+                    "Estimated using Bühlmann ZHL-16C from the imported profile only."
+                ))
+                Text(verbatim: languageManager.localized(
+                    "Replay is simulated using the conservative GF High ceiling baseline, so the ceiling shown may be more optimistic (shallower) than what your dive computer displayed at the time."
+                ))
+            }
             Text(verbatim: languageManager.localized(
                 "This app can't read the original device's dive-series index, so replay-anomaly detection here has narrower coverage than in ultra or immersion."
             ))
@@ -229,9 +346,10 @@ struct DiveAnalysisView: View {
                             }
                         }
 
-                        // 選取豎線
-                        if let point = selectedPoint,
-                           let x = proxy.position(forX: point.timeSeconds / 60.0) {
+                        // 選取豎線——用**原始樣本**的時間，不用重放點：異常時
+                        // 沒有重放點，但拖曳照常有效，豎線不能跟著消失。
+                        if let sample = selectedSample,
+                           let x = proxy.position(forX: sample.timeSeconds / 60.0) {
                             Rectangle()
                                 .fill(Color.accentColor.opacity(0.6))
                                 .frame(width: 1.5, height: plotFrame.height)
@@ -243,10 +361,12 @@ struct DiveAnalysisView: View {
     }
 
     private func select(atX x: CGFloat, proxy: ChartProxy, plotFrame: CGRect) {
-        guard !samples.isEmpty,
+        // 🔴 一律走 `orderedSamples`——索引基準必須與 `ReplayPoint.sampleIndex`
+        // 相同（見 `orderedSamples` 的說明）。也不再要求重放成功：異常時三欄照常可拖曳。
+        guard !orderedSamples.isEmpty,
               let minutes: Double = proxy.value(atX: x - plotFrame.minX) else { return }
         let t = minutes * 60
-        let nearest = samples.enumerated().min {
+        let nearest = orderedSamples.enumerated().min {
             abs($0.element.timeSeconds - t) < abs($1.element.timeSeconds - t)
         }
         selectedIndex = nearest?.offset
@@ -257,26 +377,30 @@ struct DiveAnalysisView: View {
     // Ceiling/No Deco 五欄等寬排版，label 在上、數值在下；只有真的需要警示時
     // （減壓中 / NDL 逼近）數值才用填色膠囊強調，其餘為一般深色文字。
 
-    private func calloutRow(_ point: DiveReplayEngine.ReplayPoint) -> some View {
+    /// - Parameters:
+    ///   - sample: **原始剖面樣本**——Time／Depth／Temp 三欄的唯一來源，與重放無關。
+    ///   - point: 對應的重放點；`nil` ⇒ 前置判斷拒算（或該樣本無對應重放點），
+    ///     Ceiling／No Deco 顯示「—」，**其餘三欄照常**（PM 2026-09-12 裁示 4.3）。
+    private func calloutRow(_ sample: DiveProfileSample, point: DiveReplayEngine.ReplayPoint?) -> some View {
         // v1.2：畫面一致性——固定 5 欄排版，不因資料缺漏（例如沒有溫度樣本）而增減
-        // 欄位數，缺的欄位一律用「—」佔位，不隱藏欄位本身。Ceiling/No Deco 現在對
-        // 所有氣體（含 trimix）皆為真實計算值，不再有「資料不可用」的情況。
+        // 欄位數，缺的欄位一律用「—」佔位，不隱藏欄位本身。
         HStack(spacing: 0) {
-            calloutCell(label: Text("Time"), value: timeLabel(point.timeSeconds))
-            calloutCell(label: Text("Depth"), value: unitSystem.formatDepth(point.depthMeters))
+            calloutCell(label: Text("Time"), value: timeLabel(sample.timeSeconds))
+            calloutCell(label: Text("Depth"), value: unitSystem.formatDepth(sample.depthMeters))
             calloutCell(
                 label: Text("Temp"),
-                value: point.waterTemp.map { unitSystem.formatTemperature($0) } ?? "—"
+                value: sample.waterTemp.map { unitSystem.formatTemperature($0) } ?? "—"
             )
             calloutCell(
                 label: Text("Ceiling"),
-                value: point.ceilingMeters > 0 ? unitSystem.formatDepthConservative(point.ceilingMeters) : "—",
-                accent: point.ceilingMeters > 0 ? .deco : .neutral
+                value: (point?.ceilingMeters ?? 0) > 0
+                    ? unitSystem.formatDepthConservative(point!.ceilingMeters) : "—",
+                accent: (point?.ceilingMeters ?? 0) > 0 ? .deco : .neutral
             )
             calloutCell(
                 label: Text("No Deco"),
-                value: ndlText(point.ndlSeconds),
-                accent: point.ndlSeconds < AlgorithmConstants.ndlWarnMinutes * 60 ? .warning : .neutral
+                value: point.map { ndlText($0.ndlSeconds) } ?? "—",
+                accent: (point?.ndlSeconds ?? .max) < AlgorithmConstants.ndlWarnMinutes * 60 ? .warning : .neutral
             )
         }
     }
