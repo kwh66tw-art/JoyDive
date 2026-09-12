@@ -117,6 +117,19 @@ struct DiveAnalysisView: View {
             case .anomaly(let reason):
                 // 深度剖面照常顯示（chart 不吃重放結果）；只有組織艙/ceiling/NDL
                 // 這些「事後推算」的部分改成說明訊息。
+                //
+                // 🔴 **2026-09-12：實作超出上面這句宣告的意圖，已裁示重新設計。**
+                // `selectedIndex = nil` 會讓拖曳完全沒反應，連 Time／Depth／Temp
+                // 也一起關掉——**那三欄來自原始剖面，與重放無關**（`calloutRow` 5 欄
+                // 只有 Ceiling／No Deco 是重放產物）。結果是
+                // 「Touch and drag the profile to inspect any moment of the dive」
+                // 在這些潛水上變成**做不到的承諾**。
+                // ⇒ 新設計：三欄照常可拖曳，Ceiling／No Deco 顯示「—」，
+                //   組織艙位置改為說明文字＋ⓘ。callout 需在 `replay == nil` 時
+                //   改從**原始 samples** 取值（現在從 `ReplayPoint`）。
+                // **動這裡之前請先讀**
+                // `../_JD2-family/decisions/2026-09-12_重放異常的文案細分與UI重新設計-PM裁示.md`
+                // （含異常分三類、not available vs not applicable、免責必須拆兩句）。
                 replay = nil
                 selectedIndex = nil
                 anomaly = reason
