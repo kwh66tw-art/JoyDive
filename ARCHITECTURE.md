@@ -1,7 +1,14 @@
 # JD2-Logbook 架構設計
 
-**最後更新**：2026-07-28（反映 F5/F6 遷移後 + v1.2：DiveKit/DiveImportKit 改為家族共用
-SPM 套件外部引用，本地 JD2Core/Algorithm 僅存 DiveReplayEngine.swift，State/ 資料夾已移除）
+**最後更新**：2026-09-13（反映 F5/F6 遷移後 + v1.2：DiveKit/DiveImportKit 改為家族共用
+SPM 套件外部引用，本地 JD2Core/Algorithm **僅存 `DiveReplayInput.swift`**，State/ 資料夾已移除）
+
+> 🔴 **2026-09-13 補修（總指揮驗收時發現）**：同日修正本檔「JD2Core/Algorithm」一節時，
+> **檔頭這一行與下方架構圖裡的同一句過時敘述沒有跟著改**——`DiveReplayEngine.swift`
+> 已於 DiveKit v1.9.0（2026-08-22）上收進 Kit 並刪除。
+> 📌 **這個形狀今天第四次出現**（憲法鐵律 2 落後 15 天／F-20 節點 3 落後 14 天／
+> ultra `PROGRESS.md` 路徑落後 55 天／本處）：**修一處過時敘述時，要先問「同一份檔案裡
+> 還有幾處在講同一件事」**，而不是只改被指名的那一處。
 
 ---
 
@@ -17,7 +24,7 @@ SPM 套件外部引用，本地 JD2Core/Algorithm 僅存 DiveReplayEngine.swift�
 │              JD2Core                    │
 │ ┌────────┐┌──────────┐┌────────────────┐│
 │ │ Models ││Importers ││Algorithm       ││
-│ │SwiftData││(Adapter)││(DiveReplayEngine││
+│ │SwiftData││(Adapter)││(DiveReplayInput ││
 │ │        ││         ││ 僅此一檔)       ││
 │ └────────┘└──────────┘└────────────────┘│
 │              Utilities                   │
