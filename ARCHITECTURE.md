@@ -77,21 +77,24 @@ v1.1 曾新增此資料夾（`DiveComputerState.swift`／`SurfaceStatus.swift`�
 已集中至家族共用目錄 `_JD2-family/dive-log-samples/`（供 ultra 等其他專案未來重用），
 測試檔的 fixture 路徑已同步更新。詳見 `_JD2-family/F-00-文件登錄表.md`。
 
-### JD2Core/Algorithm（F5 已完成遷移，2026-07-18）
+### JD2Core/Algorithm（F5 已完成遷移，2026-07-18；2026-09-13 修正）
 
-現在**僅存 `DiveReplayEngine.swift`** 一個檔案。原本 v1.1 曾有的本地 fork
+> ⚠️ 本節原寫「現在僅存 `DiveReplayEngine.swift`」，已過時：該檔已於
+> **DiveKit v1.9.0（2026-08-22）**上收進 Kit 本體（`DiveReplay.swift`）後刪除，
+> `CLAUDE.md`「家族層」一節已於 2026-09-02 修正，本檔未同步跟上，發現後
+> 一併修正。
+
+現在**僅存 `DiveReplayInput.swift`** 一個檔案（純輸入轉接：`DiveLog` →
+`DiveKit.DiveInput` 的映射，非重放邏輯本身）。原本 v1.1 曾有的本地 fork
 （`Buhlmann.swift`／`DiveEngine.swift`／`DecoCalculator.swift`／
 `DivePlanner.swift`／`FreeDive.swift`／`GuidanceBanner.swift`／
 `OxygenToxicity.swift`，與 Ultra 側稽核已知 9 項安全級問題同源）已於 F5
 里程碑**整包刪除**，改為 `import DiveKit` 使用家族統一套件（SPM local
-path 引用 `../../_JD2-family/DiveKit`，見下方「SPM 依賴」）。演算法問題
-發現後一律回統一 DiveKit 修（單一戰場，見 `../CLAUDE.md` 家族鐵律），
+path 引用 `../../_JD2-family/DiveKit`，見下方「SPM 依賴」）。**剖面回放
+引擎本體（原 `DiveReplayEngine.swift`）已於 DiveKit v1.9.0 上收為 Kit 內的
+`DiveReplay.swift`**，本 repo 現在直接呼叫 Kit 版本，不再有本地重放邏輯拷貝。
+演算法問題發現後一律回統一 DiveKit 修（單一戰場，見 `../CLAUDE.md` 家族鐵律），
 **不得在本 repo 繞道本地修改**。
-
-`DiveReplayEngine.swift` 是**本 repo 專屬、現行使用**的日誌回放引擎（匯入後
-計算 NDL/減壓狀態摘要），語意與即時電腦不同，`import DiveKit` 呼叫
-`Buhlmann`/`AlgorithmConstants` 等家族核心型別，本身不隨家族遷移（非演算法
-本體，是 Logbook 特有的剖面重放邏輯）。
 
 ### JD2Core/Utilities
 

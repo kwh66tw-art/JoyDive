@@ -33,19 +33,29 @@
 
 ## 現況速覽
 
-- **狀態**：v1.0 已提審 App Store（iOS + macOS）；iOS 審核逾期未回覆，PM 決定不再等待，**2026-07-14 啟動 v1.1 開發，2026-07-17 完工 13/14 項**（詳見 `V1_1_BACKLOG.md`）
-- **目標上線**：2026 年 8 月 18 日
+> ⚠️ 2026-09-13 修正：本節原停在 v1.1 開發階段（2026-07-17），落後**兩個里程碑**
+> （v1.2 已送審、已上架），且「目標上線」日期早已過期失效——文件債，發現後
+> 立即修正，不等下一輪。v1.1 階段紀錄本身沒有錯，移到下方「v1.1 開發」小節
+> 保留為歷史紀錄。
+
+- **狀態**：**v1.2 (Build 3) 已於 2026-07-29 通過審核並上架（iOS + macOS）**。
+  上架後發現 App Store 關鍵字策略失敗（見下），下一版首要任務。
+  v1.1 開發（2026-07-14 啟動，2026-07-17 完工 13/14 項）與 v1.0 送審皆為
+  已完成的歷史階段，詳見下方對應小節與 `V1_1_BACKLOG.md`。
+- **目標上線**：已上架，不再適用；下一版時程未定，待 PM 排定。
 - **平台**：iOS 17.0+ / macOS 14.0+，Swift 6
 - **Bundle ID**：`com.jd2logbook.JD2-Logbook`
 - **Apple Team**：HUA SHENG Huang（77UHM3NN7J）
 - **最新 commit**：以 `git log` 為準（本檔不寫死 commit 資訊）
 
-### 審核狀態（截至 2026-07-29）
+### 審核狀態（2026-07-29 通過，現況持續有效）
 - **iOS App 1.2 (Build 3)**：✅ **已通過審核並上架**（2026-07-29，修正 2.3.6/5.1.2(i) 兩項拒絕理由後過關）
 - **macOS App 1.2 (Build 3)**：✅ **已通過審核並上架**（2026-07-29）
 - **IAP**：`com.jd2logbook.premium`，Non-Consumable，$1.99，隨 v1.2 版本上架
-- **⚠️ 上架後發現重大問題（2026-07-29）**：App Store 關鍵字策略失敗，非品牌詞搜尋完全找不到本產品，
-  下次改版列為首要修正任務，見 `V1_RELEASE_CHECKLIST.md`「下一版重點工作」第一項
+- **⚠️ 上架後發現重大問題（2026-07-29，截至 2026-09-13 仍未執行）**：App Store
+  關鍵字策略失敗，非品牌詞搜尋完全找不到本產品，下次改版列為首要修正任務，
+  見 `V1_RELEASE_CHECKLIST.md`「下一版重點工作」第一項。**已擱置約六週，
+  是否仍是首要任務需向 PM／總指揮確認**（見 `HANDOFF.md`「下一步」#6）。
 
 ### v1.1 開發（2026-07-14 啟動，2026-07-17 完工 13/14 項）
 - 詳細紀錄見 `V1_1_BACKLOG.md`、`CHANGELOG.md` 2026-07-17 條目
@@ -108,7 +118,9 @@
 ## 下次發布流程
 
 1. 改 code，commit
-2. `CURRENT_PROJECT_VERSION` +1（下次應改為 3）
+2. `CURRENT_PROJECT_VERSION` +1（實測目前為 **3**，Build 3 已上架 ⇒ **下次應改為 4**；
+   2026-09-13 修正：本條原寫「下次應改為 3」，若照做會與已上架的 Build 3 撞號、
+   送審會被擋，發現後立即修正）
 3. Xcode → Product → Archive（iOS 選 Any iOS Device，macOS 選 Any Mac）
 4. Distribute App → App Store Connect
 5. App Store Connect → 對應版本頁面 → Add Build → Add for Review
@@ -120,8 +132,11 @@
 ## Xcode 專案位置
 
 ```
-JD2-Logbook/JD2-Logbook/JD2-Logbook.xcodeproj
+JD2-Logbook/JD2-Logbook.xcodeproj
 ```
+
+（2026-09-13 修正：本條原多寫一層 `JD2-Logbook/JD2-Logbook/JD2-Logbook.xcodeproj`，
+`find` 實測 repo 內僅此一個 `.xcodeproj`，路徑應以此為準）
 
 ---
 
