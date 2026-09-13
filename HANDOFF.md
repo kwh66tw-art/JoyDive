@@ -28,18 +28,22 @@
 ### 工作區
 
 - `git status --porcelain` **乾淨**（無未 commit 變更）。
-- 本地 HEAD：`87ac751 docs: DiveKit 引用版本回填 v1.28.3 → v1.29.0`
+- 本地 HEAD：`f25451d docs: DiveKit 引用版本回填 v1.29.0 → v1.29.1`
   （2026-09-13 更新；中間經過 `2039378`／`70853a8`／`0a4d77e` 全盤複查修正／
   `c23b9e1` 家族總指揮補修 ARCHITECTURE.md 剩餘漏網處／`290283e`／`fe6874f`／
-  `4283b30` HANDOFF 回填／`408fb60`／`f8cb618`／`87ac751` 三筆 DiveKit 版號
-  回填：v1.28.2（節點4c 查證批次）／v1.28.3（揭露批次）／**v1.29.0**（結構
-  整併批次，**MINOR**——新增 public API `AlgorithmConstants.gaugeLockHours`／
-  `otuDailyResetHours`，零行為變更；差分閘門 `verify_against.sh v1.28.3`
-  逐位元完全相同，測試 409/0/0，+2 為新增守門測試，既有測試零改動）。
-  三筆版號回填皆為總指揮代改、本 session 驗證兩支閘門
-  （`check_doc_version_sync`／`check_version_lock`）皆綠後 push——**只改
-  `CLAUDE.md:13` 這一行，不需要改依賴宣告**（本 repo 是 SPM local path
-  引用，實際吃 HEAD）。
+  `4283b30`／`7684c46` HANDOFF 回填／`408fb60`／`f8cb618`／`87ac751`／
+  `f25451d` 四筆 DiveKit 版號回填：v1.28.2（節點4c 查證批次）／v1.28.3
+  （揭露批次）／v1.29.0（結構整併批次，MINOR——新增 public API
+  `AlgorithmConstants.gaugeLockHours`／`otuDailyResetHours`，零行為變更）／
+  **v1.29.1**（PATCH——移除 `DecoCalculator.simulateAscentTime()` 裡從未
+  生效的「每站最短停留 60 秒」宣稱與 knob，`minStationSec` 是區域 `let`
+  從不對外，介面無影響；測試 408/0/0，-1 是移除鎖定該常數的測試，常數已
+  不存在；差分閘門逐位元完全相同）。
+  四筆版號回填前三筆為總指揮代改、本 session 驗證後 push；**v1.29.1 這筆
+  改由本 session 自己動手**（對方直接交代位置與內容，非代改後要求驗證）。
+  每次皆先跑兩支閘門（`check_doc_version_sync`／`check_version_lock`）確認
+  Logbook 那一側全綠再 push——**只改 `CLAUDE.md:13` 這一行，不需要改依賴
+  宣告**（本 repo 是 SPM local path 引用，實際吃 HEAD）。
   🔴 **`GasMix.mod()` 破壞性變更——本批「刻意沒做」，待 PM 裁示**：總指揮
   說明移除兩個靜默預設參數是破壞性 public API 變更，本批的逐位元驗收方法
   驗不到介面變更，混進來會讓「逐位元相同⇒本批安全」的結論失效，因此連同
@@ -47,7 +51,7 @@
   GasMixTests.swift:33`／`:60` 現在不會壞，也還不用改**；真的要動時對方
   會先發完整派工單。下一個 session 若看到這兩個測試無故編不過，先查有沒有
   漏看新派工單，不要自己亂猜。
-- ✅ **已確認 push，`HEAD == origin/main == 87ac751`**（`git rev-parse HEAD
+- ✅ **已確認 push，`HEAD == origin/main == f25451d`**（`git rev-parse HEAD
   origin/main` 實測一致）。
 - Remote 為 `github.com/kwh66tw-art/JoyDive.git`（repo 名是 **JoyDive**，不是
   JD2-Logbook）。三 App 中本 repo 是少數有 remote 的 ⇒ **任何文件都不得寫入
@@ -55,17 +59,18 @@
 
 ### 共用層版本
 
-- DiveKit：tag **v1.29.0**（2026-09-13 回填三次）——v1.28.2（節點4c 查證
-  批次，comment-only）→ v1.28.3（揭露批次，comment-only）→ **v1.29.0**
-  （結構整併批次，**MINOR**：新增 public API
+- DiveKit：tag **v1.29.1**（2026-09-13 回填四次）——v1.28.2（節點4c 查證
+  批次，comment-only）→ v1.28.3（揭露批次，comment-only）→ v1.29.0
+  （結構整併批次，MINOR：新增 public API
   `AlgorithmConstants.gaugeLockHours`／`otuDailyResetHours`，零行為變更；
-  差分閘門 `verify_against.sh v1.28.3`——74 剖面 × 原生＋1Hz 雙網格——GF
-  逐 tick 完全相同、穩態 REC 52/52 與 SYNTH 22/22 零差異、狀態機分岔 0 個
-  tick；測試 409 passed／0 failed／0 skipped，+2 為新增守門測試，既有
-  測試零改動）。三 App 皆 SPM local path 引用、實際吃 HEAD，**依賴宣告
-  不用動**，只有 `CLAUDE.md:13` 的版號宣稱字串需回填，否則
-  `check_doc_version_sync`／`check_version_lock` 會紅（三次都已跑過兩支
-  腳本確認皆綠，見 commit `408fb60`／`f8cb618`／`87ac751`）。
+  差分閘門逐位元完全相同，測試 409/0/0）→ **v1.29.1**（PATCH：移除
+  `DecoCalculator.simulateAscentTime()` 從未生效的「每站最短停留 60 秒」
+  knob，介面無變化；測試 408/0/0，差分閘門逐位元完全相同）。三 App 皆
+  SPM local path 引用、實際吃 HEAD，**依賴宣告不用動**，只有
+  `CLAUDE.md:13` 的版號宣稱字串需回填，否則
+  `check_doc_version_sync`／`check_version_lock` 會紅（每次都已跑過兩支
+  腳本確認 Logbook 那一側全綠，見 commit `408fb60`／`f8cb618`／`87ac751`／
+  `f25451d`）。
 - DiveImportKit：tag **v0.7.1**（`git describe` = `v0.7.1-1-g6b33e2d`，未變）。
 - 兩者與 `../_JD2-family/F-02-COMPAT_MATRIX.md` 一致；本 repo `CLAUDE.md`
   寫的 v1.28.2／v0.7.1 也一致。兩個 Kit 工作區皆乾淨。
