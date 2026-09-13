@@ -28,10 +28,14 @@
 ### 工作區
 
 - `git status --porcelain` **乾淨**（無未 commit 變更）。
-- 本地 HEAD：`c23b9e1 docs: ARCHITECTURE.md 補修兩處漏網的過時敘述（總指揮驗收發現）`
+- 本地 HEAD：`408fb60 docs: DiveKit 引用版本回填 v1.28.1 → v1.28.2`
   （2026-09-13 更新；中間經過 `2039378`／`70853a8`／`0a4d77e` 全盤複查修正／
-  `c23b9e1` 家族總指揮補修 ARCHITECTURE.md 剩餘漏網處）。
-- ✅ **已確認 push，`HEAD == origin/main == c23b9e1`**（`git rev-parse HEAD
+  `c23b9e1` 家族總指揮補修 ARCHITECTURE.md 剩餘漏網處／`290283e` HANDOFF 回填／
+  `408fb60` 家族層打 DiveKit v1.28.2（節點 4c 查證批次，comment-only，
+  `Sources/` 逐字未變，407/0/0 不變）後回填 `CLAUDE.md:13` 版號宣稱，
+  總指揮代改、由本 session 驗證後 push——**只改這一行，不需要改依賴宣告**
+  （本 repo 是 SPM local path 引用，實際吃 HEAD）。
+- ✅ **已確認 push，`HEAD == origin/main == 408fb60`**（`git rev-parse HEAD
   origin/main` 實測一致）。
 - Remote 為 `github.com/kwh66tw-art/JoyDive.git`（repo 名是 **JoyDive**，不是
   JD2-Logbook）。三 App 中本 repo 是少數有 remote 的 ⇒ **任何文件都不得寫入
@@ -39,11 +43,16 @@
 
 ### 共用層版本
 
-- DiveKit：tag **v1.28.1**（`git describe` = `v1.28.1-1-ge8c9925`，HEAD 比 tag
-  多 1 個 commit，那個 commit 就是「打 tag ＋ 矩陣回填」的 docs commit 本身）。
-- DiveImportKit：tag **v0.7.1**（`git describe` = `v0.7.1-1-g6b33e2d`，同上）。
-- 兩者與 `../_JD2-family/F-02-COMPAT_MATRIX.md` 第 5 行一致；本 repo `CLAUDE.md`
-  寫的 v1.28.1／v0.7.1 也一致。兩個 Kit 工作區皆乾淨。
+- DiveKit：tag **v1.28.2**（2026-09-13 回填；`git describe` = `v1.28.2-1-gf5af18d`）
+  ——節點 4c 查證批次，**comment-only**，`Sources/` 逐字未變，407 passed／
+  0 failed／0 skipped 不變（swift-testing 367／63 suites ＋ XCTest 40／0）。
+  三 App 皆 SPM local path 引用、實際吃 HEAD，**依賴宣告不用動**，只有
+  `CLAUDE.md:13` 的版號宣稱字串需回填，否則 `check_doc_version_sync`／
+  `check_version_lock` 會紅（本輪已跑過兩支腳本確認皆綠，見 commit
+  `408fb60`）。
+- DiveImportKit：tag **v0.7.1**（`git describe` = `v0.7.1-1-g6b33e2d`，未變）。
+- 兩者與 `../_JD2-family/F-02-COMPAT_MATRIX.md` 一致；本 repo `CLAUDE.md`
+  寫的 v1.28.2／v0.7.1 也一致。兩個 Kit 工作區皆乾淨。
 - 引用方式：SPM local path（`../../_JD2-family/DiveKit`／`DiveImportKit`），
   **本 repo 無任何演算法／解析器原始碼拷貝**。
 
@@ -268,10 +277,10 @@ cat HANDOFF.md CLAUDE.md
 cat ../_JD2-family/HANDOFF.md
 # 2) 同步狀態（本 repo 有 remote，push 前要問）
 git status --porcelain && git log --oneline origin/main..HEAD
-# 3) Kit 版本對照（應為 v1.28.1 / v0.7.1）
+# 3) Kit 版本對照（應為 v1.28.2 / v0.7.1，2026-09-13 回填後）
 git -C ../_JD2-family/DiveKit describe --tags
 git -C ../_JD2-family/DiveImportKit describe --tags
-grep -n "v1.28.1" ../_JD2-family/F-02-COMPAT_MATRIX.md | head -3
+grep -n "v1.28.2" ../_JD2-family/F-02-COMPAT_MATRIX.md | head -3
 # 4) 開場自檢 + 測試基準（預期 146/1/1 或 147/0/1）
 bash ../_JD2-family/scripts/preflight.sh
 bash ../_JD2-family/scripts/run_tests.sh logbook
