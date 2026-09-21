@@ -104,6 +104,7 @@ final class DiveReplayChainAdoptionTests: XCTestCase {
 
         let target = makeDive(at: Date(timeIntervalSince1970: 1_700_000_000))
         let sameDay = makeDive(at: target.dateTime.addingTimeInterval(-4 * 3600))
+        // ⚠️ 這個 48 是「兩天前」的時間算術，與 `algorithmLockHours` 無關（2026-09-21 註）。
         let twoDaysAgo = makeDive(at: target.dateTime.addingTimeInterval(-48 * 3600))
         let ancient = makeDive(at: target.dateTime.addingTimeInterval(-200 * 3600))
         let later = makeDive(at: target.dateTime.addingTimeInterval(3 * 3600))
