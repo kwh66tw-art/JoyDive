@@ -4148,6 +4148,17 @@
         }
       }
     },
+    "Ascent rate stayed above %1$.0f m/min (%2$.1f ft/min) for %3$d seconds.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ascent rate stayed above %1$.0f m/min (%2$.1f ft/min) for %3$d seconds."
+          }
+        }
+      }
+    },
     "Average Depth": {
       "extractionState": "stale",
       "localizations": {
@@ -25529,6 +25540,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "水面狀況"
+          }
+        }
+      }
+    },
+    "Sustained Ascent Rate Alert": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sustained Ascent Rate Alert"
           }
         }
       }

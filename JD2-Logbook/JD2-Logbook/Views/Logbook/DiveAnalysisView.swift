@@ -91,7 +91,7 @@ struct DiveAnalysisView: View {
         return replayPoints.first { $0.sampleIndex == idx }
     }
 
-    /// v1.2 #3：目前選取的樣本點附近命中的警示事件（可能 0～2 筆：上升過速／強制安全停留）
+    /// v1.2 #3：目前選取的樣本點附近命中的警示事件（可能 0～2 筆：超速 5 秒／超速持續 10 秒）
     /// showWarningEvents=false 時強制回傳空陣列，UI 端不需要另外判斷開關。
     private var selectedWarnings: [DiveReplayEngine.ReplayWarning] {
         guard showWarningEvents, let idx = selectedIndex else { return [] }
@@ -330,7 +330,7 @@ struct DiveAnalysisView: View {
                                 // 放開後保留選取（不自動收回），讓使用者能停下來仔細看
                                 // callout／組織艙圖；下次點選其他時間點時才會更新。
                             )
-                        // v1.2 #3：曲線警示標示（紅點＝上升過速、橘點＝強制安全停留）——
+                        // v1.2 #3：曲線警示標示（紅點＝超速 5 秒、橘點＝超速持續 10 秒）——
                         // 暫時關閉（showWarningEvents，見型別開頭註解），同樣要用 plotFrame
                         // 校正，否則會踩到跟選取線一樣的偏移 bug，重新開放時保留這段校正邏輯。
                         if showWarningEvents {
@@ -513,21 +513,21 @@ struct DiveAnalysisView: View {
     private func warningIcon(_ kind: DiveReplayEngine.ReplayWarningKind) -> String {
         switch kind {
         case .ascentRateExceeded:  return "arrow.up"
-        case .mandatorySafetyStop: return "hourglass"
+        case .ascentSustained:     return "hourglass"
         }
     }
 
     private func warningColor(_ kind: DiveReplayEngine.ReplayWarningKind) -> Color {
         switch kind {
         case .ascentRateExceeded:  return .red
-        case .mandatorySafetyStop: return .orange
+        case .ascentSustained:     return .orange
         }
     }
 
     private func warningTitle(_ kind: DiveReplayEngine.ReplayWarningKind) -> String {
         switch kind {
         case .ascentRateExceeded:  return languageManager.localized("Ascent Rate Alert")
-        case .mandatorySafetyStop: return languageManager.localized("Mandatory Safety Stop")
+        case .ascentSustained:     return languageManager.localized("Sustained Ascent Rate Alert")
         }
     }
 
@@ -539,8 +539,11 @@ struct DiveAnalysisView: View {
         switch kind {
         case .ascentRateExceeded:
             return String(format: languageManager.localized("Ascent rate exceeded %1$.0f m/min (%2$.1f ft/min)."), locale: languageManager.locale, mpm, fpm)
-        case .mandatorySafetyStop:
-            return String(format: languageManager.localized("Safety stop became mandatory: ascent rate stayed above %1$.0f m/min (%2$.1f ft/min) for %3$d seconds."), locale: languageManager.locale, mpm, fpm, AlgorithmConstants.ascentSustainedWarnSec)
+        case .ascentSustained:
+            // 2026-09-21：原文案寫「Safety stop became mandatory: …」，描述的是已移除的
+            // 強制停留機制（見 _JD2-family/decisions/2026-09-21_移除強制安全停留加時-模型不相容.md）。
+            // 這個事件實際上只是「超速持續 ascentSustainedWarnSec 秒」，文案照實改寫。
+            return String(format: languageManager.localized("Ascent rate stayed above %1$.0f m/min (%2$.1f ft/min) for %3$d seconds."), locale: languageManager.locale, mpm, fpm, AlgorithmConstants.ascentSustainedWarnSec)
         }
     }
 
