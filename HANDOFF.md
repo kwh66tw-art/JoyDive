@@ -55,11 +55,16 @@ stayed above %1$.0f m/min (%2$.1f ft/min) for %3$d seconds.」（照實描述，
 **使用者今天看不到這次文案改寫**，純粹是跟上 Kit 介面改名、避免程式碼裡
 留著描述已不存在機制的文字。
 
-### 測試現況（家族層 2026-09-22 於同一 HEAD `6b45791` 驗證，本 session 另跑一次確認中）
+### 測試現況（家族層 2026-09-22 記錄 129/18/1；本 session 2026-09-25 重跑確認 130/17/1）
 
-- **129 passed／18 failed／1 skipped**（`../_JD2-family/HANDOFF.md` §0b 記錄，
-  與本 repo 同一 HEAD）。
-- 🔴 **18 個 failed 全是既有問題，非本輪回歸**：
+- 家族層（`../_JD2-family/HANDOFF.md` §0b）2026-09-22 於同一 HEAD `6b45791`
+  記錄 **129 passed／18 failed／1 skipped**；本 session 用
+  `bash ../_JD2-family/scripts/run_tests.sh logbook` 在同一個 HEAD 重跑一次，
+  結果 **130 passed／17 failed／1 skipped**——**總數同為 148，差 1**，與下方
+  「既有 flaky」的描述一致（牆鐘效能測試這次沒超標，通過了），**不是新回歸
+  也不是測試消失，是同一組已知不穩定測試的其中一次波動**。兩次跑法、
+  跑者、腳本皆相同，僅執行時機不同。
+- 🔴 **失敗全是既有問題，非本輪回歸**：
   - **17 支 `ImportCoordinatorTests` SIGABRT**：根因是
     `ImportCoordinator.__deallocating_deinit` 在
     `swift_task_deinitOnExecutorMainActorBackDeploy` 上崩潰
@@ -117,10 +122,9 @@ stayed above %1$.0f m/min (%2$.1f ft/min) for %3$d seconds.」（照實描述，
 
 1. **push 決策**：向 PM 確認是否現在把領先的 15 個 commit push 到
    `origin/main`（本 repo 有 remote，push 是對外動作，本輪未執行）。
-2. **確認本 session 背景測試結果**：本輪已啟動
-   `bash ../_JD2-family/scripts/run_tests.sh logbook`（背景執行中，跑
-   iOS 全測試套件較久），完成後核對是否仍是 129/18/1，若數字不同要
-   查為什麼（機器差異？新回歸？），不要假設一定跟家族層記錄一樣。
+2. ✅（2026-09-25）**背景測試已跑完並確認**：130/17/1，與家族層 129/18/1
+   總數一致（差 1 為既有 flaky 效能測試波動），詳見上方「測試現況」。
+   **不需要再重跑這輪確認**，除非有新程式碼變動。
 3. **語系第三輪＋ `cebeb59` 新增 key**：合併處理，`bash
    ../_JD2-family/scripts/check_localization.sh JD2-Logbook` 先確認使用
    鍵皆存在，再產 CSV 交母語審閱；術語先查
@@ -189,7 +193,8 @@ git status --porcelain && git log --oneline origin/main..HEAD
 # 3) Kit 版本對照（應為 v5.2.0 / v0.7.1）
 git -C ../_JD2-family/DiveKit describe --tags
 git -C ../_JD2-family/DiveImportKit describe --tags
-# 4) 開場自檢 + 測試基準（預期 129/18/1，18 個既有 SIGABRT+flaky，非回歸）
+# 4) 開場自檢 + 測試基準（預期總數 148，failed 落在 17-18 之間屬既有
+#    SIGABRT+flaky 波動，不是回歸；passed+failed 應恆為 147，skipped 恆 1）
 bash ../_JD2-family/scripts/preflight.sh
 bash ../_JD2-family/scripts/run_tests.sh logbook
 ```
