@@ -400,7 +400,7 @@ struct DiveAnalysisView: View {
             calloutCell(
                 label: Text("No Deco"),
                 value: point.map { ndlText($0.ndlSeconds) } ?? "—",
-                accent: (point?.ndlSeconds ?? .max) < AlgorithmConstants.ndlWarnMinutes * 60 ? .warning : .neutral
+                accent: (point?.ndlSeconds ?? .max) <= AlgorithmConstants.ndlWarnSeconds ? .warning : .neutral   // 2026-09-27：與引擎同一規則（秒、≤、300）
             )
         }
     }
