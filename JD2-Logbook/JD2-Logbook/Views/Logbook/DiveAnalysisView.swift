@@ -519,8 +519,10 @@ struct DiveAnalysisView: View {
 
     private func warningColor(_ kind: DiveReplayEngine.ReplayWarningKind) -> Color {
         switch kind {
-        case .ascentRateExceeded:  return .red
-        case .ascentSustained:     return .orange
+        // 2026-09-29（PM，上升速率改制；_JD2-family/decisions/2026-09-29_上升速率改制-18漏桶.md）：
+        //   `.ascentSustained` 改為「> 18 m/min 累積 5 s」＝兩者中較嚴重者 ⇒ 紅；`.ascentRateExceeded`（> 9）⇒ 橘。原本兩色相反。
+        case .ascentRateExceeded:  return .orange
+        case .ascentSustained:     return .red
         }
     }
 
@@ -542,8 +544,10 @@ struct DiveAnalysisView: View {
         case .ascentSustained:
             // 2026-09-21：原文案寫「Safety stop became mandatory: …」，描述的是已移除的
             // 強制停留機制（見 _JD2-family/decisions/2026-09-21_移除強制安全停留加時-模型不相容.md）。
-            // 這個事件實際上只是「超速持續 ascentSustainedWarnSec 秒」，文案照實改寫。
-            return String(format: languageManager.localized("Ascent rate stayed above %1$.0f m/min (%2$.1f ft/min) for %3$d seconds."), locale: languageManager.locale, mpm, fpm, AlgorithmConstants.ascentSustainedWarnSec)
+            // 2026-09-29（上升速率改制）：條件改為「> 18 m/min（`maxAscentRateHardMpm`）累積 5 s」——
+            //   同一句型（翻譯鍵不變），代入值由 9 m/min／10 s 改為 18 m/min／5 s。
+            let hardMpm = AlgorithmConstants.maxAscentRateHardMpm
+            return String(format: languageManager.localized("Ascent rate stayed above %1$.0f m/min (%2$.1f ft/min) for %3$d seconds."), locale: languageManager.locale, hardMpm, hardMpm * 3.28084, AlgorithmConstants.ascentWarnConsecutiveSec)
         }
     }
 
