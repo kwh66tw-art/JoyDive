@@ -68,6 +68,14 @@ final class ImportCoordinator {
         self.database = database
     }
 
+    // 🔴 2026-10-03：**刻意寫一個空的 nonisolated deinit，不要刪**。
+    // 不寫時，Xcode 27／Swift 6.4 在本專案設定（`SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`、部署目標 iOS 17）下
+    // 為本類別產生「主執行緒隔離 deinit」（向下相容墊片 `swift_task_deinitOnExecutorMainActorBackDeploy`），
+    // 實例在同步的 XCTest 方法內釋放時於 Swift 併發執行階段內 SIGABRT（malloc：釋放未配置指標）——
+    // `ImportCoordinatorTests` 17–18 支「0 秒失敗」即此（崩潰堆疊見 _JD2-family HANDOFF 2026-10-03）。
+    // 本類別沒有需要清理的資源 ⇒ 不隔離的空 deinit 語意完全相同，並避開該路徑（正式版關閉匯入精靈時同一路徑）。
+    nonisolated deinit {}
+
     // MARK: - 主要匯入流程
 
     /// 匯入單個檔案
