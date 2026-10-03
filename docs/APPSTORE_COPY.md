@@ -52,7 +52,9 @@ Traditional Chinese, Simplified Chinese, English, Japanese, Korean, French, Germ
 
 ## Keywords (100 characters, comma-separated, no words already in App Name)
 
-dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving
+logbook,scuba,diving,divelog,diary,nitrox,freediving,UDDF,import,record,tracker,profile,deco,depth
+
+> ✅ **v1.3（2026-10-03，PM 裁示）**：移除品牌名（2.3.7＋艦隊紅線）；台灣／日本在地化，其他 storefront 用英文組。依據 `docs/KEYWORDS_NEXT_DRAFT.md`。舊組（v1.2）：`dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`
 
 > ⚠️ One keyword set per storefront. Use English for the broadest reach.
 > ⚠️ 95 characters (no spaces after commas). App Store limit is 100.
@@ -66,6 +68,15 @@ dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive comp
 >   priority for next version**: redesign keywords around "潛水日誌"/"dive log" core
 >   intent, move brand-compatibility mentions into the Description body instead of
 >   burning Keywords budget on them. See `V1_RELEASE_CHECKLIST.md` 下一版重點工作.
+
+---
+
+## What's New — v1.3（草稿，PM 2026-10-03 同意方向）
+
+Improved accuracy of decompression estimates. Repetitive dives now include residual nitrogen from earlier dives in the same series, so no-decompression times may be shorter than before. Other bug fixes.
+
+> ⚠️ 兩件事**並列、不寫因果**：單筆潛水 NDL 變短主因是係數改正（v1.2 實為 ZHL-16B a 係數），不是連續潛水——
+>   見 `_JD2-family/decisions/2026-10-03_App-lb重放輸出差異回顧-v1.2對現行.md`。不得改寫成「因為連續潛水所以 NDL 變短」。
 
 ---
 
@@ -84,7 +95,9 @@ New in this update:
 | Field | Value | Notes |
 |-------|-------|-------|
 | App Name | JoyDive² | English only |
-| Subtitle | Log Every Dive, Every Story | Optional |
+| Subtitle | 潛水日誌・每一潛都記下
+
+> ✏️ v1.3 草稿（PM 2026-10-03：台灣在地化）——文案待 PM 定稿；v1.2 為英文 "Log Every Dive, Every Story" | Optional |
 | Description | See above | |
 | Keywords | See above | 100 chars max |
 | Support URL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | Required |
@@ -123,7 +136,9 @@ JoyDive²
 
 ## 副標題（30 字以內）
 
-Log Every Dive, Every Story
+ダイビングログを、すべての潜水に
+
+> ✏️ v1.3 草稿（PM 2026-10-03：日本在地化）——文案待 PM 定稿；v1.2 は英語 "Log Every Dive, Every Story"
 
 ---
 
@@ -165,7 +180,9 @@ JoyDive²，陪你從第一次下水到進階技術潛水的潛水日誌。
 
 ## 關鍵字（100 字以內，逗號分隔）
 
-dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving
+潛水日誌,潛水紀錄,潛水記錄,水肺潛水,自由潛水,潛水,日誌,紀錄,高氧,潛水電腦,潛水錶,深度,剖面,減壓,logbook,scuba,divelog
+
+> ✅ **v1.3（2026-10-03，PM 裁示）**：移除品牌名（2.3.7＋艦隊紅線）；台灣／日本在地化，其他 storefront 用英文組。依據 `docs/KEYWORDS_NEXT_DRAFT.md`。舊組（v1.2）：`dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`
 
 > ⚠️ 每個地區只能填一組關鍵字，建議用英文覆蓋最廣。
 > ⚠️ 95 字元（逗號後無空格）。App Store 上限 100 字元。
@@ -177,6 +194,12 @@ dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive comp
 >   核心意圖詞完全沒覆蓋到。**下次改版首要任務**：以「潛水日誌／dive log」為主軸
 >   重新設計關鍵字，品牌相容性留給 Description 內文提，不要佔 Keywords 版位。
 >   詳見 `V1_RELEASE_CHECKLIST.md`「下一版重點工作」。
+
+---
+
+## 版本說明（What's New）— v1.3（草稿）
+
+提升減壓估算的準確度。連續潛水現在會計入同一系列前幾支潛水的殘餘氮氣，因此免減壓時間可能比先前版本短。其他錯誤修正。
 
 ---
 
@@ -259,7 +282,9 @@ GPS座標から地図上へ自動的にピンをドロップ。これまで訪�
 
 ## キーワード（最大100文字、カンマ区切り、App名にある単語は除外）
 
-dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving
+ダイビングログ,ダイブログ,ログブック,スキューバ,ダイビング,潜水,記録,ナイトロックス,フリーダイビング,ダイブコンピュータ,水深,減圧,logbook,scuba
+
+> ✅ **v1.3（2026-10-03，PM 裁示）**：移除品牌名（2.3.7＋艦隊紅線）；台灣／日本在地化，其他 storefront 用英文組。依據 `docs/KEYWORDS_NEXT_DRAFT.md`。舊組（v1.2）：`dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`
 
 > ⚠️ キーワードはストアのロケールごとに1セットのみ登録可能です。最も広くカバーできるよう英語での登録を推奨します。
 > ⚠️ 計95文字（カンマの後にスペースを入れない）。App Storeの制限は100文字です。
@@ -272,6 +297,12 @@ dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive comp
 >   **次バージョンの最優先課題**：「潜水日誌／dive log」を軸にキーワードを再設計し、
 >   ブランド互換性への言及はDescription本文に移す。詳細は
 >   `V1_RELEASE_CHECKLIST.md`「下一版重點工作」を参照。
+
+---
+
+## 新機能（What's New）— v1.3（草案）
+
+減圧の推定精度を改善しました。反復潜水では同じシリーズ内の以前の潜水による残留窒素を計算に含めるようになったため、無減圧時間が以前より短くなる場合があります。そのほかの不具合を修正しました。
 
 ---
 

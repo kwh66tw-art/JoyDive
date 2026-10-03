@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  2026-10-03：App 本身的 Privacy Manifest（v1.2 只有 AdMob SDK 自帶的兩份）。
+  · 追蹤：否——與 ASC 隱私問卷一致（v1.2 5.1.2(i) 修正後：Tracking = No，見 CHANGELOG 2026-07-28）。
+  · 蒐集資料：App 本身無（定位只在本機、無網路請求）；AdMob 的資料由其 SDK 的 manifest 申報。
+  · Required Reason API：僅 UserDefaults.standard（無 App Group、無檔案時間戳／開機時間／磁碟空間 API；兩個 Kit 皆未使用）
+    ⇒ CA92.1（只存取本 App 自己寫入的資料）。送審前對 Apple「Describing use of required reason API」頁面再核一次代碼。
+-->
+<plist version="1.0">
+<dict>
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

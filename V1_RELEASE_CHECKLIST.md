@@ -153,7 +153,7 @@
   欄位需要各自依語言搜尋習慣重新規劃，不能像這次一樣三語共用同一組
   英文詞。
 
-- **匯入結果動態數量字串的 Vary-by-Plural 修復**（`ImportWizardView.swift`
+- ✅ **（2026-10-03 查證：已於 2026-09-02 `efe4e42` R-050 完成——改為語言中立標籤句「Dives imported: %lld」，18 語同步；本條為過期紀錄）** **匯入結果動態數量字串的 Vary-by-Plural 修復**（`ImportWizardView.swift`
   `"%lld dive%@ imported"`／`"%lld skipped (duplicates)"`）——**這是現在就
   能看到的顯示 bug**：18 種語言裡 count≠1 時畫面會混進一個字面英文 "s"
   （手動判斷單複數後綴的寫法對非英語式複數規則完全沒有對應機制），不是
