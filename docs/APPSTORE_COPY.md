@@ -97,7 +97,7 @@ New in this update:
 | App Name | JoyDive² | English only |
 | Subtitle | 潛水日誌・每一潛都記下
 
-> ✏️ v1.3 草稿（PM 2026-10-03：台灣在地化）——文案待 PM 定稿；v1.2 為英文 "Log Every Dive, Every Story" | Optional |
+> ✅ v1.3 定稿（PM 2026-10-03：台灣在地化）；v1.2 為英文 "Log Every Dive, Every Story" | Optional |
 | Description | See above | |
 | Keywords | See above | 100 chars max |
 | Support URL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | Required |
@@ -138,7 +138,7 @@ JoyDive²
 
 ダイビングログを、すべての潜水に
 
-> ✏️ v1.3 草稿（PM 2026-10-03：日本在地化）——文案待 PM 定稿；v1.2 は英語 "Log Every Dive, Every Story"
+> ✅ v1.3 定稿（PM 2026-10-03：日本在地化）；v1.2 は英語 "Log Every Dive, Every Story"
 
 ---
 
