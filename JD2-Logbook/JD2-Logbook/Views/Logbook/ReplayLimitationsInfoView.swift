@@ -94,6 +94,11 @@ struct ReplayLimitationsInfoView: View {
                 // （已有 18 語翻譯），不另造新句——同一件事兩種說法會讓翻譯校對
                 // 與術語一致性檢查各自維護一份。
                 Section(header: Text(verbatim: languageManager.localized("Always applies"))) {
+                    // 2026-10-03（PM 定稿；放在這一頁＝PM 指定的 ⓘ 說明頁）：建模抉擇揭露（F-20 節點 1）。
+                    // 句尾與 App-u 不同：本 App 沒有保守度設定，App-u 原句的「or a more conservative setting」在這裡不成立。
+                    // 翻譯：PM 定稿英／繁中／日（＋en-GB）；其餘 14 語待翻，缺翻譯時退回英文原文。
+                    row(text: languageManager.localized("The Bühlmann decompression model used by this app tracks residual nitrogen between dives, but it does not add extra conservatism for repetitive or multi-day diving. Follow the more conservative of your dive computer and this app."),
+                        isActive: false)
                     row(text: languageManager.localized("Replay is simulated using the conservative GF High ceiling baseline, so the ceiling shown may be more optimistic (shallower) than what your dive computer displayed at the time."),
                         isActive: false)
                     row(text: languageManager.localized("This app can't read the original device's dive-series index, so replay-anomaly detection here has narrower coverage than in ultra or immersion."),
