@@ -92,7 +92,7 @@ P0-1 → P0-2 → P0-3 → P1-1～P1-5 → 翻譯 → 送審收尾。每項完�
 | P0-4 What's New 措辭 | ⏸ PM 定稿 | — | 三語草稿已在 `APPSTORE_COPY.md` |
 | P1-1 定位權限說明在地化 | ✅ | `09ac3f5` | 產物 `en／zh-Hant／ja／en-GB.lproj/InfoPlist.strings` 皆有值（plutil 讀取） |
 | P1-2 死碼 | ✅ | `09ac3f5` | `callers.sh` 生產 0／測試 0；檔頭無保留理由 |
-| P1-3 效能測試 | ✅ | `09ac3f5` | 改量執行緒 CPU 時間、門檻不變；連跑 3 次 40/0/0 |
+| P1-3 效能測試 | 🟡 未根治 | `09ac3f5` | 改量執行緒 CPU 時間、門檻不變；單類連跑 3 次 40/0/0，**但 10/05 全套 149/1/1：`testPerformance_SuuntoJSON_Repeated` CPU 時間 116.1 ms > 100 ms**——不是牆鐘問題。待 PM：改採 D5 另一選項（三支效能測試移出閘門套件），門檻仍不改 |
 | P1-4 Swift 6 警告 | ✅ | `a560f1f` | 乾淨重建：App 層警告 3 → 0（DiveKit 內 `gf` 棄用警告屬凍結中的 Kit，未動） |
 | P1-5 catalog 清理 | ✅ | `fd9b1cf` | 移除 50 個未使用鍵、補 `Developer Tools`；`check_localization` ❌→通過；全套 **150/0/1** |
 | D6 GDPR／UMP | ✅ 已查證 | `fd9b1cf` | `docs/V1_3_D6_D7_RESEARCH.md`：非個人化廣告仍需同意；建議下一版做（B），待 PM |
