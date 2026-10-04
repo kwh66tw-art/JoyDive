@@ -45,7 +45,9 @@ struct ReplayLimitationsInfoView: View {
         var textKey: String {
             switch self {
             case .technicalDive:
-                return "Technical dive: replay models a single gas for the whole dive, so multi-gas and rebreather profiles are excluded."
+                // v1.3 P0-2（PM 2026-10-04）：原句只說「多氣體與循環呼吸器」不支援——**單一氣體 trimix 也被拒算**
+                // （DiveKit `DiveReplay.swift:591`，trimix 已裁定產品範圍外），舊句會讓人以為單一氣體 trimix 可用。
+                return "Trimix or technical dive: trimix, multi-gas and rebreather dives are not supported."
             case .unknownGasMix:
                 return "The gas mix could not be determined from the imported record."
             case .overlappingDives:
@@ -94,6 +96,9 @@ struct ReplayLimitationsInfoView: View {
                 // （已有 18 語翻譯），不另造新句——同一件事兩種說法會讓翻譯校對
                 // 與術語一致性檢查各自維護一份。
                 Section(header: Text(verbatim: languageManager.localized("Always applies"))) {
+                    // v1.3 P0-2（PM 2026-10-04：減壓分析「有限支援」要在 UI 說明）：支援範圍——不論本次是否異常都成立，放第一條。
+                    row(text: languageManager.localized("Tissue loading and no-deco estimates support single-gas air and nitrox dives only."),
+                        isActive: false)
                     // 2026-10-03（PM 定稿；放在這一頁＝PM 指定的 ⓘ 說明頁）：建模抉擇揭露（F-20 節點 1）。
                     // 句尾與 App-u 不同：本 App 沒有保守度設定，App-u 原句的「or a more conservative setting」在這裡不成立。
                     // 翻譯：PM 定稿英／繁中／日（＋en-GB）；其餘 14 語待翻，缺翻譯時退回英文原文。

@@ -22,7 +22,7 @@ Start logging your dives by hand from day one. Got a dive computer? Import every
 
 ## Description (4000 characters max)
 
-JoyDive² is the dive log that grows with you — from your very first dive to advanced technical diving.
+JoyDive² is the dive log that grows with you — from your very first dive to your most advanced ones.
 
 **No Dive Computer? No Problem.**
 Start logging right away. Enter depth, dive time, water temperature, gas mix, GPS coordinates, and notes by hand. JoyDive² is built for divers at every stage — you don't need a dive computer to keep a proper logbook.
@@ -34,7 +34,7 @@ Supports major brands including UDDF, Subsurface, Suunto, Garmin, Shearwater, Se
 Each entry can hold depth profile, max & average depth, dive time, gas mix (Air / Nitrox / Trimix), water temperature and conditions, equipment (wetsuit, weights, cylinder), GPS coordinates, and notes. A clean list view and calendar make it easy to browse your full dive history.
 
 **Interactive Profile, With Tissue Loading (Limited Support)**
-Tap and drag anywhere on the dive profile chart to inspect that exact moment — depth, elapsed time, and an estimated tissue loading level from the Bühlmann ZHL-16C model. A clearer picture of every dive, not a replacement for your dive computer. Tissue loading isn't available for technical (multi-gas) dives or logs with discontinuous imported data — the depth profile itself always displays normally.
+Tap and drag anywhere on the dive profile chart to inspect that exact moment — depth, elapsed time, and an estimated tissue loading level from the Bühlmann ZHL-16C model. A clearer picture of every dive, not a replacement for your dive computer. Tissue loading supports single-gas air and nitrox dives; it isn't available for trimix, multi-gas or rebreather dives, or for logs with discontinuous imported data — the depth profile itself always displays normally.
 
 **Dive Site Map**
 GPS coordinates are automatically plotted on a map so you can see every dive site you've visited. Cluster display keeps the map readable no matter how many dives you've logged.
@@ -150,7 +150,7 @@ JoyDive²
 
 ## 描述（4000 字以內）
 
-JoyDive²，陪你從第一次下水到進階技術潛水的潛水日誌。
+JoyDive²，陪你從第一次下水到每一次進階潛水的潛水日誌。
 
 **沒有電腦錶？一樣可以開始記錄。**
 直接手動建立潛水日誌。輸入深度、潛水時間、水溫、氣體混合、GPS 座標與備註，從第一次下水就開始累積你的潛水歷史。JoyDive² 適合每個階段的潛水員，不需要電腦錶也能擁有一本完整的潛水記錄。
@@ -161,8 +161,8 @@ JoyDive²，陪你從第一次下水到進階技術潛水的潛水日誌。
 **完整的潛水資訊一目了然**
 每筆記錄可保存深度剖面、最大/平均深度、潛水時間、氣體混合（空氣 / Nitrox / Trimix）、水溫與環境條件、裝備（防寒衣、配重、氣瓶），以及 GPS 座標與備註。清晰的列表與日曆視圖，讓你快速回顧每一次下水。
 
-**互動式剖面圖，附組織艙飽和度**
-直接在潛水剖面圖上點選拖曳，即可查看任一時刻的深度、經過時間，以及以 Bühlmann ZHL-16C 演算法估算的組織艙飽和度。讓你更清楚看懂整趟潛水過程——僅供參考，不能取代你的潛水電腦錶。
+**互動式剖面圖，附組織負荷（有限支援）**
+直接在潛水剖面圖上點選拖曳，即可查看任一時刻的深度、經過時間，以及以 Bühlmann ZHL-16C 演算法估算的組織負荷。讓你更清楚看懂整趟潛水過程——僅供參考，不能取代你的潛水電腦錶。組織負荷僅支援單一氣體的空氣與 Nitrox（高氧）潛水；Trimix、多氣體、封閉式循環呼吸器潛水，以及匯入資料不連續的紀錄不提供組織負荷——深度剖面本身一律正常顯示。
 
 **潛點地圖**
 自動將 GPS 座標標記在地圖上，一眼看到你去過的每一個潛點。支援聚類顯示，不論累積多少筆記錄都清晰好用。
@@ -252,7 +252,7 @@ Log Every Dive, Every Story
 
 ## 説明（最大4000文字）
 
-JoyDive²は、初めてのファンダイビングから進んだテクニカルダイビングまで、あなたの成長に寄り添うダイビングログブックアプリです。
+JoyDive²は、初めてのファンダイビングからステップアップしたダイビングまで、あなたの成長に寄り添うダイビングログブックアプリです。
 
 **ダイブコンピューターがなくても大丈夫**
 すぐにログの記録を始められます。水深、潜水時間、水温、ガスミックス、GPS座標、メモなどを手動で入力するだけ。JoyDive²はあらゆるステージのダイバー向けに設計されているため、ダイコンをお持ちでなくても本格的なログブックを作成できます。
@@ -263,8 +263,8 @@ UDDF、Subsurface、Suunto、Garmin、Shearwater、Seabearなど、主要なブ�
 **充実のダイビング情報をひと目で確認**
 各ログには、水深プロファイル、最大/平均水深、潜水時間、ガスミックス（空気 / ナイトロックス / トライミックス）、水温とコンディション、装備（ウェットスーツ、ウェイト、タンク）、GPS座標、メモを記録可能。洗練されたリスト表示とカレンダービューにより、過去のダイビング履歴をスムーズに振り返ることができます。
 
-**インタラクティブなプロファイルと組織飽和度**
-ダイブプロファイルチャート上をタップ&ドラッグするだけで、その瞬間の水深・経過時間、そしてBühlmann ZHL-16Cモデルによる推定組織飽和度を確認できます。ダイビングをより深く理解できますが、ダイブコンピューターの代わりにはなりません。
+**インタラクティブなプロファイルと組織負荷（限定サポート）**
+ダイブプロファイルチャート上をタップ&ドラッグするだけで、その瞬間の水深・経過時間、そしてBühlmann ZHL-16Cモデルによる推定組織負荷を確認できます。ダイビングをより深く理解できますが、ダイブコンピューターの代わりにはなりません。組織負荷は単一ガスの空気およびナイトロックスのダイビングに対応しています。トライミックス、マルチガス、リブリーザーのダイビング、および取り込みデータが不連続なログでは表示されません。ダイブプロファイル自体は常に通常どおり表示されます。
 
 **ダイブサイトマップ**
 GPS座標から地図上へ自動的にピンをドロップ。これまで訪れたすべてのダイブサイトを視覚的に確認できます。クラスタリング表示に対応しているため、ログの数が多くなっても地図がすっきりと見やすく保たれます。

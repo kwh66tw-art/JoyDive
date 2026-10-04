@@ -2197,6 +2197,66 @@
         }
       }
     },
+    "Tissue loading and no-deco estimates support single-gas air and nitrox dives only.": {
+      "comment": "Limitations page, 'Always applies': supported scope of the tissue loading / NDL replay (limited support disclosure).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tissue loading and no-deco estimates support single-gas air and nitrox dives only."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tissue loading and no-deco estimates support single-gas air and nitrox dives only."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組織負荷と無減圧の推定は、単一ガスの空気およびナイトロックスのダイビングのみに対応しています。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組織負荷與免減壓估算僅支援單一氣體的空氣與 Nitrox（高氧）潛水。"
+          }
+        }
+      }
+    },
+    "Trimix or technical dive: trimix, multi-gas and rebreather dives are not supported.": {
+      "comment": "Limitations page: why tissue loading is unavailable for this dive. Replaces the old 'Technical dive: replay models a single gas…' sentence (single-gas trimix is also unsupported).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix or technical dive: trimix, multi-gas and rebreather dives are not supported."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix or technical dive: trimix, multi-gas and rebreather dives are not supported."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トライミックス／テクニカルダイビング：トライミックス、マルチガス、リブリーザーのダイビングには対応していません。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix 或技術潛水：不支援 Trimix、多氣體與封閉式循環呼吸器潛水。"
+          }
+        }
+      }
+    },
     "Your dive log could not be opened": {
       "comment": "Shown instead of the app when the dive database cannot be opened (e.g. after a failed upgrade). Title.",
       "extractionState": "manual",
@@ -31611,119 +31671,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "本次潛水適用"
-          }
-        }
-      }
-    },
-    "Technical dive: replay models a single gas for the whole dive, so multi-gas and rebreather profiles are excluded.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Technischer Tauchgang: Die Wiedergabe rechnet mit einem einzigen Gas für den gesamten Tauchgang, daher sind Multigas- und Kreislaufgeräte-Profile ausgeschlossen."
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Τεχνική κατάδυση: η αναπαραγωγή υπολογίζει ένα μόνο αέριο για όλη την κατάδυση, οπότε τα προφίλ πολλαπλών αερίων και κλειστού κυκλώματος εξαιρούνται."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Technical dive: replay models a single gas for the whole dive, so multi-gas and rebreather profiles are excluded."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Technical dive: replay models a single gas for the whole dive, so multi-gas and rebreather profiles are excluded."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Inmersión técnica: la repetición calcula un solo gas para toda la inmersión, por lo que se excluyen los perfiles multigás y de recirculador."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Plongée technique : la relecture calcule un seul gaz pour toute la plongée, les profils multigaz et recycleur sont donc exclus."
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tehnički uron: reprodukcija računa s jednim plinom za cijeli uron, pa su profili s više plinova i s rebreatherom isključeni."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Penyelaman teknis: pemutaran ulang menghitung satu gas untuk seluruh penyelaman, sehingga profil multigas dan rebreather dikecualikan."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Immersione tecnica: il replay calcola un solo gas per tutta l'immersione, quindi i profili multigas e con rebreather sono esclusi."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "テクニカルダイビング：リプレイは全編を単一ガスで計算するため、マルチガスやリブリーザーのプロファイルは対象外です。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "테크니컬 다이빙: 리플레이는 전체 다이빙을 단일 가스로 계산하므로 다중 가스 및 리브리더 프로필은 제외됩니다."
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Penyelaman teknikal: tayangan semula mengira satu gas untuk keseluruhan penyelaman, jadi profil multigas dan rebreather dikecualikan."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Technische duik: de replay rekent met één gas voor de hele duik, dus multigas- en rebreatherprofielen vallen erbuiten."
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mergulho técnico: a repetição calcula um único gás para todo o mergulho, pelo que os perfis multigás e de recirculador ficam excluídos."
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "การดำน้ำเทคนิค: การเล่นซ้ำคำนวณด้วยก๊าซชนิดเดียวทั้งการดำน้ำ จึงไม่รวมโปรไฟล์หลายก๊าซและรีบรีเทอร์"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lặn kỹ thuật: phần phát lại tính toán một loại khí duy nhất cho toàn bộ lần lặn, nên các hồ sơ nhiều khí và rebreather bị loại trừ."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "技术潜水：回放全程只按单一气体计算，因此不包含多气体与循环呼吸器的剖面。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "技術潛水：重放全程只以單一氣體計算，因此不含多氣體與封閉式循環呼吸器的剖面。"
           }
         }
       }
