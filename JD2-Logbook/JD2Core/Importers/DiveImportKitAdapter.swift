@@ -95,7 +95,8 @@ func makeDiveLog(from parsed: DiveImportKit.ParsedDiveLog) -> DiveLog {
 /// 不轉換的話 Kit 錯誤會落到通用 catch，UI 錯誤提示劣化。
 /// Kit 的 `parsingFailed` underlyingError 為 String?（Sendable 限制），
 /// 併回 detail 字串，訊息內容與 Kit errorDescription 一致。
-func mapImportKitError(_ error: Error) -> Error {
+// v1.3 P1-4：純函式、只呼叫 DiveImportKit（非隔離）⇒ nonisolated，供 `ImportCoordinator` 的背景 Task 呼叫（原為 Swift 6 隔離警告）。
+nonisolated func mapImportKitError(_ error: Error) -> Error {
     guard let kitError = error as? DiveImportKit.DiveLogImportError else { return error }
     switch kitError {
     case .fileNotFound(let path):        return DiveLogImportError.fileNotFound(path)
@@ -119,7 +120,8 @@ func mapImportKitError(_ error: Error) -> Error {
 
 /// 選格式＋解析＋基本驗證（maxDepth >= 0、diveTimeSeconds > 0）。
 /// - Throws: 對應 App 本地 `DiveLogImportError`（已透過 `mapImportKitError` 轉換）。
-func parseAndValidateForBackground(filePath: String) throws -> [DiveImportKit.ParsedDiveLog] {
+// v1.3 P1-4：純函式、只呼叫 DiveImportKit（非隔離）⇒ nonisolated，供 `ImportCoordinator` 的背景 Task 呼叫（原為 Swift 6 隔離警告）。
+nonisolated func parseAndValidateForBackground(filePath: String) throws -> [DiveImportKit.ParsedDiveLog] {
     do {
         return try DiveImportKit.ImportBatchProcessor.parseAndValidate(filePath: filePath)
     } catch {
@@ -220,7 +222,8 @@ func makeTestParsedDiveLog(
 }
 
 /// 格式顯示名稱（供 log 訊息用，不需要讓呼叫端知道 Kit 的 DiveLogFormat 型別存在）。
-func formatDisplayName(for filePath: String) -> String? {
+// v1.3 P1-4：純函式、只呼叫 DiveImportKit（非隔離）⇒ nonisolated，供 `ImportCoordinator` 的背景 Task 呼叫（原為 Swift 6 隔離警告）。
+nonisolated func formatDisplayName(for filePath: String) -> String? {
     DiveImportKit.DiveLogImporterFactory.selectImporter(for: filePath)?.format.displayName
 }
 

@@ -80,7 +80,11 @@ struct ReplayLimitationsInfoView: View {
         }
     }
 
-    private var activeItem: Item? { activeAnomaly.map(Item.init) }
+    // v1.3 P1-4：不把 `Item.init` 當函式值傳給 `map`（未套用的初始化器參照被視為非隔離 ⇒ Swift 6 警告）。
+    private var activeItem: Item? {
+        guard let anomaly = activeAnomaly else { return nil }
+        return Item(anomaly)
+    }
 
     var body: some View {
         NavigationStack {
