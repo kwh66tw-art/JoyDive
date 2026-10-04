@@ -1,7 +1,7 @@
 # 下一版送審檢查（2026-10-03，依 `app-store-submission-guide` §0 清單）
 
 > 狀態以指令查證：建置產物 `Debug-iphonesimulator/JoyDive².app`（`defaults read`、`find *.xcprivacy`），原始碼 `grep`。
-> Kit 已凍結（DiveKit v8.9.1／DiveImportKit v0.7.1）。
+> Kit 已凍結（DiveKit v9.2.0／DiveImportKit v0.7.1，2026-10-04 晚重新凍結）。
 
 ## 🔴 需要處理（送審前）
 
@@ -20,7 +20,7 @@
 - **ATS**：`NSAllowsArbitraryLoads`／`…ForMedia` 皆為 true。v1.2 已過審；若用不到可移除以降低審核問答——需確認 AdMob 是否仍需要。
 - **隱私問卷**（§3.1）：AdMob（`GADApplicationIdentifier`）＋定位（`NSLocationWhenInUseUsageDescription`）——問卷與 manifest 要一致；v1.2 曾因 5.1.2(i) 被拒，修正紀錄見 `CHANGELOG.md` 2026-07-28。
 - **Support URL**：`https://…/logbook/privacy`（真網頁，非 mailto）✅。
-- **測試**：`run_tests logbook` 147/0/1 ✅（`ImportCoordinatorTests` 崩潰已修，`181e441`）。
+- **測試**：`run_tests logbook` **147/0/1** ✅——2026-10-04 於 DiveKit v9.2.0 重跑，與 v8.9.1 時相同（重放程式 v8.9.1→v9.2.0 未變動，已讀碼確認）。
 - **實機／模擬器走一次匯入流程**：`ImportCoordinator` 的 deinit 崩潰在正式版關閉匯入精靈時是同一路徑——修正後應手動驗一次。
 
 ## 🟡 PM 判斷（2026-10-03 新增）
