@@ -391,6 +391,15 @@ final class ImportCoordinatorTests: XCTestCase {
 
     /// 測試所有可用測試檔案的批量解析效能
     /// 目標：< 2 秒解析全部（9+ 個檔案）
+    /// v1.3 P1-3（PM 2026-10-04 核准 D5）：效能測試改量**本執行緒的 CPU 時間**，不量牆鐘時間。
+    /// 原因：牆鐘時間會被同機其他負載（建置、模擬器、背景測試）拉長 ⇒ `testPerformance_SuuntoJSON_Repeated`
+    /// 時過時不過，但程式本身沒變慢。解析都在測試執行緒上同步跑，CPU 時間完整涵蓋。**門檻數字不變**。
+    static func threadCPUSeconds() -> Double {
+        var ts = timespec()
+        clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts)
+        return Double(ts.tv_sec) + Double(ts.tv_nsec) / 1_000_000_000
+    }
+
     func testPerformance_BatchParse_AllFormats() throws {
         let allTestFiles: [String] = [
             testFilePath("UDDF/test42.uddf"),
@@ -409,7 +418,7 @@ final class ImportCoordinatorTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(allTestFiles.count, 5,
             "至少需要 5 個測試檔案才能進行有意義的效能測試")
 
-        let start = Date()
+        let start = Self.threadCPUSeconds()
         var totalDives = 0
         var parsedFiles = 0
         var failedFiles = 0
@@ -428,7 +437,7 @@ final class ImportCoordinatorTests: XCTestCase {
             }
         }
 
-        let elapsed = Date().timeIntervalSince(start)
+        let elapsed = Self.threadCPUSeconds() - start
 
         print("[Performance] \(parsedFiles) files, \(totalDives) dives, \(String(format: "%.3f", elapsed))s")
         print("[Performance] failed: \(failedFiles) / \(allTestFiles.count)")
@@ -449,12 +458,12 @@ final class ImportCoordinatorTests: XCTestCase {
         let parser = SuuntoJSONParser()
         let iterations = 50
 
-        let start = Date()
+        let start = Self.threadCPUSeconds()
         for _ in 0..<iterations {
             let dives = try parser.parse(from: path)
             XCTAssertEqual(dives.count, 1)
         }
-        let elapsed = Date().timeIntervalSince(start)
+        let elapsed = Self.threadCPUSeconds() - start
         let perParse = elapsed / Double(iterations) * 1000  // ms
 
         print("[Performance] SuuntoJSON x\(iterations): \(String(format: "%.1f", perParse))ms/parse")
@@ -482,9 +491,9 @@ final class ImportCoordinatorTests: XCTestCase {
             dives.append(dive)
         }
 
-        let start = Date()
+        let start = Self.threadCPUSeconds()
         let validated = coordinator.validateDives(dives)
-        let elapsed = Date().timeIntervalSince(start)
+        let elapsed = Self.threadCPUSeconds() - start
 
         print("[Performance] validateDives(1000): \(String(format: "%.3f", elapsed))s")
 
