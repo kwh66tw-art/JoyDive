@@ -1,120 +1,36 @@
 // ReplayLimitationsInfoView.swift — JD2-Logbook/Views/Logbook/
 //
-// 互動剖面／組織艙重放的限制說明頁（提示列與組織艙區塊的 ⓘ 目的地）。
-//
-// 🔑 **為什麼要「全部羅列」而不是只講這次那一條**（PM 2026-09-12 裁示 4.5）：
-//   · 使用者在一筆潛水上看到「不支援」，第一個問題是「那我哪些潛水會這樣」——
-//     只講這一條答不了，他得自己一筆一筆試。
-//   · 但全部羅列又有反效果：8 條裡要自己對號入座。⇒ **同時標出「本次適用」**
-//     （`activeAnomaly`），成本很低。
-//
-// 🔴 下方兩項「一般性限制」與異常無關，**重放完全正常時同樣成立**，所以這一頁的
-// 入口不能只在異常時出現（見 `DiveAnalysisView.hintRow`）。
-//
-// 文案定版：`../_JD2-family/decisions/2026-09-12_重放異常的文案細分與UI重新設計-PM裁示.md`
-// ⚠️ 該檔取代 `V1_2_BACKLOG.md` #24 的 2026-08-22 定版。
-
-// ⚠️ 本檔所有字串一律走 `languageManager.localized(_:)`，不用 `Text("字面量")`
-// ——後者讀系統 Locale，App 內語言切換器切換後不重開 App 會殘留舊語言（v1.2 #17
-// 同一個 bug 已在別處修過一輪）。
+// 組織負荷重放的說明頁（提示列「Limited support ⓘ」與組織負荷區塊 ⓘ 的目的地）。
+// PM 2026-10-05：只正面說明支援範圍、精簡；不列逐項排除清單、不提其他 App。
+// 字串一律走 `languageManager.localized(_:)`（App 內語言切換即時生效）。
 
 import SwiftUI
-import DiveKit
 
 struct ReplayLimitationsInfoView: View {
-    /// 本次這筆潛水觸發的異常；nil ⇒ 重放正常（只標一般性限制）
-    let activeAnomaly: DiveReplayEngine.Anomaly?
-
     @Environment(AppLanguageManager.self) private var languageManager
     @Environment(\.dismiss) private var dismiss
 
-    /// 羅列順序＝`DiveReplayEngine.Anomaly` 的宣告順序，讓兩邊好對照。
-    /// 🔴 **不要在這裡重新分類成 A/B/C 三組**：分類只決定
-    /// `DiveAnalysisView` 那一句用 available 還是 applicable，
-    /// 這一頁是「所有情況的清單」，多一層分組只會讓使用者多一層要理解的東西。
-    private enum Item: String, CaseIterable {
-        case technicalDive
-        case unknownGasMix
-        case overlappingDives
-        case implausibleTiming
-        case seriesIndexMismatch
-        case precedingProfileSamplesMissing
-        case breathHoldTarget
-        case inconsistentEnvironment
-
-        var textKey: String {
-            switch self {
-            case .technicalDive:
-                // v1.3 P0-2（PM 2026-10-04）：原句只說「多氣體與循環呼吸器」不支援——**單一氣體 trimix 也被拒算**
-                // （DiveKit `DiveReplay.swift:591`，trimix 已裁定產品範圍外），舊句會讓人以為單一氣體 trimix 可用。
-                return "Trimix or technical dive: trimix, multi-gas and rebreather dives are not supported."
-            case .unknownGasMix:
-                return "The gas mix could not be determined from the imported record."
-            case .overlappingDives:
-                return "Two records cover the same clock time — two devices on one dive, or a duplicate import."
-            case .implausibleTiming:
-                return "The record's own timing is implausible, such as a zero-length duration or an invalid timestamp."
-            case .seriesIndexMismatch:
-                return "The device's dive-series number does not match the order rebuilt from the timestamps."
-            case .precedingProfileSamplesMissing:
-                return "An earlier dive in the same series has no depth profile, so its remaining nitrogen cannot be replayed."
-            case .breathHoldTarget:
-                return "Breath-hold dive: the model assumes continuous breathing at depth, so it does not apply."
-            case .inconsistentEnvironment:
-                return "An earlier dive in the series used a different surface pressure or water type, so remaining nitrogen cannot be carried over."
-            }
-        }
-
-        /// Kit 的 `Anomaly` 帶 payload（chainIndex 等）⇒ 不能直接比對相等，用 switch。
-        init(_ anomaly: DiveReplayEngine.Anomaly) {
-            switch anomaly {
-            case .technicalDive:                   self = .technicalDive
-            case .unknownGasMix:                   self = .unknownGasMix
-            case .overlappingDives:                self = .overlappingDives
-            case .implausibleTiming:               self = .implausibleTiming
-            case .seriesIndexMismatch:             self = .seriesIndexMismatch
-            case .precedingProfileSamplesMissing:  self = .precedingProfileSamplesMissing
-            case .breathHoldTarget:                self = .breathHoldTarget
-            case .inconsistentEnvironment:         self = .inconsistentEnvironment
-            }
-        }
-    }
-
-    // v1.3 P1-4：不把 `Item.init` 當函式值傳給 `map`（未套用的初始化器參照被視為非隔離 ⇒ Swift 6 警告）。
-    private var activeItem: Item? {
-        guard let anomaly = activeAnomaly else { return nil }
-        return Item(anomaly)
-    }
+    private let lines = [
+        "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives on a single gas — air or nitrox.",
+        "Repetitive dives in the same series include residual nitrogen from the earlier dives.",
+        "Ceilings are calculated at the GF High setting throughout the dive.",
+        // PM 2026-10-03 定稿的建模揭露（F-20 節點 1），保留。
+        "The Bühlmann decompression model used by this app tracks residual nitrogen between dives, but it does not add extra conservatism for repetitive or multi-day diving. Follow the more conservative of your dive computer and this app.",
+        "Other dives show the depth profile only.",
+    ]
 
     var body: some View {
         NavigationStack {
             List {
-                Section(header: Text(verbatim: languageManager.localized("When tissue loading cannot be shown"))) {
-                    ForEach(Item.allCases, id: \.rawValue) { item in
-                        row(text: languageManager.localized(item.textKey),
-                            isActive: item == activeItem)
+                Section(header: Text(verbatim: languageManager.localized("What tissue loading covers"))) {
+                    ForEach(lines, id: \.self) { key in
+                        Text(verbatim: languageManager.localized(key))
+                            .font(.footnote)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
-
-                // 一般性限制：**與本次是否異常無關，永遠成立**。文案沿用既有 key
-                // （已有 18 語翻譯），不另造新句——同一件事兩種說法會讓翻譯校對
-                // 與術語一致性檢查各自維護一份。
-                Section(header: Text(verbatim: languageManager.localized("Always applies"))) {
-                    // v1.3 P0-2（PM 2026-10-04：減壓分析「有限支援」要在 UI 說明）：支援範圍——不論本次是否異常都成立，放第一條。
-                    row(text: languageManager.localized("Tissue loading and no-deco estimates support single-gas air and nitrox dives only."),
-                        isActive: false)
-                    // 2026-10-03（PM 定稿；放在這一頁＝PM 指定的 ⓘ 說明頁）：建模抉擇揭露（F-20 節點 1）。
-                    // 句尾與 App-u 不同：本 App 沒有保守度設定，App-u 原句的「or a more conservative setting」在這裡不成立。
-                    // 翻譯：PM 定稿英／繁中／日（＋en-GB）；其餘 14 語待翻，缺翻譯時退回英文原文。
-                    row(text: languageManager.localized("The Bühlmann decompression model used by this app tracks residual nitrogen between dives, but it does not add extra conservatism for repetitive or multi-day diving. Follow the more conservative of your dive computer and this app."),
-                        isActive: false)
-                    row(text: languageManager.localized("Replay is simulated using the conservative GF High ceiling baseline, so the ceiling shown may be more optimistic (shallower) than what your dive computer displayed at the time."),
-                        isActive: false)
-                    row(text: languageManager.localized("This app can't read the original device's dive-series index, so replay-anomaly detection here has narrower coverage than in ultra or immersion."),
-                        isActive: false)
-                }
             }
-            .navigationTitle(Text(verbatim: languageManager.localized("Interactive Profile Limitations")))
+            .navigationTitle(Text(verbatim: languageManager.localized("About Tissue Loading")))
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(action: { dismiss() }) { Text(verbatim: languageManager.localized("Done")) }
@@ -122,20 +38,5 @@ struct ReplayLimitationsInfoView: View {
             }
         }
         .accessibilityIdentifier("replayLimitationsInfo")
-    }
-
-    private func row(text: String, isActive: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            if isActive {
-                // 只標「本次適用」，不加重風險色彩——加重視覺權重本身隱含風險提示，
-                // 而那需要可查證出處（PM 2026-09-12 裁示 4：C 類暫定同樣低調）。
-                Text(verbatim: languageManager.localized("Applies to this dive"))
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.secondary)
-            }
-            Text(verbatim: text)
-                .font(.footnote)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

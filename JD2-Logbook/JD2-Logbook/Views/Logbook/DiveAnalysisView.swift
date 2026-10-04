@@ -136,7 +136,7 @@ struct DiveAnalysisView: View {
             replayLimitationsNotice
         }
         .sheet(isPresented: $showingLimitations) {
-            ReplayLimitationsInfoView(activeAnomaly: anomaly)
+            ReplayLimitationsInfoView()
         }
         .animation(.easeInOut(duration: 0.15), value: selectedIndex)
         .task {
@@ -229,11 +229,7 @@ struct DiveAnalysisView: View {
     }
 
     // MARK: - 提示列（PM 2026-09-12 裁示 4.2）
-    // 「Limited support ⓘ」與既有 App Store 文案一致（標題已是 "Interactive Profile,
-    // With Tissue Loading (Limited Support)"），措辭不另外發明。
-    // 🔑 ⓘ **恆常可達**：ⓘ 頁除了 8 種異常，還列 2 項**永遠成立**的一般性限制
-    // （GF 樂觀偏差、本 App 缺 series index 導致偵測覆蓋較窄）——那兩項在重放
-    // 完全正常時同樣適用，所以入口不能只在異常時出現。
+    // 「Limited support ⓘ」恆常可達：ⓘ 頁說明支援範圍，重放正常時同樣適用。
     private var hintRow: some View {
         HStack(alignment: .firstTextBaseline, spacing: 4) {
             if selectedIndex == nil {
@@ -259,43 +255,18 @@ struct DiveAnalysisView: View {
     }
 
     // MARK: - 一般性重放限制揭露
-    // 設計文件第七節（`_JD2-family/decisions/2026-08-22_重放連續潛水殘氮與前置
-    // 判斷-設計.md`）：這兩項是 DiveKit 共用重放引擎／Logbook 資料模型的固有限制，
-    // **永遠顯示**在組織艙飽和度／ceiling 區塊附近，不論這次重放有沒有觸發 P1–P6
-    // 異常——因為就算重放正常算出結果，這兩項限制依然成立。文案由 PM 於
-    // 2026-08-22 定版（V1_2_BACKLOG #24）：
-    //   1. GF 樂觀偏差：重放全程以 gfHigh 為基準，不模擬即時裝置 ascent 中的
-    //      GF 收緊，ceiling 因此可能比裝置當時實際顯示更淺（更樂觀）。
-    //   2. 偵測強度較弱：Logbook 沒有 `diveNumberInSeries` 欄位（ultra／immersion
-    //      有），P4 交叉比對會被跳過，不得暗示偵測強度與另外兩者相同。
-    // 比異常訊息（anomalyNotice）更不顯眼——那是狀況警示，這是固定揭露。
-    //
-    // 🔴 **2026-09-12：兩句不得同進退**（PM 裁示 4.4 的同一原則往下一層套用）。
-    // 第一句描述「這次重放**怎麼算的**」——沒有重放時它宣稱了沒發生的事，必須消失。
-    // 第二句描述「**偵測**覆蓋範圍」——偵測確實跑過（正是它判出異常的），永遠成立。
-    // 綁在一起一定有一句是錯的：一起留 ⇒ 第一句說謊；一起消失 ⇒ 在資訊最少的
-    // 那些潛水上連正確的那句也不見了。
+    // 圖下說明（PM 2026-10-05：精簡、正面）：有重放結果時說明數字的來源；其餘說明在 ⓘ 頁。
+    @ViewBuilder
     private var replayLimitationsNotice: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            if replay != nil {
-                // 從呼叫端 Section footer 搬進來（PM 2026-09-12 裁示 4.4）：這句描述
-                // 「這些數字是怎麼算出來的」，沒有重放時它宣稱了沒發生的事。
-                // 免責那一句（"Not a substitute for…"）留在 footer 恆常顯示。
-                Text(verbatim: languageManager.localized(
-                    "Estimated using Bühlmann ZHL-16C from the imported profile only."
-                ))
-                Text(verbatim: languageManager.localized(
-                    "Replay is simulated using the conservative GF High ceiling baseline, so the ceiling shown may be more optimistic (shallower) than what your dive computer displayed at the time."
-                ))
-            }
+        if replay != nil {
             Text(verbatim: languageManager.localized(
-                "This app can't read the original device's dive-series index, so replay-anomaly detection here has narrower coverage than in ultra or immersion."
+                "Estimated using Bühlmann ZHL-16C from the imported profile only."
             ))
+            .font(.caption2)
+            .foregroundStyle(.tertiary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityIdentifier("replayLimitationsNotice")
         }
-        .font(.caption2)
-        .foregroundStyle(.tertiary)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .accessibilityIdentifier("replayLimitationsNotice")
     }
 
     // MARK: - 互動剖面圖

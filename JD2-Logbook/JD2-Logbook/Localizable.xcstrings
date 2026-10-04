@@ -800,6 +800,66 @@
         }
       }
     },
+    "About Tissue Loading": {
+      "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About Tissue Loading"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About Tissue Loading"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組織負荷について"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "關於組織負荷"
+          }
+        }
+      }
+    },
+    "Ceilings are calculated at the GF High setting throughout the dive.": {
+      "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ceilings are calculated at the GF High setting throughout the dive."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ceilings are calculated at the GF High setting throughout the dive."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "シーリングは潜水全体を通してGF Highの設定で計算します。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上限深度全程以 GF High 設定計算。"
+          }
+        }
+      }
+    },
     "Developer Tools": {
       "comment": "DEBUG-only Settings section header (never shown in release builds).",
       "extractionState": "manual",
@@ -1500,6 +1560,66 @@
         }
       }
     },
+    "Other dives show the depth profile only.": {
+      "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other dives show the depth profile only."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other dives show the depth profile only."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "その他のダイビングでは水深プロファイルのみを表示します。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "其他潛水僅顯示深度剖面。"
+          }
+        }
+      }
+    },
+    "Repetitive dives in the same series include residual nitrogen from the earlier dives.": {
+      "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repetitive dives in the same series include residual nitrogen from the earlier dives."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repetitive dives in the same series include residual nitrogen from the earlier dives."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同じシリーズの反復潜水では、それ以前の潜水の残留窒素を計算に含めます。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同一系列的連續潛水會計入前幾支潛水的殘餘氮氣。"
+          }
+        }
+      }
+    },
     "Scuba": {
       "comment": "Dive mode option: scuba diving (family glossary term 'scuba')",
       "localizations": {
@@ -1755,62 +1875,62 @@
         }
       }
     },
-    "Tissue loading and no-deco estimates support single-gas air and nitrox dives only.": {
-      "comment": "Limitations page, 'Always applies': supported scope of the tissue loading / NDL replay (limited support disclosure).",
+    "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives on a single gas — air or nitrox.": {
+      "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tissue loading and no-deco estimates support single-gas air and nitrox dives only."
+            "value": "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives on a single gas — air or nitrox."
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tissue loading and no-deco estimates support single-gas air and nitrox dives only."
+            "value": "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives on a single gas — air or nitrox."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "組織負荷と無減圧の推定は、単一ガスの空気およびナイトロックスのダイビングのみに対応しています。"
+            "value": "組織負荷はBühlmann ZHL-16Cモデルで参考値を計算します。対象は単一ガス（空気またはナイトロックス）のレクリエーショナルスクーバダイビングです。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "組織負荷與免減壓估算僅支援單一氣體的空氣與 Nitrox（高氧）潛水。"
+            "value": "組織負荷以 Bühlmann ZHL-16C 模型計算參考值，適用於使用單一氣體（空氣或 Nitrox（高氧））的休閒水肺潛水。"
           }
         }
       }
     },
-    "Trimix or technical dive: trimix, multi-gas and rebreather dives are not supported.": {
-      "comment": "Limitations page: why tissue loading is unavailable for this dive. Replaces the old 'Technical dive: replay models a single gas…' sentence (single-gas trimix is also unsupported).",
+    "What tissue loading covers": {
+      "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Trimix or technical dive: trimix, multi-gas and rebreather dives are not supported."
+            "value": "What tissue loading covers"
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "Trimix or technical dive: trimix, multi-gas and rebreather dives are not supported."
+            "value": "What tissue loading covers"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "トライミックス／テクニカルダイビング：トライミックス、マルチガス、リブリーザーのダイビングには対応していません。"
+            "value": "組織負荷の対象範囲"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "Trimix 或技術潛水：不支援 Trimix、多氣體與封閉式循環呼吸器潛水。"
+            "value": "組織負荷的適用範圍"
           }
         }
       }
@@ -11069,52 +11189,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "正在匯入第 %1$lld 個檔案（共 %2$lld 個）：%3$@"
-          }
-        }
-      }
-    },
-    "Replay is simulated using the conservative GF High ceiling baseline, so the ceiling shown may be more optimistic (shallower) than what your dive computer displayed at the time.": {
-      "comment": "General disclosure (always shown near the Interactive Tissue Loading/Ceiling section, independent of P1-P6 anomaly state): DiveKit's shared replay engine models the ceiling using the conservative GF High baseline rather than the live ascent-time GF tightening a real dive computer applies, so the displayed ceiling can read shallower/more optimistic than the device's own reading at the time. PM-finalized wording, 2026-08-22 — see V1_2_BACKLOG #24 and _JD2-family/decisions/2026-08-22_重放連續潛水殘氮與前置判斷-設計.md 第七節.",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Replay is simulated using the conservative GF High ceiling baseline, so the ceiling shown may be more optimistic (shallower) than what your dive computer displayed at the time."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Replay is simulated using the conservative GF High ceiling baseline, so the ceiling shown may be more optimistic (shallower) than what your dive computer displayed at the time."
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重放以保守飽和度上限（GF High）為基準模擬，天花板深度可能較潛水當下裝置實際顯示更樂觀（較淺）。"
-          }
-        }
-      }
-    },
-    "This app can't read the original device's dive-series index, so replay-anomaly detection here has narrower coverage than in ultra or immersion.": {
-      "comment": "General disclosure (always shown near the Interactive Tissue Loading/Ceiling section, independent of P1-P6 anomaly state): Logbook has no `diveNumberInSeries` field (unlike ultra/immersion), so the P4 cross-check in DiveKit's shared replay pre-check is skipped here — detection coverage is intentionally weaker than the sibling apps, and this must not be implied to be equivalent. PM-finalized wording, 2026-08-22 — see V1_2_BACKLOG #24 and _JD2-family/decisions/2026-08-22_重放連續潛水殘氮與前置判斷-設計.md 第七節.",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This app can't read the original device's dive-series index, so replay-anomaly detection here has narrower coverage than in ultra or immersion."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This app can't read the original device's dive-series index, so replay-anomaly detection here has narrower coverage than in ultra or immersion."
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "本App無法讀取原始裝置的潛水序號，重放前置異常偵測的涵蓋範圍較 ultra／immersion 弱。"
           }
         }
       }
@@ -22514,7 +22588,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "觸摸並拖曳剖面圖，可查看潛水過程中任一時刻的狀態。"
+            "value": "點選並拖曳剖面圖，可查看潛水過程中任一時刻的狀態。"
           }
         }
       }
@@ -25553,1249 +25627,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "支援有限"
-          }
-        }
-      }
-    },
-    "When tissue loading cannot be shown": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wann die Gewebebelastung nicht angezeigt werden kann"
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Πότε δεν μπορεί να εμφανιστεί η φόρτωση ιστών"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "When tissue loading cannot be shown"
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "When tissue loading cannot be shown"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cuándo no se puede mostrar la carga tisular"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Quand la charge tissulaire ne peut pas être affichée"
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kada se opterećenje tkiva ne može prikazati"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kapan beban jaringan tidak dapat ditampilkan"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Quando il carico tissutale non può essere mostrato"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "組織負荷を表示できない場合"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "조직 부하를 표시할 수 없는 경우"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bila bebanan tisu tidak dapat dipaparkan"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wanneer de weefselbelasting niet kan worden weergegeven"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Quando a carga tecidual não pode ser mostrada"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "กรณีที่ไม่สามารถแสดงภาระเนื้อเยื่อ"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Khi không thể hiển thị tải trọng mô"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "哪些情况无法显示组织负荷"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "哪些情況無法顯示組織負荷"
-          }
-        }
-      }
-    },
-    "Always applies": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gilt immer"
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ισχύει πάντα"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Always applies"
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Always applies"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Se aplica siempre"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "S'applique toujours"
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Uvijek se primjenjuje"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Selalu berlaku"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si applica sempre"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "常に該当します"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "항상 해당됩니다"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sentiasa berkenaan"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Geldt altijd"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aplica-se sempre"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ใช้ได้เสมอ"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Luôn áp dụng"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "始终适用"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "永遠適用"
-          }
-        }
-      }
-    },
-    "Interactive Profile Limitations": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einschränkungen des interaktiven Profils"
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Περιορισμοί του διαδραστικού προφίλ"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Interactive Profile Limitations"
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Interactive Profile Limitations"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Limitaciones del perfil interactivo"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Limites du profil interactif"
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ograničenja interaktivnog profila"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Batasan profil interaktif"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Limiti del profilo interattivo"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "インタラクティブ・プロファイルの制限"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "인터랙티브 프로필 제한 사항"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Batasan profil interaktif"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beperkingen van het interactieve profiel"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Limitações do perfil interativo"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ข้อจำกัดของโปรไฟล์แบบอินเทอร์แอกทีฟ"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Giới hạn của biểu đồ tương tác"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "交互式剖面的限制"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "互動式剖面的限制"
-          }
-        }
-      }
-    },
-    "Applies to this dive": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gilt für diesen Tauchgang"
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ισχύει για αυτήν την κατάδυση"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Applies to this dive"
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Applies to this dive"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Se aplica a esta inmersión"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "S'applique à cette plongée"
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Primjenjuje se na ovaj uron"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Berlaku untuk penyelaman ini"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si applica a questa immersione"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "このダイビングに該当"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "이 다이빙에 해당"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Berkenaan dengan penyelaman ini"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Geldt voor deze duik"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aplica-se a este mergulho"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ใช้กับการดำน้ำครั้งนี้"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Áp dụng cho lần lặn này"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "本次潜水适用"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "本次潛水適用"
-          }
-        }
-      }
-    },
-    "The gas mix could not be determined from the imported record.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das Gasgemisch konnte aus dem importierten Datensatz nicht bestimmt werden."
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Το μείγμα αερίων δεν μπόρεσε να προσδιοριστεί από την εισαγόμενη καταγραφή."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The gas mix could not be determined from the imported record."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The gas mix could not be determined from the imported record."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No se pudo determinar la mezcla de gas a partir del registro importado."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Le mélange gazeux n'a pas pu être déterminé à partir de l'enregistrement importé."
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mješavina plina nije se mogla odrediti iz uvezenog zapisa."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Campuran gas tidak dapat ditentukan dari catatan yang diimpor."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Non è stato possibile determinare la miscela di gas dal record importato."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "インポートした記録からガス混合を判定できませんでした。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "가져온 기록에서 가스 혼합을 판정할 수 없었습니다."
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Campuran gas tidak dapat ditentukan daripada rekod yang diimport."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Het gasmengsel kon niet uit het geïmporteerde logboek worden bepaald."
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Não foi possível determinar a mistura de gás a partir do registo importado."
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ไม่สามารถระบุส่วนผสมก๊าซจากบันทึกที่นำเข้าได้"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Không thể xác định hỗn hợp khí từ hồ sơ đã nhập."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "无法从导入的记录判定气体混合。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "無法從匯入的紀錄判定氣體混合。"
-          }
-        }
-      }
-    },
-    "Two records cover the same clock time — two devices on one dive, or a duplicate import.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zwei Aufzeichnungen decken dieselbe Uhrzeit ab — zwei Geräte bei einem Tauchgang oder ein doppelter Import."
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Δύο καταγραφές καλύπτουν την ίδια ώρα — δύο υπολογιστές στην ίδια κατάδυση ή διπλή εισαγωγή."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Two records cover the same clock time — two devices on one dive, or a duplicate import."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Two records cover the same clock time — two devices on one dive, or a duplicate import."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dos registros cubren la misma hora — dos ordenadores en una inmersión o una importación duplicada."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deux enregistrements couvrent la même heure — deux ordinateurs sur une plongée, ou un import en double."
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dva zapisa pokrivaju isto vrijeme — dva računala na istom uronu ili dvostruki uvoz."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dua catatan mencakup waktu yang sama — dua komputer pada satu penyelaman, atau impor ganda."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Due record coprono la stessa ora — due computer nella stessa immersione, o un'importazione duplicata."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "2 件の記録が同じ時刻を含んでいます — 1 回のダイビングを 2 台で記録、または重複インポートです。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "두 기록이 같은 시각을 포함합니다 — 한 다이빙을 두 대로 기록했거나 중복 가져오기입니다."
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dua rekod meliputi waktu yang sama — dua komputer pada satu penyelaman, atau import berganda."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Twee registraties dekken dezelfde kloktijd — twee computers op één duik, of een dubbele import."
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dois registos cobrem a mesma hora — dois computadores num mergulho, ou uma importação duplicada."
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "บันทึกสองรายการครอบคลุมเวลาเดียวกัน — ใช้คอมพิวเตอร์สองเครื่องในการดำน้ำครั้งเดียว หรือนำเข้าซ้ำ"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hai hồ sơ trùng cùng một khoảng thời gian — hai máy trong một lần lặn, hoặc nhập trùng."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "两笔记录涵盖同一段时间 — 一次潜水用两台电脑记录，或重复导入。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "兩筆紀錄涵蓋同一段時間 — 一次潛水用兩台電腦記錄，或重複匯入。"
-          }
-        }
-      }
-    },
-    "The record's own timing is implausible, such as a zero-length duration or an invalid timestamp.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Zeitangaben des Datensatzes selbst sind unplausibel, etwa eine Dauer von null oder ein ungültiger Zeitstempel."
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Οι χρόνοι της ίδιας της καταγραφής δεν είναι εύλογοι, π.χ. μηδενική διάρκεια ή μη έγκυρη χρονοσήμανση."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The record's own timing is implausible, such as a zero-length duration or an invalid timestamp."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The record's own timing is implausible, such as a zero-length duration or an invalid timestamp."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Los tiempos del propio registro no son plausibles, por ejemplo una duración de cero o una marca de tiempo no válida."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Les horaires de l'enregistrement lui-même sont invraisemblables : durée nulle ou horodatage invalide."
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vremena samog zapisa nisu vjerojatna, npr. trajanje nula ili nevažeća vremenska oznaka."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Waktu pada catatan itu sendiri tidak masuk akal, misalnya durasi nol atau stempel waktu tidak valid."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "I tempi del record stesso non sono plausibili, ad esempio durata zero o timestamp non valido."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "記録自体の時間が妥当ではありません（潜水時間が 0、またはタイムスタンプが不正）。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "기록 자체의 시간이 타당하지 않습니다(다이빙 시간이 0이거나 타임스탬프가 유효하지 않음)."
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Masa pada rekod itu sendiri tidak munasabah, contohnya tempoh sifar atau cap masa tidak sah."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "De tijden van de registratie zelf zijn niet plausibel, zoals een duur van nul of een ongeldig tijdstempel."
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Os tempos do próprio registo não são plausíveis, por exemplo duração zero ou data/hora inválida."
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "เวลาของบันทึกเองไม่สมเหตุสมผล เช่น ระยะเวลาเป็นศูนย์ หรือเวลาบันทึกไม่ถูกต้อง"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Thời gian của chính hồ sơ không hợp lý, ví dụ thời lượng bằng không hoặc dấu thời gian không hợp lệ."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "记录本身的时间不合理，例如时长为零或时间戳无效。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "紀錄本身的時間不合理，例如時長為零或時間戳無效。"
-          }
-        }
-      }
-    },
-    "The device's dive-series number does not match the order rebuilt from the timestamps.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Tauchgangsnummer des Geräts passt nicht zur Reihenfolge, die aus den Zeitstempeln rekonstruiert wurde."
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ο αριθμός σειράς κατάδυσης του υπολογιστή δεν συμφωνεί με τη σειρά που ανακατασκευάστηκε από τις χρονοσημάνσεις."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The device's dive-series number does not match the order rebuilt from the timestamps."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The device's dive-series number does not match the order rebuilt from the timestamps."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "El número de inmersión de la serie que indica el ordenador no coincide con el orden reconstruido a partir de las marcas de tiempo."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Le numéro de plongée dans la série indiqué par l'ordinateur ne correspond pas à l'ordre reconstruit à partir des horodatages."
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Broj urona u seriji koji je zapisalo računalo ne odgovara redoslijedu rekonstruiranom iz vremenskih oznaka."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nomor seri penyelaman dari komputer tidak cocok dengan urutan yang direkonstruksi dari stempel waktu."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Il numero dell'immersione nella serie registrato dal computer non corrisponde all'ordine ricostruito dai timestamp."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ダイブコンピューターが記録した連続ダイブ番号が、タイムスタンプから再構成した順序と一致しません。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "다이브 컴퓨터가 기록한 연속 다이빙 번호가 타임스탬프로 재구성한 순서와 일치하지 않습니다."
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nombor siri penyelaman yang dicatat komputer tidak sepadan dengan susunan yang dibina semula daripada cap masa."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Het duikserienummer van de computer komt niet overeen met de volgorde die uit de tijdstempels is gereconstrueerd."
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "O número do mergulho na série indicado pelo computador não corresponde à ordem reconstruída a partir das datas/horas."
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "หมายเลขลำดับการดำน้ำที่คอมพิวเตอร์บันทึกไม่ตรงกับลำดับที่สร้างใหม่จากเวลาบันทึก"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Số thứ tự lần lặn do máy ghi lại không khớp với thứ tự được dựng lại từ dấu thời gian."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "潜水电脑记录的连续潜水编号与依时间戳重建的顺序不一致。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "潛水電腦記錄的連續潛水編號與依時間戳重建的順序不一致。"
-          }
-        }
-      }
-    },
-    "An earlier dive in the same series has no depth profile, so its remaining nitrogen cannot be replayed.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einem früheren Tauchgang derselben Serie fehlt das Tiefenprofil, daher kann sein Reststickstoff nicht wiedergegeben werden."
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Μια προηγούμενη κατάδυση της ίδιας σειράς δεν έχει προφίλ βάθους, οπότε το υπολειπόμενο άζωτό της δεν μπορεί να αναπαραχθεί."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "An earlier dive in the same series has no depth profile, so its remaining nitrogen cannot be replayed."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "An earlier dive in the same series has no depth profile, so its remaining nitrogen cannot be replayed."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Una inmersión anterior de la misma serie no tiene perfil de profundidad, por lo que su nitrógeno residual no se puede repetir."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Une plongée précédente de la même série n'a pas de profil de profondeur : son azote résiduel ne peut pas être rejoué."
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Prethodni uron u istoj seriji nema dubinski profil, pa se njegov zaostali dušik ne može reproducirati."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Penyelaman sebelumnya dalam seri yang sama tidak memiliki profil kedalaman, sehingga nitrogen sisanya tidak dapat diputar ulang."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Un'immersione precedente della stessa serie non ha il profilo di profondità, quindi il suo azoto residuo non può essere riprodotto."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "同じ連続ダイブ内の前のダイビングに深度プロファイルがないため、その残留窒素を再現できません。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "같은 연속 다이빙의 이전 다이빙에 심도 프로필이 없어 잔류 질소를 재현할 수 없습니다."
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Penyelaman terdahulu dalam siri yang sama tiada profil kedalaman, jadi nitrogen bakinya tidak dapat ditayang semula."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Een eerdere duik in dezelfde serie heeft geen diepteprofiel, dus de reststikstof kan niet worden nagebootst."
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Um mergulho anterior da mesma série não tem perfil de profundidade, pelo que o seu azoto residual não pode ser repetido."
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "การดำน้ำก่อนหน้าในชุดเดียวกันไม่มีโปรไฟล์ความลึก จึงไม่สามารถเล่นซ้ำไนโตรเจนคงค้างได้"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Một lần lặn trước trong cùng chuỗi không có hồ sơ độ sâu, nên không thể phát lại lượng nitơ còn lại."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "同一串连续潜水中较早的一次没有深度剖面，因此无法回放其残余氮。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "同一串連續潛水中較早的一次沒有深度剖面，因此無法重放其殘餘氮。"
-          }
-        }
-      }
-    },
-    "Breath-hold dive: the model assumes continuous breathing at depth, so it does not apply.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Apnoetauchgang: Das Modell setzt durchgehende Atmung in der Tiefe voraus und ist daher nicht anwendbar."
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Κατάδυση με άπνοια: το μοντέλο προϋποθέτει συνεχή αναπνοή στο βάθος, οπότε δεν εφαρμόζεται."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Breath-hold dive: the model assumes continuous breathing at depth, so it does not apply."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Breath-hold dive: the model assumes continuous breathing at depth, so it does not apply."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Inmersión en apnea: el modelo supone respiración continua en profundidad, por lo que no es aplicable."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Plongée en apnée : le modèle suppose une respiration continue en profondeur, il ne s'applique donc pas."
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ronjenje na dah: model pretpostavlja neprekidno disanje na dubini, pa se ne primjenjuje."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Penyelaman tahan napas: model mengasumsikan pernapasan terus-menerus di kedalaman, sehingga tidak berlaku."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Immersione in apnea: il modello presuppone una respirazione continua in profondità, quindi non è applicabile."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "息こらえのダイビング：モデルは深度で継続的に呼吸していることを前提とするため、該当しません。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "숨참기 다이빙: 모델은 수중에서 계속 호흡하는 것을 전제하므로 해당되지 않습니다."
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Penyelaman tahan nafas: model menganggap pernafasan berterusan pada kedalaman, jadi ia tidak berkenaan."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Apneuduik: het model gaat uit van continu ademen op diepte en is daarom niet van toepassing."
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mergulho em apneia: o modelo pressupõe respiração contínua em profundidade, pelo que não se aplica."
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "การดำน้ำแบบกลั้นหายใจ: แบบจำลองสมมติว่าหายใจต่อเนื่องที่ความลึก จึงไม่ใช้กับกรณีนี้"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lặn nín thở: mô hình giả định hít thở liên tục ở độ sâu, nên không áp dụng."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "闭气潜水：模型假设在水下持续呼吸，因此不适用。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "閉氣潛水：模型假設在水下持續呼吸，因此不適用。"
-          }
-        }
-      }
-    },
-    "An earlier dive in the series used a different surface pressure or water type, so remaining nitrogen cannot be carried over.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ein früherer Tauchgang der Serie hatte einen anderen Oberflächendruck oder Wassertyp, daher kann der Reststickstoff nicht übernommen werden."
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Μια προηγούμενη κατάδυση της σειράς είχε διαφορετική πίεση επιφανείας ή τύπο νερού, οπότε το υπολειπόμενο άζωτο δεν μπορεί να μεταφερθεί."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "An earlier dive in the series used a different surface pressure or water type, so remaining nitrogen cannot be carried over."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "An earlier dive in the series used a different surface pressure or water type, so remaining nitrogen cannot be carried over."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Una inmersión anterior de la serie tuvo una presión en superficie o un tipo de agua distintos, por lo que el nitrógeno residual no se puede trasladar."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Une plongée précédente de la série avait une pression de surface ou un type d'eau différent : l'azote résiduel ne peut pas être repris."
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Prethodni uron u seriji imao je drugačiji površinski pritisak ili tip vode, pa se zaostali dušik ne može prenijeti."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Penyelaman sebelumnya dalam seri menggunakan tekanan permukaan atau jenis air yang berbeda, sehingga nitrogen sisa tidak dapat dilanjutkan."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Un'immersione precedente della serie aveva una pressione in superficie o un tipo d'acqua diversi, quindi l'azoto residuo non può essere riportato."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "連続ダイブ内の前のダイビングは水面気圧または水の種類が異なるため、残留窒素を引き継げません。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "연속 다이빙의 이전 다이빙은 수면 기압이나 수질이 달라 잔류 질소를 이어받을 수 없습니다."
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Penyelaman terdahulu dalam siri menggunakan tekanan permukaan atau jenis air yang berbeza, jadi nitrogen baki tidak dapat diteruskan."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Een eerdere duik in de serie had een andere oppervlaktedruk of watertype, dus de reststikstof kan niet worden meegenomen."
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Um mergulho anterior da série teve uma pressão à superfície ou um tipo de água diferentes, pelo que o azoto residual não pode ser transportado."
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "การดำน้ำก่อนหน้าในชุดนี้ใช้ความกดอากาศที่ผิวน้ำหรือประเภทน้ำที่ต่างกัน จึงไม่สามารถส่งต่อไนโตรเจนคงค้างได้"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Một lần lặn trước trong chuỗi có áp suất mặt nước hoặc loại nước khác, nên không thể chuyển tiếp lượng nitơ còn lại."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "该串连续潜水中较早的一次使用了不同的水面气压或水质，因此残余氮无法延续。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "該串連續潛水中較早的一次使用了不同的水面氣壓或水質，因此殘餘氮無法延續。"
           }
         }
       }
