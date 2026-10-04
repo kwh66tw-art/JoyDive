@@ -46,13 +46,41 @@ final class DiveLogDatabase {
         )
 
         // 初始化 ModelContainer
+        // v1.3（PM 2026-10-04 核准 D2）：原本失敗即 `fatalError` ⇒ 升級失敗的使用者每次開 App 都閃退。
+        // 改為：記下錯誤、改用記憶體內容器讓 App 能啟動，畫面改顯示錯誤頁（`DatabaseOpenErrorView`）；
+        // **不刪除、不重建、不覆寫磁碟上的資料檔**——修好之後的版本還能讀回原資料。
+        switch Self.openPersistentContainer(schema: schema, configuration: modelConfiguration) {
+        case .success(let container):
+            self.modelContainer = container
+            self.openError = nil
+        case .failure(let error):
+            self.modelContainer = Self.inMemoryFallback(schema: schema)
+            self.openError = error
+        }
+    }
+
+    /// 開啟磁碟上的資料庫失敗時的錯誤；`nil`＝正常。非 nil 時 App 只顯示錯誤頁、不顯示（也不寫入）日誌。
+    let openError: Error?
+
+    /// 開啟磁碟資料庫；失敗回傳錯誤而非終止程式（抽出為靜態函式以便測試）。
+    static func openPersistentContainer(schema: Schema,
+                                        configuration: ModelConfiguration) -> Result<ModelContainer, Error> {
         do {
-            self.modelContainer = try ModelContainer(
+            return .success(try ModelContainer(for: schema, configurations: [configuration]))
+        } catch {
+            return .failure(error)
+        }
+    }
+
+    /// 開檔失敗時的備援：只在記憶體、不碰磁碟。連這個都建不起來代表執行環境本身壞了，才終止。
+    static func inMemoryFallback(schema: Schema) -> ModelContainer {
+        do {
+            return try ModelContainer(
                 for: schema,
-                configurations: [modelConfiguration]
+                configurations: [ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)]
             )
         } catch {
-            fatalError("無法初始化 SwiftData ModelContainer: \(error)")
+            fatalError("無法建立記憶體內 SwiftData 容器: \(error)")
         }
     }
 

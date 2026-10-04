@@ -27,9 +27,17 @@ struct JD2_LogbookApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
-                .environment(languageManager)
-                .environment(\.locale, languageManager.locale)
+            // v1.3（D2）：資料庫打不開 ⇒ 只顯示錯誤頁（不載入日誌、不寫入），磁碟上的資料檔保持原樣。
+            Group {
+                if let error = DiveLogDatabase.shared.openError {
+                    DatabaseOpenErrorView()
+                        .onAppear { print("[Database] 開啟失敗，已保留資料檔：\(error)") }
+                } else {
+                    MainTabView()
+                }
+            }
+            .environment(languageManager)
+            .environment(\.locale, languageManager.locale)
         }
         .modelContainer(DiveLogDatabase.shared.modelContainer)
         #if os(macOS)
