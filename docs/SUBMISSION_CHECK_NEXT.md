@@ -20,8 +20,9 @@
 - **ATS**：`NSAllowsArbitraryLoads`／`…ForMedia` 皆為 true。v1.2 已過審；若用不到可移除以降低審核問答——需確認 AdMob 是否仍需要。
 - **隱私問卷**（§3.1）：AdMob（`GADApplicationIdentifier`）＋定位（`NSLocationWhenInUseUsageDescription`）——問卷與 manifest 要一致；v1.2 曾因 5.1.2(i) 被拒，修正紀錄見 `CHANGELOG.md` 2026-07-28。
 - **Support URL**：`https://…/logbook/privacy`（真網頁，非 mailto）✅。
-- **測試**：`run_tests logbook` **147/0/1** ✅——2026-10-04 於 DiveKit v9.2.0 重跑，與 v8.9.1 時相同（重放程式 v8.9.1→v9.2.0 未變動，已讀碼確認）。
-- **實機／模擬器走一次匯入流程**：`ImportCoordinator` 的 deinit 崩潰在正式版關閉匯入精靈時是同一路徑——修正後應手動驗一次。
+- **測試**：`run_tests logbook` **150/0/1** ✅（2026-10-04 夜，DiveKit v9.2.0；147＋新增 3 支資料庫開啟失敗測試）。
+- **升級**：v1.2→v1.3 模擬器實測通過（見 `docs/V1_3_WORK_PLAN.md` §七）。
+- ❌ **實機／模擬器走一次匯入流程**：2026-10-04 模擬器嘗試未成（檔案選擇器看不到測試檔）——**待 PM 手動驗一次**（匯入→關閉精靈）。
 
 ## 🟡 PM 判斷（2026-10-03 新增）
 

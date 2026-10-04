@@ -30,6 +30,11 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 編輯潛水後衍生值即時重算、氣體 JSON 解碼失敗不再靜默降級（`e107a76`）；地圖 zoom-to-fit 競態（`ae8284c`）。
 - 關閉匯入精靈時可能閃退（Swift 6.4 隔離 deinit，`181e441`）——**實機／模擬器走一次匯入流程待驗**。
 
+### 2026-10-04 夜追加（v1.3 工作計劃 `docs/V1_3_WORK_PLAN.md`）
+- 資料庫打不開時不再閃退：改顯示錯誤頁、保留資料檔（`6eb6552`）；v1.2→v1.3 升級已於模擬器實測通過。
+- 減壓分析「有限支援」揭露：ⓘ 頁涵蓋單一氣體 trimix、新增支援範圍說明；商店文案三語但書（`a733d6d`）。
+- 定位權限說明在地化、移除死碼、效能測試改量 CPU 時間（`09ac3f5`）；Swift 6 警告歸零（`a560f1f`）；翻譯檔清理 50 個未使用鍵（`fd9b1cf`）。
+
 ### 送審相關
 - App Privacy Manifest（UserDefaults `CA92.1`）、`ITSAppUsesNonExemptEncryption = NO`、版號 1.3（4）（`ef160ba`）。
 - App Store 關鍵字移除品牌、台灣／日本在地化；What's New 三語草稿；說明文保留格式相容品牌（`ef160ba`、`258c7a6`，PM 2026-10-03）。
