@@ -9,7 +9,7 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 ## [v1.3.0] — 2026-10-04（送審準備中，Build 4）
 
 > 自 v1.2（2026-07-29 上架）以來的使用者可見變更。依據：`git log --since=2026-07-29`（扣除版號回填）。
-> 送審檢查見 `docs/SUBMISSION_CHECK_NEXT.md`；共用層凍結於 DiveKit v9.2.0／DiveImportKit v0.7.1。
+> 送審檢查見 `docs/SUBMISSION_CHECK_NEXT.md`；共用層凍結於 DiveKit v9.2.0／DiveImportKit **v0.7.2**（10/05 凍結期 bug 修正）。
 
 ### Changed（演算法與重放）
 - **減壓係數改正**：v1.2 標示 ZHL-16C、實際用到 ZHL-16B 的 a 係數（單筆 NDL 最多長約 47 分）；改用統一 DiveKit 後為正確 ZHL-16C（`_JD2-family/decisions/2026-10-03_App-lb重放輸出差異回顧-v1.2對現行.md`）。
@@ -34,6 +34,15 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 資料庫打不開時不再閃退：改顯示錯誤頁、保留資料檔（`6eb6552`）；v1.2→v1.3 升級已於模擬器實測通過。
 - 減壓分析「有限支援」揭露：ⓘ 頁涵蓋單一氣體 trimix、新增支援範圍說明；商店文案三語但書（`a733d6d`）。
 - 定位權限說明在地化、移除死碼、效能測試改量 CPU 時間（`09ac3f5`）；Swift 6 警告歸零（`a560f1f`）；翻譯檔清理 50 個未使用鍵（`fd9b1cf`）。
+
+### 2026-10-05 追加（PM 逐項裁示）
+- **Garmin FIT 氣體**：DiveImportKit 讀錯訊息號，所有 Garmin FIT 一律被寫成空氣（技術潛水也被當空氣算組織負荷）⇒ v0.7.2 修正；
+  另讓重放讀取匯入時的「氣體不可信」標記（先前七種格式的標記從未生效），舊版匯入的 Garmin 紀錄一律視為氣體不可信（`f2bdfc7`、`ed386ce`）。
+- 組織負荷說明只分「支援／不支援」各一句；ⓘ 頁精簡為一段（`3f1a3b4`、`45b8506`）。
+- 重放分析改用家族語意色（組織負荷綠／黃／紅、Ceiling 藍底黑字、No Deco 黃）（`fe266c1`、`ed386ce`）。
+- 剖面讀數標籤恢復原字級（Xcode 27 建置下被縮到 65%，`c0515d6`）。
+- 匯入失敗原因改為使用者看得懂的一句話，不再顯示檔案路徑（`f9bf97b`）。
+- ATS 改 AdMob 官方寫法（`1f79c05`）；效能測試門檻放寬為抓回歸用（`e59e5fc`）；What's New 三語定稿（`646c60b`）。
 
 ### 送審相關
 - App Privacy Manifest（UserDefaults `CA92.1`）、`ITSAppUsesNonExemptEncryption = NO`、版號 1.3（4）（`ef160ba`）。
