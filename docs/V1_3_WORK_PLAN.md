@@ -96,7 +96,7 @@ P0-1 → P0-2 → P0-3 → P1-1～P1-5 → 翻譯 → 送審收尾。每項完�
 | P1-4 Swift 6 警告 | ✅ | `a560f1f` | 乾淨重建：App 層警告 3 → 0（DiveKit 內 `gf` 棄用警告屬凍結中的 Kit，未動） |
 | P1-5 catalog 清理 | ✅ | `fd9b1cf` | 移除 50 個未使用鍵、補 `Developer Tools`；`check_localization` ❌→通過；全套 **150/0/1** |
 | D6 GDPR／UMP | ✅ 已查證 | `fd9b1cf` | `docs/V1_3_D6_D7_RESEARCH.md`：非個人化廣告仍需同意；建議下一版做（B），待 PM |
-| D7 ATS | ✅ 已查證 | `fd9b1cf` | 同上：AdMob 現行只要求 `ForMedia`＋`InWebContent`；建議改官方寫法，待 PM |
+| D7 ATS | ✅ 完成（PM 10/05 裁示 A） | `fd9b1cf`＋本次提交 | 改 AdMob 官方寫法：移除 `NSAllowsArbitraryLoads`、補 `NSAllowsArbitraryLoadsInWebContent`（`ForMedia` 保留）；`plutil -lint` OK、build 產物 Info.plist 實測兩鍵、測試廣告照常顯示（截圖 `10`） |
 
 ### 新發現（待 PM）
 
