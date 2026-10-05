@@ -194,7 +194,7 @@ struct DiveAnalysisView: View {
         .accessibilityIdentifier("replayAnomalyNotice")
     }
 
-    /// 支援：「點選並拖曳剖面圖，可用 Bühlmann ZHL-16C 估算潛水過程中的狀態 — 有限支援 ⓘ」。
+    /// 支援時的提示句＋句尾「— 有限支援 ⓘ」連結（PM 2026-10-05 定稿；文案見 Localizable 對應鍵）。
     /// 合成一段文字自然換行（D9：HStack 分欄時中文會從句中截斷）；「有限支援 ⓘ」是連結。
     private static let limitationsURL = URL(string: "jd2logbook-internal://replay-limitations")!
 
