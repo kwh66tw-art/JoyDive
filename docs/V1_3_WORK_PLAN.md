@@ -89,13 +89,13 @@ P0-1 → P0-2 → P0-3 → P1-1～P1-5 → 翻譯 → 送審收尾。每項完�
 | D2 開資料庫失敗不閃退 | ✅ | `6eb6552` | `DatabaseOpenFailureTests` 3/0/0；故障注入（失敗時刪檔）RED |
 | P0-2 有限支援揭露 | ✅ | `a733d6d` | 模擬器截圖：trimix 潛水的提示列與 ⓘ 頁（`03–04`，繁中）；文案三語 |
 | P0-3 實際走一次匯入流程 | ❌ 未完成 | — | 模擬器檔案選擇器看不到直接複製進儲存區的檔案（重開機後仍空）；依除錯兩次原則停止。**需 PM 在實機或模擬器手動走一次**（匯入→關閉精靈）；關閉時閃退的根因已由 `ImportCoordinatorTests`（原 17–18 支崩潰）轉綠覆蓋 |
-| P0-4 What's New 措辭 | ⏸ PM 定稿 | — | 三語草稿已在 `APPSTORE_COPY.md` |
+| P0-4 What's New 措辭 | ✅ PM 10/05 定稿 | 本次提交 | 籠統寫法、保留「提升準確度」：英 "Improved accuracy of decompression estimates, plus multiple minor bug fixes and improvements."／繁中「提升減壓估算的準確度，並修正多項小問題。」／日「減圧推定の精度を改善し、複数の軽微な不具合を修正しました。」（`APPSTORE_COPY.md`） |
 | P1-1 定位權限說明在地化 | ✅ | `09ac3f5` | 產物 `en／zh-Hant／ja／en-GB.lproj/InfoPlist.strings` 皆有值（plutil 讀取） |
 | P1-2 死碼 | ✅ | `09ac3f5` | `callers.sh` 生產 0／測試 0；檔頭無保留理由 |
 | P1-3 效能測試 | ✅ 完成（PM 10/05 裁示 B） | `09ac3f5`＋本次提交 | SuuntoJSON 門檻 100→**500 ms**（常態 58–100 ms 的約 5 倍）；BatchParse 10 s（常態約 2 s）、ValidateDives 1 s（常態 0.004–0.017 s）已達 5 倍以上，**數字不改、補註常態值**。全套 2 次：150/0/1、150/0/1（Suunto 117.2／99.0 ms——第一次在舊門檻下會失敗） |
 | P1-4 Swift 6 警告 | ✅ | `a560f1f` | 乾淨重建：App 層警告 3 → 0（DiveKit 內 `gf` 棄用警告屬凍結中的 Kit，未動） |
 | P1-5 catalog 清理 | ✅ | `fd9b1cf` | 移除 50 個未使用鍵、補 `Developer Tools`；`check_localization` ❌→通過；全套 **150/0/1** |
-| D6 GDPR／UMP | ✅ 已查證 | `fd9b1cf` | `docs/V1_3_D6_D7_RESEARCH.md`：非個人化廣告仍需同意；建議下一版做（B），待 PM |
+| D6 GDPR／UMP | ⏭ 下一版（PM 10/05 裁示 B） | `fd9b1cf` | `docs/V1_3_D6_D7_RESEARCH.md`：非個人化廣告仍需同意；v1.3 不做，送審不受影響 |
 | D7 ATS | ✅ 完成（PM 10/05 裁示 A） | `fd9b1cf`＋本次提交 | 改 AdMob 官方寫法：移除 `NSAllowsArbitraryLoads`、補 `NSAllowsArbitraryLoadsInWebContent`（`ForMedia` 保留）；`plutil -lint` OK、build 產物 Info.plist 實測兩鍵、測試廣告照常顯示（截圖 `10`） |
 
 ### 新發現（待 PM）

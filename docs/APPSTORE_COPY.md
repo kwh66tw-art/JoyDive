@@ -71,11 +71,11 @@ logbook,scuba,diving,divelog,diary,nitrox,freediving,UDDF,import,record,tracker,
 
 ---
 
-## What's New — v1.3（草稿，PM 2026-10-03 同意方向）
+## What's New — v1.3（✅ PM 2026-10-05 定稿：籠統寫法，保留「提升準確度」）
 
-Improved accuracy of decompression estimates. Repetitive dives now include residual nitrogen from earlier dives in the same series, so no-decompression times may be shorter than before. Other bug fixes.
+Improved accuracy of decompression estimates, plus multiple minor bug fixes and improvements.
 
-> ⚠️ 兩件事**並列、不寫因果**：單筆潛水 NDL 變短主因是係數改正（v1.2 實為 ZHL-16B a 係數），不是連續潛水——
+> ⚠️ 定稿不提 NDL 變短與連續潛水（PM 10/03 起的籠統方向）。日後若要補寫，兩件事**並列、不寫因果**：單筆潛水 NDL 變短主因是係數改正（v1.2 實為 ZHL-16B a 係數），不是連續潛水——
 >   見 `_JD2-family/decisions/2026-10-03_App-lb重放輸出差異回顧-v1.2對現行.md`。不得改寫成「因為連續潛水所以 NDL 變短」。
 
 ---
@@ -197,9 +197,9 @@ JoyDive²，陪你從第一次下水到每一次進階潛水的潛水日誌。
 
 ---
 
-## 版本說明（What's New）— v1.3（草稿）
+## 版本說明（What's New）— v1.3（✅ PM 2026-10-05 定稿）
 
-提升減壓估算的準確度。連續潛水現在會計入同一系列前幾支潛水的殘餘氮氣，因此免減壓時間可能比先前版本短。其他錯誤修正。
+提升減壓估算的準確度，並修正多項小問題。
 
 ---
 
@@ -300,9 +300,9 @@ GPS座標から地図上へ自動的にピンをドロップ。これまで訪�
 
 ---
 
-## 新機能（What's New）— v1.3（草案）
+## 新機能（What's New）— v1.3（✅ PM 2026-10-05 定稿）
 
-減圧の推定精度を改善しました。反復潜水では同じシリーズ内の以前の潜水による残留窒素を計算に含めるようになったため、無減圧時間が以前より短くなる場合があります。そのほかの不具合を修正しました。
+減圧推定の精度を改善し、複数の軽微な不具合を修正しました。
 
 ---
 
