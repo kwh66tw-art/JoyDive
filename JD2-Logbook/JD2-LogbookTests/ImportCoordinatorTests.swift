@@ -393,7 +393,10 @@ final class ImportCoordinatorTests: XCTestCase {
     /// 目標：< 2 秒解析全部（9+ 個檔案）
     /// v1.3 P1-3（PM 2026-10-04 核准 D5）：效能測試改量**本執行緒的 CPU 時間**，不量牆鐘時間。
     /// 原因：牆鐘時間會被同機其他負載（建置、模擬器、背景測試）拉長 ⇒ `testPerformance_SuuntoJSON_Repeated`
-    /// 時過時不過，但程式本身沒變慢。解析都在測試執行緒上同步跑，CPU 時間完整涵蓋。**門檻數字不變**。
+    /// 時過時不過，但程式本身沒變慢。解析都在測試執行緒上同步跑，CPU 時間完整涵蓋。
+    /// v1.3 P1-3 第二步（PM 2026-10-05 裁示 B）：只改 CPU 時間仍不穩——SuuntoJSON 正常就落在 58–100 ms（全套
+    /// 並行偶發 116／122 ms），舊門檻 100 ms 卡在常態上緣。**本專案決定**：效能門檻用來抓「慢好幾倍」的回歸，
+    /// 不是使用者體感門檻 ⇒ 一律設在常態值約 5 倍以上。常態值見各測試註解（量自 2026-10-04～05 全套與單類別執行）。
     static func threadCPUSeconds() -> Double {
         var ts = timespec()
         clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts)
@@ -442,7 +445,7 @@ final class ImportCoordinatorTests: XCTestCase {
         print("[Performance] \(parsedFiles) files, \(totalDives) dives, \(String(format: "%.3f", elapsed))s")
         print("[Performance] failed: \(failedFiles) / \(allTestFiles.count)")
 
-        // 目標：< 10s（保守基線，Garmin FIT 使用 C SDK 較慢）
+        // 門檻 10s：常態約 2s（全套執行的測試耗時）⇒ 約 5 倍，抓回歸用，不改
         XCTAssertLessThan(elapsed, 10.0,
             "批量解析 \(allTestFiles.count) 個檔案應在 10 秒內完成，實際: \(String(format: "%.3f", elapsed))s")
         XCTAssertGreaterThan(totalDives, 0, "至少應解析出 1 筆潛水記錄")
@@ -468,9 +471,9 @@ final class ImportCoordinatorTests: XCTestCase {
 
         print("[Performance] SuuntoJSON x\(iterations): \(String(format: "%.1f", perParse))ms/parse")
 
-        // 每次解析 < 100ms
-        XCTAssertLessThan(perParse, 100.0,
-            "SuuntoJSON 單次解析應 < 100ms，實際: \(String(format: "%.1f", perParse))ms")
+        // 門檻 500ms：常態 58–100ms/次（偶發 116／122ms）⇒ 約 5 倍，抓回歸用（PM 2026-10-05 裁示 B，原 100ms）
+        XCTAssertLessThan(perParse, 500.0,
+            "SuuntoJSON 單次解析應 < 500ms（常態 58–100ms，超過代表變慢約 5 倍），實際: \(String(format: "%.1f", perParse))ms")
     }
 
     /// 驗證去重邏輯效能（validateDives + 確認 deduplicateDives 不被誤呼叫）
@@ -498,6 +501,7 @@ final class ImportCoordinatorTests: XCTestCase {
         print("[Performance] validateDives(1000): \(String(format: "%.3f", elapsed))s")
 
         XCTAssertEqual(validated.count, 1000, "1000 筆合法潛水應全部通過驗證")
+        // 門檻 1s：常態 0.004–0.017s ⇒ 已遠超 5 倍，抓回歸用，不改
         XCTAssertLessThan(elapsed, 1.0, "validateDives 1000 筆應在 1 秒內完成")
     }
 
