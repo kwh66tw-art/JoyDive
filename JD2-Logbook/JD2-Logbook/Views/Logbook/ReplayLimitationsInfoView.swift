@@ -10,13 +10,9 @@ struct ReplayLimitationsInfoView: View {
     @Environment(AppLanguageManager.self) private var languageManager
     @Environment(\.dismiss) private var dismiss
 
+    // PM 2026-10-05 晚：只留一段（原第 1、2 條合併）；GF High、建模保守度揭露、「其他潛水僅顯示剖面」三條移除。
     private let lines = [
-        "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives.",
-        "Repetitive dives in the same series include residual nitrogen from the earlier dives.",
-        "Ceilings are calculated at the GF High setting throughout the dive.",
-        // PM 2026-10-03 定稿的建模揭露（F-20 節點 1），保留。
-        "The Bühlmann decompression model used by this app tracks residual nitrogen between dives, but it does not add extra conservatism for repetitive or multi-day diving. Follow the more conservative of your dive computer and this app.",
-        "Other dives show the depth profile only.",
+        "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives. Repetitive dives in the same series include residual nitrogen from the earlier dives.",
     ]
 
     var body: some View {

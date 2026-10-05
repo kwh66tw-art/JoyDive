@@ -830,36 +830,6 @@
         }
       }
     },
-    "Ceilings are calculated at the GF High setting throughout the dive.": {
-      "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ceilings are calculated at the GF High setting throughout the dive."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ceilings are calculated at the GF High setting throughout the dive."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "シーリングは潜水全体を通してGF Highの設定で計算します。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "上限深度全程以 GF High 設定計算。"
-          }
-        }
-      }
-    },
     "Developer Tools": {
       "comment": "DEBUG-only Settings section header (never shown in release builds).",
       "extractionState": "manual",
@@ -1560,66 +1530,6 @@
         }
       }
     },
-    "Other dives show the depth profile only.": {
-      "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Other dives show the depth profile only."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Other dives show the depth profile only."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "その他のダイビングでは水深プロファイルのみを表示します。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "其他潛水僅顯示深度剖面。"
-          }
-        }
-      }
-    },
-    "Repetitive dives in the same series include residual nitrogen from the earlier dives.": {
-      "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Repetitive dives in the same series include residual nitrogen from the earlier dives."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Repetitive dives in the same series include residual nitrogen from the earlier dives."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "同じシリーズの反復潜水では、それ以前の潜水の残留窒素を計算に含めます。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "同一系列的連續潛水會計入前幾支潛水的殘餘氮氣。"
-          }
-        }
-      }
-    },
     "Scuba": {
       "comment": "Dive mode option: scuba diving (family glossary term 'scuba')",
       "localizations": {
@@ -1846,61 +1756,32 @@
         }
       }
     },
-    "The Bühlmann decompression model used by this app tracks residual nitrogen between dives, but it does not add extra conservatism for repetitive or multi-day diving. Follow the more conservative of your dive computer and this app.": {
-      "comment": "Disclaimer: Bühlmann model does not add conservatism for repetitive dives; follow the more conservative of dive computer and app (PM 2026-10-03). Other 14 languages pending translation (fall back to English, the approved original).",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The Bühlmann decompression model used by this app tracks residual nitrogen between dives, but it does not add extra conservatism for repetitive or multi-day diving. Follow the more conservative of your dive computer and this app."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The Bühlmann decompression model used by this app tracks residual nitrogen between dives, but it does not add extra conservatism for repetitive or multi-day diving. Follow the more conservative of your dive computer and this app."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "本アプリが使用する Bühlmann 減圧モデルは、ダイビング間の残留窒素を計算しますが、反復潜水や連日潜水に対して保守性を追加することはありません。ダイブコンピューターと本アプリのうち、より保守的な方に従ってください。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "本 App 使用的 Bühlmann 減壓模型會計算潛水之間的殘餘氮氣，但不會因重複潛水或多日潛水而額外增加保守度。請以潛水電腦與本 App 兩者中較保守的一方為準。"
-          }
-        }
-      }
-    },
-    "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives.": {
+    "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives. Repetitive dives in the same series include residual nitrogen from the earlier dives.": {
       "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives."
+            "value": "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives. Repetitive dives in the same series include residual nitrogen from the earlier dives."
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives."
+            "value": "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives. Repetitive dives in the same series include residual nitrogen from the earlier dives."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "組織負荷はBühlmann ZHL-16Cモデルで参考値を計算します。レクリエーショナルスクーバダイビングが対象です。"
+            "value": "組織負荷はBühlmann ZHL-16Cモデルで参考値を計算します。レクリエーショナルスクーバダイビングが対象です。同じシリーズの反復潜水では、それ以前の潜水の残留窒素を計算に含めます。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "組織負荷以 Bühlmann ZHL-16C 模型計算參考值，適用休閒水肺潛水。"
+            "value": "組織負荷以 Bühlmann ZHL-16C 模型計算參考值，適用休閒水肺潛水。同一系列的連續潛水會計入前幾支潛水的殘餘氮氣。"
           }
         }
       }
