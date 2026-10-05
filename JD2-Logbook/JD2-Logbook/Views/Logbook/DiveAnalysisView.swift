@@ -371,11 +371,20 @@ struct DiveAnalysisView: View {
         // 這是翻譯內容長度無關的通用版面修法，另外也同一批把翻譯內容本身的多餘雙語
         // 冗字修掉（見 V1_2_BACKLOG）。
         VStack(spacing: 3) {
-            label
-                .font(.caption2)
-                .foregroundStyle(Color.accessibleSecondary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.65)
+            // v1.3（PM 2026-10-05）：先試原字級、放不下才換成可縮小的版本。
+            // 直接掛 `.minimumScaleFactor(0.65)` 時，Xcode 27 建置的版本在放得下的情況下
+            // 也把 label 縮到 65%（同一份程式碼，Xcode 26 建置的 v1.2 真機正常）——
+            // 拿掉該行即恢復原字級（模擬器 A/B 實驗，2026-10-05）。泰文等長譯文仍可縮小，不截斷。
+            ViewThatFits(in: .horizontal) {
+                label
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+                label
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.65)
+            }
+            .font(.caption2)
+            .foregroundStyle(Color.accessibleSecondary)
             Text(verbatim: value)
                 .font(.footnote.weight(.semibold).monospacedDigit())
                 .foregroundStyle(accent.textColor)
