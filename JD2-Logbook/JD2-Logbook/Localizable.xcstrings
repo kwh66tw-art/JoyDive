@@ -1530,6 +1530,29 @@
         }
       }
     },
+    "No supported dive log files found.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No supported dive log files found."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No supported dive log files found."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "找不到支援的潛水記錄檔案。"
+          }
+        }
+      }
+    },
     "Scuba": {
       "comment": "Dive mode option: scuba diving (family glossary term 'scuba')",
       "localizations": {
@@ -1752,6 +1775,75 @@
           "stringUnit": {
             "state": "translated",
             "value": "浮潛"
+          }
+        }
+      }
+    },
+    "The file is empty.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The file is empty."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The file is empty."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檔案是空的。"
+          }
+        }
+      }
+    },
+    "This file couldn't be read. It may be damaged.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This file couldn't be read. It may be damaged."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This file couldn't be read. It may be damaged."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法讀取此檔案，檔案可能已損毀。"
+          }
+        }
+      }
+    },
+    "This file format isn't supported.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This file format isn't supported."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This file format isn't supported."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不支援此檔案格式。"
           }
         }
       }

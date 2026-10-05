@@ -542,7 +542,7 @@ struct ImportWizardView: View {
                 }
 
                 guard !tempFiles.isEmpty else {
-                    step = .failure(message: "No supported dive log files found.")
+                    step = .failure(message: languageManager.localized("No supported dive log files found."))
                     return
                 }
 
@@ -554,7 +554,7 @@ struct ImportWizardView: View {
             }
 
         case .failure(let error):
-            step = .failure(message: error.localizedDescription)
+            step = .failure(message: userFacingReason(for: error))
         }
     }
 
@@ -583,6 +583,22 @@ struct ImportWizardView: View {
         return files.sorted { $0.lastPathComponent < $1.lastPathComponent }
     }
 
+    /// v1.3（PM 2026-10-05）：失敗原因只給使用者看得懂的一句話、走 App 內語言。
+    /// 原本直接顯示 `localizedDescription`——Kit 找不到解析器時把**檔案完整路徑**當原因
+    /// （`ImportBatchProcessor.swift:68`），畫面上出現沙盒路徑、且永遠是英文。
+    /// 技術細節只進 console，不上畫面。
+    private func userFacingReason(for error: Error) -> String {
+        print("[Import] failed: \(error)")
+        switch error as? DiveLogImportError {
+        case .unsupportedFormat?, .invalidFormat?:
+            return languageManager.localized("This file format isn't supported.")
+        case .emptyFile?:
+            return languageManager.localized("The file is empty.")
+        default:
+            return languageManager.localized("This file couldn't be read. It may be damaged.")
+        }
+    }
+
     /// 批次匯入：逐檔處理，更新 step 進度；完成後切到 success / failure
     private func runBatchImport(tempFiles: [(name: String, url: URL)]) async {
         let total = tempFiles.count
@@ -598,7 +614,7 @@ struct ImportWizardView: View {
                 allImported.append(contentsOf: result.dives)
                 totalSkipped += result.skippedDuplicates
             } catch {
-                failures.append(ImportFailure(fileName: file.name, reason: error.localizedDescription))
+                failures.append(ImportFailure(fileName: file.name, reason: userFacingReason(for: error)))
             }
 
             // 清理 temp 檔案
