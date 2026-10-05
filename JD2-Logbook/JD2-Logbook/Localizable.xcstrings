@@ -1875,32 +1875,32 @@
         }
       }
     },
-    "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives on a single gas — air or nitrox.": {
+    "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives.": {
       "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives on a single gas — air or nitrox."
+            "value": "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives."
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives on a single gas — air or nitrox."
+            "value": "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "組織負荷はBühlmann ZHL-16Cモデルで参考値を計算します。対象は単一ガス（空気またはナイトロックス）のレクリエーショナルスクーバダイビングです。"
+            "value": "組織負荷はBühlmann ZHL-16Cモデルで参考値を計算します。レクリエーショナルスクーバダイビングが対象です。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "組織負荷以 Bühlmann ZHL-16C 模型計算參考值，適用於使用單一氣體（空氣或 Nitrox（高氧））的休閒水肺潛水。"
+            "value": "組織負荷以 Bühlmann ZHL-16C 模型計算參考值，適用休閒水肺潛水。"
           }
         }
       }

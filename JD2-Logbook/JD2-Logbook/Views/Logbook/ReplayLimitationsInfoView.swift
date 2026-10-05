@@ -11,7 +11,7 @@ struct ReplayLimitationsInfoView: View {
     @Environment(\.dismiss) private var dismiss
 
     private let lines = [
-        "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives on a single gas — air or nitrox.",
+        "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives.",
         "Repetitive dives in the same series include residual nitrogen from the earlier dives.",
         "Ceilings are calculated at the GF High setting throughout the dive.",
         // PM 2026-10-03 定稿的建模揭露（F-20 節點 1），保留。
