@@ -336,8 +336,9 @@ struct DiveAnalysisView: View {
         var pillFill: Color? {
             switch self {
             case .neutral: return nil
-            case .warning: return .yellow
-            case .deco:    return .red
+            // v1.3（PM 2026-10-05）：家族語意色；Ceiling 原為紅色（家族中紅＝危險），改藍色（＝減壓停留）
+            case .warning: return ReplayColor.warning
+            case .deco:    return ReplayColor.deco
             }
         }
         var textColor: Color {
@@ -519,6 +520,9 @@ struct TissueBarsView: View {
                 ForEach(Array(loadPercents.enumerated()), id: \.offset) { _, percent in
                     RoundedRectangle(cornerRadius: 1.5)
                         .fill(barColor(percent))
+                        // 黃色在白底對比只有 1.41:1（WCAG 公式實算；F-25 §4.4）⇒ 加淡外框讓長條輪廓可辨（比照 App-u iPhone 端）
+                        .overlay(RoundedRectangle(cornerRadius: 1.5)
+                            .stroke(Color.primary.opacity(0.18), lineWidth: 0.5))
                         .frame(height: barHeight(percent))
                         .frame(maxWidth: .infinity, alignment: .bottom)
                 }
@@ -543,10 +547,13 @@ struct TissueBarsView: View {
         max(2, CGFloat(min(percent, 120) / 120) * 64)
     }
 
+    /// v1.3（PM 2026-10-05）：家族語意色（`ReplayColor`）；原為系統 .red／.orange／.green。
+    /// 門檻 80%／100%：**本專案決定**（100%＝超出 GF High 收緊後的水面 M-value，由定義而來；
+    /// 80% 的「接近上限」分界無外部出處）。
     private func barColor(_ percent: Double) -> Color {
-        if percent > 100 { return .red }      // 超出水面允許值（gfHigh M-value）
-        if percent > 80  { return .orange }    // 逼近上限
-        return .green
+        if percent > 100 { return ReplayColor.danger }
+        if percent > 80  { return ReplayColor.warning }
+        return ReplayColor.safe
     }
 }
 
