@@ -95,6 +95,27 @@ final class DiveReplayChainAdoptionTests: XCTestCase {
         XCTAssertEqual(reason, .technicalDive(chainIndex: 0, isTargetDive: true))
     }
 
+    /// v1.3（PM 2026-10-05）：匯入時標記 `gasMixConfidence=unknown`（例：Garmin FIT 多氣體／CCR）
+    /// 的潛水，即使 gasMixJSON 是合法的 "air"，重放也必須拒算——先前 App 從未讀這個標記。
+    func testImportFlaggedUnknownGasIsReportedAsAnomaly() {
+        let dive = makeDive(at: Date(), depth: 30, seconds: 2400)
+        dive.importExtrasJSON = #"{"gasMixConfidence":"unknown"}"#
+        XCTAssertEqual(dive.replayGasMixConfidence, .unknown)
+
+        guard case .anomaly(let reason) =
+                DiveReplayEngine.replayChain(target: dive.replayInput, precedingDives: [])
+        else { return XCTFail("匯入標記氣體不可信，應被前置判斷攔下") }
+        XCTAssertEqual(reason, .unknownGasMix(chainIndex: 0, isTargetDive: true))
+    }
+
+    func testUnflaggedAirDiveStillReplays() {
+        let dive = makeDive(at: Date(), depth: 18, seconds: 2400)
+        dive.importExtrasJSON = #"{"deviceSerial":"123"}"#
+        XCTAssertEqual(dive.replayGasMixConfidence, .confirmed)
+        guard case .replayed = DiveReplayEngine.replayChain(target: dive.replayInput, precedingDives: [])
+        else { return XCTFail("沒有不可信標記的空氣潛水應照常重放") }
+    }
+
     // MARK: - ③ 前導潛水查詢（96h 窗口）
 
     func testPrecedingDivesQueryWindow() throws {

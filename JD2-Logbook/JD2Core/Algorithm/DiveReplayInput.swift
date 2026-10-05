@@ -41,8 +41,14 @@ extension DiveLog {
     }
 
     /// R-058／R-008：`replayGasMix` 這個具體值是否真的可信。
+    ///
+    /// v1.3（PM 2026-10-05）：另讀匯入時的 `importExtras["gasMixConfidence"] == "unknown"`。
+    /// DiveImportKit 七支解析器（v0.7.2 起含 Garmin FIT：多氣體／循環呼吸器／缺氣體）在來源
+    /// 無法確定單一氣體時寫入此標記，但先前本 App 只看解碼失敗、**從未讀它**⇒ 這些潛水仍被
+    /// 當成確定的空氣／高氧重放。標記只在匯入時寫入；使用者手動改氣體**不會**清掉它（保守）。
     var replayGasMixConfidence: DiveReplayEngine.GasMixConfidence {
-        decodedGasMix != nil ? .confirmed : .unknown
+        guard decodedGasMix != nil else { return .unknown }
+        return importExtras["gasMixConfidence"] == "unknown" ? .unknown : .confirmed
     }
 
     /// 攤平成 Kit 的中性輸入。
