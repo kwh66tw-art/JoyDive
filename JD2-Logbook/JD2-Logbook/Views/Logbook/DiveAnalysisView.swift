@@ -132,8 +132,9 @@ struct DiveAnalysisView: View {
                 ))
             }
 
-            hintRow
-            replayLimitationsNotice
+            if replay != nil {
+                hintRow
+            }
         }
         .sheet(isPresented: $showingLimitations) {
             ReplayLimitationsInfoView()
@@ -168,75 +169,41 @@ struct DiveAnalysisView: View {
         }
     }
 
-    // MARK: - 前置判斷異常說明（組織艙區塊的替代內容）
-    // 設計文件第四節：前置判斷任一成立 → 整個 tissue loading 重放不計算，原本放
-    // 組織艙飽和度的區塊改顯示說明訊息，**深度剖面與 Time／Depth／Temp 照常**。
-    //
-    // 🔑 文案定版 2026-09-12（PM 全案裁示，取代 V1_2_BACKLOG #24 的 2026-08-22 定版
-    // ——那版是六種異常共用一段，之後 `Anomaly` 變 8 種、其中一種性質也改了）：
-    // `../_JD2-family/decisions/2026-09-12_重放異常的文案細分與UI重新設計-PM裁示.md`
-    //
-    // 🔴 **"available" 與 "applicable" 只差一個字，但它決定使用者覺得
-    // 「app 有問題」還是「這種潛水本來就沒有」**——B／C 都不是故障：模型本來就
-    // 不適用於閉氣潛水，也不能跨大氣基準線做殘氮延續。不要在翻譯或改寫時合併這兩句。
+    // MARK: - 組織負荷說明（PM 2026-10-05：只分「支援／不支援」，各一句）
+    // 取代 2026-09-12 裁示的 available／applicable 兩句分流與圖下揭露句
+    // （`../_JD2-family/decisions/2026-09-12_重放異常的文案細分與UI重新設計-PM裁示.md`）。
+    // 兩句互斥：重放成功 ⇒ 提示列；被拒算 ⇒ 不支援說明。句尾連結都開 ⓘ 頁。
+    // 深度剖面與 Time／Depth／Temp 照常可拖曳查看，不受是否支援影響。
+    // 字串一律走 `languageManager.localized(_:)`：App 內語言切換後才會即時生效（v1.2 #17）。
 
-    // D9（PM 2026-10-05）：不再附「查看詳情 ⓘ」——說明頁入口統一由下方提示列的「(有限支援 ⓘ)」提供。
+    /// 不支援：「本次潛水無法顯示互動式組織負荷 — 查看詳情 ⓘ」。
     private func tissueUnavailableNotice(_ anomaly: DiveReplayEngine.Anomaly) -> some View {
-        Text(verbatim: languageManager.localized(AnomalyClass(anomaly).tissueNoticeKey))
+        Button {
+            showingLimitations = true
+        } label: {
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(verbatim: languageManager.localized("Interactive tissue loading is not available for this dive — see detail"))
+                Image(systemName: "info.circle")
+            }
             .font(.caption)
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, alignment: .leading)
             .multilineTextAlignment(.leading)
-            .accessibilityIdentifier("replayAnomalyNotice")
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("replayAnomalyNotice")
     }
 
-    /// 異常分三類（PM 2026-09-12 裁示 1）。**分類只影響文案語意，不影響是否拒算**。
-    private enum AnomalyClass {
-        /// A 資料問題（6 種）：這筆紀錄的資料無法支持重放 ⇒ "not available"
-        case dataProblem
-        /// B 不適用（`breathHoldTarget`）：模型本來就不適用 ⇒ "not applicable"
-        case notApplicable
-        /// C 環境不同（`inconsistentEnvironment`）：無法跨大氣基準線延續殘氮 ⇒ "not applicable"
-        case differentEnvironment
-
-        init(_ anomaly: DiveReplayEngine.Anomaly) {
-            switch anomaly {
-            case .breathHoldTarget:
-                self = .notApplicable
-            case .inconsistentEnvironment:
-                self = .differentEnvironment
-            case .technicalDive, .unknownGasMix, .overlappingDives,
-                 .implausibleTiming, .seriesIndexMismatch, .precedingProfileSamplesMissing:
-                self = .dataProblem
-            }
-        }
-
-        var tissueNoticeKey: String {
-            switch self {
-            case .dataProblem:
-                return "Interactive tissue loading is not available for this dive"
-            case .notApplicable, .differentEnvironment:
-                return "Interactive tissue loading is not applicable for this dive"
-            }
-        }
-    }
-
-    // MARK: - 提示列（PM 2026-09-12 裁示 4.2；2026-10-05 D9 改為單句）
-    // 「Limited support ⓘ」恆常可達：ⓘ 頁說明支援範圍，重放正常時同樣適用。
-    // D9（PM 2026-10-05）：說明與「(有限支援 ⓘ)」合成一段文字、自然換行——
-    // 原本 HStack 分欄時繁中會把句子從中間截斷。括號段是連結，點了開 ⓘ 頁。
+    /// 支援：「點選並拖曳剖面圖，可用 Bühlmann ZHL-16C 估算潛水過程中的狀態 — 有限支援 ⓘ」。
+    /// 合成一段文字自然換行（D9：HStack 分欄時中文會從句中截斷）；「有限支援 ⓘ」是連結。
     private static let limitationsURL = URL(string: "jd2logbook-internal://replay-limitations")!
 
     private var hintText: AttributedString {
-        var text = AttributedString()
-        if selectedIndex == nil {
-            // 走 localized(_:) 而非 Text 字面量：App 內語言切換後才會即時生效（v1.2 #17）
-            let hint = languageManager.localized("Touch and drag the profile to inspect any moment of the dive.")
-            text += AttributedString(hint)
-            // 拉丁文句尾（句點）後空一格；中日文直接接括號
-            if hint.last?.isASCII == true { text += AttributedString(" ") }
-        }
-        var link = AttributedString("(" + languageManager.localized("Limited support") + " ⓘ)")
+        var text = AttributedString(languageManager.localized(
+            "Touch and drag the profile to see the dive at any moment, estimated with Bühlmann ZHL-16C"
+        ))
+        text += AttributedString(" — ")
+        var link = AttributedString(languageManager.localized("Limited support") + " ⓘ")
         link.link = Self.limitationsURL
         text += link
         return text
@@ -254,21 +221,6 @@ struct DiveAnalysisView: View {
                 return .handled
             })
             .accessibilityIdentifier("replayLimitedSupportButton")
-    }
-
-    // MARK: - 一般性重放限制揭露
-    // 圖下說明（PM 2026-10-05：精簡、正面）：有重放結果時說明數字的來源；其餘說明在 ⓘ 頁。
-    @ViewBuilder
-    private var replayLimitationsNotice: some View {
-        if replay != nil {
-            Text(verbatim: languageManager.localized(
-                "Estimated using Bühlmann ZHL-16C from the imported profile only."
-            ))
-            .font(.caption2)
-            .foregroundStyle(.tertiary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .accessibilityIdentifier("replayLimitationsNotice")
-        }
     }
 
     // MARK: - 互動剖面圖

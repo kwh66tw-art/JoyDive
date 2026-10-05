@@ -22481,114 +22481,25 @@
         }
       }
     },
-    "Touch and drag the profile to inspect any moment of the dive.": {
+    "Touch and drag the profile to see the dive at any moment, estimated with Bühlmann ZHL-16C": {
+      "extractionState": "manual",
       "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Berühre und ziehe über das Profil, um jeden Moment des Tauchgangs zu untersuchen."
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Αγγίξτε και σύρετε το προφίλ για να εξετάσετε οποιαδήποτε στιγμή της κατάδυσης."
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Touch and drag the profile to inspect any moment of the dive."
+            "value": "Touch and drag the profile to see the dive at any moment, estimated with Bühlmann ZHL-16C"
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "Touch and drag the profile to inspect any moment of the dive."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toca y arrastra el perfil para inspeccionar cualquier momento de la inmersión."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Touchez et faites glisser le profil pour examiner n'importe quel instant de la plongée."
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dodirnite i povucite profil kako biste pregledali bilo koji trenutak urona."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sentuh dan geser profil untuk memeriksa momen mana pun dalam penyelaman."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tocca e trascina il profilo per esaminare qualsiasi momento dell'immersione."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "プロファイルをタッチしてドラッグすると、潜水中の任意の瞬間を確認できます。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "프로필을 터치하고 드래그하면 다이빙의 특정 순간을 확인할 수 있습니다."
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sentuh dan seret profil untuk memeriksa mana-mana detik semasa selaman."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Raak het profiel aan en sleep om elk moment van de duik te bekijken."
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toque e arraste o perfil para inspecionar qualquer momento do mergulho."
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "แตะและลากโปรไฟล์เพื่อตรวจสอบช่วงเวลาใด ๆ ของการดำน้ำ"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Chạm và kéo trên hồ sơ để xem bất kỳ thời điểm nào của lần lặn."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "触摸并拖曳剖面图，可查看潜水过程中任一时刻的状态。"
+            "value": "Touch and drag the profile to see the dive at any moment, estimated with Bühlmann ZHL-16C"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "點選並拖曳剖面圖，可查看潛水過程中狀態"
+            "value": "點選並拖曳剖面圖，可用 Bühlmann ZHL-16C 估算潛水過程中的狀態"
           }
         }
       }
@@ -25292,228 +25203,115 @@
         }
       }
     },
-    "Interactive tissue loading is not available for this dive": {
+    "Interactive tissue loading is not available for this dive — see detail": {
       "extractionState": "manual",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interaktive Gewebebelastung ist für diesen Tauchgang nicht verfügbar"
+            "value": "Interaktive Gewebebelastung ist für diesen Tauchgang nicht verfügbar — Details anzeigen"
           }
         },
         "el": {
           "stringUnit": {
             "state": "translated",
-            "value": "Η διαδραστική φόρτωση ιστών δεν είναι διαθέσιμη για αυτήν την κατάδυση"
+            "value": "Η διαδραστική φόρτωση ιστών δεν είναι διαθέσιμη για αυτήν την κατάδυση — δείτε λεπτομέρειες"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interactive tissue loading is not available for this dive"
+            "value": "Interactive tissue loading is not available for this dive — see detail"
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interactive tissue loading is not available for this dive"
+            "value": "Interactive tissue loading is not available for this dive — see detail"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "La carga tisular interactiva no está disponible para esta inmersión"
+            "value": "La carga tisular interactiva no está disponible para esta inmersión — ver detalle"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "La charge tissulaire interactive n'est pas disponible pour cette plongée"
+            "value": "La charge tissulaire interactive n'est pas disponible pour cette plongée — voir le détail"
           }
         },
         "hr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interaktivno opterećenje tkiva nije dostupno za ovaj uron"
+            "value": "Interaktivno opterećenje tkiva nije dostupno za ovaj uron — vidi detalje"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Beban jaringan interaktif tidak tersedia untuk penyelaman ini"
+            "value": "Beban jaringan interaktif tidak tersedia untuk penyelaman ini — lihat detail"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Il carico tissutale interattivo non è disponibile per questa immersione"
+            "value": "Il carico tissutale interattivo non è disponibile per questa immersione — vedi dettaglio"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "このダイビングではインタラクティブな組織負荷を利用できません"
+            "value": "このダイビングではインタラクティブな組織負荷を利用できません — 詳細を見る"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "이 다이빙에서는 인터랙티브 조직 부하를 사용할 수 없습니다"
+            "value": "이 다이빙에서는 인터랙티브 조직 부하를 사용할 수 없습니다 — 자세히 보기"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bebanan tisu interaktif tidak tersedia untuk penyelaman ini"
+            "value": "Bebanan tisu interaktif tidak tersedia untuk penyelaman ini — lihat butiran"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interactieve weefselbelasting is niet beschikbaar voor deze duik"
+            "value": "Interactieve weefselbelasting is niet beschikbaar voor deze duik — bekijk details"
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "A carga tecidual interativa não está disponível para este mergulho"
+            "value": "A carga tecidual interativa não está disponível para este mergulho — ver detalhe"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ภาระเนื้อเยื่อแบบอินเทอร์แอกทีฟไม่พร้อมใช้งานสำหรับการดำน้ำครั้งนี้"
+            "value": "ภาระเนื้อเยื่อแบบอินเทอร์แอกทีฟไม่พร้อมใช้งานสำหรับการดำน้ำครั้งนี้ — ดูรายละเอียด"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tải trọng mô tương tác không có sẵn cho lần lặn này"
+            "value": "Tải trọng mô tương tác không có sẵn cho lần lặn này — xem chi tiết"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "本次潜水无法显示交互式组织负荷"
+            "value": "本次潜水无法显示交互式组织负荷 — 查看详情"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "本次潛水無法顯示互動式組織負荷"
-          }
-        }
-      }
-    },
-    "Interactive tissue loading is not applicable for this dive": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Interaktive Gewebebelastung ist für diesen Tauchgang nicht anwendbar"
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Η διαδραστική φόρτωση ιστών δεν εφαρμόζεται σε αυτήν την κατάδυση"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Interactive tissue loading is not applicable for this dive"
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Interactive tissue loading is not applicable for this dive"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La carga tisular interactiva no es aplicable a esta inmersión"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La charge tissulaire interactive ne s'applique pas à cette plongée"
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Interaktivno opterećenje tkiva nije primjenjivo na ovaj uron"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beban jaringan interaktif tidak berlaku untuk penyelaman ini"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Il carico tissutale interattivo non è applicabile a questa immersione"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "このダイビングにはインタラクティブな組織負荷が該当しません"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "이 다이빙에는 인터랙티브 조직 부하가 해당되지 않습니다"
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bebanan tisu interaktif tidak berkenaan bagi penyelaman ini"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Interactieve weefselbelasting is niet van toepassing op deze duik"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "A carga tecidual interativa não se aplica a este mergulho"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ภาระเนื้อเยื่อแบบอินเทอร์แอกทีฟไม่ใช้กับการดำน้ำครั้งนี้"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tải trọng mô tương tác không áp dụng cho lần lặn này"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "交互式组织负荷不适用于本次潜水"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "互動式組織負荷不適用於本次潛水"
+            "value": "本次潛水無法顯示互動式組織負荷 — 查看詳情"
           }
         }
       }
@@ -25627,119 +25425,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "有限支援"
-          }
-        }
-      }
-    },
-    "Estimated using Bühlmann ZHL-16C from the imported profile only.": {
-      "extractionState": "manual",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Geschätzt mit Bühlmann ZHL-16C ausschließlich auf Basis des importierten Profils."
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Εκτίμηση με χρήση Bühlmann ZHL-16C μόνο από το εισαγόμενο προφίλ."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Estimated using Bühlmann ZHL-16C from the imported profile only."
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Estimated using Bühlmann ZHL-16C from the imported profile only."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Estimado con Bühlmann ZHL-16C solo a partir del perfil importado."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Estimation avec Bühlmann ZHL-16C basée uniquement sur le profil importé."
-          }
-        },
-        "hr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Procijenjeno pomoću Bühlmann ZHL-16C samo na temelju uvezenog profila."
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diperkirakan menggunakan Bühlmann ZHL-16C hanya dari profil yang diimpor."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stimato con Bühlmann ZHL-16C basandosi solo sul profilo importato."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "インポートしたプロファイルのみから Bühlmann ZHL-16C で推定しています。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "가져온 프로필만을 기반으로 Bühlmann ZHL-16C를 사용해 추정한 값입니다."
-          }
-        },
-        "ms": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dianggarkan menggunakan Bühlmann ZHL-16C hanya daripada profil yang diimport."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Geschat met Bühlmann ZHL-16C, uitsluitend op basis van het geïmporteerde profiel."
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Estimado com Bühlmann ZHL-16C apenas a partir do perfil importado."
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ประมาณการโดยใช้ Bühlmann ZHL-16C จากโปรไฟล์ที่นำเข้าเท่านั้น"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ước tính bằng Bühlmann ZHL-16C chỉ dựa trên hồ sơ đã nhập."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "仅根据导入的剖面数据，使用 Bühlmann ZHL-16C 估算。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "僅根據匯入的剖面資料，使用 Bühlmann ZHL-16C 估算。"
           }
         }
       }
