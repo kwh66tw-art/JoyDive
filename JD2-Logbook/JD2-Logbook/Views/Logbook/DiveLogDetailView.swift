@@ -236,7 +236,8 @@ struct DiveLogDetailView: View {
             }
 
             // ── 原始資料（v1.1 #6/#7：匯入來源無對應欄位的原始資料，可折疊）──
-            let extras = dive.importExtras
+            // 內部標記不是來源資料，不顯示（v1.3：Garmin 氣體已驗證標記）
+            let extras = dive.importExtras.filter { $0.key != DiveLog.garminGasVerifiedKey }
             if !extras.isEmpty {
                 Section {
                     DisclosureGroup(languageManager.localized("Raw Import Data")) {

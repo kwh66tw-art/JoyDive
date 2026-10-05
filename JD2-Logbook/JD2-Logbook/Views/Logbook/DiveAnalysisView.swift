@@ -345,7 +345,8 @@ struct DiveAnalysisView: View {
             switch self {
             case .neutral: return .primary
             case .warning: return .black
-            case .deco:    return .white
+            // 黑字：白字在 deco 藍上 3.98:1（< WCAG AA 4.5:1），黑字 5.27:1（PM 2026-10-05）
+            case .deco:    return .black
             }
         }
     }
@@ -456,6 +457,8 @@ struct DiveAnalysisView: View {
         switch kind {
         // 2026-09-29（PM，上升速率改制；_JD2-family/decisions/2026-09-29_上升速率改制-18漏桶.md）：
         //   `.ascentSustained` 改為「> 18 m/min 累積 5 s」＝兩者中較嚴重者 ⇒ 紅；`.ascentRateExceeded`（> 9）⇒ 橘。原本兩色相反。
+        // ⚠️ 本功能目前關閉（showWarningEvents=false）。重新開放前改用家族語意色
+        // （`ReplayColor.warning`／`.danger`，F-25 §4.4）——橘色不在家族色盤（PM 2026-10-05）。
         case .ascentRateExceeded:  return .orange
         case .ascentSustained:     return .red
         }

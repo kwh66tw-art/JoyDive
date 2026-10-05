@@ -83,7 +83,13 @@ func makeDiveLog(from parsed: DiveImportKit.ParsedDiveLog) -> DiveLog {
     }
 
     // 匯入原始資料：Kit 結構化陣列 → 既有 sortedKeys JSON dict 字串
-    dive.importExtrasJSON = buildImportExtrasJSON(parsed.importExtras.map { ($0.key, $0.value) })
+    var extras = parsed.importExtras.map { ($0.key, $0.value) }
+    // v1.3（PM 2026-10-05）：Garmin FIT 的氣體由修正後的 DiveImportKit（v0.7.2，讀 GMN 259）解析——
+    // 標記下來，重放據此區分「舊版匯入、氣體一律被寫成 air」的紀錄（見 `DiveLog.replayGasMixConfidence`）。
+    if parsed.sourceFormat == "garmin" {
+        extras.append((DiveLog.garminGasVerifiedKey, "v0.7.2"))
+    }
+    dive.importExtrasJSON = buildImportExtrasJSON(extras)
 
     return dive
 }
@@ -207,7 +213,8 @@ func makeTestParsedDiveLog(
     maxDepth: Double,
     diveTimeSeconds: Int,
     roundtripID: String?,
-    waterTemperature: Double? = nil
+    waterTemperature: Double? = nil,
+    sourceFormat: String = "manual"
 ) -> DiveImportKit.ParsedDiveLog {
     DiveImportKit.ParsedDiveLog(
         dateTime: dateTime,
@@ -215,6 +222,7 @@ func makeTestParsedDiveLog(
         maxDepth: maxDepth,
         diveTimeSeconds: diveTimeSeconds,
         waterTemperature: waterTemperature,
+        sourceFormat: sourceFormat,
         importExtras: roundtripID.map {
             [DiveImportKit.ImportExtra(key: DiveImportKit.jd2RoundtripIDKey, value: $0)]
         } ?? []

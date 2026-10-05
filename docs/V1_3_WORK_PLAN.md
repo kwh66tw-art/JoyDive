@@ -145,8 +145,8 @@ P0-1 → P0-2 → P0-3 → P1-1～P1-5 → 翻譯 → 送審收尾。每項完�
 | Garmin FIT 氣體全變 air（DiveImportKit 讀錯訊息號 269→259） | ✅ DiveImportKit **v0.7.2** | DIK `8f34180`／`9efb13d` | DIK 368/0/0；故障注入 RED（4/5） |
 | 重放讀取匯入的 `gasMixConfidence=unknown`（先前從未讀） | ✅ | `f2bdfc7` | 全套 152/0/1（+2）；截圖 `17`（Sensus 標記不可信 ⇒ 現在正確拒算） |
 | 重放分析語意色（組織負荷綠黃紅＋外框、Ceiling 紅→藍、No Deco 黃） | ✅ | 本次提交 | 截圖 `18`（淺）、`19`（深）；F-25 §4.4 新增 |
-| ⏳ 已匯入的 Garmin 紀錄仍為 air（不會自動更正） | 待 PM | — | 例：2023-10-21 62 m 仍可重放（截圖 `18`） |
-| ⏳ Ceiling 白字在藍底 3.98:1（< AA 4.5:1） | 待 PM | — | 黑字為 5.27:1 |
-| ⏳ 上升速率警示圖示仍用 .orange／.red | 待 PM | — | — |
+| 已匯入的 Garmin 紀錄（舊版讀錯氣體） | ✅ PM 裁示 A | 本次提交 | 匯入時標記 `jd2GarminGasVerified`；無標記的 Garmin FIT 一律視為氣體不可信（含 v1.2 資料、備份還原，免遷移）；截圖 `20`（62 m 舊紀錄現已拒算）；+3 測試 |
+| Ceiling 膠囊改黑字（白 3.98:1 未達 AA；黑 5.27:1；藍字無膠囊亦 3.98／4.27 不過） | ✅ PM 裁示 | 本次提交 | 截圖 `21` |
+| 上升速率警示 | 功能關閉中（`showWarningEvents=false`），使用者看不到；程式加註重開前改家族色 | 本次提交 | `DiveAnalysisView.swift:31` |
 | ⏳ 匯入不辨識潛水模式（自潛／浮潛皆當水肺） | 依 10/04 裁示：待 App-u 定案 | — | 2026-02-05 樣本來源記 Mode=0、21% O₂、12 L 氣瓶 |
 | ⏳ App-u iPhone 端 No Deco 警示門檻為 < 10 min（引擎為 ≤ 5 min） | 另案（App-u） | — | `JD2UltraPhone/UI/Logbook/DiveAnalysisView.swift:261` |

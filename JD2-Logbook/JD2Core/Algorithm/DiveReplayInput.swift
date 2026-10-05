@@ -46,10 +46,23 @@ extension DiveLog {
     /// DiveImportKit 七支解析器（v0.7.2 起含 Garmin FIT：多氣體／循環呼吸器／缺氣體）在來源
     /// 無法確定單一氣體時寫入此標記，但先前本 App 只看解碼失敗、**從未讀它**⇒ 這些潛水仍被
     /// 當成確定的空氣／高氧重放。標記只在匯入時寫入；使用者手動改氣體**不會**清掉它（保守）。
+    ///
+    /// Garmin FIT（PM 2026-10-05 裁示 A）：DiveImportKit v0.7.2 前讀錯訊息號，**所有** Garmin FIT
+    /// 的氣體一律被寫成 "air"（技術潛水也是）。沒有 `garminGasVerifiedKey` 標記的 Garmin 紀錄
+    /// ＝舊版匯入（含 v1.2 使用者資料、備份還原），一律視為不可信——不需要遷移，備份還原也涵蓋。
     var replayGasMixConfidence: DiveReplayEngine.GasMixConfidence {
         guard decodedGasMix != nil else { return .unknown }
-        return importExtras["gasMixConfidence"] == "unknown" ? .unknown : .confirmed
+        let extras = importExtras
+        if extras["gasMixConfidence"] == "unknown" { return .unknown }
+        if Self.garminFITSourceFormats.contains(sourceFormat.lowercased()),
+           extras[Self.garminGasVerifiedKey] == nil { return .unknown }
+        return .confirmed
     }
+
+    /// 匯入時寫入的標記：這筆 Garmin FIT 的氣體由修正後的 DiveImportKit 解析（值＝Kit 版本）。
+    static let garminGasVerifiedKey = "jd2GarminGasVerified"
+    /// `DiveLogDetailView.sourceFormatDisplayName` 中對應 "Garmin Descent" 的兩個字串
+    static let garminFITSourceFormats: Set<String> = ["garmin", "garmin-fit"]
 
     /// 攤平成 Kit 的中性輸入。
     ///

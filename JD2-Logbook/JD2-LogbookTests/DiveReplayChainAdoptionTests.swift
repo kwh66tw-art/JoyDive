@@ -116,6 +116,35 @@ final class DiveReplayChainAdoptionTests: XCTestCase {
         else { return XCTFail("沒有不可信標記的空氣潛水應照常重放") }
     }
 
+    /// v1.3（PM 2026-10-05 裁示 A）：舊版匯入的 Garmin FIT（無已驗證標記）氣體一律被寫成 air ⇒ 視為不可信。
+    func testLegacyGarminFITWithoutVerifiedMarkIsUnknown() {
+        let dive = makeDive(at: Date(), depth: 30, seconds: 2400)
+        dive.sourceFormat = "garmin"
+        XCTAssertEqual(dive.replayGasMixConfidence, .unknown)
+        guard case .anomaly(let reason) =
+                DiveReplayEngine.replayChain(target: dive.replayInput, precedingDives: [])
+        else { return XCTFail("舊版 Garmin 匯入應被前置判斷攔下") }
+        XCTAssertEqual(reason, .unknownGasMix(chainIndex: 0, isTargetDive: true))
+    }
+
+    func testVerifiedGarminFITReplays() {
+        let dive = makeDive(at: Date(), depth: 18, seconds: 2400, gasMixJSON: #"{"nitrox":{"fO2":0.33}}"#)
+        dive.sourceFormat = "garmin"
+        dive.importExtrasJSON = "{\"\(DiveLog.garminGasVerifiedKey)\":\"v0.7.2\"}"
+        XCTAssertEqual(dive.replayGasMixConfidence, .confirmed)
+    }
+
+    func testAdapterMarksGarminImportsAsVerified() {
+        let garmin = makeDiveLog(from: makeTestParsedDiveLog(
+            dateTime: Date(), location: "", maxDepth: 18, diveTimeSeconds: 2400,
+            roundtripID: nil, sourceFormat: "garmin"))
+        XCTAssertEqual(garmin.importExtras[DiveLog.garminGasVerifiedKey], "v0.7.2")
+        let uddf = makeDiveLog(from: makeTestParsedDiveLog(
+            dateTime: Date(), location: "", maxDepth: 18, diveTimeSeconds: 2400,
+            roundtripID: nil, sourceFormat: "uddf"))
+        XCTAssertNil(uddf.importExtras[DiveLog.garminGasVerifiedKey])
+    }
+
     // MARK: - ③ 前導潛水查詢（96h 窗口）
 
     func testPrecedingDivesQueryWindow() throws {
