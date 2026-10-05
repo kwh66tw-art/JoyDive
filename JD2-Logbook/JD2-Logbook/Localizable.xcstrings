@@ -22588,7 +22588,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "點選並拖曳剖面圖，可查看潛水過程中任一時刻的狀態。"
+            "value": "點選並拖曳剖面圖，可查看潛水過程中狀態"
           }
         }
       }
@@ -25292,228 +25292,228 @@
         }
       }
     },
-    "Interactive tissue loading is not available for this dive — see detail": {
+    "Interactive tissue loading is not available for this dive": {
       "extractionState": "manual",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interaktive Gewebebelastung ist für diesen Tauchgang nicht verfügbar — Details anzeigen"
+            "value": "Interaktive Gewebebelastung ist für diesen Tauchgang nicht verfügbar"
           }
         },
         "el": {
           "stringUnit": {
             "state": "translated",
-            "value": "Η διαδραστική φόρτωση ιστών δεν είναι διαθέσιμη για αυτήν την κατάδυση — δείτε λεπτομέρειες"
+            "value": "Η διαδραστική φόρτωση ιστών δεν είναι διαθέσιμη για αυτήν την κατάδυση"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interactive tissue loading is not available for this dive — see detail"
+            "value": "Interactive tissue loading is not available for this dive"
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interactive tissue loading is not available for this dive — see detail"
+            "value": "Interactive tissue loading is not available for this dive"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "La carga tisular interactiva no está disponible para esta inmersión — ver detalle"
+            "value": "La carga tisular interactiva no está disponible para esta inmersión"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "La charge tissulaire interactive n'est pas disponible pour cette plongée — voir le détail"
+            "value": "La charge tissulaire interactive n'est pas disponible pour cette plongée"
           }
         },
         "hr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interaktivno opterećenje tkiva nije dostupno za ovaj uron — vidi detalje"
+            "value": "Interaktivno opterećenje tkiva nije dostupno za ovaj uron"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Beban jaringan interaktif tidak tersedia untuk penyelaman ini — lihat detail"
+            "value": "Beban jaringan interaktif tidak tersedia untuk penyelaman ini"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Il carico tissutale interattivo non è disponibile per questa immersione — vedi dettaglio"
+            "value": "Il carico tissutale interattivo non è disponibile per questa immersione"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "このダイビングではインタラクティブな組織負荷を利用できません — 詳細を見る"
+            "value": "このダイビングではインタラクティブな組織負荷を利用できません"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "이 다이빙에서는 인터랙티브 조직 부하를 사용할 수 없습니다 — 자세히 보기"
+            "value": "이 다이빙에서는 인터랙티브 조직 부하를 사용할 수 없습니다"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bebanan tisu interaktif tidak tersedia untuk penyelaman ini — lihat butiran"
+            "value": "Bebanan tisu interaktif tidak tersedia untuk penyelaman ini"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interactieve weefselbelasting is niet beschikbaar voor deze duik — bekijk details"
+            "value": "Interactieve weefselbelasting is niet beschikbaar voor deze duik"
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "A carga tecidual interativa não está disponível para este mergulho — ver detalhe"
+            "value": "A carga tecidual interativa não está disponível para este mergulho"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ภาระเนื้อเยื่อแบบอินเทอร์แอกทีฟไม่พร้อมใช้งานสำหรับการดำน้ำครั้งนี้ — ดูรายละเอียด"
+            "value": "ภาระเนื้อเยื่อแบบอินเทอร์แอกทีฟไม่พร้อมใช้งานสำหรับการดำน้ำครั้งนี้"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tải trọng mô tương tác không có sẵn cho lần lặn này — xem chi tiết"
+            "value": "Tải trọng mô tương tác không có sẵn cho lần lặn này"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "本次潜水无法显示交互式组织负荷 — 查看详情"
+            "value": "本次潜水无法显示交互式组织负荷"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "本次潛水無法顯示互動式組織負荷 — 查看詳情"
+            "value": "本次潛水無法顯示互動式組織負荷"
           }
         }
       }
     },
-    "Interactive tissue loading is not applicable for this dive — see detail": {
+    "Interactive tissue loading is not applicable for this dive": {
       "extractionState": "manual",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interaktive Gewebebelastung ist für diesen Tauchgang nicht anwendbar — Details anzeigen"
+            "value": "Interaktive Gewebebelastung ist für diesen Tauchgang nicht anwendbar"
           }
         },
         "el": {
           "stringUnit": {
             "state": "translated",
-            "value": "Η διαδραστική φόρτωση ιστών δεν εφαρμόζεται σε αυτήν την κατάδυση — δείτε λεπτομέρειες"
+            "value": "Η διαδραστική φόρτωση ιστών δεν εφαρμόζεται σε αυτήν την κατάδυση"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interactive tissue loading is not applicable for this dive — see detail"
+            "value": "Interactive tissue loading is not applicable for this dive"
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interactive tissue loading is not applicable for this dive — see detail"
+            "value": "Interactive tissue loading is not applicable for this dive"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "La carga tisular interactiva no es aplicable a esta inmersión — ver detalle"
+            "value": "La carga tisular interactiva no es aplicable a esta inmersión"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "La charge tissulaire interactive ne s'applique pas à cette plongée — voir le détail"
+            "value": "La charge tissulaire interactive ne s'applique pas à cette plongée"
           }
         },
         "hr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interaktivno opterećenje tkiva nije primjenjivo na ovaj uron — vidi detalje"
+            "value": "Interaktivno opterećenje tkiva nije primjenjivo na ovaj uron"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Beban jaringan interaktif tidak berlaku untuk penyelaman ini — lihat detail"
+            "value": "Beban jaringan interaktif tidak berlaku untuk penyelaman ini"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Il carico tissutale interattivo non è applicabile a questa immersione — vedi dettaglio"
+            "value": "Il carico tissutale interattivo non è applicabile a questa immersione"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "このダイビングにはインタラクティブな組織負荷が該当しません — 詳細を見る"
+            "value": "このダイビングにはインタラクティブな組織負荷が該当しません"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "이 다이빙에는 인터랙티브 조직 부하가 해당되지 않습니다 — 자세히 보기"
+            "value": "이 다이빙에는 인터랙티브 조직 부하가 해당되지 않습니다"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bebanan tisu interaktif tidak berkenaan bagi penyelaman ini — lihat butiran"
+            "value": "Bebanan tisu interaktif tidak berkenaan bagi penyelaman ini"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interactieve weefselbelasting is niet van toepassing op deze duik — bekijk details"
+            "value": "Interactieve weefselbelasting is niet van toepassing op deze duik"
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "A carga tecidual interativa não se aplica a este mergulho — ver detalhe"
+            "value": "A carga tecidual interativa não se aplica a este mergulho"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ภาระเนื้อเยื่อแบบอินเทอร์แอกทีฟไม่ใช้กับการดำน้ำครั้งนี้ — ดูรายละเอียด"
+            "value": "ภาระเนื้อเยื่อแบบอินเทอร์แอกทีฟไม่ใช้กับการดำน้ำครั้งนี้"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tải trọng mô tương tác không áp dụng cho lần lặn này — xem chi tiết"
+            "value": "Tải trọng mô tương tác không áp dụng cho lần lặn này"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "交互式组织负荷不适用于本次潜水 — 查看详情"
+            "value": "交互式组织负荷不适用于本次潜水"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "互動式組織負荷不適用於本次潛水 — 查看詳情"
+            "value": "互動式組織負荷不適用於本次潛水"
           }
         }
       }
@@ -25626,7 +25626,7 @@
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "支援有限"
+            "value": "有限支援"
           }
         }
       }

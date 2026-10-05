@@ -180,21 +180,14 @@ struct DiveAnalysisView: View {
     // 「app 有問題」還是「這種潛水本來就沒有」**——B／C 都不是故障：模型本來就
     // 不適用於閉氣潛水，也不能跨大氣基準線做殘氮延續。不要在翻譯或改寫時合併這兩句。
 
+    // D9（PM 2026-10-05）：不再附「查看詳情 ⓘ」——說明頁入口統一由下方提示列的「(有限支援 ⓘ)」提供。
     private func tissueUnavailableNotice(_ anomaly: DiveReplayEngine.Anomaly) -> some View {
-        Button {
-            showingLimitations = true
-        } label: {
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(verbatim: languageManager.localized(AnomalyClass(anomaly).tissueNoticeKey))
-                Image(systemName: "info.circle")
-            }
+        Text(verbatim: languageManager.localized(AnomalyClass(anomaly).tissueNoticeKey))
             .font(.caption)
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, alignment: .leading)
             .multilineTextAlignment(.leading)
-        }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("replayAnomalyNotice")
+            .accessibilityIdentifier("replayAnomalyNotice")
     }
 
     /// 異常分三類（PM 2026-09-12 裁示 1）。**分類只影響文案語意，不影響是否拒算**。
@@ -221,37 +214,46 @@ struct DiveAnalysisView: View {
         var tissueNoticeKey: String {
             switch self {
             case .dataProblem:
-                return "Interactive tissue loading is not available for this dive — see detail"
+                return "Interactive tissue loading is not available for this dive"
             case .notApplicable, .differentEnvironment:
-                return "Interactive tissue loading is not applicable for this dive — see detail"
+                return "Interactive tissue loading is not applicable for this dive"
             }
         }
     }
 
-    // MARK: - 提示列（PM 2026-09-12 裁示 4.2）
+    // MARK: - 提示列（PM 2026-09-12 裁示 4.2；2026-10-05 D9 改為單句）
     // 「Limited support ⓘ」恆常可達：ⓘ 頁說明支援範圍，重放正常時同樣適用。
-    private var hintRow: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 4) {
-            if selectedIndex == nil {
-                // 走 localized(_:) 而非 Text 字面量：App 內語言切換後才會即時生效（v1.2 #17）
-                Text(verbatim: languageManager.localized("Touch and drag the profile to inspect any moment of the dive."))
-                Text(verbatim: "·")
-            }
-            Button {
-                showingLimitations = true
-            } label: {
-                HStack(alignment: .firstTextBaseline, spacing: 3) {
-                    Text(verbatim: languageManager.localized("Limited support"))
-                    Image(systemName: "info.circle")
-                }
-            }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("replayLimitedSupportButton")
-            Spacer(minLength: 0)
+    // D9（PM 2026-10-05）：說明與「(有限支援 ⓘ)」合成一段文字、自然換行——
+    // 原本 HStack 分欄時繁中會把句子從中間截斷。括號段是連結，點了開 ⓘ 頁。
+    private static let limitationsURL = URL(string: "jd2logbook-internal://replay-limitations")!
+
+    private var hintText: AttributedString {
+        var text = AttributedString()
+        if selectedIndex == nil {
+            // 走 localized(_:) 而非 Text 字面量：App 內語言切換後才會即時生效（v1.2 #17）
+            let hint = languageManager.localized("Touch and drag the profile to inspect any moment of the dive.")
+            text += AttributedString(hint)
+            // 拉丁文句尾（句點）後空一格；中日文直接接括號
+            if hint.last?.isASCII == true { text += AttributedString(" ") }
         }
-        .font(.caption)
-        .foregroundStyle(.secondary)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        var link = AttributedString("(" + languageManager.localized("Limited support") + " ⓘ)")
+        link.link = Self.limitationsURL
+        text += link
+        return text
+    }
+
+    private var hintRow: some View {
+        Text(hintText)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .tint(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .environment(\.openURL, OpenURLAction { url in
+                guard url == Self.limitationsURL else { return .systemAction }
+                showingLimitations = true
+                return .handled
+            })
+            .accessibilityIdentifier("replayLimitedSupportButton")
     }
 
     // MARK: - 一般性重放限制揭露
