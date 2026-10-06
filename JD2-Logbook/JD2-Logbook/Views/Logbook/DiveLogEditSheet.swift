@@ -752,6 +752,12 @@ struct DiveLogEditSheet: View {
             modelContext.insert(dive)
 
         case .edit(let dive):
+            // 剖面 CSV 的日期是匯入時代填的；使用者改過日期 ⇒ 視為已核對，恢復參與殘氮鏈。
+            if dive.sourceFormat.lowercased() == "csv-profile", entryTime != dive.dateTime {
+                var extras = dive.importExtras
+                extras[DiveLog.dateTimeConfidenceKey] = "user"
+                dive.importExtrasJSON = buildImportExtrasJSON(extras.map { ($0.key, $0.value) })
+            }
             dive.dateTime         = entryTime
             dive.location         = location.trimmingCharacters(in: .whitespaces)
             dive.maxDepth         = maxDepth

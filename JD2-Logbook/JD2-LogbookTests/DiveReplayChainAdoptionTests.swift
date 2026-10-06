@@ -12,6 +12,7 @@
 import XCTest
 import SwiftData
 import DiveKit
+import DiveImportKit
 @testable import JoyDive_
 
 @MainActor
@@ -143,6 +144,64 @@ final class DiveReplayChainAdoptionTests: XCTestCase {
             dateTime: Date(), location: "", maxDepth: 18, diveTimeSeconds: 2400,
             roundtripID: nil, sourceFormat: "uddf"))
         XCTAssertNil(uddf.importExtras[DiveLog.garminGasVerifiedKey])
+    }
+
+    /// PM 2026-10-06：DiveImportKit v0.7.3 修正氣體判定的格式，舊版匯入（無標記）一律不可信；UDDF 維持原狀。
+    func testLegacyV073FormatsWithoutMarkerAreUnknown_UDDFUnaffected() {
+        for format in ["seabear", "divinglog", "shearwater", "csv", "csv-profile"] {
+            let dive = makeDive(at: Date(), depth: 18, seconds: 2400)
+            dive.sourceFormat = format
+            XCTAssertEqual(dive.replayGasMixConfidence, .unknown, format)
+            dive.importExtrasJSON = "{\"\(DiveLog.gasVerifiedKey)\":\"v0.7.3\"}"
+            XCTAssertEqual(dive.replayGasMixConfidence, .confirmed, "\(format) 新版匯入（有標記、無不可信旗標）照常")
+        }
+        let uddf = makeDive(at: Date(), depth: 18, seconds: 2400)
+        uddf.sourceFormat = "UDDF"
+        XCTAssertEqual(uddf.replayGasMixConfidence, .confirmed, "UDDF 舊資料依 PM 裁示維持原狀")
+    }
+
+    func testAdapterMarksV073FormatsAsVerified() {
+        let seabear = makeDiveLog(from: makeTestParsedDiveLog(
+            dateTime: Date(), location: "", maxDepth: 18, diveTimeSeconds: 2400,
+            roundtripID: nil, sourceFormat: "seabear"))
+        XCTAssertEqual(seabear.importExtras[DiveLog.gasVerifiedKey], "v0.7.3")
+        let dm5 = makeDiveLog(from: makeTestParsedDiveLog(
+            dateTime: Date(), location: "", maxDepth: 18, diveTimeSeconds: 2400,
+            roundtripID: nil, sourceFormat: "suunto-dm5"))
+        XCTAssertNil(dm5.importExtras[DiveLog.gasVerifiedKey])
+    }
+
+    /// DiveImportKit v0.7.3：來源標示的自由潛水帶進 `diveMode`（DM5 Mode=3 等）。
+    func testAdapterMapsFreediveMode() {
+        var parsed = makeTestParsedDiveLog(dateTime: Date(), location: "", maxDepth: 12, diveTimeSeconds: 60,
+                                           roundtripID: nil, sourceFormat: "suunto-dm5")
+        parsed.diveMode = "free"
+        XCTAssertEqual(makeDiveLog(from: parsed).diveModeValue, .free)
+        parsed.diveMode = nil
+        XCTAssertEqual(makeDiveLog(from: parsed).diveModeValue, .scuba)
+    }
+
+    /// PM 2026-10-06 裁示 B：剖面 CSV 的日期是代填值，不參與殘氮鏈；使用者改過日期後恢復。
+    func testProfileCSVWithUnknownDateIsExcludedFromChain() throws {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: DiveLog.self, configurations: config)
+        let context = ModelContext(container)
+        let target = makeDive(at: Date(timeIntervalSince1970: 1_700_000_000))
+        let csv = makeDive(at: target.dateTime.addingTimeInterval(-3 * 3600))
+        csv.sourceFormat = "csv-profile"
+        csv.importExtrasJSON = #"{"dateTimeConfidence":"unknown"}"#
+        let real = makeDive(at: target.dateTime.addingTimeInterval(-5 * 3600))
+        for d in [target, csv, real] { context.insert(d) }
+
+        var preceding = DiveReplayChainQuery.precedingDives(of: target, in: context)
+        XCTAssertEqual(preceding.map(\.dateTime), [real.dateTime], "代填日期的紀錄不得進入殘氮鏈")
+
+        csv.importExtrasJSON = #"{"dateTimeConfidence":"user"}"#
+        preceding = DiveReplayChainQuery.precedingDives(of: target, in: context)
+        XCTAssertEqual(preceding.count, 2, "使用者核對過日期後恢復參與")
+
+        csv.importExtrasJSON = "{}"
+        XCTAssertTrue(csv.hasUnknownDateTime, "舊版匯入沒有標記，但此格式本來就沒有日期")
     }
 
     // MARK: - ③ 前導潛水查詢（96h 窗口）

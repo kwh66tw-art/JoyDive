@@ -26,7 +26,10 @@ import DiveImportKit
 ///   - `profileSamples`（陣列）→ `profileSamplesJSON`（短鍵 t/d/w JSON 字串）
 ///   - `importExtras`（陣列）→ `importExtrasJSON`（sortedKeys JSON dict 字串，
 ///     沿用既有 `buildImportExtrasJSON`，輸出與搬遷前逐 byte 一致）
-func makeDiveLog(from parsed: DiveImportKit.ParsedDiveLog) -> DiveLog {
+func makeDiveLog(from kitParsed: DiveImportKit.ParsedDiveLog) -> DiveLog {
+    // v1.3（DiveImportKit v0.7.3）：來源不帶時區的當地時間，以裝置目前時區解讀。
+    // 正式匯入路徑已在 Kit `parseAndValidate` 做過（冪等，這裡是本地薄包裝路徑的保險）。
+    let parsed = kitParsed.resolvingFloatingTime(in: .current)
     let dive = DiveLog(
         dateTime:         parsed.dateTime,
         location:         parsed.location,
@@ -67,6 +70,11 @@ func makeDiveLog(from parsed: DiveImportKit.ParsedDiveLog) -> DiveLog {
     // 額外信息
     dive.notes        = parsed.notes
     dive.sourceFormat = parsed.sourceFormat
+    // v1.3（DiveImportKit v0.7.3）：來源明確標示的閉氣模式（目前 "free"）。值與 `DiveLogMode` rawValue 一致；
+    // 未知值或 nil 維持預設 `.scuba`。自由潛水會被排除在殘氮鏈外（`DiveLog.isBreathHold`）。
+    if let mode = parsed.diveMode, let value = DiveLogMode(rawValue: mode) {
+        dive.diveMode = value.rawValue
+    }
     if let avgDepth = parsed.avgDepth { dive.avgDepth = avgDepth }
 
     // 剖面樣本：Kit DTO 陣列 → 本地短鍵 JSON 字串（CodingKeys t/d/w 與本地一致）
@@ -88,6 +96,11 @@ func makeDiveLog(from parsed: DiveImportKit.ParsedDiveLog) -> DiveLog {
     // 標記下來，重放據此區分「舊版匯入、氣體一律被寫成 air」的紀錄（見 `DiveLog.replayGasMixConfidence`）。
     if parsed.sourceFormat == "garmin" {
         extras.append((DiveLog.garminGasVerifiedKey, "v0.7.2"))
+    }
+    // v1.3（PM 2026-10-06）：DiveImportKit v0.7.3 對這幾種格式補上「多氣體／循環呼吸器／無氣體欄位」判定。
+    // 標記下來，重放據此把舊版匯入（無標記）的同格式紀錄視為氣體不可信。
+    if DiveLog.gasRuleV073SourceFormats.contains(parsed.sourceFormat.lowercased()) {
+        extras.append((DiveLog.gasVerifiedKey, "v0.7.3"))
     }
     dive.importExtrasJSON = buildImportExtrasJSON(extras)
 

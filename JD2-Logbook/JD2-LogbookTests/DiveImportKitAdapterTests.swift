@@ -68,9 +68,11 @@ final class DiveImportKitAdapterTests: XCTestCase {
 
         let dive = try XCTUnwrap(dives.first)
 
-        // 日期時間：2014-04-02T10:00:00Z
-        let fmt = ISO8601DateFormatter()
-        XCTAssertEqual(dive.dateTime, fmt.date(from: "2014-04-02T10:00:00Z"))
+        // 日期時間：檔內 `2014-04-02T10:00:00`（不帶時區＝當地牆上時間）。
+        // DiveImportKit v0.7.3 起以裝置目前時區解讀（先前誤當 UTC，在 UTC+8 顯示成 18:00）。
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = .current
+        XCTAssertEqual(dive.dateTime, cal.date(from: DateComponents(year: 2014, month: 4, day: 2, hour: 10)))
 
         // 潛水參數
         XCTAssertEqual(dive.maxDepth, 38.99, accuracy: 0.01)

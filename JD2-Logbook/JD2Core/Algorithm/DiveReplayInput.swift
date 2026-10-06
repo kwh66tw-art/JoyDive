@@ -56,8 +56,27 @@ extension DiveLog {
         if extras["gasMixConfidence"] == "unknown" { return .unknown }
         if Self.garminFITSourceFormats.contains(sourceFormat.lowercased()),
            extras[Self.garminGasVerifiedKey] == nil { return .unknown }
+        // PM 2026-10-06（同 Garmin A 案）：DiveImportKit v0.7.3 前，這幾種格式的循環呼吸器／多氣體／
+        // 無氣體欄位紀錄都被當成確定的單一氣體。舊版匯入（無 `gasVerifiedKey`）一律視為不可信。
+        // UDDF 依 PM 裁示維持原狀（不套用）。
+        if Self.gasRuleV073SourceFormats.contains(sourceFormat.lowercased()),
+           extras[Self.gasVerifiedKey] == nil { return .unknown }
         return .confirmed
     }
+
+    /// 匯入時寫入的標記：這筆的氣體由 DiveImportKit v0.7.3 的判定規則解析（值＝Kit 版本）。
+    static let gasVerifiedKey = "jd2GasVerified"
+    /// v0.7.3 修正氣體判定的格式（`sourceFormat` 字串，經 Kit 原始碼與模擬器資料庫查證）。
+    static let gasRuleV073SourceFormats: Set<String> = ["seabear", "divinglog", "shearwater", "csv", "csv-profile"]
+
+    /// 日期是否為代填值（Subsurface 剖面 CSV 沒有日期，以匯入當下時間代填）。
+    /// 使用者在編輯頁改過日期後記為 `"user"`，即恢復參與殘氮鏈。
+    /// 舊版匯入沒有標記，但此格式本來就沒有日期 ⇒ 以格式判定。
+    var hasUnknownDateTime: Bool {
+        guard sourceFormat.lowercased() == "csv-profile" else { return false }
+        return importExtras[Self.dateTimeConfidenceKey] != "user"
+    }
+    static let dateTimeConfidenceKey = "dateTimeConfidence"
 
     /// 匯入時寫入的標記：這筆 Garmin FIT 的氣體由修正後的 DiveImportKit 解析（值＝Kit 版本）。
     static let garminGasVerifiedKey = "jd2GarminGasVerified"
@@ -123,6 +142,7 @@ enum DiveReplayChainQuery {
         )
         descriptor.fetchLimit = 64   // 96h 內不可能有更多真實潛水；防呆上界
         let fetched = (try? context.fetch(descriptor)) ?? []
-        return fetched.filter { $0.persistentModelID != targetID }
+        // PM 2026-10-06 裁示 B：日期是代填值的紀錄（剖面 CSV）不參與殘氮鏈——它的時間不是潛水發生的時間。
+        return fetched.filter { $0.persistentModelID != targetID && !$0.hasUnknownDateTime }
     }
 }
