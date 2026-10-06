@@ -29,6 +29,18 @@
       "comment" : "Location permission prompt (Info.plist). v1.3 audit R-06: previously English only.",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird verwendet, um Ihren aktuellen Standort auf der Karte anzuzeigen, damit Sie die Ansicht neu zentrieren können. Der Standort wird nur angefordert, wenn Sie dies in den Einstellungen aktivieren, und verbleibt auf Ihrem Gerät."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Χρησιμοποιείται για την εμφάνιση της τρέχουσας τοποθεσίας σας στον χάρτη, ώστε να μπορείτε να τον κεντράρετε ξανά. Η τοποθεσία ζητείται μόνο εάν την ενεργοποιήσετε στις Ρυθμίσεις και παραμένει στη συσκευή σας."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -41,10 +53,82 @@
             "value" : "Used to show your current position on the map so you can recenter it. Location is only requested if you enable it in Settings, and stays on your device."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se usa para mostrar tu ubicación actual en el mapa para que puedas volver a centrarlo. La ubicación solo se solicita si la activas en Ajustes y permanece únicamente en tu dispositivo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilisé pour afficher votre position actuelle sur la carte afin de pouvoir la recentrer. La position n'est demandée que si vous l'activez dans Réglages et reste uniquement sur votre appareil."
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koristi se za prikaz vaše trenutne lokacije na karti kako biste je mogli ponovno centrirati. Lokacija se traži samo ako je omogućite u Postavkama i ostaje na vašem uređaju."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Digunakan untuk menampilkan lokasi Anda saat ini di peta agar Anda dapat memusatkan kembali peta tersebut. Lokasi hanya diminta jika Anda mengaktifkannya di Pengaturan, dan tetap tersimpan di perangkat Anda."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilizzato per mostrare la posizione corrente sulla mappa e consentirti di ricentrare la mappa. La posizione viene richiesta solo se la attivi in Impostazioni e rimane esclusivamente sul tuo dispositivo."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "地図上に現在地を表示し、地図を現在地に戻すために使用します。位置情報は設定で有効にした場合にのみ要求され、お使いのデバイス内にのみ保存されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지도에 현재 위치를 표시하여 지도를 다시 중앙에 맞출 수 있도록 합니다. '설정'에서 활성화한 경우에만 위치 정보를 요청하며, 위치 데이터는 기기에만 저장됩니다."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Digunakan untuk menunjukkan kedudukan semasa anda pada peta supaya anda boleh memusatkannya semula. Lokasi hanya diminta jika anda mendayakannya dalam Tetapan, dan kekal pada peranti anda."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wordt gebruikt om je huidige positie op de kaart weer te geven, zodat je de kaart opnieuw kunt centreren. De locatie wordt alleen gevraagd als je dit inschakelt in Instellingen en blijft op je apparaat."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilizado para mostrar a sua localização atual no mapa para que possa recentrá-lo. A localização só é pedida se a ativar nas Definições e permanece no seu dispositivo."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ใช้เพื่อแสดงตำแหน่งปัจจุบันของคุณบนแผนที่เพื่อให้คุณจัดตำแหน่งแผนที่ให้อยู่ตรงกลางได้ ตำแหน่งที่ตั้งจะถูกขอเมื่อคุณเปิดใช้งานในการตั้งค่าเท่านั้น และจะคงอยู่ในอุปกรณ์ของคุณ"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Được sử dụng để hiển thị vị trí hiện tại của bạn trên bản đồ để bạn có thể căn giữa lại. Vị trí chỉ được yêu cầu nếu bạn bật trong Cài đặt và được lưu trữ trên thiết bị của bạn."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用于在地图上显示您当前的位置，方便将地图移回您所在位置。仅在“设置”中启用时才会请求定位，且位置数据仅保留在您的设备上。"
           }
         },
         "zh-Hant" : {

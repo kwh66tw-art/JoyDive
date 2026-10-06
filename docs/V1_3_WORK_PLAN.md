@@ -150,3 +150,16 @@ P0-1 → P0-2 → P0-3 → P1-1～P1-5 → 翻譯 → 送審收尾。每項完�
 | 上升速率警示 | 功能關閉中（`showWarningEvents=false`），使用者看不到；程式加註重開前改家族色 | 本次提交 | `DiveAnalysisView.swift:31` |
 | ⏳ 匯入不辨識潛水模式（自潛／浮潛皆當水肺） | 依 10/04 裁示：待 App-u 定案 | — | 2026-02-05 樣本來源記 Mode=0、21% O₂、12 L 氣瓶 |
 | ⏳ App-u iPhone 端 No Deco 警示門檻為 < 10 min（引擎為 ≤ 5 min） | 另案（App-u） | — | `JD2UltraPhone/UI/Logbook/DiveAnalysisView.swift:261` |
+
+## 九、翻譯（2026-10-06，PM 稽核譯文 v03＋總指揮查核修正後寫入）
+
+| 項目 | 結果 | 驗證 |
+|---|---|---|
+| 新字串 11 個 key 補齊 15 語（含定位權限說明 `InfoPlist.xcstrings`） | ✅ 寫入 159 格 | 讀回比對：既有譯文只動 1 格（`Limited support` 簡中 支持有限→有限支持） |
+| 「組織負荷」用詞 | ✅ 全依 F-10 術語表（`tissue loading`），說明頁與欄位標題一致 | — |
+| 查核修正（PM 10/06 全部採納） | ✅ de 提示列去句尾句號（後接「— 連結」）；ja 匯入句統一「対応」、提示列 Bühlmann 用拉丁字；nl berekend→geschat；id berkas→file、提示列去重複；it 標題改全稱；de 錯誤畫面用 Logbuch；fr 統一直引號、「找不到檔案」改寫 | 截圖 `22`（de）、`23`（ja） |
+| No Deco 希臘文／克羅埃西亞文（#23） | ✅ **PM 10/06 裁示：採用 NDL**（避免原文過長被截斷）；與術語表一致，不再待母語審 | — |
+| 驗證 | `run_tests.sh logbook` 155/0/1；`check_localization` Logbook 無 ❌（唯一 ❌ 屬 JD2-ultra 他人未提交檔，改動前即如此） | — |
+
+已知外觀：日文提示列「対応は限定的」後的 ⓘ 可能單獨換到下一行（依螢幕寬度），屬自然換行，未處理。
+未翻（刻意）：`Developer Tools`（僅 DEBUG）、上升速率警示 2 句（功能關閉）、`AL100 (14L)`、App 名稱。

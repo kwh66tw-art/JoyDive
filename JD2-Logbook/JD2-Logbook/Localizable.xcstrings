@@ -804,6 +804,18 @@
       "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Über Gewebebelastung"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Σχετικά με τη φόρτωση ιστών"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -816,10 +828,82 @@
             "value": "About Tissue Loading"
           }
         },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acerca de la carga tisular"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À propos de la charge tissulaire"
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O opterećenju tkiva"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tentang Beban Jaringan"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Informazioni sul carico tissutale"
+          }
+        },
         "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "組織負荷について"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "조직 부하 정보"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perihal Bebanan Tisu"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Over weefselbelasting"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sobre a carga tecidual"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เกี่ยวกับภาระเนื้อเยื่อ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giới thiệu về tải trọng mô"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "关于组织负荷"
           }
         },
         "zh-Hant": {
@@ -1533,6 +1617,18 @@
     "No supported dive log files found.": {
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine unterstützten Tauchprotokolldateien gefunden."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Δεν βρέθηκαν υποστηριζόμενα αρχεία καταγραφής καταδύσεων."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1543,6 +1639,84 @@
           "stringUnit": {
             "state": "translated",
             "value": "No supported dive log files found."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se encontraron archivos de diario de buceo compatibles."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun carnet de plongée pris en charge n'a été trouvé."
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nisu pronađene podržane datoteke dnevnika ronjenja."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tidak ditemukan file log penyelaman yang didukung."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessun file del registro immersioni supportato trovato."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "対応しているダイブログファイルが見つかりません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지원되는 다이빙 로그 파일을 찾을 수 없습니다."
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiada fail log selaman yang disokong ditemui."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geen ondersteunde duiklogbestanden gevonden."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhum ficheiro de registo de mergulho compatível foi encontrado."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่พบไฟล์บันทึกการดำน้ำที่รองรับ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không tìm thấy tệp nhật ký lặn nào được hỗ trợ."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未找到受支持的潜水日志文件。"
           }
         },
         "zh-Hant": {
@@ -1782,6 +1956,18 @@
     "The file is empty.": {
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Datei ist leer."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Το αρχείο είναι κενό."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1792,6 +1978,84 @@
           "stringUnit": {
             "state": "translated",
             "value": "The file is empty."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El archivo está vacío."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le fichier est vide."
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datoteka je prazna."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "File ini kosong."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il file è vuoto."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイルが空です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "파일이 비어 있습니다."
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fail ini kosong."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Het bestand is leeg."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O ficheiro está vazio."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไฟล์ว่างเปล่า"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tệp trống."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文件为空。"
           }
         },
         "zh-Hant": {
@@ -1805,6 +2069,18 @@
     "This file couldn't be read. It may be damaged.": {
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Datei konnte nicht gelesen werden. Sie ist möglicherweise beschädigt."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Δεν ήταν δυνατή η ανάγνωση αυτού του αρχείου. Ίσως έχει καταστραφεί."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1815,6 +2091,84 @@
           "stringUnit": {
             "state": "translated",
             "value": "This file couldn't be read. It may be damaged."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo leer este archivo. Puede que esté dañado."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de lire ce fichier. Il est peut-être endommagé."
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ovu datoteku nije moguće pročitati. Možda je oštećena."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "File tidak dapat dibaca. File mungkin rusak."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile leggere questo file. Potrebbe essere danneggiato."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイルを読み込めませんでした。破損している可能性があります。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "파일을 읽을 수 없습니다. 파일이 손상되었을 수 있습니다."
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fail ini tidak dapat dibaca. Fail mungkin rosak."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dit bestand kan niet worden gelezen. Het is mogelijk beschadigd."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível ler este ficheiro. Pode estar danificado."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถอ่านไฟล์นี้ได้ ไฟล์อาจเสียหาย"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể đọc tệp này. Tệp có thể đã bị hỏng."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法读取此文件，文件可能已损坏。"
           }
         },
         "zh-Hant": {
@@ -1828,6 +2182,18 @@
     "This file format isn't supported.": {
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Dateiformat wird nicht unterstützt."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αυτή η μορφή αρχείου δεν υποστηρίζεται."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1838,6 +2204,84 @@
           "stringUnit": {
             "state": "translated",
             "value": "This file format isn't supported."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este formato de archivo no es compatible."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce format de fichier n'est pas pris en charge."
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ovaj format datoteke nije podržan."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Format file ini tidak didukung."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questo formato di file non è supportato."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このファイル形式には対応していません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지원되지 않는 파일 형식입니다."
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Format fail ini tidak disokong."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deze bestandsindeling wordt niet ondersteund."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este formato de ficheiro não é suportado."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่รองรับรูปแบบไฟล์นี้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Định dạng tệp này không được hỗ trợ."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不支持此文件格式。"
           }
         },
         "zh-Hant": {
@@ -1852,6 +2296,18 @@
       "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Gewebebelastung verwendet das Bühlmann-ZHL-16C-Modell, um Referenzwerte für Sporttauchgänge zu berechnen. Bei Wiederholungstauchgängen derselben Serie wird der Reststickstoff aus vorherigen Tauchgängen berücksichtigt."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Η φόρτωση ιστών χρησιμοποιεί το μοντέλο Bühlmann ZHL-16C για τον υπολογισμό τιμών αναφοράς για καταδύσεις αναψυχής. Οι επαναληπτικές καταδύσεις στην ίδια σειρά περιλαμβάνουν υπολειμματικό άζωτο από τις προηγούμενες καταδύσεις."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1864,10 +2320,82 @@
             "value": "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives. Repetitive dives in the same series include residual nitrogen from the earlier dives."
           }
         },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La carga tisular utiliza el modelo Bühlmann ZHL-16C para calcular valores de referencia para inmersiones recreativas. Las inmersiones sucesivas de una misma serie incluyen el nitrógeno residual de las inmersiones anteriores."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La charge tissulaire utilise le modèle Bühlmann ZHL-16C pour calculer des valeurs de référence pour la plongée loisir. Les plongées successives d'une même série incluent l'azote résiduel des plongées précédentes."
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opterećenje tkiva koristi model Bühlmann ZHL-16C za izračun referentnih vrijednosti za rekreativna ronjenja. Ponovljeni uroni u istoj seriji uključuju zaostali dušik iz prethodnih urona."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beban jaringan menggunakan model Bühlmann ZHL-16C untuk menghitung nilai referensi penyelaman scuba rekreasi. Penyelaman berulang dalam seri yang sama memperhitungkan sisa nitrogen dari penyelaman sebelumnya."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il carico tissutale utilizza il modello Bühlmann ZHL-16C per calcolare i valori di riferimento per le immersioni ricreative. Le immersioni ripetitive della stessa serie includono l'azoto residuo delle immersioni precedenti."
+          }
+        },
         "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "組織負荷はBühlmann ZHL-16Cモデルで参考値を計算します。レクリエーショナルスクーバダイビングが対象です。同じシリーズの反復潜水では、それ以前の潜水の残留窒素を計算に含めます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "조직 부하는 레크리에이션 스쿠버 다이빙의 기준값을 계산하기 위해 Bühlmann ZHL-16C 모델을 사용합니다. 동일한 시리즈의 반복 다이빙에는 이전 다이빙의 잔여 질소가 포함됩니다."
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bebanan tisu menggunakan model Bühlmann ZHL-16C untuk mengira nilai rujukan bagi selaman skuba rekreasi. Selaman berulang dalam siri yang sama merangkumi baki nitrogen daripada selaman sebelumnya."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weefselbelasting gebruikt het Bühlmann ZHL-16C-model om referentiewaarden voor recreatieve duiken te berekenen. Bij herhalingsduiken in dezelfde reeks wordt rekening gehouden met reststikstof van eerdere duiken."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A carga tecidual utiliza o modelo Bühlmann ZHL-16C para calcular valores de referência para mergulhos recreativos. Os mergulhos sucessivos da mesma série incluem o azoto residual dos mergulhos anteriores."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ภาระเนื้อเยื่อใช้แบบจำลอง Bühlmann ZHL-16C เพื่อคำนวณค่าอ้างอิงสำหรับการดำน้ำสคูบาเพื่อสันทนาการ การดำน้ำซ้ำในชุดเดียวกันจะรวมไนโตรเจนตกค้างจากการดำน้ำก่อนหน้าด้วย"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tải trọng mô sử dụng mô hình Bühlmann ZHL-16C để tính toán các giá trị tham chiếu cho lặn bình khí giải trí. Các ca lặn lặp lại trong cùng một chuỗi sẽ bao gồm lượng nitơ dư từ các ca lặn trước đó."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "组织负荷基于 Bühlmann ZHL-16C 模型计算休闲水肺潜水的参考值。同一系列的重复潜水会计入先前潜水的残留氮气。"
           }
         },
         "zh-Hant": {
@@ -1882,6 +2410,18 @@
       "comment": "Tissue loading info page (PM 2026-10-05: positive, concise).",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geltungsbereich der Gewebebelastung"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Τι καλύπτει η φόρτωση ιστών"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1894,10 +2434,82 @@
             "value": "What tissue loading covers"
           }
         },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alcance de la carga tisular"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce que couvre la charge tissulaire"
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Što obuhvaća opterećenje tkiva"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cakupan beban jaringan"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cosa include il carico tissutale"
+          }
+        },
         "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "組織負荷の対象範囲"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "조직 부하 적용 범위"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skop bebanan tisu"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wat weefselbelasting omvat"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Âmbito da carga tecidual"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ขอบเขตของภาระเนื้อเยื่อ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phạm vi áp dụng của tải trọng mô"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "组织负荷的适用范围"
           }
         },
         "zh-Hant": {
@@ -1912,6 +2524,18 @@
       "comment": "Shown instead of the app when the dive database cannot be opened (e.g. after a failed upgrade). Title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ihr Logbuch konnte nicht geöffnet werden"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Δεν ήταν δυνατό το άνοιγμα του ημερολογίου καταδύσεων"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1924,10 +2548,82 @@
             "value": "Your dive log could not be opened"
           }
         },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo abrir tu diario de buceo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d'ouvrir votre carnet de plongée"
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nije moguće otvoriti vaš dnevnik ronjenja"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log selam Anda tidak dapat dibuka"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile aprire il registro immersioni"
+          }
+        },
         "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "ダイビングログを開けませんでした"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다이빙 로그를 열 수 없습니다"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log selaman anda tidak dapat dibuka"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je duiklog kan niet worden geopend"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível abrir o seu registo de mergulho"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่สามารถเปิดบันทึกการดำน้ำของคุณได้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể mở nhật ký lặn của bạn"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法打开您的潜水日志"
           }
         },
         "zh-Hant": {
@@ -1942,6 +2638,18 @@
       "comment": "Body of the database-open error screen. Reassures that data was not deleted and says what to do.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ihre gespeicherten Tauchgänge wurden nicht gelöscht. Bitte aktualisieren Sie JoyDive² auf die neueste Version. Wenn das Problem weiterhin besteht, kontaktieren Sie uns über die App Store-Seite."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Οι αποθηκευμένες καταδύσεις σας δεν έχουν διαγραφεί. Ενημερώστε το JoyDive² στην πιο πρόσφατη έκδοση. Εάν το πρόβλημα παραμένει, επικοινωνήστε μαζί μας μέσω της σελίδας στο App Store."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1954,10 +2662,82 @@
             "value": "Your saved dives have not been deleted. Please update JoyDive² to the latest version. If the problem continues, contact us through the App Store page."
           }
         },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tus inmersiones guardadas no se han eliminado. Actualiza JoyDive² a la última versión. Si el problema continúa, contáctanos a través de la página de App Store."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vos plongées enregistrées n'ont pas été supprimées. Veuillez mettre à jour JoyDive² vers la dernière version. Si le problème persiste, contactez-nous via la page de l'App Store."
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vaši spremljeni uroni nisu izbrisani. Ažurirajte JoyDive² na najnoviju verziju. Ako se problem nastavi, obratite nam se putem stranice na App Storeu."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selaman tersimpan Anda belum dihapus. Harap perbarui JoyDive² ke versi terbaru. Jika masalah berlanjut, hubungi kami melalui halaman App Store."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le tue immersioni salvate non sono state eliminate. Aggiorna JoyDive² alla versione più recente. Se il problema persiste, contattaci tramite la pagina di App Store."
+          }
+        },
         "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "保存済みのダイビング記録は削除されていません。JoyDive²を最新バージョンに更新してください。問題が解決しない場合は、App Storeのページからお問い合わせください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "저장된 다이빙 기록은 삭제되지 않았습니다. JoyDive²를 최신 버전으로 업데이트해 주세요. 문제가 계속되면 App Store 페이지를 통해 문의해 주세요."
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selaman anda yang disimpan belum dipadamkan. Sila kemas kini JoyDive² kepada versi terkini. Jika masalah berterusan, hubungi kami melalui halaman App Store."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je opgeslagen duiken zijn niet verwijderd. Werk JoyDive² bij naar de nieuwste versie. Neem contact met ons op via de App Store-pagina als het probleem aanhoudt."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Os seus mergulhos guardados não foram eliminados. Atualize o JoyDive² para a versão mais recente. Se o problema persistir, contacte-nos através da página da App Store."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ข้อมูลการดำน้ำที่คุณบันทึกไว้ไม่ได้ถูกลบ โปรดอัปเดต JoyDive² เป็นเวอร์ชันล่าสุด หากยังพบปัญหา โปรดติดต่อเราผ่านหน้ารายละเอียดบน App Store"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Các ca lặn đã lưu của bạn chưa bị xóa. Vui lòng cập nhật JoyDive² lên phiên bản mới nhất. Nếu sự cố vẫn tiếp diễn, hãy liên hệ với chúng tôi qua trang App Store."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "您已保存的潜水记录未被删除。请将 JoyDive² 更新至最新版本；如果问题仍然存在，请通过 App Store 页面与我们联系。"
           }
         },
         "zh-Hant": {
@@ -22457,6 +23237,18 @@
     "Touch and drag the profile to see the dive at any moment, estimated with Bühlmann ZHL-16C": {
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippen und ziehen Sie das Profil, um den Tauchgang zu jedem Zeitpunkt anzuzeigen, geschätzt nach Bühlmann ZHL-16C"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αγγίξτε και σύρετε το προφίλ για να δείτε την κατάδυση ανά πάσα στιγμή, με εκτίμηση βάσει Bühlmann ZHL-16C"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -22467,6 +23259,84 @@
           "stringUnit": {
             "state": "translated",
             "value": "Touch and drag the profile to see the dive at any moment, estimated with Bühlmann ZHL-16C"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toca y arrastra el perfil para ver la inmersión en cualquier momento, estimada con Bühlmann ZHL-16C"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touchez et faites glisser le profil pour voir la plongée à tout moment, estimée selon le modèle Bühlmann ZHL-16C"
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dodirnite i povucite profil za prikaz zarona u bilo kojem trenutku, procijenjeno prema Bühlmann ZHL-16C"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sentuh dan seret profil untuk melihat penyelaman kapan saja, diestimasi dengan Bühlmann ZHL-16C"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tocca e trascina il profilo per visualizzare l'immersione in qualsiasi momento, stimata con Bühlmann ZHL-16C"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プロファイルをタッチしてドラッグすると、Bühlmann ZHL-16C で推定された各時点のダイブ状態を確認できます"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "프로필을 터치하고 드래그하여 Bühlmann ZHL-16C로 추정한 다이빙 상태를 언제든지 확인할 수 있습니다"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sentuh dan seret profil selaman untuk melihat selaman pada bila-bila masa, dianggar dengan Bühlmann ZHL-16C"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tik en sleep op het profiel om de duik op elk moment te bekijken, geschat met Bühlmann ZHL-16C"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toque e arraste o perfil para ver o mergulho em qualquer momento, estimado com Bühlmann ZHL-16C"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "แตะแล้วลากกราฟการดำน้ำเพื่อดูสภาวะในแต่ละช่วงเวลา ประมาณการด้วย Bühlmann ZHL-16C"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chạm và kéo biểu đồ lặn để xem trạng thái tại bất kỳ thời điểm nào, ước tính theo Bühlmann ZHL-16C"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "轻按并拖移剖面图，可查看通过 Bühlmann ZHL-16C 估算的潜水状态"
           }
         },
         "zh-Hant": {
@@ -25391,7 +26261,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "支持有限"
+            "value": "有限支持"
           }
         },
         "zh-Hant": {

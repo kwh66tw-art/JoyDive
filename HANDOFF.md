@@ -23,10 +23,7 @@ What's New 三語定稿（籠統寫法）；剖面讀數 label 字級；匯入�
 
 ## 下一步（依序，一件一件問 PM）
 
-1. **翻譯**（PM 未定翻法：機器翻譯標註 or 英文退回）。待翻清單：
-   - 新字串只有 en／en-GB／繁中（部分含日）：支援／不支援說明句、ⓘ 合併段、匯入失敗 4 句、`Limited support`（繁中已改「有限支援」）。
-   - 簡中仍為舊句（「触摸并拖曳…」「支持有限」）。
-   - 既有待翻：免責句其餘 14 語、R-051、定位權限說明、el／hr「No Deco」覆核。
+1. ~~翻譯~~ ✅ 2026-10-06 完成（`docs/V1_3_WORK_PLAN.md` §九；No Deco el／hr 採用 NDL）。
 2. **送審收尾**：`docs/SUBMISSION_CHECK_NEXT.md`、隱私 reason code 複核、`app-store-submission-guide` skill 清單；push 與上傳由 PM。
 3. P0-3 手動走匯入：PM 10/05 已在模擬器走過一次（26 檔）；匯入失敗新文案**尚未截圖驗證**（PM 同意直接提交）。
 
