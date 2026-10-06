@@ -23,7 +23,7 @@ What's New 三語定稿（籠統寫法）；剖面讀數 label 字級；匯入�
 
 ## 下一步（依序，一件一件問 PM）
 
-0. ✅ **匯入格式修正完成**（`b0d2d69`，159/0/1；DIK v0.7.3）。剩 What's New 一句待 PM 定稿，草稿：
+0. ✅ **匯入格式修正完成**（`b0d2d69`，159/0/1；DIK v0.7.3）。What's New 時區句 PM 10/06 同意，已寫入 `docs/APPSTORE_COPY.md`（三語）：
    - en：Fixed dive times from several import formats being shifted by your time zone.
    - zh-Hant：修正部分匯入格式的潛水時間因時區而偏移的問題。
    - ja：一部のインポート形式でダイブ時刻がタイムゾーン分ずれる問題を修正しました。
