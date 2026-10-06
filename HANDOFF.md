@@ -9,9 +9,9 @@
 
 ## 目前狀態
 
-- HEAD `689e7fb`＝`origin/main`（**已 push**）。工作樹只剩 `docs/l10n_v1.3_待翻譯.csv`（工作檔，刻意不提交）。
-- 共用層：DiveKit **v9.2.0**、DiveImportKit **v0.7.3**（10/06 匯入格式全面稽核修正）。🔒 兩 Kit 凍結（僅 bug 修正）。
-- 測試：`run_tests.sh logbook` **159／0／1**。版號 1.3（4）。
+- HEAD `065403d`（origin 落後 2：交接 `0392afc`＋SDE 遷移；**未 push**）。工作樹只剩 `docs/l10n_v1.3_待翻譯.csv`（工作檔，刻意不提交）。
+- 共用層：DiveKit **v9.2.0**、DiveImportKit **v0.7.4**（10/06 匯入稽核＋逐樣本水溫）。🔒 兩 Kit 凍結（僅 bug 修正）。
+- 測試：`run_tests.sh logbook` **161／0／1**。版號 1.3（4）。
 
 ## v1.3 已完成
 
@@ -21,9 +21,11 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 
 ## 下一步（依序）
 
-1. ⏳ **SDE 舊紀錄 0 °C → 未記錄**（PM 10/06 裁示 A）：首次啟動一次性遷移，條件 `sourceFormat == "suunto-sde" && waterTemperature == 0` ⇒ `nil`；以 UserDefaults 旗標防重跑；加測試。
-2. ⏳ **UDDF 溫度曲線**（PM：修）：DIK `UDDFParser` 補逐樣本水溫 ⇒ 本 repo 驗證剖面拖曳時 Temp 有值（Lake Coleridge 樣本）。
-3. 送審：1、2 完成、測試與截圖後，ASC 上傳由 PM。
+1. ✅ **SDE 舊紀錄 0 °C → 未記錄**（`065403d`）：`DiveLogDatabase.migrateLegacySDEZeroWaterTemperature`，旗標 `jd2.migration.v13.sdeZeroWaterTemp`；
+   測試 +2；**模擬器 LB-Upgrade 實測**：唯一一筆 SDE 紀錄水溫 0 → NULL（sqlite 查證；此為預期遷移，不還原）。
+2. ✅ Kit 側 **UDDF／剖面 CSV 逐樣本水溫**（DIK v0.7.4，394/0/0，注入 2 項 RED）；App 映射已接（`DiveImportKitAdapter.swift:85`）。
+   ⚠️ **未驗證**：App 拖曳剖面 Temp 顯示（需重新匯入 UDDF；舊匯入的 UDDF 不會自動補，屬預期）。
+3. ⏳ 送審：PM 重新匯入 test42／Lake Coleridge 目視拖曳 Temp 後，ASC 上傳。
 
 ## 待 PM（未裁示，不阻擋送審）
 
