@@ -1,4 +1,32 @@
-# 下一版送審檢查（2026-10-03，依 `app-store-submission-guide` §0 清單）
+# 下一版送審檢查（2026-10-03 建立；**2026-10-06 送審收尾複核**，依 `app-store-submission-guide` §0 清單）
+
+## 2026-10-06 收尾複核（以指令查證；舊內容保留於下方）
+
+產物：Release `generic/platform=iOS`（`CODE_SIGNING_ALLOWED=NO`，BUILD SUCCEEDED）＋ Debug 模擬器。
+
+| 項目 | 結果 | 驗證 |
+|---|---|---|
+| 版號 | ✅ 1.3（4） | Release 產物 `defaults read`：`CFBundleShortVersionString`=1.3、`CFBundleVersion`=4 |
+| 加密宣告 | ✅ `ITSAppUsesNonExemptEncryption`=NO | 同上（值 0） |
+| Privacy Manifest | ✅ 產物內含 App 自己的 `PrivacyInfo.xcprivacy`（＋AdMob／UMP 各一） | `find *.xcprivacy` |
+| 理由碼 `CA92.1` | ✅ **已對 Apple 官方原文核對**：「access user defaults to read and write information that is only accessible to the app itself」，不得讀其他 App／系統寫入的資訊 | Apple 文件 JSON（`nsprivacyaccessedapitypereasons`）。App 的 UserDefaults 只讀寫自己的鍵；`AppleLanguages` 只**寫入**本 App 網域（`AppLanguageManager.swift:59`）、未讀系統值 |
+| 其他 Required Reason API | ✅ 無 | `grep` App＋兩 Kit：檔案時間戳／開機時間／磁碟空間／鍵盤 皆 0 次；無 App Group |
+| ATS | ✅ AdMob 官方寫法 | 產物：`NSAllowsArbitraryLoadsForMedia`、`…InWebContent`；無 `NSAllowsArbitraryLoads` |
+| 廣告 ID | ✅ Release 為正式 ID | Release 執行檔 `strings`：正式 ID 4 個、測試 ID 0 個 |
+| 隱私問卷一致性 | ✅ 與 v1.2 過審狀態相同，無需改 ASC | 無網路請求程式碼（`URLSession` 0 次）；AdMob 仍為預設 `Request()`、未傳定位；無 ATT／IDFA |
+| 定位權限說明 | ✅ 18 語 | Release 產物各 `.lproj/InfoPlist.strings` 含 `NSLocationWhenInUseUsageDescription`（抽查 de／el／ja／vi） |
+| 翻譯 | ✅ 18 語補齊（原 #6） | `V1_3_WORK_PLAN.md` §九；`babd78b` |
+| 共用層 | ✅ DiveKit v9.2.0（HEAD＝tag）；DiveImportKit v0.7.2（HEAD 多一個純 `CLAUDE.md` 文件提交，`Sources` 與 tag 無差異） | `git describe`／`git diff --stat v0.7.2..HEAD -- Sources` |
+| 測試 | ✅ 155／0／1 | `run_tests.sh logbook`（10/06） |
+| Support／Privacy URL | ✅ HTTP 200 | `curl -L` |
+| 匯入流程手動走一次 | ✅ PM 10/05 模擬器 26 檔 | — |
+| What's New | ✅ 三語定稿 | `APPSTORE_COPY.md` |
+| 🔴 **隱私權政策的「定位」段與實際用途不符** | ⏳ **待 PM** | 政策三語（`logbook/privacy.md:38／133／228`）寫「只在您選擇**記錄潛點 GPS 座標**時請求定位」；實際只用於**地圖「回到我的位置」**，且須在設定開啟（`UserLocationProvider.swift` 檔頭、`MapView.swift:40`）。v1.2 已是如此且過審，但 5.1.1(i) 要求政策說明用途。改 `privacy.md` 並 push 即更新公開網頁（對外動作） |
+| ASC 上傳、問卷、送審 | PM | — |
+
+---
+
+## 2026-10-03 原始清單
 
 > 狀態以指令查證：建置產物 `Debug-iphonesimulator/JoyDive².app`（`defaults read`、`find *.xcprivacy`），原始碼 `grep`。
 > Kit 已凍結（DiveKit v9.2.0／DiveImportKit v0.7.1，2026-10-04 晚重新凍結）。

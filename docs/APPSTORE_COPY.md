@@ -105,7 +105,7 @@ New in this update:
 | Privacy Policy URL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | Required |
 | Age Rating | 4+ | All questions → No |
 | Contains Ads | ✅ Yes (iOS only) | AdMob is present on iOS; macOS build has no ads |
-| Version | 1.2 | Build 3 (CURRENT_PROJECT_VERSION) |
+| Version | 1.3 | Build 4 (CURRENT_PROJECT_VERSION)；2026-10-06 Release 產物 `defaults read` 實測 1.3／4 |
 
 ---
 
