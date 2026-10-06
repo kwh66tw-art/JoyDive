@@ -479,6 +479,7 @@ struct DiveLogDetailView: View {
         case "garmin",
              "garmin-fit":     return "Garmin Descent"
         case "garmin-json":    return "Garmin Connect"
+        case "suunto-fit":     return "Suunto FIT"
         case "seabear",
              "seabear-csv":    return "Seabear CSV"
         case "shearwater":     return "Shearwater XML"
