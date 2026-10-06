@@ -45,6 +45,7 @@ final class DiveLogDatabase {
         case .success(let container):
             self.modelContainer = container
             self.openError = nil
+            Self.migrateLegacySDEZeroWaterTemperature(context: container.mainContext)
         case .failure(let error):
             self.modelContainer = Self.inMemoryFallback(schema: schema)
             self.openError = error
@@ -73,6 +74,36 @@ final class DiveLogDatabase {
             )
         } catch {
             fatalError("無法建立記憶體內 SwiftData 容器: \(error)")
+        }
+    }
+
+    // MARK: - 一次性資料修正
+
+    /// v1.3 舊資料遷移旗標（UserDefaults key）。
+    static let sdeZeroTempMigrationKey = "jd2.migration.v13.sdeZeroWaterTemp"
+
+    /// v1.3（PM 2026-10-06 裁示 A）：舊版 SDE 匯入把「感測器沒有讀數」的 0 存成水溫 0 °C
+    /// （DiveImportKit v0.3.0 起取全部樣本最小值，SDE 缺值樣本寫 0）。v0.7.3 起新匯入已改為 nil；
+    /// 這裡把**已匯入**的 `suunto-sde` 且水溫恰為 0 的紀錄改為「未記錄」。只跑一次（旗標）。
+    /// 已知代價：真實 0 °C 的 SDE 紀錄也會變成未記錄（PM 接受；SDE 無法區分兩者）。
+    /// - Returns: 修正筆數；已跑過回傳 nil。
+    @discardableResult
+    static func migrateLegacySDEZeroWaterTemperature(context: ModelContext,
+                                                     defaults: UserDefaults = .standard) -> Int? {
+        guard !defaults.bool(forKey: sdeZeroTempMigrationKey) else { return nil }
+        let descriptor = FetchDescriptor<DiveLog>(
+            predicate: #Predicate { $0.sourceFormat == "suunto-sde" && $0.waterTemperature == 0 }
+        )
+        do {
+            let dives = try context.fetch(descriptor)
+            for dive in dives { dive.waterTemperature = nil }
+            if !dives.isEmpty { try context.save() }
+            defaults.set(true, forKey: sdeZeroTempMigrationKey)
+            return dives.count
+        } catch {
+            // 失敗不設旗標，下次啟動重試；不影響 App 使用。
+            print("[Migration] SDE 0 °C 修正失敗：\(error)")
+            return 0
         }
     }
 
