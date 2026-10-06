@@ -23,8 +23,10 @@ What's New 三語定稿（籠統寫法）；剖面讀數 label 字級；匯入�
 
 ## 下一步（依序，一件一件問 PM）
 
-0. 🔴 **送審前必做：匯入格式修正**（DIK v0.7.3＋本 repo）——見 `_JD2-family/decisions/2026-10-06_匯入格式全面稽核與DIK-v0.7.3修正計畫.md` §四 App-lb 表。
-   ⓘ 跑版已修（`DiveAnalysisView.swift` 不支援說明句改同段文字＋不斷行空格）。**送審延到此項完成後**。
+0. ✅ **匯入格式修正完成**（`b0d2d69`，159/0/1；DIK v0.7.3）。剩 What's New 一句待 PM 定稿，草稿：
+   - en：Fixed dive times from several import formats being shifted by your time zone.
+   - zh-Hant：修正部分匯入格式的潛水時間因時區而偏移的問題。
+   - ja：一部のインポート形式でダイブ時刻がタイムゾーン分ずれる問題を修正しました。
 
 1. ~~翻譯~~ ✅ 2026-10-06 完成（`docs/V1_3_WORK_PLAN.md` §九；No Deco el／hr 採用 NDL）。
 2. **送審收尾**：✅ 10/06 複核完成（`docs/SUBMISSION_CHECK_NEXT.md` 頂部表）。隱私權政策「定位」段已依 PM 10/06 同意修正並 push。之後 ASC 上傳由 PM。
@@ -33,7 +35,7 @@ What's New 三語定稿（籠統寫法）；剖面讀數 label 字級；匯入�
 ## 待 PM（未裁示，不阻擋送審）
 
 - App-lb 另有 4 處 `minimumScaleFactor`（清單統計列、潛水列月份、匯入頁副檔名）：Xcode 27 下是否同樣被縮小**未驗證**（A/B 實驗 PM 中止）。
-- 匯入不辨識潛水模式（自潛／浮潛皆當水肺）——依 10/04 裁示等 App-u 定案。
+- ~~匯入不辨識潛水模式~~ ✅ 10/06：DM5 Mode=3、Seabear APNEA 帶入自由潛水（其他格式無證據不推測）。
 - 使用者手動改氣體不會清掉「氣體不可信」標記（保守）；若要讓使用者確認後可重放，需新 UI。
 
 ## 陷阱提醒

@@ -23,6 +23,7 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 日誌新增潛水類型欄位（水肺／自由潛水／浮潛，`7f772b1`）。
 
 ### Fixed
+- **匯入（DiveImportKit v0.7.3，10/06）**：不帶時區的格式改以裝置時區解讀（先前在 UTC+8 顯示成 +8 小時、連續潛水間隔錯）；循環呼吸器／多氣體／無氣體欄位的紀錄不再當成確定單一氣體（舊匯入的 Seabear／DivingLog／Shearwater／Subsurface CSV 視為不可信）；剖面 CSV 代填日期不進殘氮鏈；SDE 水溫 0 °C 改正；自由潛水（DM5／Seabear）自動辨識；ⓘ 不再停在行尾（`814f725`、`b0d2d69`）。
 - 水溫未記錄時留空、不再顯示編造的預設值；手動新增表單不再預填 28 °C（`be336a3`、`b6e3a0d`、`0638c3b`）。
 - Premium 價格未載入前不再顯示寫死的 "$1.99"（`f17b104`）。
 - 匯入：深度比對 0.1 m 容差、round-trip 去重、改用 DiveImportKit 共用比對規則（`e8c294e`、`6cd7ea3`、`76aff21`）。
