@@ -21,7 +21,7 @@
 | Support／Privacy URL | ✅ HTTP 200 | `curl -L` |
 | 匯入流程手動走一次 | ✅ PM 10/05 模擬器 26 檔 | — |
 | What's New | ✅ 三語定稿 | `APPSTORE_COPY.md` |
-| 🔴 **隱私權政策的「定位」段與實際用途不符** | ⏳ **待 PM** | 政策三語（`logbook/privacy.md:38／133／228`）寫「只在您選擇**記錄潛點 GPS 座標**時請求定位」；實際只用於**地圖「回到我的位置」**，且須在設定開啟（`UserLocationProvider.swift` 檔頭、`MapView.swift:40`）。v1.2 已是如此且過審，但 5.1.1(i) 要求政策說明用途。改 `privacy.md` 並 push 即更新公開網頁（對外動作） |
+| ✅ **隱私權政策的「定位」段與實際用途不符**（10/06 PM 同意修正，三語改為「設定開啟後、僅用於地圖顯示目前位置」，更新日期 2026-10-06） | ✅ 已改並 push | 政策三語（`logbook/privacy.md:38／133／228`）寫「只在您選擇**記錄潛點 GPS 座標**時請求定位」；實際只用於**地圖「回到我的位置」**，且須在設定開啟（`UserLocationProvider.swift` 檔頭、`MapView.swift:40`）。v1.2 已是如此且過審，但 5.1.1(i) 要求政策說明用途。改 `privacy.md` 並 push 即更新公開網頁（對外動作） |
 | ASC 上傳、問卷、送審 | PM | — |
 
 ---

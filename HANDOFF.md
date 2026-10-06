@@ -24,7 +24,7 @@ What's New 三語定稿（籠統寫法）；剖面讀數 label 字級；匯入�
 ## 下一步（依序，一件一件問 PM）
 
 1. ~~翻譯~~ ✅ 2026-10-06 完成（`docs/V1_3_WORK_PLAN.md` §九；No Deco el／hr 採用 NDL）。
-2. **送審收尾**：✅ 10/06 複核完成（`docs/SUBMISSION_CHECK_NEXT.md` 頂部表）。**唯一待 PM：隱私權政策「定位」段與實際用途不符**（`logbook/privacy.md`）。之後 ASC 上傳由 PM。
+2. **送審收尾**：✅ 10/06 複核完成（`docs/SUBMISSION_CHECK_NEXT.md` 頂部表）。隱私權政策「定位」段已依 PM 10/06 同意修正並 push。之後 ASC 上傳由 PM。
 3. P0-3 手動走匯入：PM 10/05 已在模擬器走過一次（26 檔）；匯入失敗新文案**尚未截圖驗證**（PM 同意直接提交）。
 
 ## 待 PM（未裁示，不阻擋送審）

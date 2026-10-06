@@ -1,6 +1,6 @@
 # Privacy Policy — JoyDive²
 
-**Last Updated**: July 20, 2026
+**Last Updated**: October 6, 2026
 
 ---
 
@@ -35,7 +35,7 @@ For details, see [Google's Privacy Policy](https://policies.google.com/privacy).
 
 #### Location
 
-The App requests location permission only when you explicitly choose to record GPS coordinates for a dive. Location data is stored locally on your device and is not transmitted to us.
+The App requests location permission only if you turn on location in Settings. It is used solely to show your current position on the map so you can recenter it. Location data stays on your device and is not transmitted to us.
 
 ---
 
@@ -95,7 +95,7 @@ For privacy questions, contact: **joydive.app@gmail.com**
 
 # 隱私政策 — JoyDive²
 
-**最後更新**：2026 年 7 月 20 日
+**最後更新**：2026 年 10 月 6 日
 
 ---
 
@@ -130,7 +130,7 @@ JoyDive²（「本應用程式」）以保護您的隱私為設計核心。本�
 
 #### 位置
 
-本應用程式僅在您明確選擇記錄潛點 GPS 座標時才請求定位權限。位置資料儲存於您的裝置本機，不會傳送給我們。
+只有在您於「設定」中開啟定位時，本應用程式才會請求定位權限，用途僅限在地圖上顯示您目前的位置，方便將地圖移回您所在處。位置資料只保留在您的裝置上，不會傳送給我們。
 
 ---
 
@@ -190,7 +190,7 @@ JoyDive²（「本應用程式」）以保護您的隱私為設計核心。本�
 
 # プライバシーポリシー — JoyDive²
 
-**最終更新日**：2026年7月20日
+**最終更新日**：2026年10月6日
 
 ---
 
@@ -225,7 +225,7 @@ JoyDive²（以下「本アプリ」）は、ユーザーのプライバシー�
 
 #### 位置情報
 
-本アプリは、ユーザーがダイビングスポットのGPS座標の記録を明示的に選択した場合にのみ、位置情報の権限をリクエストします。位置情報データはデバイスのローカルに保存され、当社に送信されることはありません。
+本アプリは、設定で位置情報をオンにした場合にのみ位置情報の権限をリクエストし、地図上に現在地を表示して地図を現在地に戻すためだけに使用します。位置情報はデバイス内にのみ保存され、当社に送信されることはありません。
 
 ---
 
