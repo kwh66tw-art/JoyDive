@@ -181,10 +181,9 @@ struct DiveAnalysisView: View {
         Button {
             showingLimitations = true
         } label: {
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(verbatim: languageManager.localized("Interactive tissue loading is not available for this dive — see detail"))
-                Image(systemName: "info.circle")
-            }
+            // ⓘ 與「— 查看詳情」同一段文字、以不斷行空格相接：換行時跟著句尾走
+            // （PM 10/06：先前 HStack 分欄，ⓘ 會停在第一行最右邊）。寫法對齊下方提示列。
+            Text(verbatim: languageManager.localized("Interactive tissue loading is not available for this dive — see detail") + "\u{00A0}ⓘ")
             .font(.caption)
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -203,7 +202,7 @@ struct DiveAnalysisView: View {
             "Touch and drag the profile to see the dive at any moment, estimated with Bühlmann ZHL-16C"
         ))
         text += AttributedString(" — ")
-        var link = AttributedString(languageManager.localized("Limited support") + " ⓘ")
+        var link = AttributedString(languageManager.localized("Limited support") + "\u{00A0}ⓘ")
         link.link = Self.limitationsURL
         text += link
         return text
