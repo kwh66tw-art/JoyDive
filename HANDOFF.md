@@ -5,11 +5,11 @@
 
 ## 交接時間
 
-2026-10-06 夜（/handoff；狀態以指令查證）。前一版：`docs/handoff-archive/HANDOFF_2026-10-06午.md`。
+2026-10-07（滾動更新；狀態以指令查證）。前一版：`docs/handoff-archive/HANDOFF_2026-10-06午.md`。
 
 ## 目前狀態
 
-- HEAD `065403d`（origin 落後 2：交接 `0392afc`＋SDE 遷移；**未 push**）。工作樹只剩 `docs/l10n_v1.3_待翻譯.csv`（工作檔，刻意不提交）。
+- 最後 push：`3b3f0a0`（10/07）。之後的 commit **未 push**（`git log origin/main..HEAD` 查；push 需 PM 同意）。工作樹只剩 `docs/l10n_v1.3_待翻譯.csv`（工作檔，刻意不提交）。
 - 共用層：DiveKit **v9.2.0**、DiveImportKit **v0.7.6**（10/06 匯入稽核＋逐點水溫、匯出逐點水溫；10/07 Subsurface XML 多氣瓶）。🔒 兩 Kit 凍結（僅 bug 修正）。
 - 測試：`run_tests.sh logbook` **165／0／1**（10/07：Subsurface XML 舊資料不可信、改氣體＝確認；注入 2 項 RED）。版號 1.3（4）。
 
@@ -25,7 +25,7 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
    測試 +2；**模擬器 LB-Upgrade 實測**：唯一一筆 SDE 紀錄水溫 0 → NULL（sqlite 查證；此為預期遷移，不還原）。
 2. ✅ Kit 側 **UDDF／剖面 CSV 逐樣本水溫，不補值**（DIK v0.7.5，395/0/0，注入 4 項 RED；匯出也寫逐點水溫）；App 映射已接（`DiveImportKitAdapter.swift:85`）。
    ⚠️ **未驗證**：App 拖曳剖面 Temp 顯示（需重新匯入 UDDF；舊匯入的 UDDF 不會自動補，屬預期）。
-3. ⏳ 送審：PM 重新匯入 test42／Lake Coleridge 目視拖曳 Temp 後，ASC 上傳。
+3. ⏳ 送審：先完成下方「送審前還要做」全部項目，再由 PM 上傳 ASC。
 
 ## 🔴 送審前還要做（PM 10/07 已裁示「全採納」；額度用完暫停，下一輪接續）
 
@@ -44,7 +44,10 @@ PM 10/07 Mac 實測回報 9 項，查證與裁示全文見 `_JD2-family/decision
    粗估：`Text("大寫開頭…")` 在 Views 共約 62 處（Settings 15、EditSheet 15、DetailView 12、Analysis 9、Import 4、MainTab 3、Map 2、List 2；
    `grep -c`，未含 `Picker`／`Label`／`Section` 標題等其他寫法，需再盤點）。只影響「App 內語言≠系統語言」的使用者。
    做法：全面改走 `languageManager.localized`（或統一 `.environment(\.locale)`＋bundle 機制），逐語言截圖驗證（ui-verify）。
-5. 完成後：模擬器截圖驗證（編輯頁兩種情境、Mac ⓘ、Ceiling 膠囊）、`SUBMISSION_CHECK_NEXT.md` 再複核、push（需 PM 同意）、PM 上傳 ASC。
+5. ⏳ **ATMOS FIT 支援（PM 10/07：本次一起做）**：DiveImportKit 端工作，細節見 `_JD2-family/HANDOFF.md`。本 repo 只需在
+   `DiveLogDetailView.sourceFormatDisplayName` 加顯示名、跑測試。完成後把 `_JD2-family/00_Import_submission/` 補進 ATMOS FIT 4 檔（日期改 7 月）。
+   已知 FIT 盤點（10/07）：樣本只有 Garmin（✅）、Suunto（✅，自由潛水模式讀不到）、ATMOS（本項）；其他品牌 FIT 會被拒收，PM 決定不另查（無檔可測）。
+6. 完成後：模擬器截圖驗證（編輯頁兩種情境、Mac ⓘ、Ceiling 膠囊）、`SUBMISSION_CHECK_NEXT.md` 再複核、push（需 PM 同意）、PM 上傳 ASC。
 
 ✅ 10/07 已完成：#3 Mac ⓘ 視窗空白（補 macOS 尺寸）、#4 Ceiling 膠囊 A 案（#1F66E0＋白字）——**macOS build 通過、165/0/1，未截圖目視**。
 已答覆不改：#5 Suunto FIT 自由潛水判為水肺（模式欄讀不到，已是未知氣體；PM 接受）、#7 去重＝先匯入者留下、無格式優先、
@@ -81,4 +84,4 @@ PM 10/07 Mac 實測回報 9 項，查證與裁示全文見 `_JD2-family/decision
 
 ## 開場指令建議
 
-先讀本檔與 `docs/V1_3_WORK_PLAN.md` §八。驗證：`bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook`（預期 155/0/1）。
+先讀本檔與 `docs/V1_3_WORK_PLAN.md` §八。驗證：`bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook`（預期 165/0/1）。
