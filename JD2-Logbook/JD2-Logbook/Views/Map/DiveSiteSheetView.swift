@@ -46,7 +46,7 @@ struct DiveSiteSheetView: View {
 
     /// R-058：解碼失敗時不再靜默顯示「Air」，見 `DiveLog.decodedGasMix` 說明。
     private var gasMixText: String {
-        guard let gas = dive.decodedGasMix else {
+        guard let gas = dive.displayGasMix else {
             return languageManager.localized("Unknown Gas")
         }
         return gas.localizedDisplayName(languageManager)

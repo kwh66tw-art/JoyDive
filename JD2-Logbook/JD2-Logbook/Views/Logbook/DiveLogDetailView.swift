@@ -55,7 +55,7 @@ struct DiveLogDetailView: View {
     /// R-058：解碼失敗時不再靜默顯示「Air」——那會讓一支解碼失敗的 trimix 潛水
     /// 看起來像是真的空氣潛水，使用者完全無從察覺。見 `DiveLog.decodedGasMix` 說明。
     private var gasMixText: String {
-        guard let gas = dive.decodedGasMix else {
+        guard let gas = dive.displayGasMix else {
             return languageManager.localized("Unknown Gas")
         }
         return gas.localizedDisplayName(languageManager)

@@ -38,7 +38,7 @@ struct DiveRowView: View {
 
     /// R-058：解碼失敗時不再靜默顯示「Air」，見 `DiveLog.decodedGasMix` 說明。
     var gasMixText: String {
-        guard let gasMix = dive.decodedGasMix else {
+        guard let gasMix = dive.displayGasMix else {
             return languageManager.localized("Unknown Gas")
         }
         return gasMix.localizedDisplayName(languageManager)

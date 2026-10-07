@@ -191,6 +191,22 @@ final class DiveReplayChainAdoptionTests: XCTestCase {
         XCTAssertEqual(dive.replayGasMixConfidence, .confirmed)
     }
 
+    /// PM 2026-10-07：氣體不可信 ⇒ 畫面氣體欄顯示「未知氣體」（displayGasMix＝nil）；使用者確認後恢復。
+    func testDisplayGasMixIsNilWhenGasUntrusted() {
+        let dive = makeDive(at: Date(), depth: 18, seconds: 2400)
+        dive.sourceFormat = "uddf"
+        dive.gasMixJSON = "{\"nitrox\":{\"fO2\":0.32}}"
+        XCTAssertEqual(dive.displayGasMix, .nitrox(fO2: 0.32))
+        dive.importExtrasJSON = "{\"gasMixConfidence\":\"unknown\"}"
+        XCTAssertNil(dive.displayGasMix)
+        dive.importExtrasJSON = "{\"gasMixConfidence\":\"user\"}"
+        XCTAssertEqual(dive.displayGasMix, .nitrox(fO2: 0.32))
+
+        let legacy = makeDive(at: Date(), depth: 18, seconds: 2400)
+        legacy.sourceFormat = "seabear"
+        XCTAssertNil(legacy.displayGasMix, "舊版匯入（無標記）同樣顯示未知")
+    }
+
     func testAdapterMarksV073FormatsAsVerified() {
         let seabear = makeDiveLog(from: makeTestParsedDiveLog(
             dateTime: Date(), location: "", maxDepth: 18, diveTimeSeconds: 2400,

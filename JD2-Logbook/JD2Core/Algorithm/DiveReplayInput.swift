@@ -79,6 +79,12 @@ extension DiveLog {
         "seabear": "v0.7.3", "divinglog": "v0.7.3", "shearwater": "v0.7.3", "csv": "v0.7.3", "csv-profile": "v0.7.3",
         "subsurface": "v0.7.6",
     ]
+    /// 畫面上要顯示的氣體；氣體不可信（含舊資料判定）⇒ nil，顯示「未知氣體」（PM 2026-10-07）。
+    /// 不可信時解析出的氣體只是佔位或其中一種，顯示出來會讓使用者以為那就是實際用的氣體。
+    var displayGasMix: GasMix? {
+        replayGasMixConfidence == .unknown ? nil : decodedGasMix
+    }
+
     /// 編輯頁存檔時，使用者核對過的欄位 ⇒ 更新後的 `importExtras`；沒有變動回 nil。
     /// - 剖面 CSV 改了日期 ⇒ `dateTimeConfidence = "user"`（恢復參與殘氮鏈）。
     /// - 改了氣體（比對解碼後的 `GasMix`，不比 JSON 字串格式）⇒ `gasMixConfidence = "user"`（PM 2026-10-07）。
