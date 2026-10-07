@@ -207,6 +207,18 @@ final class DiveReplayChainAdoptionTests: XCTestCase {
         XCTAssertNil(legacy.displayGasMix, "舊版匯入（無標記）同樣顯示未知")
     }
 
+    /// PM 2026-10-07：「原始匯入資料」不顯示程式內部標記，只留來源資料。
+    func testDisplayableImportExtrasHidesInternalMarkers() {
+        let dive = makeDive(at: Date(), depth: 18, seconds: 2400)
+        dive.importExtrasJSON = buildImportExtrasJSON([
+            ("gasMixConfidence", "unknown"), ("dateTimeConfidence", "unknown"),
+            (DiveImportKit.jd2RoundtripIDKey, "ABC"), (DiveImportKit.dateTimeFloatingKey, "true"),
+            (DiveLog.gasVerifiedKey, "v0.7.6"), (DiveLog.garminGasVerifiedKey, "v0.7.2"),
+            ("buddy", "Ann"), ("cns", "12"),
+        ])
+        XCTAssertEqual(dive.displayableImportExtras, ["buddy": "Ann", "cns": "12"])
+    }
+
     func testAdapterMarksV073FormatsAsVerified() {
         let seabear = makeDiveLog(from: makeTestParsedDiveLog(
             dateTime: Date(), location: "", maxDepth: 18, diveTimeSeconds: 2400,

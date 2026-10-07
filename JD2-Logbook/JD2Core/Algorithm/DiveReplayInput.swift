@@ -79,6 +79,18 @@ extension DiveLog {
         "seabear": "v0.7.3", "divinglog": "v0.7.3", "shearwater": "v0.7.3", "csv": "v0.7.3", "csv-profile": "v0.7.3",
         "subsurface": "v0.7.6",
     ]
+    /// 程式內部用的 `importExtras` 標記，不是來源資料 ⇒ 詳細頁「原始匯入資料」不顯示（PM 2026-10-07）。
+    /// `jd2RoundtripID`／`dateTimeFloating` 為 DiveImportKit 的鍵（`jd2RoundtripIDKey`／`dateTimeFloatingKey`，測試對照）。
+    static let internalImportExtraKeys: Set<String> = [
+        garminGasVerifiedKey, gasVerifiedKey, gasMixConfidenceKey, dateTimeConfidenceKey,
+        "jd2RoundtripID", "dateTimeFloating",
+    ]
+
+    /// 「原始匯入資料」要顯示的項目＝來源資料（去掉內部標記）。
+    var displayableImportExtras: [String: String] {
+        importExtras.filter { !Self.internalImportExtraKeys.contains($0.key) }
+    }
+
     /// 畫面上要顯示的氣體；氣體不可信（含舊資料判定）⇒ nil，顯示「未知氣體」（PM 2026-10-07）。
     /// 不可信時解析出的氣體只是佔位或其中一種，顯示出來會讓使用者以為那就是實際用的氣體。
     var displayGasMix: GasMix? {
