@@ -47,8 +47,11 @@ PM 10/07 Mac 實測回報 9 項，查證與裁示全文見 `_JD2-family/decision
 
 - **列表篩選（PM 10/07 同意記入）**：氣體（空氣／高氧／未知氣體）、潛水類型（水肺／自由潛水）、組織負荷（可顯示／不可顯示）。
   目的：找出「未知氣體」逐筆補正、分開自由潛水、找出拖累殘氮鏈的紀錄。待定：地圖與頂部統計是否跟著篩選。需 18 語字串＋ui-verify。
-- （待 PM）搜尋範圍擴充：目前列表頂部「搜尋地點…」只比對地點與備註（`DiveLogListView.swift:43-44`）。
-- （待 PM）匯入紀錄的「環境」一律為預設海水：沒有任何解析器填 `environmentType`（`DiveLog.swift:108` 預設 `seawater`）。
+- **搜尋範圍擴充（PM 10/07 採納，與篩選同批）**：目前「搜尋地點…」只比對地點與備註（`DiveLogListView.swift:43-44`）⇒ 加潛伴、標籤、潛點名稱；
+  有固定選項的（氣體、類型、組織負荷）交給篩選。提示文字一併改（不再只寫「地點」）。
+- **環境：原始檔沒有就顯示「未記錄」（PM 10/07 採納）**：目前沒有任何解析器填 `environmentType`（全 Parsers 0 處；`DiveLog.swift:108` 預設 `seawater`）。
+  🔴 **先查再改**：重放讀的是 `surfacePressureBar`／`metersPerBar`（`DiveReplayInput.swift:25-30`），不是環境字串——
+  匯入時 `metersPerBar` 是否依淡水調整**未查證**；湖泊潛水（例 Lake Coleridge）可能以海水密度計算。改「未記錄」時要決定重放的預設密度。
 
 - 「原始匯入資料」6 個來源鍵名（`cns`／`minPPO2`／`maxPPO2`／`altitudeRange`／`decoRequired`／`gasSwitches`）補在地化名稱（18 語）；`gasSwitches` 值是 JSON，需整理成可讀格式。
 
