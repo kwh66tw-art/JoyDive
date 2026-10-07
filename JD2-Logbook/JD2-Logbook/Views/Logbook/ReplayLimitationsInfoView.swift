@@ -33,6 +33,10 @@ struct ReplayLimitationsInfoView: View {
                 }
             }
         }
+        #if os(macOS)
+        // macOS 的 sheet 不會替 List 撐出高度，沒有這行內容會被壓成 0（PM 10/07 回報 ⓘ 視窗空白）。尺寸為本專案決定。
+        .frame(minWidth: 420, minHeight: 240)
+        #endif
         .accessibilityIdentifier("replayLimitationsInfo")
     }
 }

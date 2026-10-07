@@ -16,6 +16,7 @@ enum ReplayColor {
     static let warning = Color(red: 0xFF / 255, green: 0xD6 / 255, blue: 0x00 / 255)
     /// #FF1744：超過上限（組織負荷 > 100%）
     static let danger = Color(red: 0xFF / 255, green: 0x17 / 255, blue: 0x44 / 255)
-    /// #2979FF：有減壓義務（Ceiling > 0）
-    static let deco = Color(red: 0x29 / 255, green: 0x79 / 255, blue: 0xFF / 255)
+    /// #1F66E0：有減壓義務（Ceiling > 0）
+    // PM 2026-10-07（選 A）：原 #2979FF 配黑字仍不易辨識 ⇒ 加深為 #1F66E0 配白字（WCAG 對比 5.2:1，≥ AA 4.5:1；本專案決定的色值）。
+    static let deco = Color(red: 0x1F / 255, green: 0x66 / 255, blue: 0xE0 / 255)
 }

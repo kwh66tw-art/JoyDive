@@ -344,8 +344,8 @@ struct DiveAnalysisView: View {
             switch self {
             case .neutral: return .primary
             case .warning: return .black
-            // 黑字：白字在 deco 藍上 3.98:1（< WCAG AA 4.5:1），黑字 5.27:1（PM 2026-10-05）
-            case .deco:    return .black
+            // 白字：deco 藍 2026-10-07 加深為 #1F66E0，白字 5.2:1（≥ WCAG AA 4.5:1）。原 #2979FF 白字僅 3.98:1 才用黑字（10/05）。
+            case .deco:    return .white
             }
         }
     }
