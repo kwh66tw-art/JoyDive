@@ -37,7 +37,14 @@ PM 10/07 Mac 實測回報 9 項，查證與裁示全文見 `_JD2-family/decision
 2. ⏳ **不可信的 Trimix（#2）**：開放選擇（不預選）、不顯示「無法編輯三元混合氣」；可信的 Trimix 維持鎖住。
 3. ⏳ **自由潛水剖面時間軸改秒（#6）**：DiveKit `DiveKitUI/DiveProfileChartView.swift:92` 一律 `Int(v)min` ⇒ 短潛水整排「0min」。
    潛水很短時改秒（門檻需標「本專案決定」）；DiveKit bug 修正 ⇒ 571 測試＋升版＋三 App 重跑。
-4. 完成後：模擬器截圖驗證（編輯頁兩種情境、Mac ⓘ、Ceiling 膠囊）、`SUBMISSION_CHECK_NEXT.md` 再複核、push（需 PM 同意）、PM 上傳 ASC。
+4. ⏳ **App 內切換語言後殘留中文（PM 10/07 回報，截圖：克羅埃西亞文編輯頁）**——記入調查／修正。
+   初步查證（機制已讀程式碼確認，修正範圍未逐一盤點）：殘留的都是寫成 `Text("Max Depth")` 這種**字面鍵**的地方——SwiftUI 用**系統語言**查字串，
+   不走 App 內語言設定；走 `languageManager.localized(...)` 的則正確顯示所選語言。截圖對照：「最大深度」「水溫」「混合氣體」「環境條件」「海水」
+   「水肺」「空氣」皆為 `DiveLogEditSheet.swift` 的字面 `Text("…")`（`:346`、`:371`、`:441`、`:451`、`:453` 等）。
+   粗估：`Text("大寫開頭…")` 在 Views 共約 62 處（Settings 15、EditSheet 15、DetailView 12、Analysis 9、Import 4、MainTab 3、Map 2、List 2；
+   `grep -c`，未含 `Picker`／`Label`／`Section` 標題等其他寫法，需再盤點）。只影響「App 內語言≠系統語言」的使用者。
+   做法：全面改走 `languageManager.localized`（或統一 `.environment(\.locale)`＋bundle 機制），逐語言截圖驗證（ui-verify）。
+5. 完成後：模擬器截圖驗證（編輯頁兩種情境、Mac ⓘ、Ceiling 膠囊）、`SUBMISSION_CHECK_NEXT.md` 再複核、push（需 PM 同意）、PM 上傳 ASC。
 
 ✅ 10/07 已完成：#3 Mac ⓘ 視窗空白（補 macOS 尺寸）、#4 Ceiling 膠囊 A 案（#1F66E0＋白字）——**macOS build 通過、165/0/1，未截圖目視**。
 已答覆不改：#5 Suunto FIT 自由潛水判為水肺（模式欄讀不到，已是未知氣體；PM 接受）、#7 去重＝先匯入者留下、無格式優先、
