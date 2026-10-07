@@ -11,7 +11,7 @@
 
 - HEAD `065403d`（origin 落後 2：交接 `0392afc`＋SDE 遷移；**未 push**）。工作樹只剩 `docs/l10n_v1.3_待翻譯.csv`（工作檔，刻意不提交）。
 - 共用層：DiveKit **v9.2.0**、DiveImportKit **v0.7.6**（10/06 匯入稽核＋逐點水溫、匯出逐點水溫；10/07 Subsurface XML 多氣瓶）。🔒 兩 Kit 凍結（僅 bug 修正）。
-- 測試：`run_tests.sh logbook` **163／0／1**（10/07：Subsurface XML 舊資料不可信、改氣體＝確認；注入 2 項 RED）。版號 1.3（4）。
+- 測試：`run_tests.sh logbook` **165／0／1**（10/07：Subsurface XML 舊資料不可信、改氣體＝確認；注入 2 項 RED）。版號 1.3（4）。
 
 ## v1.3 已完成
 
@@ -26,6 +26,10 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 2. ✅ Kit 側 **UDDF／剖面 CSV 逐樣本水溫，不補值**（DIK v0.7.5，395/0/0，注入 4 項 RED；匯出也寫逐點水溫）；App 映射已接（`DiveImportKitAdapter.swift:85`）。
    ⚠️ **未驗證**：App 拖曳剖面 Temp 顯示（需重新匯入 UDDF；舊匯入的 UDDF 不會自動補，屬預期）。
 3. ⏳ 送審：PM 重新匯入 test42／Lake Coleridge 目視拖曳 Temp 後，ASC 上傳。
+
+## 下一版待辦（PM 10/07）
+
+- 「原始匯入資料」6 個來源鍵名（`cns`／`minPPO2`／`maxPPO2`／`altitudeRange`／`decoRequired`／`gasSwitches`）補在地化名稱（18 語）；`gasSwitches` 值是 JSON，需整理成可讀格式。
 
 ## 待 PM（未裁示，不阻擋送審）
 

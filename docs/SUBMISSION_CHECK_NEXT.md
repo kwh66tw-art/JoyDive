@@ -1,5 +1,21 @@
 # 下一版送審檢查（2026-10-03 建立；**2026-10-06 送審收尾複核**，依 `app-store-submission-guide` §0 清單）
 
+## 2026-10-07 送審前再複核（10/06 之後又改了匯入與顯示；以指令查證）
+
+| 項目 | 結果 | 驗證 |
+|---|---|---|
+| Release 建置 | ✅ rc=0、0 error | `xcodebuild -configuration Release generic/platform=iOS CODE_SIGNING_ALLOWED=NO` |
+| 版號 | ✅ 1.3（4） | 產物 `defaults read` |
+| 加密宣告 | ✅ NO | 同上 |
+| 測試廣告 ID | ✅ 0 個 | Release 執行檔 `strings` |
+| Privacy Manifest | ✅ 3 份（App＋AdMob＋UMP） | `find *.xcprivacy` |
+| 共用層 | ✅ DiveKit v9.2.0／**DiveImportKit v0.7.6**（10/06 起 v0.7.3～v0.7.6：匯入稽核、逐點水溫、Subsurface XML 多氣瓶） | `git describe` |
+| 測試 | ✅ **165／0／1** | `run_tests.sh logbook` |
+| 新增使用者可見字串 | ✅ 無（「未知氣體」沿用既有 18 語字串） | 本輪程式改動未新增 `localized` 鍵 |
+| 10/06 之後新增行為 | SDE 0 °C 遷移、逐點水溫、Subsurface XML 舊資料不可信、改氣體＝確認、不可信顯示「未知氣體」、原始匯入資料隱藏內部標記 | 決策 §十三～§十八 |
+| 模擬器匯入目視 | ✅ 4 格式（§十七）；「未知氣體」列表／詳細頁截圖 | iPhone Air 模擬器 |
+| ASC 上傳、問卷、送審 | PM | — |
+
 ## 2026-10-06 收尾複核（以指令查證；舊內容保留於下方）
 
 產物：Release `generic/platform=iOS`（`CODE_SIGNING_ALLOWED=NO`，BUILD SUCCEEDED）＋ Debug 模擬器。
