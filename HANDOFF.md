@@ -45,6 +45,11 @@ PM 10/07 Mac 實測回報 9 項，查證與裁示全文見 `_JD2-family/decision
 
 ## 下一版待辦（PM 10/07）
 
+- **列表篩選（PM 10/07 同意記入）**：氣體（空氣／高氧／未知氣體）、潛水類型（水肺／自由潛水）、組織負荷（可顯示／不可顯示）。
+  目的：找出「未知氣體」逐筆補正、分開自由潛水、找出拖累殘氮鏈的紀錄。待定：地圖與頂部統計是否跟著篩選。需 18 語字串＋ui-verify。
+- （待 PM）搜尋範圍擴充：目前列表頂部「搜尋地點…」只比對地點與備註（`DiveLogListView.swift:43-44`）。
+- （待 PM）匯入紀錄的「環境」一律為預設海水：沒有任何解析器填 `environmentType`（`DiveLog.swift:108` 預設 `seawater`）。
+
 - 「原始匯入資料」6 個來源鍵名（`cns`／`minPPO2`／`maxPPO2`／`altitudeRange`／`decoRequired`／`gasSwitches`）補在地化名稱（18 語）；`gasSwitches` 值是 JSON，需整理成可讀格式。
 
 ## 待 PM（未裁示，不阻擋送審）
