@@ -47,7 +47,9 @@ PM 10/07 Mac 實測回報 9 項，查證與裁示全文見 `_JD2-family/decision
 5. ⏳ **ATMOS FIT 支援（PM 10/07：本次一起做）**：DiveImportKit 端工作，細節見 `_JD2-family/HANDOFF.md`。本 repo 只需在
    `DiveLogDetailView.sourceFormatDisplayName` 加顯示名、跑測試。完成後把 `_JD2-family/00_Import_submission/` 補進 ATMOS FIT 4 檔（日期改 7 月）。
    已知 FIT 盤點（10/07）：樣本只有 Garmin（✅）、Suunto（✅，自由潛水模式讀不到）、ATMOS（本項）；其他品牌 FIT 會被拒收，PM 決定不另查（無檔可測）。
-6. 完成後：模擬器截圖驗證（編輯頁兩種情境、Mac ⓘ、Ceiling 膠囊）、`SUBMISSION_CHECK_NEXT.md` 再複核、push（需 PM 同意）、PM 上傳 ASC。
+6. ⏳ **新增潛水不選潛水模式（PM 10/07）**：手動新增一律水肺（scuba），新增頁移除「潛水模式」選項；編輯既有紀錄的模式選項維持
+   （PM 曾說使用者可手動把 Suunto FIT 自由潛水改成自由潛水）。`DiveLogEditSheet` 依 `.add`／`.edit` 分流。
+7. 完成後：模擬器截圖驗證（編輯頁兩種情境、Mac ⓘ、Ceiling 膠囊）、`SUBMISSION_CHECK_NEXT.md` 再複核、push（需 PM 同意）、PM 上傳 ASC。
 
 ✅ 10/07 已完成：#3 Mac ⓘ 視窗空白（補 macOS 尺寸）、#4 Ceiling 膠囊 A 案（#1F66E0＋白字）——**macOS build 通過、165/0/1，未截圖目視**。
 已答覆不改：#5 Suunto FIT 自由潛水判為水肺（模式欄讀不到，已是未知氣體；PM 接受）、#7 去重＝先匯入者留下、無格式優先、
