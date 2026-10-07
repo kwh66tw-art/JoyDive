@@ -99,8 +99,8 @@ func makeDiveLog(from kitParsed: DiveImportKit.ParsedDiveLog) -> DiveLog {
     }
     // v1.3（PM 2026-10-06）：DiveImportKit v0.7.3 對這幾種格式補上「多氣體／循環呼吸器／無氣體欄位」判定。
     // 標記下來，重放據此把舊版匯入（無標記）的同格式紀錄視為氣體不可信。
-    if DiveLog.gasRuleV073SourceFormats.contains(parsed.sourceFormat.lowercased()) {
-        extras.append((DiveLog.gasVerifiedKey, "v0.7.3"))
+    if DiveLog.gasRuleMinimumKitVersion[parsed.sourceFormat.lowercased()] != nil {
+        extras.append((DiveLog.gasVerifiedKey, DiveLog.gasRuleCurrentKitVersion))
     }
     dive.importExtrasJSON = buildImportExtrasJSON(extras)
 

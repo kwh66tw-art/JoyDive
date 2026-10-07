@@ -160,11 +160,46 @@ final class DiveReplayChainAdoptionTests: XCTestCase {
         XCTAssertEqual(uddf.replayGasMixConfidence, .confirmed, "UDDF 舊資料依 PM 裁示維持原狀")
     }
 
+    /// PM 2026-10-07：Subsurface XML 舊匯入（無標記，或 v0.7.6 之前的標記）一律不可信。
+    func testLegacySubsurfaceXMLBeforeV076IsUnknown() {
+        let dive = makeDive(at: Date(), depth: 18, seconds: 2400)
+        dive.sourceFormat = "Subsurface"
+        XCTAssertEqual(dive.replayGasMixConfidence, .unknown, "無標記＝舊版匯入")
+        dive.importExtrasJSON = "{\"\(DiveLog.gasVerifiedKey)\":\"v0.7.3\"}"
+        XCTAssertEqual(dive.replayGasMixConfidence, .unknown, "v0.7.3 還沒有多氣瓶判定")
+        dive.importExtrasJSON = "{\"\(DiveLog.gasVerifiedKey)\":\"v0.7.6\"}"
+        XCTAssertEqual(dive.replayGasMixConfidence, .confirmed)
+        dive.importExtrasJSON = "{\"\(DiveLog.gasVerifiedKey)\":\"v0.7.10\"}"
+        XCTAssertEqual(dive.replayGasMixConfidence, .confirmed, "版本以數字比較，不是字串")
+    }
+
+    /// PM 2026-10-07：使用者改了氣體 ⇒ 已確認，壓過匯入端的不可信與舊資料判定；沒改氣體不算。
+    func testUserGasEditConfirmsGas() {
+        let dive = makeDive(at: Date(), depth: 18, seconds: 2400)
+        dive.sourceFormat = "Subsurface"
+        dive.gasMixJSON = "{\"nitrox\":{\"fO2\":0.30}}"
+        dive.importExtrasJSON = "{\"gasMixConfidence\":\"unknown\"}"
+        XCTAssertEqual(dive.replayGasMixConfidence, .unknown)
+
+        XCTAssertNil(dive.userEditConfirmations(newDateTime: dive.dateTime, newGasMixJSON: "{\"nitrox\":{\"fO2\":0.3}}"),
+                     "氣體沒變（字串格式不同、解碼後相同）不算確認")
+
+        let extras = dive.userEditConfirmations(newDateTime: dive.dateTime, newGasMixJSON: "{\"nitrox\":{\"fO2\":0.32}}")
+        XCTAssertEqual(extras?[DiveLog.gasMixConfidenceKey], DiveLog.userConfirmedValue)
+        dive.importExtrasJSON = buildImportExtrasJSON((extras ?? [:]).map { ($0.key, $0.value) })
+        dive.gasMixJSON = "{\"nitrox\":{\"fO2\":0.32}}"
+        XCTAssertEqual(dive.replayGasMixConfidence, .confirmed)
+    }
+
     func testAdapterMarksV073FormatsAsVerified() {
         let seabear = makeDiveLog(from: makeTestParsedDiveLog(
             dateTime: Date(), location: "", maxDepth: 18, diveTimeSeconds: 2400,
             roundtripID: nil, sourceFormat: "seabear"))
-        XCTAssertEqual(seabear.importExtras[DiveLog.gasVerifiedKey], "v0.7.3")
+        XCTAssertEqual(seabear.importExtras[DiveLog.gasVerifiedKey], DiveLog.gasRuleCurrentKitVersion)
+        let subsurface = makeDiveLog(from: makeTestParsedDiveLog(
+            dateTime: Date(), location: "", maxDepth: 18, diveTimeSeconds: 2400,
+            roundtripID: nil, sourceFormat: "Subsurface"))
+        XCTAssertEqual(subsurface.importExtras[DiveLog.gasVerifiedKey], "v0.7.6")
         let dm5 = makeDiveLog(from: makeTestParsedDiveLog(
             dateTime: Date(), location: "", maxDepth: 18, diveTimeSeconds: 2400,
             roundtripID: nil, sourceFormat: "suunto-dm5"))

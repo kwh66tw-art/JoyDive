@@ -753,9 +753,8 @@ struct DiveLogEditSheet: View {
 
         case .edit(let dive):
             // 剖面 CSV 的日期是匯入時代填的；使用者改過日期 ⇒ 視為已核對，恢復參與殘氮鏈。
-            if dive.sourceFormat.lowercased() == "csv-profile", entryTime != dive.dateTime {
-                var extras = dive.importExtras
-                extras[DiveLog.dateTimeConfidenceKey] = "user"
+            // 使用者核對過的欄位（剖面 CSV 日期、氣體）標為已確認，見 `DiveLog.userEditConfirmations`。
+            if let extras = dive.userEditConfirmations(newDateTime: entryTime, newGasMixJSON: gasMixJSON) {
                 dive.importExtrasJSON = buildImportExtrasJSON(extras.map { ($0.key, $0.value) })
             }
             dive.dateTime         = entryTime

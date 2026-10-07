@@ -53,21 +53,53 @@ extension DiveLog {
     var replayGasMixConfidence: DiveReplayEngine.GasMixConfidence {
         guard decodedGasMix != nil else { return .unknown }
         let extras = importExtras
-        if extras["gasMixConfidence"] == "unknown" { return .unknown }
+        // PM 2026-10-07：使用者在編輯頁改過氣體 ⇒ 視為已確認，優先於所有匯入端的不可信判定。
+        if extras[Self.gasMixConfidenceKey] == Self.userConfirmedValue { return .confirmed }
+        if extras[Self.gasMixConfidenceKey] == "unknown" { return .unknown }
         if Self.garminFITSourceFormats.contains(sourceFormat.lowercased()),
            extras[Self.garminGasVerifiedKey] == nil { return .unknown }
         // PM 2026-10-06（同 Garmin A 案）：DiveImportKit v0.7.3 前，這幾種格式的循環呼吸器／多氣體／
         // 無氣體欄位紀錄都被當成確定的單一氣體。舊版匯入（無 `gasVerifiedKey`）一律視為不可信。
         // UDDF 依 PM 裁示維持原狀（不套用）。
-        if Self.gasRuleV073SourceFormats.contains(sourceFormat.lowercased()),
-           extras[Self.gasVerifiedKey] == nil { return .unknown }
+        // PM 2026-10-07：Subsurface XML 於 DiveImportKit v0.7.6 補上多氣瓶判定，同樣處理（最低版本 v0.7.6）。
+        if let minimum = Self.gasRuleMinimumKitVersion[sourceFormat.lowercased()],
+           (extras[Self.gasVerifiedKey] ?? "").compare(minimum, options: .numeric) == .orderedAscending {
+            return .unknown
+        }
         return .confirmed
     }
 
-    /// 匯入時寫入的標記：這筆的氣體由 DiveImportKit v0.7.3 的判定規則解析（值＝Kit 版本）。
+    /// 匯入時寫入的標記：這筆的氣體由哪一版 DiveImportKit 的判定規則解析（值＝Kit 版本）。
     static let gasVerifiedKey = "jd2GasVerified"
-    /// v0.7.3 修正氣體判定的格式（`sourceFormat` 字串，經 Kit 原始碼與模擬器資料庫查證）。
-    static let gasRuleV073SourceFormats: Set<String> = ["seabear", "divinglog", "shearwater", "csv", "csv-profile"]
+    /// 匯入時寫入 `gasVerifiedKey` 的值＝目前引用的 DiveImportKit 版本。
+    static let gasRuleCurrentKitVersion = "v0.7.6"
+    /// 修正過氣體判定的格式 → 需要的最低 Kit 版本（`sourceFormat` 小寫，經 Kit 原始碼與模擬器資料庫查證）。
+    /// 標記缺少或低於此版本 ⇒ 舊版匯入，氣體不可信。v0.7.3：前五種；v0.7.6：Subsurface XML（`"Subsurface"`）。
+    static let gasRuleMinimumKitVersion: [String: String] = [
+        "seabear": "v0.7.3", "divinglog": "v0.7.3", "shearwater": "v0.7.3", "csv": "v0.7.3", "csv-profile": "v0.7.3",
+        "subsurface": "v0.7.6",
+    ]
+    /// 編輯頁存檔時，使用者核對過的欄位 ⇒ 更新後的 `importExtras`；沒有變動回 nil。
+    /// - 剖面 CSV 改了日期 ⇒ `dateTimeConfidence = "user"`（恢復參與殘氮鏈）。
+    /// - 改了氣體（比對解碼後的 `GasMix`，不比 JSON 字串格式）⇒ `gasMixConfidence = "user"`（PM 2026-10-07）。
+    func userEditConfirmations(newDateTime: Date, newGasMixJSON: String) -> [String: String]? {
+        var extras = importExtras
+        var changed = false
+        if sourceFormat.lowercased() == "csv-profile", newDateTime != dateTime {
+            extras[Self.dateTimeConfidenceKey] = "user"
+            changed = true
+        }
+        let newGas = newGasMixJSON.data(using: .utf8).flatMap { try? JSONDecoder().decode(GasMix.self, from: $0) }
+        if let newGas, newGas != decodedGasMix {
+            extras[Self.gasMixConfidenceKey] = Self.userConfirmedValue
+            changed = true
+        }
+        return changed ? extras : nil
+    }
+
+    /// DiveImportKit 的氣體可信度旗標鍵；值 `"unknown"`＝匯入端判定不可信，`"user"`＝使用者在編輯頁改過氣體。
+    static let gasMixConfidenceKey = "gasMixConfidence"
+    static let userConfirmedValue = "user"
 
     /// 日期是否為代填值（Subsurface 剖面 CSV 沒有日期，以匯入當下時間代填）。
     /// 使用者在編輯頁改過日期後記為 `"user"`，即恢復參與殘氮鏈。
