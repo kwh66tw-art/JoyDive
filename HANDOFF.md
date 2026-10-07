@@ -10,8 +10,8 @@
 ## 目前狀態
 
 - HEAD `065403d`（origin 落後 2：交接 `0392afc`＋SDE 遷移；**未 push**）。工作樹只剩 `docs/l10n_v1.3_待翻譯.csv`（工作檔，刻意不提交）。
-- 共用層：DiveKit **v9.2.0**、DiveImportKit **v0.7.5**（10/06 匯入稽核＋逐點水溫、匯出逐點水溫）。🔒 兩 Kit 凍結（僅 bug 修正）。
-- 測試：`run_tests.sh logbook` **161／0／1**。版號 1.3（4）。
+- 共用層：DiveKit **v9.2.0**、DiveImportKit **v0.7.6**（10/06 匯入稽核＋逐點水溫、匯出逐點水溫；10/07 Subsurface XML 多氣瓶）。🔒 兩 Kit 凍結（僅 bug 修正）。
+- 測試：`run_tests.sh logbook` **163／0／1**（10/07：Subsurface XML 舊資料不可信、改氣體＝確認；注入 2 項 RED）。版號 1.3（4）。
 
 ## v1.3 已完成
 
@@ -31,7 +31,7 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 
 - App-lb 另有 4 處 `minimumScaleFactor`（清單統計列、潛水列月份、匯入頁副檔名）：Xcode 27 下是否同樣被縮小**未驗證**（A/B 實驗 PM 中止）。
 - ~~匯入不辨識潛水模式~~ ✅ 10/06：DM5 Mode=3、Seabear APNEA 帶入自由潛水（其他格式無證據不推測）。
-- 使用者手動改氣體不會清掉「氣體不可信」標記（保守）；若要讓使用者確認後可重放，需新 UI。
+- ~~使用者手動改氣體不會清掉「氣體不可信」標記~~ ✅ 10/07 PM：改了氣體＝已確認（`DiveLog.userEditConfirmations`）。
 
 ## 陷阱提醒
 
