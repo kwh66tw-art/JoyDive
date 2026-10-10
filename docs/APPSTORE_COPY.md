@@ -25,10 +25,10 @@ Start logging your dives by hand from day one. Got a dive computer? Import every
 JoyDive² is the dive log that grows with you — from your very first dive to your most advanced ones.
 
 **No Dive Computer? No Problem.**
-Start logging right away. Enter depth, dive time, water temperature, gas mix, GPS coordinates, and notes by hand. JoyDive² is built for divers at every stage — you don't need a dive computer to keep a proper logbook.
+Start logging right away. Enter depth, dive time, water temperature, gas, and notes by hand. JoyDive² is built for divers at every stage — you don't need a dive computer to keep a proper logbook.
 
 **Got a Dive Computer? Bring Everything In.**
-Supports major brands including UDDF, Subsurface, Suunto, Garmin, Shearwater, Seabear, and more. Import your computer logs and they merge seamlessly alongside your manual entries — one complete, unified logbook.
+Supports major brands including UDDF, Subsurface, Suunto, Garmin, Shearwater, ATMOS, Seabear, and more. Import your computer logs and they merge seamlessly alongside your manual entries — one complete, unified logbook.
 
 **Every Detail, At a Glance**
 Each entry can hold depth profile, max & average depth, dive time, gas mix (Air / Nitrox / Trimix), water temperature and conditions, equipment (wetsuit, weights, cylinder), GPS coordinates, and notes. A clean list view and calendar make it easy to browse your full dive history.
@@ -52,11 +52,12 @@ Traditional Chinese, Simplified Chinese, English, Japanese, Korean, French, Germ
 
 ## Keywords (100 characters, comma-separated, no words already in App Name)
 
-logbook,scuba,diving,divelog,diary,nitrox,freediving,UDDF,import,record,tracker,profile,deco,depth
+dive log,divelog,Tauchlogbuch,duiklogboek,plongée,buceo,bitácora,immersioni,mergulho,다이빙로그,selam,lặn
 
 > ✅ **v1.3（2026-10-03，PM 裁示）**：移除品牌名（2.3.7＋艦隊紅線）；台灣／日本在地化，其他 storefront 用英文組。依據 `docs/KEYWORDS_NEXT_DRAFT.md`。舊組（v1.2）：`dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`
 
-> ⚠️ 98 characters (no spaces after commas). Apple limit: 100.
+> ✅ **v1.3 再修訂（PM 2026-10-10）**：英文組**只放各國「潛水日誌」用詞**（不放品牌、不放泛用詞）——英 dive log／divelog、德 Tauchlogbuch、荷 duiklogboek、法 plongée、西 buceo／bitácora、義 immersioni、葡 mergulho、韓 다이빙로그、印尼／馬來 selam、越 lặn。片語拆成單字（App Store 會自動組合搜尋），18 語全放約 200 字元放不下，PM 選此組（未涵蓋：泰、希、克、簡中）。10/03 那組（logbook,scuba,diving,…,depth）已換掉。
+> ⚠️ 100 characters / 114 bytes (no spaces after commas). Apple limit: 100 — **上限是算字元還是位元組未查到出處，上傳前在 ASC 實貼確認**；若被擋，先拿掉 lặn 或 selam。
 > 📜 History: the v1.2 set (brand names such as Shearwater/Garmin/Suunto/Subsurface) was found unsearchable after launch
 >   (2026-07-29); replaced in v1.3 per PM 2026-10-03. Details: `docs/KEYWORDS_NEXT_DRAFT.md`.
 
@@ -89,6 +90,7 @@ New in this update:
 | Subtitle | Log Every Dive, Every Story | Optional |
 | Description | See above | |
 | Keywords | See above | 100 chars max |
+| Primary Category | **Sports**（v1.3 PM 2026-10-10 裁示：對齊其他潛水日誌 App；v1.2 為 Health & Fitness）——ASC 手動改 | Required |
 | Support URL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | Required |
 | Marketing URL | (leave blank) | Optional |
 | Privacy Policy URL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | Required |
@@ -142,10 +144,10 @@ JoyDive²
 JoyDive²，陪你從第一次下水到每一次進階潛水的潛水日誌。
 
 **沒有電腦錶？一樣可以開始記錄。**
-直接手動建立潛水日誌。輸入深度、潛水時間、水溫、氣體混合、GPS 座標與備註，從第一次下水就開始累積你的潛水歷史。JoyDive² 適合每個階段的潛水員，不需要電腦錶也能擁有一本完整的潛水記錄。
+直接手動建立潛水日誌。輸入深度、潛水時間、水溫、氣體與備註，從第一次下水就開始累積你的潛水歷史。JoyDive² 適合每個階段的潛水員，不需要電腦錶也能擁有一本完整的潛水記錄。
 
 **有了電腦錶？把所有記錄都帶進來。**
-支援多種主流品牌，包含 UDDF、Subsurface、Suunto、Garmin、Shearwater、Seabear 等。電腦錶的記錄匯入後，會與你手動建立的日誌無縫整合——從初學到現在，一本完整的記錄，一個 App 管理。
+支援多種主流品牌，包含 UDDF、Subsurface、Suunto、Garmin、Shearwater、ATMOS、Seabear 等。電腦錶的記錄匯入後，會與你手動建立的日誌無縫整合——從初學到現在，一本完整的記錄，一個 App 管理。
 
 **完整的潛水資訊一目了然**
 每筆記錄可保存深度剖面、最大/平均深度、潛水時間、氣體混合（空氣 / Nitrox / Trimix）、水溫與環境條件、裝備（防寒衣、配重、氣瓶），以及 GPS 座標與備註。清晰的列表與日曆視圖，讓你快速回顧每一次下水。
@@ -239,10 +241,10 @@ JoyDive²
 JoyDive²は、初めてのファンダイビングからステップアップしたダイビングまで、あなたの成長に寄り添うダイビングログブックアプリです。
 
 **ダイブコンピューターがなくても大丈夫**
-すぐにログの記録を始められます。水深、潜水時間、水温、ガスミックス、GPS座標、メモなどを手動で入力するだけ。JoyDive²はあらゆるステージのダイバー向けに設計されているため、ダイコンをお持ちでなくても本格的なログブックを作成できます。
+すぐにログの記録を始められます。水深、潜水時間、水温、ガス、メモなどを手動で入力するだけ。JoyDive²はあらゆるステージのダイバー向けに設計されているため、ダイコンをお持ちでなくても本格的なログブックを作成できます。
 
 **ダイコンをお持ちなら、すべてのデータを集約**
-UDDF、Subsurface、Suunto、Garmin、Shearwater、Seabearなど、主要なブランドに幅広く対応。お手持ちのダイコンのログをインポートすれば、手動で作成したエントリーと美しく統合され、これまでのすべての記録を一つのアプリで一元管理できます。
+UDDF、Subsurface、Suunto、Garmin、Shearwater、ATMOS、Seabearなど、主要なブランドに幅広く対応。お手持ちのダイコンのログをインポートすれば、手動で作成したエントリーと美しく統合され、これまでのすべての記録を一つのアプリで一元管理できます。
 
 **充実のダイビング情報をひと目で確認**
 各ログには、水深プロファイル、最大/平均水深、潜水時間、ガスミックス（空気 / ナイトロックス / トライミックス）、水温とコンディション、装備（ウェットスーツ、ウェイト、タンク）、GPS座標、メモを記録可能。洗練されたリスト表示とカレンダービューにより、過去のダイビング履歴をスムーズに振り返ることができます。
@@ -300,6 +302,7 @@ GPS座標から地図上へ自動的にピンをドロップ。これまで訪�
 | 副題 | ダイビングログを、すべての潜水に | オプション |
 | 説明 | 上記を参照 | |
 | キーワード | 上記を参照 | 最大100文字 |
+| プライマリカテゴリ | **スポーツ**（v1.3 PM 2026-10-10：他のダイブログAppに合わせる；v1.2はヘルスケア／フィットネス）——ASCで手動変更 | 必須 |
 | サポートURL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | 必須 |
 | マーケティングURL | （空欄のまま） | オプション |
 | プライバシーポリシーURL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | 必須 |

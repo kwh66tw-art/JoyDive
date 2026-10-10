@@ -18,6 +18,9 @@
 | 10/07 之後新增行為 | 編輯頁氣體保留原值／百分比不取整、未知氣體模式空白與多氣體鎖住、新增潛水不選模式、自由潛水／浮潛不顯示氣體、潛水時間不截整分、App 內語言殘留修正（約 110 處）、短潛水秒軸、ATMOS FIT 匯入 | 決策 §十九、§二十二、§二十三 |
 | 模擬器目視 | ✅ 克羅埃西亞文（系統繁中）：列表、新增、編輯、詳細、匯入、選單、剖面讀數無中文殘留；編輯頁各情境；ATMOS FIT 匯入。Ceiling 膠囊、Mac ⓘ：PM 確認；UDDF 逐點水溫：PM 確認（ATMOS） | iPhone Air 模擬器 |
 | What's New | ✅ 三語加 ATMOS FIT 一句（PM 10/10） | `APPSTORE_COPY.md` |
+| App 類別（PM 10/10 追加） | ✅ `public.app-category.sports`；**ASC 主類別要 PM 手動改 Sports** | Release 產物 macOS／iOS `plutil -extract LSApplicationCategoryType` 皆為 `public.app-category.sports` |
+| 英文關鍵字（PM 10/10 追加） | ✅ 只放各國潛水日誌用詞，100 字元／114 bytes；⚠️ ASC 上限算字元或位元組未查證，上傳時實貼確認 | `APPSTORE_COPY.md` Keywords |
+| 說明文（PM 10/10 追加） | ✅ 手動記錄句去掉 GPS 座標、氣體混合→氣體；品牌加 ATMOS（三語） | `APPSTORE_COPY.md` |
 | ASC 上傳、問卷、送審 | PM | — |
 
 ## 2026-10-07 送審前再複核（10/06 之後又改了匯入與顯示；以指令查證）

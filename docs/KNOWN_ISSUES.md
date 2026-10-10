@@ -8,7 +8,7 @@
 
 | 項目 | 說明 | 解決方式 |
 |------|------|---------|
-| macOS/iOS `LSApplicationCategoryType` 誤觸發遊戲模式 | `Info.plist` 原設為 `public.app-category.sports-games`（Apple 分類體系裡「運動類電玩遊戲」子分類，非「運動」本身），會讓 iOS 18+/macOS 系統把 App 誤判為遊戲，觸發 Game Mode／Game Center 相關行為（iOS 端曾出現「遊戲模式：已開啟」橫幅）。已改為 `public.app-category.healthcare-fitness`；App Store Connect 的 Category 欄位同步改為 Health & Fitness。iOS + macOS 皆已用真機／直接雙擊安裝版驗證修復生效（不需要等這次送審核准）。詳見 `V1_2_BACKLOG.md` #1b |
+| macOS/iOS `LSApplicationCategoryType` 誤觸發遊戲模式 | `Info.plist` 原設為 `public.app-category.sports-games`（Apple 分類體系裡「運動類電玩遊戲」子分類，非「運動」本身），會讓 iOS 18+/macOS 系統把 App 誤判為遊戲，觸發 Game Mode／Game Center 相關行為（iOS 端曾出現「遊戲模式：已開啟」橫幅）。已改為 `public.app-category.healthcare-fitness`；App Store Connect 的 Category 欄位同步改為 Health & Fitness。iOS + macOS 皆已用真機／直接雙擊安裝版驗證修復生效（不需要等這次送審核准）。詳見 `V1_2_BACKLOG.md` #1b **2026-10-10 後續**：v1.3 依 PM 裁示改為 `public.app-category.sports`（運動，非 `sports-games`），對齊其他潛水日誌 App；ASC 主類別同步改 Sports。 |
 | Trimix 潛水 Edit 後 Save 會靜默把氣體資料降級成 Air（資料損毀） | `DiveLogEditSheet` 的 Gas picker 不支援編輯 trimix，但 `save()` 原本無條件用 picker 顯示值覆寫 `dive.gasMixJSON`。已修：記住原始 JSON，trimix 潛水 save() 時維持不動；picker 對 trimix 加 `.disabled()`。詳見 `V1_2_BACKLOG.md` #18 |
 | 配重／氣瓶壓力英制單位未換算 + 剖面圖多語系版面截斷 | `DiveLogEditSheet`／`DiveLogDetailView`／`DiveLogListView` 三處各自獨立寫死 kg/bar/m；`DiveAnalysisView` 剖面圖互動列的 Ceiling/No Deco/Temp 標籤在德/法/泰/越/克羅埃西亞等語言下過長被截斷。已修復單位換算與版面保底（`.minimumScaleFactor`），部分翻譯內容縮短。詳見 `V1_2_BACKLOG.md` #18/#20/#22/#23 |
 | `ImportWizardView` 進度/結果畫面完全未走在地化 | `"File X of Y"`／匯入結果訊息原本是純字串插值，不管 App 語言設定永遠顯示英文；旁邊早有 18 語言翻譯的 key 閒置沒被呼叫。已重新接回既有 key。詳見 `V1_2_BACKLOG.md` #21 |

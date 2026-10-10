@@ -15,7 +15,7 @@ PM 指示（2026-10-03）：移除品牌名稱；各語系用當地「潛水日�
 
 | 語系 | 關鍵字 | 字數 |
 |---|---|---|
-| en | `logbook,scuba,diving,divelog,diary,nitrox,freediving,UDDF,import,record,tracker,profile,deco,depth` | 98 |
+| en | ~~`logbook,scuba,diving,divelog,diary,nitrox,freediving,UDDF,import,record,tracker,profile,deco,depth`~~ ⇒ **PM 2026-10-10 改為只放各國潛水日誌用詞**：`dive log,divelog,Tauchlogbuch,duiklogboek,plongée,buceo,bitácora,immersioni,mergulho,다이빙로그,selam,lặn`（現行以 `APPSTORE_COPY.md` 為準） | 100 |
 | zh-Hant | `潛水日誌,潛水紀錄,潛水記錄,水肺潛水,自由潛水,潛水,日誌,紀錄,高氧,潛水電腦,潛水錶,深度,剖面,減壓,logbook,scuba,divelog` | 76 |
 | ja | `ダイビングログ,ダイブログ,ログブック,スキューバ,ダイビング,潜水,記録,ナイトロックス,フリーダイビング,ダイブコンピュータ,水深,減圧,logbook,scuba` | 84 |
 

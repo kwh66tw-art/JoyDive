@@ -59,6 +59,7 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 ### 送審相關
 - App Privacy Manifest（UserDefaults `CA92.1`）、`ITSAppUsesNonExemptEncryption = NO`、版號 1.3（4）（`ef160ba`）。
 - App Store 關鍵字移除品牌、台灣／日本在地化；What's New 三語草稿；說明文保留格式相容品牌（`ef160ba`、`258c7a6`，PM 2026-10-03）。
+- **PM 2026-10-10**：App 類別改為運動（`LSApplicationCategoryType` → `public.app-category.sports`，對齊其他潛水日誌 App；ASC 主類別需手動改 Sports）；英文關鍵字改為只放各國「潛水日誌」用詞（100 字元）；說明文手動記錄句拿掉「GPS 座標」（編輯頁無座標欄位，座標只來自匯入）、「氣體混合」改「氣體」，支援品牌加 ATMOS（三語）。
 
 ---
 

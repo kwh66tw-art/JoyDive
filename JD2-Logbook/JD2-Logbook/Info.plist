@@ -11,7 +11,7 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.healthcare-fitness</string>
+	<string>public.app-category.sports</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Used to show your current position on the map so you can recenter it. Location is only requested if you enable it in Settings, and stays on your device.</string>
 	<key>NSAppTransportSecurity</key>

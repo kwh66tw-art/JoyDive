@@ -11,7 +11,7 @@
 
 ## ✅ 已解決（原「待決策」，見 `docs/KNOWN_ISSUES.md`）
 
-- [x] macOS/iOS `Info.plist` 的 `LSApplicationCategoryType`：已改為 `public.app-category.healthcare-fitness`，ASC Category 欄位同步更新，真機驗證修復生效（2026-07-25）
+- [x] macOS/iOS `Info.plist` 的 `LSApplicationCategoryType`：已改為 `public.app-category.healthcare-fitness`，ASC Category 欄位同步更新，真機驗證修復生效（2026-07-25）。**v1.3（PM 2026-10-10）再改為 `public.app-category.sports`**（對齊其他潛水日誌 App；這是「運動」本身，不是先前誤觸遊戲模式的 `sports-games`），ASC 主類別需 PM 手動改為 Sports
 
 ---
 
