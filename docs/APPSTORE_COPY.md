@@ -71,9 +71,9 @@ logbook,scuba,diving,divelog,diary,nitrox,freediving,UDDF,import,record,tracker,
 
 ---
 
-## What's New — v1.3（✅ PM 2026-10-05 定稿：籠統寫法，保留「提升準確度」；10-06 PM 同意加時區修正句）
+## What's New — v1.3（✅ PM 2026-10-05 定稿：籠統寫法，保留「提升準確度」；10-06 PM 同意加時區修正句；10-10 PM 加 ATMOS FIT）
 
-Improved accuracy of decompression estimates. Fixed dive times from several import formats being shifted by your time zone. Plus multiple minor bug fixes and improvements.
+Improved accuracy of decompression estimates. Added import of FIT files from ATMOS dive computers. Fixed dive times from several import formats being shifted by your time zone. Plus multiple minor bug fixes and improvements.
 
 > ⚠️ 定稿不提 NDL 變短與連續潛水（PM 10/03 起的籠統方向）。日後若要補寫，兩件事**並列、不寫因果**：單筆潛水 NDL 變短主因是係數改正（v1.2 實為 ZHL-16B a 係數），不是連續潛水——
 >   見 `_JD2-family/decisions/2026-10-03_App-lb重放輸出差異回顧-v1.2對現行.md`。不得改寫成「因為連續潛水所以 NDL 變短」。
@@ -197,9 +197,9 @@ JoyDive²，陪你從第一次下水到每一次進階潛水的潛水日誌。
 
 ---
 
-## 版本說明（What's New）— v1.3（✅ PM 2026-10-05 定稿；10-06 加時區修正句）
+## 版本說明（What's New）— v1.3（✅ PM 2026-10-05 定稿；10-06 加時區修正句；10-10 加 ATMOS FIT）
 
-提升減壓估算的準確度；修正部分匯入格式的潛水時間因時區而偏移的問題；並修正多項小問題。
+提升減壓估算的準確度；新增匯入 ATMOS 潛水電腦錶的 FIT 檔；修正部分匯入格式的潛水時間因時區而偏移的問題；並修正多項小問題。
 
 ---
 
@@ -300,9 +300,9 @@ GPS座標から地図上へ自動的にピンをドロップ。これまで訪�
 
 ---
 
-## 新機能（What's New）— v1.3（✅ PM 2026-10-05 定稿；10-06 タイムゾーン修正を追加）
+## 新機能（What's New）— v1.3（✅ PM 2026-10-05 定稿；10-06 タイムゾーン修正を追加；10-10 ATMOS FIT を追加）
 
-減圧推定の精度を改善しました。一部のインポート形式でダイブ時刻がタイムゾーン分ずれる問題を修正しました。そのほか複数の軽微な不具合を修正しました。
+減圧推定の精度を改善しました。ATMOS ダイブコンピューターの FIT ファイルのインポートに対応しました。一部のインポート形式でダイブ時刻がタイムゾーン分ずれる問題を修正しました。そのほか複数の軽微な不具合を修正しました。
 
 ---
 

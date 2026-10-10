@@ -88,7 +88,7 @@ P0-1 → P0-2 → P0-3 → P1-1～P1-5 → 翻譯 → 送審收尾。每項完�
 | ↳ 升級後出現「未知氣體」 | ✅ 非使用者問題 | — | 只有 DEBUG 假資料產生器寫過 `{"o2Percent":…}` 舊格式（已於 `0ec946e` 修）；v1.2 真實寫入路徑（編輯表單、所有匯入器）皆為 v1.3 可讀格式（讀 v1.2 原始碼確認） |
 | D2 開資料庫失敗不閃退 | ✅ | `6eb6552` | `DatabaseOpenFailureTests` 3/0/0；故障注入（失敗時刪檔）RED |
 | P0-2 有限支援揭露 | ✅ | `a733d6d` | 模擬器截圖：trimix 潛水的提示列與 ⓘ 頁（`03–04`，繁中）；文案三語 |
-| P0-3 實際走一次匯入流程 | ❌ 未完成 | — | 模擬器檔案選擇器看不到直接複製進儲存區的檔案（重開機後仍空）；依除錯兩次原則停止。**需 PM 在實機或模擬器手動走一次**（匯入→關閉精靈）；關閉時閃退的根因已由 `ImportCoordinatorTests`（原 17–18 支崩潰）轉綠覆蓋 |
+| P0-3 實際走一次匯入流程 | ✅（10/10） | — | 模擬器（iPhone Air）以「檔案」App 選檔匯入多次成功（4 檔 7 支、Subsurface＋FIT 等 20 支）；放檔方式見 HANDOFF 陷阱提醒 |
 | P0-4 What's New 措辭 | ✅ PM 10/05 定稿 | 本次提交 | 籠統寫法、保留「提升準確度」：英 "Improved accuracy of decompression estimates, plus multiple minor bug fixes and improvements."／繁中「提升減壓估算的準確度，並修正多項小問題。」／日「減圧推定の精度を改善し、複数の軽微な不具合を修正しました。」（`APPSTORE_COPY.md`） |
 | P1-1 定位權限說明在地化 | ✅ | `09ac3f5` | 產物 `en／zh-Hant／ja／en-GB.lproj/InfoPlist.strings` 皆有值（plutil 讀取） |
 | P1-2 死碼 | ✅ | `09ac3f5` | `callers.sh` 生產 0／測試 0；檔頭無保留理由 |

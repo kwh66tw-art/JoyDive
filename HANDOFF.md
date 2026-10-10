@@ -5,13 +5,13 @@
 
 ## 交接時間
 
-2026-10-07（滾動更新；狀態以指令查證）。前一版：`docs/handoff-archive/HANDOFF_2026-10-06午.md`。
+2026-10-10（滾動更新；狀態以指令查證）。前一版：`docs/handoff-archive/HANDOFF_2026-10-06午.md`。
 
 ## 目前狀態
 
-- 最後 push：`3b3f0a0`（10/07）。之後的 commit **未 push**（`git log origin/main..HEAD` 查；push 需 PM 同意）。工作樹只剩 `docs/l10n_v1.3_待翻譯.csv`（工作檔，刻意不提交）。
-- 共用層：DiveKit **v9.2.0**、DiveImportKit **v0.7.6**（10/06 匯入稽核＋逐點水溫、匯出逐點水溫；10/07 Subsurface XML 多氣瓶）。🔒 兩 Kit 凍結（僅 bug 修正）。
-- 測試：`run_tests.sh logbook` **165／0／1**（10/07：Subsurface XML 舊資料不可信、改氣體＝確認；注入 2 項 RED）。版號 1.3（4）。
+- 最後 push：`410b585`（10/10）；本檔之後的文件提交見 `git log origin/main..HEAD`（push 需 PM 同意）。工作樹只剩 `docs/l10n_v1.3_待翻譯.csv`（工作檔，刻意不提交）。
+- 共用層：DiveKit **v9.3.0**、DiveImportKit **v0.7.8**。🔒 兩 Kit 凍結（僅 bug 修正；本輪改動皆經 PM 核准）。
+- 測試：`run_tests.sh logbook` **171／0／1**。版號 1.3（4）。送審複核：`docs/SUBMISSION_CHECK_NEXT.md` 10/10 段——**程式與送審檢查皆完成，剩 PM 上傳 ASC**。
 
 ## v1.3 已完成
 
@@ -24,8 +24,8 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 1. ✅ **SDE 舊紀錄 0 °C → 未記錄**（`065403d`）：`DiveLogDatabase.migrateLegacySDEZeroWaterTemperature`，旗標 `jd2.migration.v13.sdeZeroWaterTemp`；
    測試 +2；**模擬器 LB-Upgrade 實測**：唯一一筆 SDE 紀錄水溫 0 → NULL（sqlite 查證；此為預期遷移，不還原）。
 2. ✅ Kit 側 **UDDF／剖面 CSV 逐樣本水溫，不補值**（DIK v0.7.5，395/0/0，注入 4 項 RED；匯出也寫逐點水溫）；App 映射已接（`DiveImportKitAdapter.swift:85`）。
-   ⚠️ **未驗證**：App 拖曳剖面 Temp 顯示（需重新匯入 UDDF；舊匯入的 UDDF 不會自動補，屬預期）。
-3. ⏳ 送審：先完成下方「送審前還要做」全部項目，再由 PM 上傳 ASC。
+   ✅ App 拖曳剖面 Temp 顯示：PM 10/10 確認 ATMOS（UDDF）正常。舊匯入的 UDDF 不會自動補，屬預期。
+3. ⏳ 送審：「送審前還要做」全部完成（10/10）；剩 PM 上傳 ASC。
 
 ## 🔴 送審前還要做（PM 10/07 已裁示「全採納」）——10/10 進度
 
@@ -39,7 +39,7 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 | 4 | App 內語言殘留 | ✅（主要畫面） | 約 110 處改走 `languageManager.localized`；克羅埃西亞文（系統繁中）截圖：列表、新增、編輯、詳細、匯入、選單、callout 無中文殘留。xcstrings 格式符號 0 不符 |
 | 5 | ATMOS FIT | ✅ | DIK v0.7.7（402/0/0）；模擬器匯入成功、顯示 ATMOS FIT。⏳ 送審樣本資料夾**未放**：FIT 內部日期依規則不改＝6 月，PM 要的是 7 月 ⇒ 待 PM 決定 |
 | 6 | 新增潛水不選模式 | ✅ | 模擬器截圖：新增頁無「潛水模式」，編輯頁有 |
-| 7 | 收尾 | ⏳ | **Ceiling 膠囊、Mac ⓘ 未截圖**（本批測試資料沒有可顯示組織負荷的減壓潛水）；`SUBMISSION_CHECK_NEXT.md` 未複核；push 待 PM |
+| 7 | 收尾 | ✅ | Ceiling 膠囊、Mac ⓘ：PM 10/10 確認；`SUBMISSION_CHECK_NEXT.md` 10/10 複核；已 push。剩 PM 上傳 ASC |
 
 **10/10 下午 PM 追加（皆已完成，`fc9aabc`、`fc6a3de`，171/0/1，模擬器克羅埃西亞文驗證）**：
 - 剖面時間軸：自由潛水**或短於 4 分鐘**用秒。

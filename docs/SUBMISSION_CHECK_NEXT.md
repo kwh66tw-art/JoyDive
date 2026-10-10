@@ -1,5 +1,25 @@
 # 下一版送審檢查（2026-10-03 建立；**2026-10-06 送審收尾複核**，依 `app-store-submission-guide` §0 清單）
 
+## 2026-10-10 送審前再複核（10/07 之後：送審前 7 項＋PM 追加；以指令查證）
+
+| 項目 | 結果 | 驗證 |
+|---|---|---|
+| Release 建置 | ✅ rc=0、0 error、BUILD SUCCEEDED | `xcodebuild -configuration Release -destination generic/platform=iOS CODE_SIGNING_ALLOWED=NO`（獨立 DerivedData） |
+| 版號 | ✅ 1.3（4） | 產物 `defaults read`：`CFBundleShortVersionString`=1.3、`CFBundleVersion`=4 |
+| 加密宣告 | ✅ NO | 產物 `ITSAppUsesNonExemptEncryption`=0 |
+| 廣告 ID | ✅ 正式 4 個、測試 0 個 | Release 執行檔 `strings`（`GADApplicationIdentifier` 為正式值） |
+| Privacy Manifest | ✅ 3 份（App＋AdMob＋UMP） | `find *.xcprivacy` |
+| ATS | ✅ 不變（`…ForMedia`、`…InWebContent`；無 `NSAllowsArbitraryLoads`） | 產物 `plutil -p Info.plist` |
+| 網路／隱私問卷 | ✅ 不變（`URLSession` 0 次） | `grep` |
+| Support／Privacy URL | ✅ HTTP 200 | `curl -L https://kwh66tw-art.github.io/JoyDive/logbook/privacy` |
+| 共用層 | ✅ DiveKit **v9.3.0**／DiveImportKit **v0.7.8**（HEAD＝tag） | `git describe` |
+| 測試 | ✅ App-lb **171／0／1**；DiveKit 572／0／0；DiveImportKit 406／0／0；App-u phone 45、watch 175、App-i 63（皆 0 失敗） | `run_tests.sh` |
+| 新增使用者可見字串 | ✅ 2 條、18 語齊（多氣體／循環呼吸器鎖住說明；「設為水肺才能選氣體」）；另 1 鍵改格式 `Nitrox O2: %@ percent`（18 語 %d→%@） | Release 產物 de／ja／hr／zh-Hant `Localizable.strings` 皆含新鍵；全目錄格式符號與鍵 0 不符 |
+| 10/07 之後新增行為 | 編輯頁氣體保留原值／百分比不取整、未知氣體模式空白與多氣體鎖住、新增潛水不選模式、自由潛水／浮潛不顯示氣體、潛水時間不截整分、App 內語言殘留修正（約 110 處）、短潛水秒軸、ATMOS FIT 匯入 | 決策 §十九、§二十二、§二十三 |
+| 模擬器目視 | ✅ 克羅埃西亞文（系統繁中）：列表、新增、編輯、詳細、匯入、選單、剖面讀數無中文殘留；編輯頁各情境；ATMOS FIT 匯入。Ceiling 膠囊、Mac ⓘ：PM 確認；UDDF 逐點水溫：PM 確認（ATMOS） | iPhone Air 模擬器 |
+| What's New | ✅ 三語加 ATMOS FIT 一句（PM 10/10） | `APPSTORE_COPY.md` |
+| ASC 上傳、問卷、送審 | PM | — |
+
 ## 2026-10-07 送審前再複核（10/06 之後又改了匯入與顯示；以指令查證）
 
 | 項目 | 結果 | 驗證 |
