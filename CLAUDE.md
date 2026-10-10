@@ -25,7 +25,8 @@
   樣板文字必須跟 Kit 保持一致**（2026-07-25 Kit 改英文時本地版沒同步，
   2026-07-26 已修正，見 `SYNC_TO_JD2-ULTRA.md` #8）——Kit 樣板文字再異動時
   記得同步檢查這裡，這個模式本身沒有機制防止兩邊漂移。
-- Logbook 專屬層（SwiftData 模型、`DiveReplayEngine`、UI）不受影響，正常開發。
+- Logbook 專屬層（SwiftData 模型、`DiveReplayInput` 映射、UI）正常開發；剖面重放引擎
+  `DiveReplayEngine` 屬 DiveKit（見上），不在本 repo（2026-10-10 修正：原寫成本 repo 專屬層）。
   排程與決策見 `../_JD2-family/F-01-FAMILY_ROADMAP.md` 與
   `../_JD2-family/decisions/`。
 
@@ -38,31 +39,34 @@
 > 立即修正，不等下一輪。v1.1 階段紀錄本身沒有錯，移到下方「v1.1 開發」小節
 > 保留為歷史紀錄。
 
-- **狀態**：**v1.2 (Build 3) 已於 2026-07-29 通過審核並上架（iOS + macOS）**。
-  上架後發現 App Store 關鍵字策略失敗（見下），下一版首要任務。
-  v1.1 開發（2026-07-14 啟動，2026-07-17 完工 13/14 項）與 v1.0 送審皆為
-  已完成的歷史階段，詳見下方對應小節與 `V1_1_BACKLOG.md`。
-- **目標上線**：已上架，不再適用；下一版時程未定，待 PM 排定。
+- **狀態（2026-10-10）**：線上版本 **v1.2 (Build 3)**（2026-07-29 上架，iOS + macOS）；
+  **v1.3 (Build 4) 程式與送審檢查皆完成，待 PM 上傳 App Store Connect**。
+  v1.3 工作紀錄見 `docs/V1_3_WORK_PLAN.md`，送審檢查見 `docs/SUBMISSION_CHECK_NEXT.md`
+  （10/10 段），上架文案見 `docs/APPSTORE_COPY.md`，變更見 `CHANGELOG.md` [v1.3.0]。
+  v1.1／v1.0 為已完成的歷史階段，見下方小節與 `V1_1_BACKLOG.md`。
+- **目標上線**：v1.3 待 PM 上傳送審，無固定日期。
+- **App 類別**：運動（`LSApplicationCategoryType = public.app-category.sports`，PM 2026-10-10；
+  ASC 主類別由 PM 手動設定）。
 - **平台**：iOS 17.0+ / macOS 14.0+，Swift 6
 - **Bundle ID**：`com.jd2logbook.JD2-Logbook`
 - **Apple Team**：HUA SHENG Huang（77UHM3NN7J）
 - **最新 commit**：以 `git log` 為準（本檔不寫死 commit 資訊）
 
-### 審核狀態（2026-07-29 通過，現況持續有效）
+### 審核狀態（v1.2，2026-07-29 通過；v1.3 尚未送審）
 - **iOS App 1.2 (Build 3)**：✅ **已通過審核並上架**（2026-07-29，修正 2.3.6/5.1.2(i) 兩項拒絕理由後過關）
 - **macOS App 1.2 (Build 3)**：✅ **已通過審核並上架**（2026-07-29）
 - **IAP**：`com.jd2logbook.premium`，Non-Consumable，$1.99，隨 v1.2 版本上架
-- **⚠️ 上架後發現重大問題（2026-07-29，截至 2026-09-13 仍未執行）**：App Store
-  關鍵字策略失敗，非品牌詞搜尋完全找不到本產品，下次改版列為首要修正任務，
-  見 `V1_RELEASE_CHECKLIST.md`「下一版重點工作」第一項。**已擱置約六週，
-  是否仍是首要任務需向 PM／總指揮確認**（見 `HANDOFF.md`「下一步」#6）。
+- **關鍵字策略（v1.2 上架後發現非品牌詞搜不到）**：✅ **v1.3 已處理**——PM 2026-10-03
+  裁示移除品牌、台灣／日本在地化；2026-10-10 再改英文組為只放各國「潛水日誌」用詞
+  （100 字元）。現行三組見 `docs/APPSTORE_COPY.md`。⚠️ ASC 關鍵字上限算字元或位元組
+  未查到出處，上傳時實貼確認。
 
 ### v1.1 開發（2026-07-14 啟動，2026-07-17 完工 13/14 項）
 - 詳細紀錄見 `V1_1_BACKLOG.md`、`CHANGELOG.md` 2026-07-17 條目
 - 已完成：#1–8、#11–14（技術債 3 項 + importExtrasJSON/avgDepth/裝置欄位 + DiveKit 互動剖面圖/組織艙飽和度 + Garmin Connect JSON + 測試覆蓋率 89.1% + Export/Import 備份 + 地圖 recenter + 語言切換）
 - **#9/#10（iOS 18 Widget）PM 確認不需要，終止規劃**，不會排入後續版本
 - **重要架構變更**：本地 `JD2Core/Algorithm/{Buhlmann,DiveEngine}.swift`、`Constants/AlgorithmConstants.swift`、`Models/{GasMix,DiveEnvironment}.swift` 已整包替換為 Ultra 的 `DiveKit` 版本（原本是零呼叫端的死碼，含 9 項已知安全問題）；`JD2Core/Algorithm/` 新增 `DecoCalculator`/`DivePlanner`/`FreeDive`/`GuidanceBanner`/`OxygenToxicity`/`DiveReplayEngine`，`JD2Core/State/` 為新資料夾（`DiveComputerState`/`LogSummary`/`SurfaceStatus`）
-- **待決策**：macOS `LSApplicationCategoryType` 誤觸發遊戲模式，PM 決定延後到上架前拍板，見 `docs/KNOWN_ISSUES.md`「待決策事項」
+- ~~**待決策**：macOS `LSApplicationCategoryType` 誤觸發遊戲模式~~——2026-07-25 已改 healthcare-fitness 解決；2026-10-10 v1.3 再改 `sports`（見 `docs/KNOWN_ISSUES.md`）
 - 解法參考：`docs/reports/V1_1_BACKLOG_解法參考_from_JD2-Ultra.md`（Ultra 單向提供，不會再更新，2026-07-18 歸檔）
 
 ### 匯入格式擴充（2026-07-17，`/file_format_research` 18 格式盤點）
@@ -95,7 +99,11 @@
 | `WCAG_2.1_AA_AUDIT_CHECKLIST.md` | 可達性合規查核表 |
 | `docs/ADMOB_IAP_SETUP.md` | AdMob App ID / Ad Unit ID / IAP 設定 |
 | `docs/LOCALIZATION_GUIDE.md` | 多語系維護流程、用詞規範 |
-| `docs/KNOWN_ISSUES.md` | 已知問題、技術雷區、v1.1 規劃 |
+| `docs/KNOWN_ISSUES.md` | 已知問題、技術雷區 |
+| `HANDOFF.md` | 交接文件（最新狀態、待辦、陷阱） |
+| `docs/V1_3_WORK_PLAN.md` | v1.3 工作計劃與完成紀錄 |
+| `docs/SUBMISSION_CHECK_NEXT.md` | 送審前檢查（依日期分段，最上面一段為最新） |
+| `docs/APPSTORE_COPY.md` | App Store 上架文案（三語：說明、副標、關鍵字、What's New） |
 
 ---
 
@@ -118,14 +126,13 @@
 ## 下次發布流程
 
 1. 改 code，commit
-2. `CURRENT_PROJECT_VERSION` +1（實測目前為 **3**，Build 3 已上架 ⇒ **下次應改為 4**；
-   2026-09-13 修正：本條原寫「下次應改為 3」，若照做會與已上架的 Build 3 撞號、
-   送審會被擋，發現後立即修正）
+2. `CURRENT_PROJECT_VERSION` +1（實測目前為 **4**，已用於 v1.3 ⇒ **下次應改為 5**；
+   `MARKETING_VERSION` 目前 1.3，版本號由 PM 定。2026-10-10 更新：原寫「目前 3、下次 4」）
 3. Xcode → Product → Archive（iOS 選 Any iOS Device，macOS 選 Any Mac）
 4. Distribute App → App Store Connect
 5. App Store Connect → 對應版本頁面 → Add Build → Add for Review
 
-**Export Compliance**：每次上傳都選 **None of the algorithms mentioned above**（app 只用 Apple HTTPS）
+**Export Compliance**：v1.3 起 `Info.plist` 已宣告 `ITSAppUsesNonExemptEncryption = NO`（只用系統 HTTPS），上傳後不再詢問；若 ASC 仍詢問，選 **None of the algorithms mentioned above**
 
 ---
 
@@ -149,12 +156,11 @@ JD2-Logbook/JD2-Logbook.xcodeproj
 - macOS Build 2 上傳（含 `LSApplicationCategoryType = public.app-category.sports-games`）
 - iOS + macOS 均已 Add for Review
 
-## v1.0 上線後待辦
+## v1.0 上線後待辦（✅ 2026-07-25 皆已完成，見 `V1_RELEASE_CHECKLIST.md` :41–:45）
 
-- 真機驗證 AdMob 廣告（Logbook / Import / Settings）
-- 真機驗證 IAP 購買流程（$1.99 Remove Ads）
-- 真機驗證 Restore Purchase
-- 詳細 backlog 見 `V1_1_BACKLOG.md`
+- ✅ 真機驗證 AdMob 廣告（Logbook / Import / Settings）
+- ✅ 真機驗證 IAP 購買流程（$1.99 Remove Ads）
+- ✅ 真機驗證 Restore Purchase
 
 ## Git Remote
 
