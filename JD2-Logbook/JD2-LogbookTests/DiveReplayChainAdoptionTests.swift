@@ -239,7 +239,7 @@ final class DiveReplayChainAdoptionTests: XCTestCase {
         let subsurface = makeDiveLog(from: makeTestParsedDiveLog(
             dateTime: Date(), location: "", maxDepth: 18, diveTimeSeconds: 2400,
             roundtripID: nil, sourceFormat: "Subsurface"))
-        XCTAssertEqual(subsurface.importExtras[DiveLog.gasVerifiedKey], "v0.7.6")
+        XCTAssertEqual(subsurface.importExtras[DiveLog.gasVerifiedKey], DiveLog.gasRuleCurrentKitVersion)
         let dm5 = makeDiveLog(from: makeTestParsedDiveLog(
             dateTime: Date(), location: "", maxDepth: 18, diveTimeSeconds: 2400,
             roundtripID: nil, sourceFormat: "suunto-dm5"))
@@ -314,5 +314,50 @@ final class DiveReplayChainAdoptionTests: XCTestCase {
         longFree.diveModeValue = .free
         XCTAssertTrue(longFree.profileTimeAxisInSeconds)
         XCTAssertFalse(makeDive(at: Date(), depth: 20, seconds: 2400).profileTimeAxisInSeconds)
+    }
+
+    /// PM 2026-10-10：氣體不可信的原因決定使用者能否補選單一氣體。
+    func testGasUnknownReasonGatesUserGasEdit() {
+        let dive = makeDive(at: Date(), depth: 30, seconds: 2400)
+        dive.sourceFormat = "uddf"
+        dive.importExtrasJSON = "{\"gasMixConfidence\":\"unknown\",\"gasMixUnknownReason\":\"multiGas\"}"
+        XCTAssertEqual(dive.gasUnknownReason, .multiGas)
+        XCTAssertFalse(dive.userCanSetUnknownGas)
+        dive.importExtrasJSON = "{\"gasMixConfidence\":\"unknown\",\"gasMixUnknownReason\":\"rebreather\"}"
+        XCTAssertFalse(dive.userCanSetUnknownGas)
+        dive.importExtrasJSON = "{\"gasMixConfidence\":\"unknown\",\"gasMixUnknownReason\":\"missing\"}"
+        XCTAssertTrue(dive.userCanSetUnknownGas)
+        dive.importExtrasJSON = "{\"gasMixConfidence\":\"unknown\"}"
+        XCTAssertNil(dive.gasUnknownReason, "舊版匯入沒有原因")
+        XCTAssertTrue(dive.userCanSetUnknownGas)
+        dive.importExtrasJSON = "{}"
+        XCTAssertNil(dive.gasUnknownReason, "氣體可信 ⇒ 沒有原因")
+    }
+
+    /// 舊版 Subsurface 匯入（無原因）但有換氣紀錄 ⇒ 視為多氣體、鎖住。
+    func testLegacySubsurfaceWithGasSwitchesIsMultiGas() {
+        let dive = makeDive(at: Date(), depth: 30, seconds: 2400)
+        dive.sourceFormat = "Subsurface"
+        dive.importExtrasJSON = buildImportExtrasJSON([("gasSwitches", "[{\"time\":1200,\"fO2\":0.5}]")])
+        XCTAssertEqual(dive.replayGasMixConfidence, .unknown, "無 jd2GasVerified ⇒ 舊資料不可信")
+        XCTAssertEqual(dive.gasUnknownReason, .multiGas)
+        XCTAssertFalse(dive.userCanSetUnknownGas)
+    }
+
+    /// 自由潛水／浮潛不顯示氣體。
+    func testShowsGasOnlyForScuba() {
+        let dive = makeDive(at: Date(), depth: 10, seconds: 600)
+        XCTAssertTrue(dive.showsGas)
+        dive.diveModeValue = .free
+        XCTAssertFalse(dive.showsGas)
+        dive.diveModeValue = .snorkel
+        XCTAssertFalse(dive.showsGas)
+    }
+
+    /// App 端鏡像的鍵與原因值必須與 DiveImportKit 一致。
+    func testGasUnknownReasonMirrorsDiveImportKit() {
+        XCTAssertEqual(DiveLog.gasMixUnknownReasonKey, DiveImportKit.gasMixUnknownReasonKey)
+        XCTAssertEqual(DiveLog.GasUnknownReason.allCases.map(\.rawValue).sorted(),
+                       DiveImportKit.GasMixUnknownReason.allCases.map(\.rawValue).sorted())
     }
 }

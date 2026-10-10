@@ -49,7 +49,13 @@ struct DiveLogEditSheet: View {
     /// 潛水類型（水肺／自由潛水／浮潛）。預設水肺——Logbook 是水肺日誌。
     /// 影響重放：自由潛水／浮潛為閉氣潛水，會被 DiveKit 排除在殘氮鏈之外
     /// （見 `DiveLogMode` 與 `DiveLog.replayInput` 的說明）。
-    @State private var diveMode: DiveLogMode
+    /// nil＝空白（PM 2026-10-10）：氣體不可信的水肺紀錄，模式先顯示空白；使用者重選「水肺」才可能補選氣體。
+    @State private var diveMode: DiveLogMode?
+    /// 模式選單是否帶空白選項（只有一開始就是空白的紀錄才有）。
+    private let modeStartsBlank: Bool
+    /// 編輯：氣體不可信 ⇒ 一般情況下不能直接選；使用者能否補選取決於不可信原因（`DiveLog.userCanSetUnknownGas`）。
+    private let gasUnknown: Bool
+    private let canSetUnknownGas: Bool
 
     // Gas mix
     private enum GasMixPickerType: String, CaseIterable, Identifiable {
@@ -115,6 +121,9 @@ struct DiveLogEditSheet: View {
             _environmentType    = State(initialValue: "seawater")
             _notes              = State(initialValue: "")
             _diveMode           = State(initialValue: .scuba)
+            modeStartsBlank     = false
+            gasUnknown          = false
+            canSetUnknownGas    = true
             _gasMixType         = State(initialValue: .air)
             _nitroxO2Percent    = State(initialValue: 32.0)
             isTrustedTrimix     = false
@@ -151,7 +160,11 @@ struct DiveLogEditSheet: View {
             _waterTemperature   = State(initialValue: dive.waterTemperature)
             _environmentType    = State(initialValue: dive.environmentType)
             _notes              = State(initialValue: dive.notes)
-            _diveMode           = State(initialValue: dive.diveModeValue)
+            let blankMode = dive.displayGasMix == nil && dive.diveModeValue == .scuba
+            _diveMode           = State(initialValue: blankMode ? nil : dive.diveModeValue)
+            modeStartsBlank     = blankMode
+            gasUnknown          = dive.displayGasMix == nil
+            canSetUnknownGas    = dive.userCanSetUnknownGas
 
             // 解析已儲存的 gas mix。不可信（`displayGasMix == nil`）⇒ 不預選（PM 2026-10-07）。
             let trusted = dive.displayGasMix
@@ -250,6 +263,16 @@ struct DiveLogEditSheet: View {
 
     // MARK: - Validation
 
+    /// 氣體區塊：自由潛水／浮潛不顯示；空白（未定）與水肺顯示。
+    private var showsGasSection: Bool { diveMode == nil || diveMode == .scuba }
+
+    /// 氣體選項鎖住：可信 Trimix；或氣體不可信且（原因是多氣體／循環呼吸器，或模式尚未重選為水肺）。
+    private var gasLocked: Bool {
+        if isTrustedTrimix { return true }
+        if gasUnknown { return !canSetUnknownGas || diveMode != .scuba }
+        return false
+    }
+
     private var isSaveEnabled: Bool {
         maxDepth > 0 && durationMinutes > 0
     }
@@ -276,9 +299,12 @@ struct DiveLogEditSheet: View {
                     // 手動新增一律水肺、不顯示（PM 2026-10-07）；編輯既有紀錄才可改。
                     if case .edit = mode {
                         Picker(languageManager.localized("Dive Mode"), selection: $diveMode) {
-                            Text(verbatim: languageManager.localized("Scuba")).tag(DiveLogMode.scuba)
-                            Text(verbatim: languageManager.localized("Freedive")).tag(DiveLogMode.free)
-                            Text(verbatim: languageManager.localized("Snorkel")).tag(DiveLogMode.snorkel)
+                            if modeStartsBlank {
+                                Text(verbatim: "").tag(DiveLogMode?.none)
+                            }
+                            Text(verbatim: languageManager.localized("Scuba")).tag(DiveLogMode?.some(.scuba))
+                            Text(verbatim: languageManager.localized("Freedive")).tag(DiveLogMode?.some(.free))
+                            Text(verbatim: languageManager.localized("Snorkel")).tag(DiveLogMode?.some(.snorkel))
                         }
                     }
 
@@ -412,6 +438,8 @@ struct DiveLogEditSheet: View {
                 }
 
                 // ── 氣體混合（Gas Mix 配置在此）─────────────
+                // 自由潛水／浮潛不顯示氣體（PM 2026-10-10）。
+                if showsGasSection {
                 Section {
                     Picker(languageManager.localized("Gas"), selection: Binding(
                         get: { gasMixType },
@@ -423,7 +451,7 @@ struct DiveLogEditSheet: View {
                     }
                     .pickerStyle(.segmented)
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                    .disabled(isTrustedTrimix)
+                    .disabled(gasLocked)
 
                     if gasMixType == .nitrox {
                         HStack(spacing: 12) {
@@ -439,6 +467,7 @@ struct DiveLogEditSheet: View {
                             ) {
                                 EmptyView()
                             }
+                            .disabled(gasLocked)
                             Text(verbatim: GasMix.percentText(nitroxO2Percent / 100) + "%")
                                 .monospacedDigit()
                                 .frame(minWidth: 44, alignment: .trailing)
@@ -457,7 +486,12 @@ struct DiveLogEditSheet: View {
                 } footer: {
                     if isTrustedTrimix {
                         Text(languageManager.localized("Trimix gas mix isn't editable here — the original mix is preserved."))
+                    } else if gasUnknown && !canSetUnknownGas {
+                        Text(languageManager.localized("Multi-gas or rebreather dive — the gas can't be edited here. The original data is kept."))
+                    } else if gasUnknown && diveMode == nil {
+                        Text(languageManager.localized("Set the dive mode to Scuba to choose the gas."))
                     }
+                }
                 }
 
                 // ═════════════════════════════════════════════════════════
@@ -717,6 +751,11 @@ struct DiveLogEditSheet: View {
 
     // MARK: - Save
 
+    /// 編輯存檔時是否寫入氣體：使用者動過氣體、氣體沒鎖、且模式是水肺（自由潛水／浮潛不寫氣體）。
+    private var gasWillBeWritten: Bool {
+        gasEdited && !gasLocked && diveMode == .scuba
+    }
+
     private func save() {
         let totalSeconds = effectiveDiveTimeSeconds
         // 編輯：使用者沒動氣體 ⇒ 原樣保留（含可信 Trimix、不可信氣體、32.5% 這類非整數值）。
@@ -746,7 +785,7 @@ struct DiveLogEditSheet: View {
             dive.environmentType = environmentType
             dive.notes  = notes.trimmingCharacters(in: .whitespaces)
             dive.sourceFormat = "manual"
-            dive.diveModeValue = diveMode
+            dive.diveModeValue = diveMode ?? .scuba
 
             // Environment Details
             dive.weather = weather
@@ -773,18 +812,18 @@ struct DiveLogEditSheet: View {
             // 剖面 CSV 的日期是匯入時代填的；使用者改過日期 ⇒ 視為已核對，恢復參與殘氮鏈。
             // 使用者核對過的欄位（剖面 CSV 日期、氣體）標為已確認，見 `DiveLog.userEditConfirmations`。
             if let extras = dive.userEditConfirmations(newDateTime: entryTime,
-                                                       newGasMixJSON: gasEdited ? gasMixJSON : nil) {
+                                                       newGasMixJSON: gasWillBeWritten ? gasMixJSON : nil) {
                 dive.importExtrasJSON = buildImportExtrasJSON(extras.map { ($0.key, $0.value) })
             }
             dive.dateTime         = entryTime
             dive.location         = location.trimmingCharacters(in: .whitespaces)
             dive.maxDepth         = maxDepth
             dive.diveTimeSeconds  = totalSeconds
-            if gasEdited { dive.gasMixJSON = gasMixJSON }
+            if gasWillBeWritten { dive.gasMixJSON = gasMixJSON }
             dive.waterTemperature = waterTemperature
             dive.environmentType  = environmentType
             dive.notes  = notes.trimmingCharacters(in: .whitespaces)
-            dive.diveModeValue    = diveMode
+            if let diveMode { dive.diveModeValue = diveMode }   // 空白＝沒選 ⇒ 不改
 
             // Environment Details
             dive.weather = weather

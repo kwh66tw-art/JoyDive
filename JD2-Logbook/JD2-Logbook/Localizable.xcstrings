@@ -1,6 +1,230 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Multi-gas or rebreather dive — the gas can't be edited here. The original data is kept.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tauchgang mit mehreren Gasen oder Kreislaufgerät – das Gas kann hier nicht bearbeitet werden. Die Originaldaten bleiben erhalten."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Κατάδυση με πολλαπλά αέρια ή αναπνευστήρα κλειστού κυκλώματος — το αέριο δεν είναι επεξεργάσιμο εδώ. Τα αρχικά δεδομένα διατηρούνται."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Multi-gas or rebreather dive — the gas can't be edited here. The original data is kept."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Multi-gas or rebreather dive — the gas can't be edited here. The original data is kept."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inmersión con varios gases o con recirculador; el gas no se puede editar aquí. Se conservan los datos originales."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plongée multigaz ou en recycleur — le gaz n'est pas modifiable ici. Les données d'origine sont conservées."
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uron s više plinova ili s rebreatherom — plin se ovdje ne može uređivati. Izvorni podaci su sačuvani."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Penyelaman multi-gas atau rebreather — gas tidak dapat diedit di sini. Data asli tetap dipertahankan."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Immersione con più gas o con rebreather: il gas non è modificabile qui. I dati originali vengono mantenuti."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "複数ガスまたはリブリーザーのダイビングのため、ここではガスを編集できません。元のデータが保持されます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "여러 기체 또는 재호흡기 다이빙이므로 여기서 기체를 편집할 수 없습니다. 원래 데이터가 유지됩니다."
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selaman berbilang gas atau rebreather — gas tidak boleh disunting di sini. Data asal dikekalkan."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duik met meerdere gassen of een rebreather — het gas kan hier niet worden bewerkt. De oorspronkelijke gegevens blijven behouden."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mergulho com vários gases ou com rebreather — o gás não é editável aqui. Os dados originais são preservados."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การดำน้ำแบบหลายก๊าซหรือรีบรีทเทอร์ — ไม่สามารถแก้ไขก๊าซได้ที่นี่ ข้อมูลเดิมจะถูกเก็บรักษาไว้"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lặn nhiều loại khí hoặc lặn bình tái thở — không thể chỉnh sửa khí tại đây. Dữ liệu gốc được giữ nguyên."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "多气体或循环呼吸器潜水——此处无法编辑气体，将保留原始数据。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "多氣體或循環呼吸器潛水——此處無法編輯氣體，將保留原始資料。"
+          }
+        }
+      }
+    },
+    "Set the dive mode to Scuba to choose the gas.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stelle den Tauchmodus auf „Gerätetauchen“, um das Gas auszuwählen."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ορίστε τη λειτουργία κατάδυσης σε «Αυτόνομη κατάδυση» για να επιλέξετε αέριο."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set the dive mode to Scuba to choose the gas."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set the dive mode to Scuba to choose the gas."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Establece el modo de buceo en «Buceo con botella» para elegir el gas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réglez le mode de plongée sur « Plongée bouteille » pour choisir le gaz."
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Postavite način ronjenja na „Ronjenje s bocom” da biste odabrali plin."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atur mode selam ke \"Selam Scuba\" untuk memilih gas."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imposta la modalità immersione su \"Immersione ARA\" per scegliere il gas."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ガスを選ぶには、ダイブモードを「スクーバ」に設定してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기체를 선택하려면 다이브 모드를 \"스쿠버\"로 설정하세요."
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tetapkan mod selam kepada \"Selam Skuba\" untuk memilih gas."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zet de duikmodus op \"Duiken met fles\" om het gas te kiezen."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Defina o modo de mergulho como «Mergulho com garrafa» para escolher o gás."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ตั้งโหมดดำน้ำเป็น \"สกูบา\" เพื่อเลือกก๊าซ"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đặt chế độ lặn thành \"Lặn bình khí\" để chọn khí."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将潜水模式设为“水肺”后即可选择气体。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將潛水模式設為「水肺」後即可選擇氣體。"
+          }
+        }
+      }
+    },
     "": {},
     " *": {},
     "* %@": {},

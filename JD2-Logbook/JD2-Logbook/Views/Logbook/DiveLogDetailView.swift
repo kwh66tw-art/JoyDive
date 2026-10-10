@@ -136,7 +136,9 @@ struct DiveLogDetailView: View {
 
             // ── 潛水資訊 ────────────────────────────────
             Section(header: Text(verbatim: languageManager.localized("Dive Info"))) {
-                DetailRow(icon: "bubbles.and.sparkles.fill", label: "Gas",      value: gasMixText)
+                if dive.showsGas {  // 自由潛水／浮潛不顯示氣體（PM 2026-10-10）
+                    DetailRow(icon: "bubbles.and.sparkles.fill", label: "Gas",      value: gasMixText)
+                }
                 DetailRow(icon: "water.waves",       label: "Environment",   value: environmentText)
                 if dive.avgDepth > 0 {
                     DetailRow(icon: "water.waves",   label: "Avg Depth",     value: unitSystem.formatDepth(dive.avgDepth))

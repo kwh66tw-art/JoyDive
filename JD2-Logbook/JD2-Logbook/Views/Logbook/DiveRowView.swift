@@ -165,13 +165,16 @@ struct DiveRowView: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
 
-                Text(gasMixText)
-                    .font(.caption.weight(.medium))
-                    .lineLimit(1)
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 2)
-                    .background(Color.accentColor.opacity(0.15))
-                    .clipShape(Capsule())
+                // 自由潛水／浮潛不顯示氣體（PM 2026-10-10）
+                if dive.showsGas {
+                    Text(gasMixText)
+                        .font(.caption.weight(.medium))
+                        .lineLimit(1)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 2)
+                        .background(Color.accentColor.opacity(0.15))
+                        .clipShape(Capsule())
+                }
             }
         }
     }

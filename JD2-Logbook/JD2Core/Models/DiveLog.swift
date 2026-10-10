@@ -325,6 +325,9 @@ final class DiveLog {
     /// 4 分鐘＝PM 2026-10-10 指定（本專案決定，非外部規範）。
     static let secondsTimeAxisThresholdSeconds = 240
 
+    /// 自由潛水／浮潛是閉氣，沒有呼吸氣體 ⇒ 列表、詳細頁、地圖卡片、編輯頁都不顯示氣體（PM 2026-10-10）。
+    var showsGas: Bool { diveModeValue == .scuba }
+
     /// 解碼後的匯入原始資料（Detail view「原始資料」區塊用）
     var importExtras: [String: String] {
         guard let data = importExtrasJSON.data(using: .utf8),

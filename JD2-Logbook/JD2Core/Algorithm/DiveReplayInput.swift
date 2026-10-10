@@ -72,7 +72,7 @@ extension DiveLog {
     /// 匯入時寫入的標記：這筆的氣體由哪一版 DiveImportKit 的判定規則解析（值＝Kit 版本）。
     static let gasVerifiedKey = "jd2GasVerified"
     /// 匯入時寫入 `gasVerifiedKey` 的值＝目前引用的 DiveImportKit 版本。
-    static let gasRuleCurrentKitVersion = "v0.7.6"
+    static let gasRuleCurrentKitVersion = "v0.7.8"
     /// 修正過氣體判定的格式 → 需要的最低 Kit 版本（`sourceFormat` 小寫，經 Kit 原始碼與模擬器資料庫查證）。
     /// 標記缺少或低於此版本 ⇒ 舊版匯入，氣體不可信。v0.7.3：前五種；v0.7.6：Subsurface XML（`"Subsurface"`）。
     static let gasRuleMinimumKitVersion: [String: String] = [
@@ -82,13 +82,33 @@ extension DiveLog {
     /// 程式內部用的 `importExtras` 標記，不是來源資料 ⇒ 詳細頁「原始匯入資料」不顯示（PM 2026-10-07）。
     /// `jd2RoundtripID`／`dateTimeFloating` 為 DiveImportKit 的鍵（`jd2RoundtripIDKey`／`dateTimeFloatingKey`，測試對照）。
     static let internalImportExtraKeys: Set<String> = [
-        garminGasVerifiedKey, gasVerifiedKey, gasMixConfidenceKey, dateTimeConfidenceKey,
+        garminGasVerifiedKey, gasVerifiedKey, gasMixConfidenceKey, gasMixUnknownReasonKey, dateTimeConfidenceKey,
         "jd2RoundtripID", "dateTimeFloating",
     ]
 
     /// 「原始匯入資料」要顯示的項目＝來源資料（去掉內部標記）。
     var displayableImportExtras: [String: String] {
         importExtras.filter { !Self.internalImportExtraKeys.contains($0.key) }
+    }
+
+    /// 氣體不可信的原因（DiveImportKit v0.7.8 起匯入時寫入 `gasMixUnknownReason`；可信 ⇒ nil）。
+    /// 舊版匯入沒有原因：Subsurface 有換氣紀錄（`gasSwitches`）⇒ 視為多氣體；其餘 nil（原因不明）。
+    var gasUnknownReason: GasUnknownReason? {
+        guard replayGasMixConfidence == .unknown else { return nil }
+        let extras = importExtras
+        if let raw = extras[Self.gasMixUnknownReasonKey], let reason = GasUnknownReason(rawValue: raw) { return reason }
+        if let switches = extras["gasSwitches"], switches.contains("{") { return .multiGas }
+        return nil
+    }
+
+    /// 氣體不可信時，使用者能否在編輯頁補選單一氣體（PM 2026-10-10）：
+    /// 多氣體／循環呼吸器 ⇒ 不行（選一種開放式氣體會讓重放用錯的氣體算整支潛水）；
+    /// 來源沒寫氣體、或原因不明的舊資料 ⇒ 可以（使用者在補資料）。
+    var userCanSetUnknownGas: Bool {
+        switch gasUnknownReason {
+        case .multiGas?, .rebreather?: return false
+        case .missing?, nil:           return true
+        }
     }
 
     /// 畫面上要顯示的氣體；氣體不可信（含舊資料判定）⇒ nil，顯示「未知氣體」（PM 2026-10-07）。
@@ -119,6 +139,9 @@ extension DiveLog {
 
     /// DiveImportKit 的氣體可信度旗標鍵；值 `"unknown"`＝匯入端判定不可信，`"user"`＝使用者在編輯頁改過氣體。
     static let gasMixConfidenceKey = "gasMixConfidence"
+    /// DiveImportKit v0.7.8 `gasMixUnknownReasonKey`；值＝`GasUnknownReason`（與 Kit 的 `GasMixUnknownReason` 同值，測試對照）。
+    static let gasMixUnknownReasonKey = "gasMixUnknownReason"
+    enum GasUnknownReason: String, CaseIterable { case multiGas, rebreather, missing }
     static let userConfirmedValue = "user"
 
     /// 日期是否為代填值（Subsurface 剖面 CSV 沒有日期，以匯入當下時間代填）。

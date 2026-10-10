@@ -218,9 +218,11 @@ struct DiveSiteSheetView: View {
             // ── Dive Info ────────────────────────────────────────────
             SheetSectionHeader(title: languageManager.localized("Dive Info"))
 
-            SheetDetailRow(icon:  "drop.fill",
-                           label: languageManager.localized("Gas"),
-                           value: gasMixText)
+            if dive.showsGas {  // 自由潛水／浮潛不顯示氣體（PM 2026-10-10）
+                SheetDetailRow(icon:  "drop.fill",
+                               label: languageManager.localized("Gas"),
+                               value: gasMixText)
+            }
             SheetDetailRow(icon:  "waveform.path",
                            label: languageManager.localized("Environment"),
                            value: environmentText)
