@@ -14658,115 +14658,115 @@
         }
       }
     },
-    "Nitrox O2: %d percent": {
+    "Nitrox O2: %@ percent": {
       "comment": "Accessibility label",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂: %d%%"
+            "value": "Nitrox O₂: %@%%"
           }
         },
         "el": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂: %d%%"
+            "value": "Nitrox O₂: %@%%"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂: %d%%"
+            "value": "Nitrox O₂: %@%%"
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂: %d%%"
+            "value": "Nitrox O₂: %@%%"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂: %d%%"
+            "value": "Nitrox O₂: %@%%"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂ : %d%%"
+            "value": "Nitrox O₂ : %@%%"
           }
         },
         "hr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂: %d%%"
+            "value": "Nitrox O₂: %@%%"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂: %d%%"
+            "value": "Nitrox O₂: %@%%"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂: %d%%"
+            "value": "Nitrox O₂: %@%%"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ナイトロックス O₂：%d%%"
+            "value": "ナイトロックス O₂：%@%%"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "나이트록스 O₂: %d%%"
+            "value": "나이트록스 O₂: %@%%"
           }
         },
         "ms": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂: %d%%"
+            "value": "Nitrox O₂: %@%%"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂: %d%%"
+            "value": "Nitrox O₂: %@%%"
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂: %d%%"
+            "value": "Nitrox O₂: %@%%"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ไนตรอกซ์ O₂: %d เปอร์เซ็นต์"
+            "value": "ไนตรอกซ์ O₂: %@ เปอร์เซ็นต์"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂: %d%%"
+            "value": "Nitrox O₂: %@%%"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂：%d%%"
+            "value": "Nitrox O₂：%@%%"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nitrox O₂：%d%%"
+            "value": "Nitrox O₂：%@%%"
           }
         }
       }

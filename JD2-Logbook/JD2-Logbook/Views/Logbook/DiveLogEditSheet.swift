@@ -48,14 +48,17 @@ struct DiveLogEditSheet: View {
         case nitrox = "Nitrox"
         var id: String { rawValue }
     }
-    @State private var gasMixType: GasMixPickerType
-    @State private var nitroxO2Percent: Double  // 22–40
+    /// nil＝未選（氣體不可信時不預選，PM 2026-10-07）。
+    @State private var gasMixType: GasMixPickerType?
+    @State private var nitroxO2Percent: Double  // 22–40；保留原值（如 32.5），不取整（PM 2026-10-10）
+    /// 使用者動過氣體欄位（picker 或滑桿）。沒動 ⇒ save() 原樣保留 `dive.gasMixJSON`，
+    /// 不經 picker 重組——否則 32.5% 會被寫成別的值、不可信氣體會被寫成預設的空氣（PM 2026-10-07／10-10）。
+    @State private var gasEdited = false
 
-    // ⚠️ Trimix 目前不支援手動編輯（picker 只有 Air/Nitrox 兩個選項），原本 save()
-    // 一律用 gasMixType/nitroxO2Percent 重新組字串寫回 dive.gasMixJSON，導致只是
-    // 想改地點/備註的使用者，儲存後 Trimix 氣體資料被靜默且不可逆地覆寫成 Air。
-    // 記住原始 gasMixJSON 是否為 trimix，save() 時比照處理：不動這個欄位，維持原樣。
-    private let originalTrimixGasMixJSON: String?
+    // ⚠️ Trimix 目前不支援手動編輯（picker 只有 Air/Nitrox 兩個選項）。
+    // 可信的 Trimix ⇒ picker 鎖住，save() 維持原始 JSON。
+    // 不可信的 Trimix（匯入端判不可信或舊資料）⇒ 開放選擇（PM 2026-10-07）：原值本來就不可信，鎖住只會讓使用者無法更正。
+    private let isTrustedTrimix: Bool
 
     // MARK: - Environment Details（Optional：nil = 未記錄）
     @State private var weather: String?
@@ -104,7 +107,7 @@ struct DiveLogEditSheet: View {
             _diveMode           = State(initialValue: .scuba)
             _gasMixType         = State(initialValue: .air)
             _nitroxO2Percent    = State(initialValue: 32.0)
-            originalTrimixGasMixJSON = nil
+            isTrustedTrimix     = false
 
             // Environment Details（新增潛水：nil = 使用者尚未填入）
             _weather            = State(initialValue: nil)
@@ -139,31 +142,22 @@ struct DiveLogEditSheet: View {
             _notes              = State(initialValue: dive.notes)
             _diveMode           = State(initialValue: dive.diveModeValue)
 
-            // 解析已儲存的 gas mix JSON
-            if let data = dive.gasMixJSON.data(using: .utf8),
-               let gas  = try? JSONDecoder().decode(GasMix.self, from: data) {
-                switch gas {
-                case .air:
-                    _gasMixType      = State(initialValue: .air)
-                    _nitroxO2Percent = State(initialValue: 32.0)
-                    originalTrimixGasMixJSON = nil
-                case .nitrox(let fO2):
-                    _gasMixType      = State(initialValue: .nitrox)
-                    _nitroxO2Percent = State(initialValue: (fO2 * 100).rounded())
-                    originalTrimixGasMixJSON = nil
-                case .trimix:
-                    // Trimix 目前不支援手動編輯（picker 只有 Air/Nitrox），僅用 Air 當
-                    // picker 顯示佔位；真正存回資料庫時 save() 會維持原始 JSON 不動，
-                    // 不能把這個 .air 顯示值反寫回去。
-                    _gasMixType      = State(initialValue: .air)
-                    _nitroxO2Percent = State(initialValue: 32.0)
-                    originalTrimixGasMixJSON = dive.gasMixJSON
-                }
-            } else {
-                _gasMixType      = State(initialValue: .air)
-                _nitroxO2Percent = State(initialValue: 32.0)
-                originalTrimixGasMixJSON = nil
+            // 解析已儲存的 gas mix。不可信（`displayGasMix == nil`）⇒ 不預選（PM 2026-10-07）。
+            let trusted = dive.displayGasMix
+            switch trusted {
+            case .air?:
+                _gasMixType = State(initialValue: .air)
+            case .nitrox?:
+                _gasMixType = State(initialValue: .nitrox)
+            case .trimix?, nil:
+                _gasMixType = State(initialValue: nil)
             }
+            if case .nitrox(let fO2)? = dive.decodedGasMix {
+                _nitroxO2Percent = State(initialValue: fO2 * 100)
+            } else {
+                _nitroxO2Percent = State(initialValue: 32.0)
+            }
+            if case .trimix? = trusted { isTrustedTrimix = true } else { isTrustedTrimix = false }
 
             // Environment Details
             _weather            = State(initialValue: dive.weather)
@@ -268,10 +262,13 @@ struct DiveLogEditSheet: View {
                     // 潛水類型（水肺／自由潛水／浮潛）
                     // 匯入紀錄一律落在 scuba（DiveImportKit 的 ParsedDiveLog 沒有
                     // dive mode 欄位，見 V1_2_BACKLOG.md），使用者要在這裡手動改。
-                    Picker(languageManager.localized("Dive Mode"), selection: $diveMode) {
-                        Text(LocalizedStringKey("Scuba")).tag(DiveLogMode.scuba)
-                        Text(LocalizedStringKey("Freedive")).tag(DiveLogMode.free)
-                        Text(LocalizedStringKey("Snorkel")).tag(DiveLogMode.snorkel)
+                    // 手動新增一律水肺、不顯示（PM 2026-10-07）；編輯既有紀錄才可改。
+                    if case .edit = mode {
+                        Picker(languageManager.localized("Dive Mode"), selection: $diveMode) {
+                            Text(verbatim: languageManager.localized("Scuba")).tag(DiveLogMode.scuba)
+                            Text(verbatim: languageManager.localized("Freedive")).tag(DiveLogMode.free)
+                            Text(verbatim: languageManager.localized("Snorkel")).tag(DiveLogMode.snorkel)
+                        }
                     }
 
                     // 潛水時間（分鐘）
@@ -300,7 +297,7 @@ struct DiveLogEditSheet: View {
                             .multilineTextAlignment(.trailing)
                             .frame(width: 70)
                             .focused($focusedField, equals: .durationMinutes)
-                        Text("min")
+                        Text(verbatim: languageManager.localized("min"))
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .combine)
@@ -343,7 +340,7 @@ struct DiveLogEditSheet: View {
                     // 最大深度 —— 必填欄位，紅色星號是通行做法，不用額外翻譯一整句話
                     // （之前用整句英文提示，語系切不過去，PM 抓到後改這個做法）。
                     HStack {
-                        Text("Max Depth").foregroundStyle(.primary)
+                        Text(verbatim: languageManager.localized("Max Depth")).foregroundStyle(.primary)
                             + Text(" *").foregroundStyle(.red)
                         Spacer()
                         TextField(String("0.0"), value: maxDepthDisplay,
@@ -368,7 +365,7 @@ struct DiveLogEditSheet: View {
 
                     // 水溫（nil = 未記錄，C2）
                     HStack {
-                        Text("Water Temp")
+                        Text(verbatim: languageManager.localized("Water Temp"))
                             .foregroundStyle(.primary)
                         Spacer()
                         TextField(String("–"), value: waterTemperatureDisplay,
@@ -391,7 +388,7 @@ struct DiveLogEditSheet: View {
                         } ?? languageManager.localized("Water Temperature: Not recorded")
                     )
                 } header: {
-                    Text("Dive Data & Time")
+                    Text(verbatim: languageManager.localized("Dive Data & Time"))
                 } footer: {
                     // 「儲存」按鈕在 maxDepth == 0 時會靜默停用，沒有任何視覺/VoiceOver
                     // 提示——真機 VoiceOver 走查回報「無法儲存」，其實是不知道深度必填。
@@ -405,42 +402,48 @@ struct DiveLogEditSheet: View {
 
                 // ── 氣體混合（Gas Mix 配置在此）─────────────
                 Section {
-                    Picker(languageManager.localized("Gas"), selection: $gasMixType) {
+                    Picker(languageManager.localized("Gas"), selection: Binding(
+                        get: { gasMixType },
+                        set: { gasMixType = $0; gasEdited = true }
+                    )) {
                         ForEach(GasMixPickerType.allCases) { type in
-                            Text(LocalizedStringKey(type.rawValue)).tag(type)
+                            Text(verbatim: languageManager.localized(type.rawValue)).tag(Optional(type))
                         }
                     }
                     .pickerStyle(.segmented)
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                    .disabled(originalTrimixGasMixJSON != nil)
+                    .disabled(isTrustedTrimix)
 
                     if gasMixType == .nitrox {
                         HStack(spacing: 12) {
                             Text("O₂")
                                 .foregroundStyle(.primary)
                             Slider(
-                                value: $nitroxO2Percent,
+                                value: Binding(
+                                    get: { nitroxO2Percent },
+                                    set: { nitroxO2Percent = $0; gasEdited = true }
+                                ),
                                 in: 22...40,
                                 step: 1
                             ) {
                                 EmptyView()
                             }
-                            Text("\(Int(nitroxO2Percent))%")
+                            Text(verbatim: GasMix.percentText(nitroxO2Percent / 100) + "%")
                                 .monospacedDigit()
                                 .frame(width: 44, alignment: .trailing)
                                 .foregroundStyle(.primary)
                         }
                         .accessibilityElement(children: .combine)
                         .accessibilityLabel(
-                            String(format: languageManager.localized("Nitrox O2: %d percent"),
+                            String(format: languageManager.localized("Nitrox O2: %@ percent"),
                                    locale: languageManager.locale,
                                    Int(nitroxO2Percent))
                         )
                     }
                 } header: {
-                    Text("Gas Mix")
+                    Text(verbatim: languageManager.localized("Gas Mix"))
                 } footer: {
-                    if originalTrimixGasMixJSON != nil {
+                    if isTrustedTrimix {
                         Text(languageManager.localized("Trimix gas mix isn't editable here — the original mix is preserved."))
                     }
                 }
@@ -448,20 +451,20 @@ struct DiveLogEditSheet: View {
                 // ═════════════════════════════════════════════════════════
                 // BLOCK 3: 環境 (Environment)
                 // ═════════════════════════════════════════════════════════
-                Section(header: Text("Conditions")) {
+                Section(header: Text(verbatim: languageManager.localized("Conditions"))) {
                     Picker(languageManager.localized("Water Type"), selection: $environmentType) {
-                        Text("Seawater").tag("seawater")
-                        Text("Freshwater").tag("freshwater")
-                        Text("Altitude").tag("altitude")
+                        Text(verbatim: languageManager.localized("Seawater")).tag("seawater")
+                        Text(verbatim: languageManager.localized("Freshwater")).tag("freshwater")
+                        Text(verbatim: languageManager.localized("Altitude")).tag("altitude")
                     }
 
                     // 天氣（nil = 未記錄）
                     Picker(languageManager.localized("Weather"), selection: $weather) {
                         Text(languageManager.localized("Not Recorded")).tag(String?.none)
-                        Text(LocalizedStringKey("Sunny")).tag(String?.some("sunny"))
-                        Text(LocalizedStringKey("Cloudy")).tag(String?.some("cloudy"))
-                        Text(LocalizedStringKey("Rainy")).tag(String?.some("rainy"))
-                        Text(LocalizedStringKey("Clear")).tag(String?.some("clear"))
+                        Text(verbatim: languageManager.localized("Sunny")).tag(String?.some("sunny"))
+                        Text(verbatim: languageManager.localized("Cloudy")).tag(String?.some("cloudy"))
+                        Text(verbatim: languageManager.localized("Rainy")).tag(String?.some("rainy"))
+                        Text(verbatim: languageManager.localized("Clear")).tag(String?.some("clear"))
                     }
 
                     // 氣溫（nil = 未記錄）
@@ -492,19 +495,19 @@ struct DiveLogEditSheet: View {
                     // 水面狀況（nil = 未記錄）
                     Picker(languageManager.localized("Surface Condition"), selection: $surfaceCondition) {
                         Text(languageManager.localized("Not Recorded")).tag(String?.none)
-                        Text(LocalizedStringKey("Calm")).tag(String?.some("calm"))
-                        Text(LocalizedStringKey("Slight")).tag(String?.some("slight"))
-                        Text(LocalizedStringKey("Moderate")).tag(String?.some("moderate"))
-                        Text(LocalizedStringKey("Rough")).tag(String?.some("rough"))
+                        Text(verbatim: languageManager.localized("Calm")).tag(String?.some("calm"))
+                        Text(verbatim: languageManager.localized("Slight")).tag(String?.some("slight"))
+                        Text(verbatim: languageManager.localized("Moderate")).tag(String?.some("moderate"))
+                        Text(verbatim: languageManager.localized("Rough")).tag(String?.some("rough"))
                     }
 
                     // 水流（nil = 未記錄）
                     Picker(languageManager.localized("Water Flow"), selection: $waterflow) {
                         Text(languageManager.localized("Not Recorded")).tag(String?.none)
-                        Text(LocalizedStringKey("None")).tag(String?.some("none"))
-                        Text(LocalizedStringKey("Slight")).tag(String?.some("slight"))
-                        Text(LocalizedStringKey("Moderate")).tag(String?.some("moderate"))
-                        Text(LocalizedStringKey("Strong")).tag(String?.some("strong"))
+                        Text(verbatim: languageManager.localized("None")).tag(String?.some("none"))
+                        Text(verbatim: languageManager.localized("Slight")).tag(String?.some("slight"))
+                        Text(verbatim: languageManager.localized("Moderate")).tag(String?.some("moderate"))
+                        Text(verbatim: languageManager.localized("Strong")).tag(String?.some("strong"))
                     }
 
                     // 能見度（nil = 未記錄）
@@ -536,7 +539,7 @@ struct DiveLogEditSheet: View {
                 // ═════════════════════════════════════════════════════════
                 // BLOCK 4: 潛水裝備 (Equipment)
                 // ═════════════════════════════════════════════════════════
-                Section(header: Text("Equipment")) {
+                Section(header: Text(verbatim: languageManager.localized("Equipment"))) {
                     // 防寒衣厚度（只輸入數字，mm 單位固定）
                     HStack {
                         Text(languageManager.localized("Wetsuit"))
@@ -589,8 +592,8 @@ struct DiveLogEditSheet: View {
 
                     // 氣瓶材質
                     Picker(languageManager.localized("Cylinder Material"), selection: $cylinderMaterial) {
-                        Text(LocalizedStringKey("Aluminum")).tag("aluminum")
-                        Text(LocalizedStringKey("Steel")).tag("steel")
+                        Text(verbatim: languageManager.localized("Aluminum")).tag("aluminum")
+                        Text(verbatim: languageManager.localized("Steel")).tag("steel")
                     }
 
                     // 氣瓶規格（預定義選項）
@@ -598,8 +601,8 @@ struct DiveLogEditSheet: View {
                         Text("S80 (12L)").tag("S80(12L)")
                         Text("S63 (8.6L)").tag("S63(8.6L)")
                         Text("AL100 (14L)").tag("AL100(14L)")
-                        Text("12L (Steel)").tag("12L(Steel)")
-                        Text("10L (Steel)").tag("10L(Steel)")
+                        Text(verbatim: languageManager.localized("12L (Steel)")).tag("12L(Steel)")
+                        Text(verbatim: languageManager.localized("10L (Steel)")).tag("10L(Steel)")
                     }
 
                     // 氣瓶起始壓力（nil = 未填入，見 init 註解）
@@ -656,7 +659,7 @@ struct DiveLogEditSheet: View {
                 // ═════════════════════════════════════════════════════════
                 // BLOCK 5: 地點（對齊詳情頁：Location 置於 Equipment 後）
                 // ═════════════════════════════════════════════════════════
-                Section(header: Text("Location")) {
+                Section(header: Text(verbatim: languageManager.localized("Location"))) {
                     // 日期改由「入水時間」的 date+time picker 統一選取
                     TextField(languageManager.localized("Dive Site"), text: $location)
                         .textContentType(.addressCity)
@@ -667,7 +670,7 @@ struct DiveLogEditSheet: View {
                 // ═════════════════════════════════════════════════════════
                 // BLOCK 6: 潛水備註 (Dive Notes)
                 // ═════════════════════════════════════════════════════════
-                Section(header: Text("Dive Notes")) {
+                Section(header: Text(verbatim: languageManager.localized("Dive Notes"))) {
                     TextEditor(text: $notes)
                         .frame(minHeight: 80, maxHeight: 200)
                         .accessibilityLabel(languageManager.localized("Notes"))
@@ -704,9 +707,12 @@ struct DiveLogEditSheet: View {
 
     private func save() {
         let totalSeconds = durationMinutes * 60
-        // Trimix 潛水：picker 不支援編輯，維持原始 JSON，不用 Air/Nitrox picker 的
-        // 顯示值覆寫（見 originalTrimixGasMixJSON 宣告處說明）。
-        let gasMixJSON   = originalTrimixGasMixJSON ?? buildGasMixJSON()
+        // 編輯：使用者沒動氣體 ⇒ 原樣保留（含可信 Trimix、不可信氣體、32.5% 這類非整數值）。
+        let originalGasMixJSON: String? = {
+            if case .edit(let dive) = mode, !gasEdited { return dive.gasMixJSON }
+            return nil
+        }()
+        let gasMixJSON   = originalGasMixJSON ?? buildGasMixJSON()
 
         // 計算出水時間：基於入水時間 + 潛水時間
         let calculatedExitTime = Calendar.current.date(
@@ -754,14 +760,15 @@ struct DiveLogEditSheet: View {
         case .edit(let dive):
             // 剖面 CSV 的日期是匯入時代填的；使用者改過日期 ⇒ 視為已核對，恢復參與殘氮鏈。
             // 使用者核對過的欄位（剖面 CSV 日期、氣體）標為已確認，見 `DiveLog.userEditConfirmations`。
-            if let extras = dive.userEditConfirmations(newDateTime: entryTime, newGasMixJSON: gasMixJSON) {
+            if let extras = dive.userEditConfirmations(newDateTime: entryTime,
+                                                       newGasMixJSON: gasEdited ? gasMixJSON : nil) {
                 dive.importExtrasJSON = buildImportExtrasJSON(extras.map { ($0.key, $0.value) })
             }
             dive.dateTime         = entryTime
             dive.location         = location.trimmingCharacters(in: .whitespaces)
             dive.maxDepth         = maxDepth
             dive.diveTimeSeconds  = totalSeconds
-            dive.gasMixJSON       = gasMixJSON
+            if gasEdited { dive.gasMixJSON = gasMixJSON }
             dive.waterTemperature = waterTemperature
             dive.environmentType  = environmentType
             dive.notes  = notes.trimmingCharacters(in: .whitespaces)
@@ -794,7 +801,7 @@ struct DiveLogEditSheet: View {
 
     private func buildGasMixJSON() -> String {
         switch gasMixType {
-        case .air:
+        case .air, nil:
             return "\"air\""
         case .nitrox:
             let fO2 = nitroxO2Percent / 100.0

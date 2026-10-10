@@ -56,40 +56,40 @@ struct SettingsView: View {
 
                 // ── 語言（App 內設定，即時生效，比照 JD2-ultra 四段式解法）──
                 Section(
-                    header: Text("Language"),
-                    footer: Text("Language changes take effect right away. Some system-provided panels may still use the device language until you reopen the app.")
+                    header: Text(verbatim: languageManager.localized("Language")),
+                    footer: Text(verbatim: languageManager.localized("Language changes take effect right away. Some system-provided panels may still use the device language until you reopen the app."))
                 ) {
                     Picker(selection: Binding(
                         get: { languageManager.appLanguage ?? "" },
                         set: { languageManager.appLanguage = $0.isEmpty ? nil : $0 }
                     )) {
-                        Text("Follow System").tag("")
+                        Text(verbatim: languageManager.localized("Follow System")).tag("")
                         ForEach(AppLanguageManager.supportedLanguages, id: \.code) { lang in
                             Text(verbatim: lang.nativeName).tag(lang.code)
                         }
                     } label: {
-                        Label("App Language", systemImage: "globe")
+                        Label(languageManager.localized("App Language"), systemImage: "globe")
                     }
                 }
 
                 // ── 單位系統（v1.2 #4：用單位符號本身表示選項，不用文字）───
-                Section(header: Text("Units")) {
+                Section(header: Text(verbatim: languageManager.localized("Units"))) {
                     Picker(selection: $unitSystem) {
                         Text(verbatim: "m / °C").tag(UnitSystem.metric)
                         Text(verbatim: "ft / °F").tag(UnitSystem.imperial)
                     } label: {
-                        Label("Units", systemImage: "ruler")
+                        Label(languageManager.localized("Units"), systemImage: "ruler")
                     }
                     .pickerStyle(.segmented)
                 }
 
                 // ── GPS 定位（雙平台：地圖 recenter 按鈕的前置開關）──────
                 Section(
-                    header: Text("GPS Location"),
-                    footer: Text("Location data stays on your device and is only requested while enabled.")
+                    header: Text(verbatim: languageManager.localized("GPS Location")),
+                    footer: Text(verbatim: languageManager.localized("Location data stays on your device and is only requested while enabled."))
                 ) {
                     Toggle(isOn: $gpsLocationEnabled) {
-                        Label("Enable GPS Location", systemImage: "location.fill")
+                        Label(languageManager.localized("Enable GPS Location"), systemImage: "location.fill")
                     }
                     .onChange(of: gpsLocationEnabled) { _, isEnabled in
                         if isEnabled {
@@ -104,13 +104,13 @@ struct SettingsView: View {
                             openSystemLocationSettings()
                         } label: {
                             HStack {
-                                Label("Location Access Denied", systemImage: "exclamationmark.triangle.fill")
+                                Label(languageManager.localized("Location Access Denied"), systemImage: "exclamationmark.triangle.fill")
                                     .foregroundStyle(.orange)
                                 Spacer()
                                 #if os(iOS)
-                                Text("iOS Settings")
+                                Text(verbatim: languageManager.localized("iOS Settings"))
                                 #else
-                                Text("System Settings")
+                                Text(verbatim: languageManager.localized("System Settings"))
                                 #endif
                                 Image(systemName: "arrow.up.right.square")
                                     .font(.caption)
@@ -125,7 +125,7 @@ struct SettingsView: View {
                 // ── Premium（僅 iOS：macOS 從無廣告，移除項目對 macOS-only 用戶無意義）──
                 #if os(iOS)
                 Section(
-                    header: Text("Premium"),
+                    header: Text(verbatim: languageManager.localized("Premium")),
                     footer: Text(
                         purchaseManager.isPremium
                             ? languageManager.localized("Premium unlocked — Ads removed.")
@@ -135,10 +135,10 @@ struct SettingsView: View {
                     if purchaseManager.isPremium {
                         // ── 已購買：顯示狀態 ──────
                         HStack {
-                            Label("Premium Unlocked", systemImage: "checkmark.seal.fill")
+                            Label(languageManager.localized("Premium Unlocked"), systemImage: "checkmark.seal.fill")
                                 .foregroundStyle(.green)
                             Spacer()
-                            Text("Active")
+                            Text(verbatim: languageManager.localized("Active"))
                                 .foregroundStyle(.secondary)
                                 .font(.subheadline)
                         }
@@ -155,7 +155,7 @@ struct SettingsView: View {
                             showPremiumSheet = true
                         } label: {
                             HStack {
-                                Label("Remove Ads",
+                                Label(languageManager.localized("Remove Ads"),
                                       systemImage: "star.fill")
                                 Spacer()
                                 if let price = purchaseManager.premiumPriceString {
@@ -181,7 +181,7 @@ struct SettingsView: View {
                             Task { await restorePurchases() }
                         } label: {
                             HStack {
-                                Label("Restore Purchase", systemImage: "arrow.clockwise")
+                                Label(languageManager.localized("Restore Purchase"), systemImage: "arrow.clockwise")
                                 if purchaseManager.isLoading {
                                     Spacer()
                                     ProgressView()
@@ -199,13 +199,13 @@ struct SettingsView: View {
                 // v1.2：尚未完整測試過，先隱藏，見 showBackupSection 說明。
                 if showBackupSection {
                     Section(
-                        header: Text("Backup"),
-                        footer: Text("Export all dives to a JSON file, or restore from a previously exported file.")
+                        header: Text(verbatim: languageManager.localized("Backup")),
+                        footer: Text(verbatim: languageManager.localized("Export all dives to a JSON file, or restore from a previously exported file."))
                     ) {
                         Button {
                             exportBackup()
                         } label: {
-                            Label("Export Backup", systemImage: "square.and.arrow.up")
+                            Label(languageManager.localized("Export Backup"), systemImage: "square.and.arrow.up")
                         }
                         #if os(macOS)
                         .buttonStyle(.borderless)
@@ -214,7 +214,7 @@ struct SettingsView: View {
                         Button {
                             showBackupImporter = true
                         } label: {
-                            Label("Import Backup", systemImage: "square.and.arrow.down")
+                            Label(languageManager.localized("Import Backup"), systemImage: "square.and.arrow.down")
                         }
                         #if os(macOS)
                         .buttonStyle(.borderless)
@@ -223,9 +223,9 @@ struct SettingsView: View {
                 }
 
                 // ── 關於 ───────────────────────────────────
-                Section(header: Text("About")) {
+                Section(header: Text(verbatim: languageManager.localized("About"))) {
                     HStack {
-                        Label("Version", systemImage: "info.circle")
+                        Label(languageManager.localized("Version"), systemImage: "info.circle")
                         Spacer()
                         Text(appVersion)
                             .foregroundStyle(.secondary)
@@ -239,12 +239,12 @@ struct SettingsView: View {
                     NavigationLink {
                         LicensesView()
                     } label: {
-                        Label("Open Source Licenses", systemImage: "doc.text")
+                        Label(languageManager.localized("Open Source Licenses"), systemImage: "doc.text")
                     }
                 }
 
                 #if DEBUG
-                Section(header: Text("Developer Tools")) {
+                Section(header: Text(verbatim: languageManager.localized("Developer Tools"))) {
                     Button {
                         do {
                             try MockDataSeeder.seed(database: DiveLogDatabase.shared, count: 105)
@@ -252,7 +252,7 @@ struct SettingsView: View {
                             print("Seeding failed: \(error)")
                         }
                     } label: {
-                        Label("Inject 100+ Mock Dives", systemImage: "square.stack.3d.up.fill")
+                        Label(languageManager.localized("Inject 100+ Mock Dives"), systemImage: "square.stack.3d.up.fill")
                     }
                     #if os(macOS)
                     .buttonStyle(.borderless)
@@ -265,7 +265,7 @@ struct SettingsView: View {
                             print("Clear failed: \(error)")
                         }
                     } label: {
-                        Label("Clear All Dives", systemImage: "trash")
+                        Label(languageManager.localized("Clear All Dives"), systemImage: "trash")
                     }
                     #if os(macOS)
                     .buttonStyle(.borderless)
@@ -277,7 +277,7 @@ struct SettingsView: View {
                         get: { purchaseManager.debugForceHideAds },
                         set: { purchaseManager.setDebugForceHideAds($0) }
                     )) {
-                        Label("Simulate Premium (Hide Ads)", systemImage: "star.fill")
+                        Label(languageManager.localized("Simulate Premium (Hide Ads)"), systemImage: "star.fill")
                     }
                 }
                 #endif
@@ -295,8 +295,8 @@ struct SettingsView: View {
             .sheet(isPresented: $showPremiumSheet) {
                 PremiumUpgradeSheet()
             }
-            .alert("Restore", isPresented: $showRestoreAlert) {
-                Button("OK", role: .cancel) { }
+            .alert(languageManager.localized("Restore"), isPresented: $showRestoreAlert) {
+                Button(languageManager.localized("OK"), role: .cancel) { }
             } message: {
                 Text(restoreAlertMessage)
             }
@@ -319,8 +319,8 @@ struct SettingsView: View {
             ) { result in
                 importBackup(from: result)
             }
-            .alert("Backup", isPresented: $showBackupResultAlert) {
-                Button("OK", role: .cancel) { }
+            .alert(languageManager.localized("Backup"), isPresented: $showBackupResultAlert) {
+                Button(languageManager.localized("OK"), role: .cancel) { }
             } message: {
                 Text(backupResultMessage)
             }
@@ -451,9 +451,9 @@ struct PremiumUpgradeSheet: View {
 
                 // 標題
                 VStack(spacing: 8) {
-                    Text("JoyDive² Premium")
+                    Text(verbatim: languageManager.localized("JoyDive² Premium"))
                         .font(.title2.bold())
-                    Text("One-time purchase — no subscription.")
+                    Text(verbatim: languageManager.localized("One-time purchase — no subscription."))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -529,8 +529,8 @@ struct PremiumUpgradeSheet: View {
             .onChange(of: purchaseManager.isPremium) { _, isPremium in
                 if isPremium { dismiss() }
             }
-            .alert("Restore", isPresented: $showRestoreAlert) {
-                Button("OK", role: .cancel) { }
+            .alert(languageManager.localized("Restore"), isPresented: $showRestoreAlert) {
+                Button(languageManager.localized("OK"), role: .cancel) { }
             } message: {
                 Text(restoreAlertMessage)
             }

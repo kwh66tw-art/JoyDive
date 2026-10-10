@@ -229,7 +229,7 @@ struct DiveAnalysisView: View {
     // 純呈現圖表，兩者職責分離。
 
     private var interactiveChart: some View {
-        DiveProfileChartView(samples: samples)
+        DiveProfileChartView(samples: samples, timeAxisInSeconds: dive.diveModeValue == .free)
             .chartOverlay { proxy in
                 GeometryReader { geo in
                     // ⚠️ 修復時間軸偏移 bug：proxy.position(forX:)／proxy.value(atX:)
@@ -309,20 +309,20 @@ struct DiveAnalysisView: View {
         // v1.2：畫面一致性——固定 5 欄排版，不因資料缺漏（例如沒有溫度樣本）而增減
         // 欄位數，缺的欄位一律用「—」佔位，不隱藏欄位本身。
         HStack(spacing: 0) {
-            calloutCell(label: Text("Time"), value: timeLabel(sample.timeSeconds))
-            calloutCell(label: Text("Depth"), value: unitSystem.formatDepth(sample.depthMeters, locale: languageManager.locale))
+            calloutCell(label: Text(verbatim: languageManager.localized("Time")), value: timeLabel(sample.timeSeconds))
+            calloutCell(label: Text(verbatim: languageManager.localized("Depth")), value: unitSystem.formatDepth(sample.depthMeters, locale: languageManager.locale))
             calloutCell(
-                label: Text("Temp"),
+                label: Text(verbatim: languageManager.localized("Temp")),
                 value: sample.waterTemp.map { unitSystem.formatTemperature($0, locale: languageManager.locale) } ?? "—"
             )
             calloutCell(
-                label: Text("Ceiling"),
+                label: Text(verbatim: languageManager.localized("Ceiling")),
                 value: (point?.ceilingMeters ?? 0) > 0
                     ? unitSystem.formatDepthConservative(point!.ceilingMeters, locale: languageManager.locale) : "—",
                 accent: (point?.ceilingMeters ?? 0) > 0 ? .deco : .neutral
             )
             calloutCell(
-                label: Text("No Deco"),
+                label: Text(verbatim: languageManager.localized("No Deco")),
                 value: point.map { ndlText($0.ndlSeconds) } ?? "—",
                 accent: (point?.ndlSeconds ?? .max) <= AlgorithmConstants.ndlWarnSeconds ? .warning : .neutral   // 2026-09-27：與引擎同一規則（秒、≤、300）
             )
@@ -509,12 +509,13 @@ struct DiveAnalysisView: View {
 // MARK: - 16 隔室張力長條
 
 struct TissueBarsView: View {
+    @Environment(AppLanguageManager.self) private var languageManager
     /// 各隔室載荷 %（相對水面 M-value，gfHigh 收緊；>100 = 超出）
     let loadPercents: [Double]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Tissue Loading")
+            Text(verbatim: languageManager.localized("Tissue Loading"))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
 
@@ -533,15 +534,15 @@ struct TissueBarsView: View {
 
             // 快慢隔室方向標（1=最快 4min ↔ 16=最慢 635min）
             HStack {
-                Text("Fast")
+                Text(verbatim: languageManager.localized("Fast"))
                     .font(.caption2).foregroundStyle(.tertiary)
                 Spacer()
-                Text("Slow")
+                Text(verbatim: languageManager.localized("Slow"))
                     .font(.caption2).foregroundStyle(.tertiary)
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("Tissue Loading"))
+        .accessibilityLabel(Text(verbatim: languageManager.localized("Tissue Loading")))
     }
 
     private func barHeight(_ percent: Double) -> CGFloat {

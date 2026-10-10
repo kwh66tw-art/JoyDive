@@ -106,9 +106,9 @@ struct DiveLogDetailView: View {
                 // 綁在一起一定有一句是錯的：一起留 ⇒ ① 說謊；一起消失 ⇒ 在資訊最少的
                 // 那些潛水上，唯一的免責也不見了。
                 Section(
-                    header: Text("Dive Profile"),
+                    header: Text(verbatim: languageManager.localized("Dive Profile")),
                     footer: profileSamples.count >= 2
-                        ? Text("Not a substitute for your dive computer or certified decompression software.")
+                        ? Text(verbatim: languageManager.localized("Not a substitute for your dive computer or certified decompression software."))
                         : nil
                 ) {
                     if profileSamples.count >= 2 {
@@ -123,19 +123,19 @@ struct DiveLogDetailView: View {
                             .id("\(dive.persistentModelID)-\(dive.replayInputsFingerprint)")
                             .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
                     } else {
-                        DiveProfileChartView(samples: profileSamples)
+                        DiveProfileChartView(samples: profileSamples, timeAxisInSeconds: dive.diveModeValue == .free)
                             .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
                     }
                 }
             }
 
             // ── 關鍵數據 ────────────────────────────────
-            Section(header: Text("Key Stats")) {
+            Section(header: Text(verbatim: languageManager.localized("Key Stats"))) {
                 keyStatsRow
             }
 
             // ── 潛水資訊 ────────────────────────────────
-            Section(header: Text("Dive Info")) {
+            Section(header: Text(verbatim: languageManager.localized("Dive Info"))) {
                 DetailRow(icon: "bubbles.and.sparkles.fill", label: "Gas",      value: gasMixText)
                 DetailRow(icon: "water.waves",       label: "Environment",   value: environmentText)
                 if dive.avgDepth > 0 {
@@ -148,7 +148,7 @@ struct DiveLogDetailView: View {
             let hasConditions = dive.weather != nil || dive.airTemperature != nil
                 || dive.surfaceCondition != nil || dive.waterflow != nil || dive.visibility != nil
             if hasConditions {
-                Section(header: Text("Conditions")) {
+                Section(header: Text(verbatim: languageManager.localized("Conditions"))) {
                     if let w = dive.weather {
                         DetailRow(icon: "sun.max.fill",   label: "Weather",           value: weatherDisplayName(w))
                     }
@@ -170,7 +170,7 @@ struct DiveLogDetailView: View {
             // ── 時間詳細資訊 ──────────────────────────
             // 匯入的潛水通常未填 entryTime/exitTime；以 dateTime（入水）與
             // diveTimeSeconds（時長）推導，確保兩個欄位皆有值可顯示。
-            Section(header: Text("Entry & Exit")) {
+            Section(header: Text(verbatim: languageManager.localized("Entry & Exit"))) {
                 let entry = dive.entryTime ?? dive.dateTime
                 let exit  = dive.exitTime ?? Calendar.current.date(
                     byAdding: .second, value: dive.diveTimeSeconds, to: entry)
@@ -186,7 +186,7 @@ struct DiveLogDetailView: View {
 
             // ── 裝備詳細資訊（僅顯示有提供的欄位；匯入未提供者留空隱藏）──
             if hasEquipment {
-                Section(header: Text("Equipment")) {
+                Section(header: Text(verbatim: languageManager.localized("Equipment"))) {
                     if let w = dive.wetsuitThickness, !w.isEmpty {
                         // 儲存值為純數字（如 "2.5"）；顯示時補回 mm 單位（舊資料若已含 mm 則不重複）
                         DetailRow(icon: "tshirt.fill",         label: "Wetsuit",
@@ -214,7 +214,7 @@ struct DiveLogDetailView: View {
             }
 
             // ── 地點 ────────────────────────────────────
-            Section(header: Text("Location")) {
+            Section(header: Text(verbatim: languageManager.localized("Location"))) {
                 if !dive.location.isEmpty {
                     DetailRow(icon: "location.fill",  label: "Location", value: dive.location)
                 }
@@ -224,9 +224,9 @@ struct DiveLogDetailView: View {
             }
 
             // ── 備註 ────────────────────────────────────
-            Section(header: Text("Notes")) {
+            Section(header: Text(verbatim: languageManager.localized("Notes"))) {
                 if dive.notes.isEmpty {
-                    Text("No notes recorded.")
+                    Text(verbatim: languageManager.localized("No notes recorded."))
                         .foregroundStyle(.secondary)
                         .font(.subheadline)
                 } else {
@@ -272,7 +272,7 @@ struct DiveLogDetailView: View {
                 Button {
                     showEditSheet = true
                 } label: {
-                    Text("Edit")
+                    Text(verbatim: languageManager.localized("Edit"))
                 }
                 .accessibilityLabel(languageManager.localized("Edit Dive"))
             }
@@ -286,7 +286,7 @@ struct DiveLogDetailView: View {
             Button(languageManager.localized("Delete"), role: .destructive) { deleteDive() }
             Button(languageManager.localized("Cancel"), role: .cancel) { }
         } message: {
-            Text("This action cannot be undone.")
+            Text(verbatim: languageManager.localized("This action cannot be undone."))
         }
         // ── Edit Sheet ───────────────────────────────────────
         .sheet(isPresented: $showEditSheet) {
@@ -480,6 +480,7 @@ struct DiveLogDetailView: View {
              "garmin-fit":     return "Garmin Descent"
         case "garmin-json":    return "Garmin Connect"
         case "suunto-fit":     return "Suunto FIT"
+        case "atmos-fit":      return "ATMOS FIT"
         case "seabear",
              "seabear-csv":    return "Seabear CSV"
         case "shearwater":     return "Shearwater XML"
@@ -513,7 +514,7 @@ private struct DetailRow: View {
                 .foregroundStyle(.tint)
                 .frame(width: 20)
 
-            Text(LocalizedStringKey(label))
+            Text(verbatim: languageManager.localized(label))
                 .foregroundStyle(Color.accessibleSecondary)
 
             Spacer()

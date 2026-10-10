@@ -16,6 +16,8 @@ import DiveKitUI
 
 struct DiveProfileChartView: View {
     let samples: [DiveProfileSample]
+    /// 自由潛水只有一兩分鐘 ⇒ X 軸改用秒（PM 2026-10-07）。
+    var timeAxisInSeconds: Bool = false
 
     @AppStorage(UnitSystem.storageKey) private var unitSystem = UnitSystem.metric
 
@@ -34,7 +36,8 @@ struct DiveProfileChartView: View {
             depthAxisLabel: { depthMeters in
                 let displayValue = unitSystem.convertDepth(metersValue: depthMeters)
                 return "\(Int(displayValue.rounded()))\(unitSystem.depthSymbol)"
-            }
+            },
+            timeAxisLabel: timeAxisInSeconds ? DiveKitUI.DiveProfileChartView.secondsTimeAxisLabel : nil
         )
     }
 }

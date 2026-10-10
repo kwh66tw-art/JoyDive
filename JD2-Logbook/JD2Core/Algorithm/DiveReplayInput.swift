@@ -100,15 +100,17 @@ extension DiveLog {
     /// 編輯頁存檔時，使用者核對過的欄位 ⇒ 更新後的 `importExtras`；沒有變動回 nil。
     /// - 剖面 CSV 改了日期 ⇒ `dateTimeConfidence = "user"`（恢復參與殘氮鏈）。
     /// - 改了氣體（比對解碼後的 `GasMix`，不比 JSON 字串格式）⇒ `gasMixConfidence = "user"`（PM 2026-10-07）。
-    func userEditConfirmations(newDateTime: Date, newGasMixJSON: String) -> [String: String]? {
+    /// - 氣體不可信時使用者選了氣體（即使與解析出的佔位值相同）⇒ 同樣視為已確認：那是使用者明確的選擇。
+    /// - `newGasMixJSON == nil`＝使用者沒動氣體欄位 ⇒ 氣體標記不變（PM 2026-10-10：保留原值不更改）。
+    func userEditConfirmations(newDateTime: Date, newGasMixJSON: String?) -> [String: String]? {
         var extras = importExtras
         var changed = false
         if sourceFormat.lowercased() == "csv-profile", newDateTime != dateTime {
             extras[Self.dateTimeConfidenceKey] = "user"
             changed = true
         }
-        let newGas = newGasMixJSON.data(using: .utf8).flatMap { try? JSONDecoder().decode(GasMix.self, from: $0) }
-        if let newGas, newGas != decodedGasMix {
+        let newGas = newGasMixJSON?.data(using: .utf8).flatMap { try? JSONDecoder().decode(GasMix.self, from: $0) }
+        if let newGas, newGas != decodedGasMix || replayGasMixConfidence == .unknown {
             extras[Self.gasMixConfidenceKey] = Self.userConfirmedValue
             changed = true
         }

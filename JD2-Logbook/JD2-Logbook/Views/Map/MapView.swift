@@ -142,7 +142,7 @@ struct MapView: View {
     private func macSidePanel(dive: DiveLog) -> some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Dive Site")
+                Text(verbatim: languageManager.localized("Dive Site"))
                     .font(.headline)
                 Spacer()
                 Button {
@@ -248,7 +248,7 @@ struct MapView: View {
                     systemImage: "map.fill"
                 )
             } description: {
-                Text("Dives with GPS coordinates will appear on this map.")
+                Text(verbatim: languageManager.localized("Dives with GPS coordinates will appear on this map."))
             }
 
             // 決策 #5：地圖空狀態 inline 廣告（Premium 用戶隱藏）

@@ -191,7 +191,7 @@ struct ImportWizardView: View {
                     .foregroundStyle(.tint)
                     .padding(.top, 20)
 
-                Text("Auto-detects format from file content")
+                Text(verbatim: languageManager.localized("Auto-detects format from file content"))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -335,7 +335,7 @@ struct ImportWizardView: View {
                         // imported」不一定相等（部分格式如 Suunto DM5/SML、Diving Log 6.0
                         // 單一檔案可能內含多筆潛水）。補一行說明，避免使用者看到數字對
                         // 不上時誤以為是 bug。
-                        Text("Some files may contain multiple dives.")
+                        Text(verbatim: languageManager.localized("Some files may contain multiple dives."))
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                             .padding(.top, 4)
@@ -468,7 +468,7 @@ struct ImportWizardView: View {
                 .font(.system(size: 64))
                 .foregroundStyle(.red)
 
-            Text("Import Failed")
+            Text(verbatim: languageManager.localized("Import Failed"))
                 .font(.title2.bold())
 
             Text(message)
@@ -480,7 +480,7 @@ struct ImportWizardView: View {
             Button {
                 resetToReady()
             } label: {
-                Text("Try Again")
+                Text(verbatim: languageManager.localized("Try Again"))
                     .font(.headline)
                     #if os(iOS)
                     .frame(maxWidth: .infinity)

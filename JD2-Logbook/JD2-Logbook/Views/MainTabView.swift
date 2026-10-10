@@ -18,7 +18,8 @@ private enum SidebarItem: Int, CaseIterable, Identifiable {
 
     var id: Int { rawValue }
 
-    var label: LocalizedStringKey {
+    /// Localizable 鍵；顯示時經 `languageManager.localized`（App 內語言切換，不跟系統語言）。
+    var label: String {
         switch self {
         case .logbook:     return "Logbook"
         case .map:         return "Map"
@@ -128,7 +129,7 @@ struct MainTabView: View {
     private var macOSBody: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             List(SidebarItem.allCases, selection: $sidebarSelection) { item in
-                Label(item.label, systemImage: item.icon)
+                Label(languageManager.localized(item.label), systemImage: item.icon)
                     .tag(item)
             }
             .listStyle(.sidebar)
@@ -195,10 +196,10 @@ private struct MacLogbookSplitView: View {
                 NavigationStack {
                     ContentUnavailableView(
                         label: {
-                            Label("No dives yet", systemImage: "water.waves")
+                            Label(languageManager.localized("No dives yet"), systemImage: "water.waves")
                         },
                         description: {
-                            Text("Use the Import tab to add your dive computer logs.")
+                            Text(verbatim: languageManager.localized("Use the Import tab to add your dive computer logs."))
                         }
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -273,12 +274,12 @@ private struct MacLogbookSplitView: View {
                                 DiveLogDetailView(dive: dive, onDeleted: { selectedDive = nil })
                             } else {
                                 ContentUnavailableView {
-                                    Label("No Dive Selected", systemImage: viewMode == .list ? "list.bullet.below.rectangle" : "calendar")
+                                    Label(languageManager.localized("No Dive Selected"), systemImage: viewMode == .list ? "list.bullet.below.rectangle" : "calendar")
                                 } description: {
                                     if viewMode == .list {
-                                        Text("Select a dive from the list to view details.")
+                                        Text(verbatim: languageManager.localized("Select a dive from the list to view details."))
                                     } else {
-                                        Text("Select a date with dives from the calendar to view details.")
+                                        Text(verbatim: languageManager.localized("Select a date with dives from the calendar to view details."))
                                     }
                                 }
                             }

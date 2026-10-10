@@ -181,14 +181,26 @@ final class DiveReplayChainAdoptionTests: XCTestCase {
         dive.importExtrasJSON = "{\"gasMixConfidence\":\"unknown\"}"
         XCTAssertEqual(dive.replayGasMixConfidence, .unknown)
 
-        XCTAssertNil(dive.userEditConfirmations(newDateTime: dive.dateTime, newGasMixJSON: "{\"nitrox\":{\"fO2\":0.3}}"),
-                     "氣體沒變（字串格式不同、解碼後相同）不算確認")
+        XCTAssertNil(dive.userEditConfirmations(newDateTime: dive.dateTime, newGasMixJSON: nil),
+                     "使用者沒動氣體欄位（nil）不算確認（PM 2026-10-10）")
+        XCTAssertEqual(dive.userEditConfirmations(newDateTime: dive.dateTime, newGasMixJSON: "{\"nitrox\":{\"fO2\":0.3}}")?[DiveLog.gasMixConfidenceKey],
+                       DiveLog.userConfirmedValue,
+                       "氣體不可信時使用者明確選了氣體，即使與佔位值相同也算確認")
 
         let extras = dive.userEditConfirmations(newDateTime: dive.dateTime, newGasMixJSON: "{\"nitrox\":{\"fO2\":0.32}}")
         XCTAssertEqual(extras?[DiveLog.gasMixConfidenceKey], DiveLog.userConfirmedValue)
         dive.importExtrasJSON = buildImportExtrasJSON((extras ?? [:]).map { ($0.key, $0.value) })
         dive.gasMixJSON = "{\"nitrox\":{\"fO2\":0.32}}"
         XCTAssertEqual(dive.replayGasMixConfidence, .confirmed)
+    }
+
+    /// 氣體可信時，選了一樣的氣體（字串格式不同、解碼後相同）不改標記。
+    func testUserGasReselectSameTrustedGasNoChange() {
+        let dive = makeDive(at: Date(), depth: 18, seconds: 2400)
+        dive.sourceFormat = "uddf"
+        dive.gasMixJSON = "{\"nitrox\":{\"fO2\":0.30}}"
+        XCTAssertEqual(dive.replayGasMixConfidence, .confirmed)
+        XCTAssertNil(dive.userEditConfirmations(newDateTime: dive.dateTime, newGasMixJSON: "{\"nitrox\":{\"fO2\":0.3}}"))
     }
 
     /// PM 2026-10-07：氣體不可信 ⇒ 畫面氣體欄顯示「未知氣體」（displayGasMix＝nil）；使用者確認後恢復。

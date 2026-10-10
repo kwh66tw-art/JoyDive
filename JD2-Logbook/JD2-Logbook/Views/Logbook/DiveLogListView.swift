@@ -72,10 +72,10 @@ struct DiveLogListView: View {
                 // 空狀態
                 ContentUnavailableView(
                     label: {
-                        Label("No dives yet", systemImage: "water.waves")
+                        Label(languageManager.localized("No dives yet"), systemImage: "water.waves")
                     },
                     description: {
-                        Text("Use the Import tab to add your dive computer logs.")
+                        Text(verbatim: languageManager.localized("Use the Import tab to add your dive computer logs."))
                     }
                 )
             } else {
@@ -102,14 +102,14 @@ struct DiveLogListView: View {
                                 Button(role: .destructive) {
                                     deleteDive(dive)
                                 } label: {
-                                    Label("Delete", systemImage: "trash")
+                                    Label(languageManager.localized("Delete"), systemImage: "trash")
                                 }
                             }
                             .contextMenu {
                                 Button(role: .destructive) {
                                     deleteDive(dive)
                                 } label: {
-                                    Label("Delete", systemImage: "trash")
+                                    Label(languageManager.localized("Delete"), systemImage: "trash")
                                 }
                             }
                         }
@@ -125,7 +125,7 @@ struct DiveLogListView: View {
                     .searchable(
                         text: $searchText,
                         placement: .navigationBarDrawer(displayMode: .always),
-                        prompt: Text("Search location…")
+                        prompt: Text(verbatim: languageManager.localized("Search location…"))
                     )
 
                     #else
@@ -179,7 +179,7 @@ struct DiveLogListView: View {
                                             Button(role: .destructive) {
                                                 deleteDive(dive)
                                             } label: {
-                                                Label("Delete", systemImage: "trash")
+                                                Label(languageManager.localized("Delete"), systemImage: "trash")
                                             }
                                             // 選單出現時把選取移到游標所在的這筆，避免誤刪聚焦中的另一筆
                                             .onAppear {
@@ -292,6 +292,7 @@ struct StatsHeaderView: View {
 }
 
 struct StatCell: View {
+    @Environment(AppLanguageManager.self) private var languageManager
     let value: String
     let label: String
     let icon: String
@@ -305,7 +306,7 @@ struct StatCell: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
 
-            Text(LocalizedStringKey(label))
+            Text(verbatim: languageManager.localized(label))
                 .font(.caption2)
                 .foregroundStyle(Color.accessibleSecondary)
                 .lineLimit(1)
@@ -313,7 +314,7 @@ struct StatCell: View {
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(value) \(label)")
+        .accessibilityLabel("\(value) \(languageManager.localized(label))")
     }
 }
 

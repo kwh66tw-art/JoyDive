@@ -300,7 +300,7 @@ struct DiveCalendarView: View {
                         .font(.title3.weight(.semibold))
                         .frame(minWidth: 44, minHeight: 44)
                 }
-                .accessibilityLabel("Previous month")
+                .accessibilityLabel(languageManager.localized("Previous month"))
 
                 Spacer()
 
@@ -335,7 +335,7 @@ struct DiveCalendarView: View {
                         .font(.title3.weight(.semibold))
                         .frame(minWidth: 44, minHeight: 44)
                 }
-                .accessibilityLabel("Next month")
+                .accessibilityLabel(languageManager.localized("Next month"))
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
@@ -377,7 +377,7 @@ struct DiveCalendarView: View {
                                 .font(.title2)
                                 .foregroundStyle(.tertiary)
                                 .accessibilityHidden(true)   // 裝飾性空狀態圖示
-                            Text("No dives on this date.")
+                            Text(verbatim: languageManager.localized("No dives on this date."))
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }
@@ -398,14 +398,14 @@ struct DiveCalendarView: View {
                                     Button(role: .destructive) {
                                         deleteDive(dive)
                                     } label: {
-                                        Label("Delete", systemImage: "trash")
+                                        Label(languageManager.localized("Delete"), systemImage: "trash")
                                     }
                                 }
                                 .contextMenu {
                                     Button(role: .destructive) {
                                         deleteDive(dive)
                                     } label: {
-                                        Label("Delete", systemImage: "trash")
+                                        Label(languageManager.localized("Delete"), systemImage: "trash")
                                     }
                                 }
                             }
@@ -429,7 +429,7 @@ struct DiveCalendarView: View {
                                         Button(role: .destructive) {
                                             deleteDive(dive)
                                         } label: {
-                                            Label("Delete", systemImage: "trash")
+                                            Label(languageManager.localized("Delete"), systemImage: "trash")
                                         }
                                         // 選單出現時把選取移到游標所在的這筆，避免誤刪聚焦中的另一筆
                                         .onAppear { selectDive(dive) }
@@ -457,7 +457,7 @@ struct DiveCalendarView: View {
                         .font(.title2)
                         .foregroundStyle(.tertiary)
                         .accessibilityHidden(true)   // 裝飾性空狀態圖示
-                    Text("Select a date to see dives.")
+                    Text(verbatim: languageManager.localized("Select a date to see dives."))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
