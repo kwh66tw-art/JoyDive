@@ -1,6 +1,6 @@
 # HANDOFF — JD2-Logbook
 
-> 交接文件（固定檔名滾動式；前一版在 `docs/handoff-archive/HANDOFF_2026-09-25.md`）。
+> 交接文件（固定檔名滾動式；前一版在 `docs/handoff-archive/HANDOFF_2026-10-06午.md`）。
 > v1.3 的逐項紀錄與裁示全文在 `docs/V1_3_WORK_PLAN.md`（§七、§八）；本檔只寫目前狀態與下一步。
 
 ## 交接時間
@@ -9,7 +9,7 @@
 
 ## 目前狀態
 
-- 最後 push：`410b585`（10/10）；本檔之後的文件提交見 `git log origin/main..HEAD`（push 需 PM 同意）。工作樹只剩 `docs/l10n_v1.3_待翻譯.csv`（工作檔，刻意不提交）。
+- 最後 push：見 `git log -1 origin/main`（10/10 晚 PM 同意 push 至本檔所在提交）。**App-lb 自 10/10 晚由 App-lb session 負責，總指揮不再寫入**（除非 PM 另行指示）。工作樹只剩 `docs/l10n_v1.3_待翻譯.csv`（工作檔，刻意不提交）。
 - 共用層：DiveKit **v9.3.0**、DiveImportKit **v0.7.8**。🔒 兩 Kit 凍結（僅 bug 修正；本輪改動皆經 PM 核准）。
 - 測試：`run_tests.sh logbook` **171／0／1**。版號 1.3（4）。送審複核：`docs/SUBMISSION_CHECK_NEXT.md` 10/10 段——**程式與送審檢查皆完成，剩 PM 上傳 ASC**。
 
@@ -18,7 +18,8 @@
 - ✅ **v1.3 送審截圖**（`00ed34c`）：`_ScreenCaptures/iOS_v1.3/`（#2 新增潛水、#3 詳細；中英日；iPhone 18 Pro Max 1320×2868 拍、交付 1260×2736；
   無廣告、狀態列 9:41；詳細頁＝9/20 14:23）＋ `_ScreenCaptures/macOS_v1.3/`（#1 列表＋詳細、#5 新增潛水；中英日；PM ⌘⇧4 原檔在 `Original/`，交付透明 1280×800）。
   PM 確認：Mac 截圖含滑鼠指標可接受。其餘截圖沿用 v1.2。
-- ⏳ **未 push**：`2c27ecc`、`65cd1f0`、`00ed34c`（push 需 PM 同意）。
+- ✅ 已 push（PM 10/10 晚同意）：`2c27ecc`、`65cd1f0`、`00ed34c`、`99a3444` 與本次 HANDOFF 更新。
+- ✅ PM 10/10 上架設定（`d38a277`）：類別 `public.app-category.sports`（Release 產物讀回驗證）、英文關鍵字只放各國潛水日誌用詞（100 字元／114 bytes）、說明文去 GPS 座標／氣體混合→氣體、品牌加 ATMOS；CLAUDE.md 現況更新（`1db588f`）。
 - ⏳ **PM 上傳 ASC**：類別手動改「運動」；三組關鍵字在 ASC 實貼確認上限；換上新截圖 12 張。
 - 環境狀態（之後可還原）：iPhone 18 Pro Max 模擬器（`EFF901CA`）已匯入 70 支範例、`DEBUG_forceHideAds`=YES、狀態列覆寫 9:41（`xcrun simctl status_bar EFF901CA… clear` 還原）；
   Mac 版 App 以 Debug 產物 `-jd2logbook.appLanguage` 參數重開過（資料未動，70 支範例），`defaults` 也寫了 `DEBUG_forceHideAds`=YES。
@@ -40,7 +41,7 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 
 ## 🔴 送審前還要做（PM 10/07 已裁示「全採納」）——10/10 進度
 
-依據：`_JD2-family/decisions/2026-10-06_匯入格式全面稽核與DIK-v0.7.3修正計畫.md` §十九、§二十二。commit `baa7c6a`、`0f7255b`（未 push）。
+依據：`_JD2-family/decisions/2026-10-06_匯入格式全面稽核與DIK-v0.7.3修正計畫.md` §十九、§二十二。commit `baa7c6a`、`0f7255b`（已 push）。
 
 | # | 項目 | 狀態 | 驗證 |
 |---|---|---|---|
@@ -111,4 +112,4 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 
 ## 開場指令建議
 
-先讀本檔與 `docs/V1_3_WORK_PLAN.md` §八。驗證：`bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook`（預期 165/0/1）。
+先讀本檔與 `docs/V1_3_WORK_PLAN.md` §八。驗證：`bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook`（預期 171/0/1）。
