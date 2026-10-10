@@ -56,18 +56,9 @@ logbook,scuba,diving,divelog,diary,nitrox,freediving,UDDF,import,record,tracker,
 
 > ✅ **v1.3（2026-10-03，PM 裁示）**：移除品牌名（2.3.7＋艦隊紅線）；台灣／日本在地化，其他 storefront 用英文組。依據 `docs/KEYWORDS_NEXT_DRAFT.md`。舊組（v1.2）：`dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`
 
-> ⚠️ One keyword set per storefront. Use English for the broadest reach.
-> ⚠️ 95 characters (no spaces after commas). App Store limit is 100.
-> ⚠️ v1.2 change: swapped generic "underwater" for "Shearwater" (a major tech-diving
->   computer brand with real search volume) — same character count, higher intent match.
-> 🔴 **2026-07-29 POST-LAUNCH FINDING — this keyword set failed**: after v1.2 went
->   live, the product is unfindable in App Store search unless users type brand terms
->   like "JD2"/"JoyDive" directly. Root cause: brand-name computer keywords (Shearwater/
->   UDDF/Garmin/Suunto/Subsurface) crowded out generic high-intent search terms like
->   "dive log"/"diving log"/"scuba diving app" that ordinary users actually type. **Top
->   priority for next version**: redesign keywords around "潛水日誌"/"dive log" core
->   intent, move brand-compatibility mentions into the Description body instead of
->   burning Keywords budget on them. See `V1_RELEASE_CHECKLIST.md` 下一版重點工作.
+> ⚠️ 98 characters (no spaces after commas). Apple limit: 100.
+> 📜 History: the v1.2 set (brand names such as Shearwater/Garmin/Suunto/Subsurface) was found unsearchable after launch
+>   (2026-07-29); replaced in v1.3 per PM 2026-10-03. Details: `docs/KEYWORDS_NEXT_DRAFT.md`.
 
 ---
 
@@ -95,9 +86,7 @@ New in this update:
 | Field | Value | Notes |
 |-------|-------|-------|
 | App Name | JoyDive² | English only |
-| Subtitle | 潛水日誌・每一潛都記下
-
-> ✅ v1.3 定稿（PM 2026-10-03：台灣在地化）；v1.2 為英文 "Log Every Dive, Every Story" | Optional |
+| Subtitle | Log Every Dive, Every Story | Optional |
 | Description | See above | |
 | Keywords | See above | 100 chars max |
 | Support URL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | Required |
@@ -136,9 +125,9 @@ JoyDive²
 
 ## 副標題（30 字以內）
 
-ダイビングログを、すべての潜水に
+潛水日誌・每一潛都記下
 
-> ✅ v1.3 定稿（PM 2026-10-03：日本在地化）；v1.2 は英語 "Log Every Dive, Every Story"
+> ✅ v1.3 定稿（PM 2026-10-03：台灣在地化）；v1.2 為英文 "Log Every Dive, Every Story"
 
 ---
 
@@ -184,16 +173,9 @@ JoyDive²，陪你從第一次下水到每一次進階潛水的潛水日誌。
 
 > ✅ **v1.3（2026-10-03，PM 裁示）**：移除品牌名（2.3.7＋艦隊紅線）；台灣／日本在地化，其他 storefront 用英文組。依據 `docs/KEYWORDS_NEXT_DRAFT.md`。舊組（v1.2）：`dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`
 
-> ⚠️ 每個地區只能填一組關鍵字，建議用英文覆蓋最廣。
-> ⚠️ 95 字元（逗號後無空格）。App Store 上限 100 字元。
-> ⚠️ v1.2 異動：把泛用字「underwater」換成「Shearwater」（技術潛水主流電腦錶品牌，
->   有實際搜尋量）——字元數不變，搜尋意圖更精準。
-> 🔴 **2026-07-29 上架後發現：這組關鍵字策略失敗**——除非直接搜「JD2」「JoyDive」
->   品牌詞，否則在 App Store 搜尋找不到本產品。根因是品牌電腦錶名稱（Shearwater／
->   UDDF／Garmin／Suunto／Subsurface）佔掉大半版位，一般用戶會打的「潛水日誌」
->   核心意圖詞完全沒覆蓋到。**下次改版首要任務**：以「潛水日誌／dive log」為主軸
->   重新設計關鍵字，品牌相容性留給 Description 內文提，不要佔 Keywords 版位。
->   詳見 `V1_RELEASE_CHECKLIST.md`「下一版重點工作」。
+> ⚠️ 76 字元／158 bytes（逗號後無空格）。上限 100——**ASC 以字元或 bytes 計未查到出處，上傳前在 ASC 實際貼一次確認**。
+> 📜 歷史：v1.2 舊組（含 Shearwater／Garmin／Suunto／Subsurface 等品牌）2026-07-29 上架後確認搜尋不到；v1.3 已依 PM 2026-10-03 裁示更換。
+>   詳見 `docs/KEYWORDS_NEXT_DRAFT.md`。
 
 ---
 
@@ -240,7 +222,9 @@ JoyDive²
 
 ## 副題（最大30文字）
 
-Log Every Dive, Every Story
+ダイビングログを、すべての潜水に
+
+> ✅ v1.3 定稿（PM 2026-10-03：日本在地化）；v1.2 は英語 "Log Every Dive, Every Story"
 
 ---
 
@@ -286,17 +270,9 @@ GPS座標から地図上へ自動的にピンをドロップ。これまで訪�
 
 > ✅ **v1.3（2026-10-03，PM 裁示）**：移除品牌名（2.3.7＋艦隊紅線）；台灣／日本在地化，其他 storefront 用英文組。依據 `docs/KEYWORDS_NEXT_DRAFT.md`。舊組（v1.2）：`dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`
 
-> ⚠️ キーワードはストアのロケールごとに1セットのみ登録可能です。最も広くカバーできるよう英語での登録を推奨します。
-> ⚠️ 計95文字（カンマの後にスペースを入れない）。App Storeの制限は100文字です。
-> ⚠️ v1.2変更点：汎用語「underwater」をテックダイビング向け主要ダイブコンピューターブランド
->   「Shearwater」に置き換え——文字数は同じで、検索意図により合致。
-> 🔴 **2026-07-29 リリース後の発見：このキーワード戦略は失敗**——「JD2」「JoyDive」など
->   ブランド名で検索しない限り、App Store検索で見つからない。原因はブランド名
->   （Shearwater／UDDF／Garmin／Suunto／Subsurface）が枠の大半を占め、一般ユーザーが
->   実際に検索する「潜水日誌／dive log」といったコア意図語をカバーできていないこと。
->   **次バージョンの最優先課題**：「潜水日誌／dive log」を軸にキーワードを再設計し、
->   ブランド互換性への言及はDescription本文に移す。詳細は
->   `V1_RELEASE_CHECKLIST.md`「下一版重點工作」を参照。
+> ⚠️ 84文字／202 bytes（カンマの後にスペースなし）。上限100——**ASCが文字数・バイト数のどちらで数えるかは出典未確認。アップロード前にASCで実際に貼り付けて確認**。
+> 📜 履歴：v1.2の旧セット（Shearwater／Garmin／Suunto／Subsurface などブランド名）は2026-07-29にリリース後検索されないことが判明。v1.3でPM 2026-10-03の裁示により差し替え済み。
+>   詳細は `docs/KEYWORDS_NEXT_DRAFT.md`。
 
 ---
 
@@ -321,7 +297,7 @@ GPS座標から地図上へ自動的にピンをドロップ。これまで訪�
 | 項目 | 値 | 備考 |
 |------|----|----|
 | App名 | JoyDive² | 英語表記のみ |
-| 副題 | Log Every Dive, Every Story | オプション |
+| 副題 | ダイビングログを、すべての潜水に | オプション |
 | 説明 | 上記を参照 | |
 | キーワード | 上記を参照 | 最大100文字 |
 | サポートURL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | 必須 |
