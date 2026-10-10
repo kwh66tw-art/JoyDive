@@ -303,4 +303,16 @@ final class DiveReplayChainAdoptionTests: XCTestCase {
         XCTAssertFalse(dates.contains(later.dateTime), "目標之後的紀錄不是前導潛水")
         XCTAssertFalse(dates.contains(target.dateTime), "目標潛水自己不得出現在候選集合")
     }
+
+    /// PM 2026-10-10：自由潛水或短於 4 分鐘 ⇒ 剖面 X 軸用秒。
+    func testProfileTimeAxisInSeconds() {
+        let shortScuba = makeDive(at: Date(), depth: 20, seconds: 70)
+        XCTAssertTrue(shortScuba.profileTimeAxisInSeconds, "70 s 水肺（讀不到模式的自由潛水）")
+        let boundary = makeDive(at: Date(), depth: 20, seconds: 240)
+        XCTAssertFalse(boundary.profileTimeAxisInSeconds, "剛好 4 分鐘用分鐘")
+        let longFree = makeDive(at: Date(), depth: 20, seconds: 400)
+        longFree.diveModeValue = .free
+        XCTAssertTrue(longFree.profileTimeAxisInSeconds)
+        XCTAssertFalse(makeDive(at: Date(), depth: 20, seconds: 2400).profileTimeAxisInSeconds)
+    }
 }

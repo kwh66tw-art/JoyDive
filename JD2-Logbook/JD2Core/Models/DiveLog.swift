@@ -317,6 +317,14 @@ final class DiveLog {
         set { diveMode = newValue.rawValue }
     }
 
+    /// 剖面圖 X 軸用秒：自由潛水，或潛水時間短於 `secondsTimeAxisThresholdSeconds`（PM 2026-10-10）。
+    /// 短潛水用分鐘刻度只剩一兩格；以時間判斷也涵蓋讀不到模式、被當成水肺的自由潛水（Suunto FIT）。
+    var profileTimeAxisInSeconds: Bool {
+        diveModeValue == .free || diveTimeSeconds < Self.secondsTimeAxisThresholdSeconds
+    }
+    /// 4 分鐘＝PM 2026-10-10 指定（本專案決定，非外部規範）。
+    static let secondsTimeAxisThresholdSeconds = 240
+
     /// 解碼後的匯入原始資料（Detail view「原始資料」區塊用）
     var importExtras: [String: String] {
         guard let data = importExtrasJSON.data(using: .utf8),

@@ -229,7 +229,7 @@ struct DiveAnalysisView: View {
     // 純呈現圖表，兩者職責分離。
 
     private var interactiveChart: some View {
-        DiveProfileChartView(samples: samples, timeAxisInSeconds: dive.diveModeValue == .free)
+        DiveProfileChartView(samples: samples, timeAxisInSeconds: dive.profileTimeAxisInSeconds)
             .chartOverlay { proxy in
                 GeometryReader { geo in
                     // ⚠️ 修復時間軸偏移 bug：proxy.position(forX:)／proxy.value(atX:)

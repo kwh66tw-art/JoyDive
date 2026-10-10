@@ -123,7 +123,7 @@ struct DiveLogDetailView: View {
                             .id("\(dive.persistentModelID)-\(dive.replayInputsFingerprint)")
                             .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
                     } else {
-                        DiveProfileChartView(samples: profileSamples, timeAxisInSeconds: dive.diveModeValue == .free)
+                        DiveProfileChartView(samples: profileSamples, timeAxisInSeconds: dive.profileTimeAxisInSeconds)
                             .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
                     }
                 }
