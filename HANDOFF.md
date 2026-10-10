@@ -13,6 +13,17 @@
 - 共用層：DiveKit **v9.3.0**、DiveImportKit **v0.7.8**。🔒 兩 Kit 凍結（僅 bug 修正；本輪改動皆經 PM 核准）。
 - 測試：`run_tests.sh logbook` **171／0／1**。版號 1.3（4）。送審複核：`docs/SUBMISSION_CHECK_NEXT.md` 10/10 段——**程式與送審檢查皆完成，剩 PM 上傳 ASC**。
 
+## 10/10 晚：送審截圖與交接（總指揮 → App-lb）
+
+- ✅ **v1.3 送審截圖**（`00ed34c`）：`_ScreenCaptures/iOS_v1.3/`（#2 新增潛水、#3 詳細；中英日；iPhone 18 Pro Max 1320×2868 拍、交付 1260×2736；
+  無廣告、狀態列 9:41；詳細頁＝9/20 14:23）＋ `_ScreenCaptures/macOS_v1.3/`（#1 列表＋詳細、#5 新增潛水；中英日；PM ⌘⇧4 原檔在 `Original/`，交付透明 1280×800）。
+  PM 確認：Mac 截圖含滑鼠指標可接受。其餘截圖沿用 v1.2。
+- ⏳ **未 push**：`2c27ecc`、`65cd1f0`、`00ed34c`（push 需 PM 同意）。
+- ⏳ **PM 上傳 ASC**：類別手動改「運動」；三組關鍵字在 ASC 實貼確認上限；換上新截圖 12 張。
+- 環境狀態（之後可還原）：iPhone 18 Pro Max 模擬器（`EFF901CA`）已匯入 70 支範例、`DEBUG_forceHideAds`=YES、狀態列覆寫 9:41（`xcrun simctl status_bar EFF901CA… clear` 還原）；
+  Mac 版 App 以 Debug 產物 `-jd2logbook.appLanguage` 參數重開過（資料未動，70 支範例），`defaults` 也寫了 `DEBUG_forceHideAds`=YES。
+- 送審後工作交 App-lb：舊文件整理（下一版待辦）、v1.4 待辦。
+
 ## v1.3 已完成
 
 P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位段、What's New（三語，含時區修正句）、ⓘ 接在句尾（截圖 24）、
