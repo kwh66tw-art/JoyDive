@@ -60,6 +60,11 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 
 ## 下一版待辦（PM 10/07）
 
+- **匯入頁支援格式清單補 ATMOS FIT（PM 10/10 排 v1.4）**：`ImportWizardView.swift:281-306` `supportedFormatGroups` 無 ATMOS（`grep -ci atmos` 0），
+  但 What's New 與三語 Description 已寫支援。補上後重拍 macOS 匯入頁截圖（兩欄會完整顯示清單）。
+- **詳細頁「來源格式」手動新增顯示英文 "Manual Entry"（PM 10/10 排 v1.4；既有問題）**：`DiveLogDetailView.swift:496` 回傳字面字串，
+  未走 `languageManager.localized`（catalog 已有 `Manual Entry` 鍵）。
+
 - **文件整理（PM 10/10：送審後做，交給 App-lb）**：`V1_2_BACKLOG.md`（停在 9/13）、`docs/KNOWN_ISSUES.md`（停在 8/17）跟上 v1.3 結果
   （R-06 定位權限在地化、D7 ATS、P1-3 效能門檻 500 ms、181e441 SIGABRT 已修、D6 GDPR 延下一版）；文件登錄表補登 `V1_3_WORK_PLAN`／`SUBMISSION_CHECK_NEXT`／`KEYWORDS_NEXT_DRAFT`。
 
