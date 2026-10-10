@@ -27,29 +27,25 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
    ⚠️ **未驗證**：App 拖曳剖面 Temp 顯示（需重新匯入 UDDF；舊匯入的 UDDF 不會自動補，屬預期）。
 3. ⏳ 送審：先完成下方「送審前還要做」全部項目，再由 PM 上傳 ASC。
 
-## 🔴 送審前還要做（PM 10/07 已裁示「全採納」；額度用完暫停，下一輪接續）
+## 🔴 送審前還要做（PM 10/07 已裁示「全採納」）——10/10 進度
 
-PM 10/07 Mac 實測回報 9 項，查證與裁示全文見 `_JD2-family/decisions/2026-10-06_匯入格式全面稽核與DIK-v0.7.3修正計畫.md` §十九。
+依據：`_JD2-family/decisions/2026-10-06_匯入格式全面稽核與DIK-v0.7.3修正計畫.md` §十九、§二十二。commit `baa7c6a`、`0f7255b`（未 push）。
 
-1. ⏳ **編輯頁氣體（#1）**：氣體不可信時選項不預選；使用者沒動氣體 ⇒ 原樣保留 `gasMixJSON`（不四捨五入、不算確認）。
-   現況 bug：高氧帶小數（32.5%）開編輯頁存檔會被改成 33% 並誤標 `user`（`DiveLogEditSheet.swift:150-152`）。
-   做法：`gasMixType` 改 optional＋`gasEdited` 旗標；`userEditConfirmations` 只在 `gasEdited` 時判斷。
-2. ⏳ **不可信的 Trimix（#2）**：開放選擇（不預選）、不顯示「無法編輯三元混合氣」；可信的 Trimix 維持鎖住。
-3. ⏳ **自由潛水剖面時間軸改秒（#6）**：DiveKit `DiveKitUI/DiveProfileChartView.swift:92` 一律 `Int(v)min` ⇒ 短潛水整排「0min」。
-   潛水很短時改秒（門檻需標「本專案決定」）；DiveKit bug 修正 ⇒ 571 測試＋升版＋三 App 重跑。
-4. ⏳ **App 內切換語言後殘留中文（PM 10/07 回報，截圖：克羅埃西亞文編輯頁）**——**PM 10/07：本次送審前一起改，不延到 v1.3.1**；等額度回復後做。
-   初步查證（機制已讀程式碼確認，修正範圍未逐一盤點）：殘留的都是寫成 `Text("Max Depth")` 這種**字面鍵**的地方——SwiftUI 用**系統語言**查字串，
-   不走 App 內語言設定；走 `languageManager.localized(...)` 的則正確顯示所選語言。截圖對照：「最大深度」「水溫」「混合氣體」「環境條件」「海水」
-   「水肺」「空氣」皆為 `DiveLogEditSheet.swift` 的字面 `Text("…")`（`:346`、`:371`、`:441`、`:451`、`:453` 等）。
-   粗估：`Text("大寫開頭…")` 在 Views 共約 62 處（Settings 15、EditSheet 15、DetailView 12、Analysis 9、Import 4、MainTab 3、Map 2、List 2；
-   `grep -c`，未含 `Picker`／`Label`／`Section` 標題等其他寫法，需再盤點）。只影響「App 內語言≠系統語言」的使用者。
-   做法：全面改走 `languageManager.localized`（或統一 `.environment(\.locale)`＋bundle 機制），逐語言截圖驗證（ui-verify）。
-5. ⏳ **ATMOS FIT 支援（PM 10/07：本次一起做）**：DiveImportKit 端工作，細節見 `_JD2-family/HANDOFF.md`。本 repo 只需在
-   `DiveLogDetailView.sourceFormatDisplayName` 加顯示名、跑測試。完成後把 `_JD2-family/00_Import_submission/` 補進 ATMOS FIT 4 檔（日期改 7 月）。
-   已知 FIT 盤點（10/07）：樣本只有 Garmin（✅）、Suunto（✅，自由潛水模式讀不到）、ATMOS（本項）；其他品牌 FIT 會被拒收，PM 決定不另查（無檔可測）。
-6. ⏳ **新增潛水不選潛水模式（PM 10/07）**：手動新增一律水肺（scuba），新增頁移除「潛水模式」選項；編輯既有紀錄的模式選項維持
-   （PM 曾說使用者可手動把 Suunto FIT 自由潛水改成自由潛水）。`DiveLogEditSheet` 依 `.add`／`.edit` 分流。
-7. 完成後：模擬器截圖驗證（編輯頁兩種情境、Mac ⓘ、Ceiling 膠囊）、`SUBMISSION_CHECK_NEXT.md` 再複核、push（需 PM 同意）、PM 上傳 ASC。
+| # | 項目 | 狀態 | 驗證 |
+|---|---|---|---|
+| 1 | 編輯頁氣體：不可信不預選；沒動就原值保留（32.5% 不再變 33%）；百分比不取整（PM 10/10 裁示 A） | ✅ | 模擬器：EAN32.5 未動存檔，DB 仍 `0.325`、extras 不變；Lake Coleridge 不可信 Trimix 未動存檔仍原值＋unknown |
+| 2 | 不可信 Trimix 開放選擇；可信 Trimix 鎖住 | ✅ | 模擬器截圖兩種情境（Lake Coleridge 可選、Garmin Tx18/20 鎖住＋提示） |
+| 3 | 自由潛水時間軸改秒 | ✅（App-lb） | 模擬器：70 s Suunto 改自由潛水 ⇒ 0s/12s/…/60s。DiveKit v9.3.0 待 DK 全測試＋App-u/App-i 重跑 |
+| 4 | App 內語言殘留 | ✅（主要畫面） | 約 110 處改走 `languageManager.localized`；克羅埃西亞文（系統繁中）截圖：列表、新增、編輯、詳細、匯入、選單、callout 無中文殘留。xcstrings 格式符號 0 不符 |
+| 5 | ATMOS FIT | ✅ | DIK v0.7.7（402/0/0）；模擬器匯入成功、顯示 ATMOS FIT。⏳ 送審樣本資料夾**未放**：FIT 內部日期依規則不改＝6 月，PM 要的是 7 月 ⇒ 待 PM 決定 |
+| 6 | 新增潛水不選模式 | ✅ | 模擬器截圖：新增頁無「潛水模式」，編輯頁有 |
+| 7 | 收尾 | ⏳ | **Ceiling 膠囊、Mac ⓘ 未截圖**（本批測試資料沒有可顯示組織負荷的減壓潛水）；`SUBMISSION_CHECK_NEXT.md` 未複核；push 待 PM |
+
+**10/10 驗證中另抓到並已修**：
+- 🔴 自己引入的閃退：無障礙鍵改 `%@` 卻仍傳 Int ⇒ 開高氧潛水編輯頁 EXC_BAD_ACCESS（`0f7255b` 修）。
+- 既有 bug：編輯頁存檔把潛水時間截成整分鐘（4674 → 4620 s，出水時間與水面間隔跟著變）⇒ 分鐘沒改就保留原秒數。
+  ⚠️ App-u 的 `JD2UltraPhone/UI/Logbook/DiveLogEditSheet.swift` 結構相同，**未查**是否同病（家族待辦）。
+- 已知未翻譯（使用者看不到）：DEBUG 開發者工具 4 鍵；上升速率警示 2 鍵（`showWarningEvents=false`）。
 
 ✅ 10/07 已完成：#3 Mac ⓘ 視窗空白（補 macOS 尺寸）、#4 Ceiling 膠囊 A 案（#1F66E0＋白字）——**macOS build 通過、165/0/1，未截圖目視**。
 已答覆不改：#5 Suunto FIT 自由潛水判為水肺（模式欄讀不到，已是未知氣體；PM 接受）、#7 去重＝先匯入者留下、無格式優先、
