@@ -9,7 +9,7 @@
 
 ## 目前狀態
 
-- 最後 push：見 `git log -1 origin/main`（10/10 晚 PM 同意 push 至本檔所在提交）。**App-lb 自 10/10 晚由 App-lb session 負責，總指揮不再寫入**（除非 PM 另行指示）。工作樹只剩 `docs/l10n_v1.3_待翻譯.csv`（工作檔，刻意不提交）。
+- 最後 push：見 `git log -1 origin/main`（10/10 晚 PM 同意 push 至本檔所在提交）。**App-lb 自 10/10 晚由 App-lb session 負責，總指揮不再寫入**（除非 PM 另行指示）。工作樹乾淨（10/10 PM 裁示：還原 Xcode 自動重排的 Localizable.xcstrings、刪除用完的 `l10n_v1.3_待翻譯.csv`）。⚠️ `%lld%%` 已被標 `extractionState: stale`（編輯頁改用 percentText 後無人引用），排 v1.4 清理；之後 Xcode build／Archive 還會重排 xcstrings，提交前先 `git diff --stat` 確認，需要時 `git checkout --` 還原。
 - 共用層：DiveKit **v9.3.0**、DiveImportKit **v0.7.8**。🔒 兩 Kit 凍結（僅 bug 修正；本輪改動皆經 PM 核准）。
 - 測試：`run_tests.sh logbook` **171／0／1**。版號 1.3（4）。送審複核：`docs/SUBMISSION_CHECK_NEXT.md` 10/10 段——**程式與送審檢查皆完成；10/10 晚已上傳並送審（Waiting for Review）**。
 
