@@ -60,6 +60,9 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 
 ## 下一版待辦（PM 10/07）
 
+- **文件整理（PM 10/10：送審後做，交給 App-lb）**：`V1_2_BACKLOG.md`（停在 9/13）、`docs/KNOWN_ISSUES.md`（停在 8/17）跟上 v1.3 結果
+  （R-06 定位權限在地化、D7 ATS、P1-3 效能門檻 500 ms、181e441 SIGABRT 已修、D6 GDPR 延下一版）；文件登錄表補登 `V1_3_WORK_PLAN`／`SUBMISSION_CHECK_NEXT`／`KEYWORDS_NEXT_DRAFT`。
+
 - **文字自動縮小 4 處（PM 10/10 排 v1.4）**：`DiveLogListView.swift:307,313`（統計列）、`DiveRowView.swift:114`（日期區塊）、`ImportWizardView.swift:694`（副檔名）。
   Xcode 27 建置下 `.minimumScaleFactor` 放得下也縮小（10/05 剖面讀數已改 `ViewThatFits`）；逐處改法相同，改完與 v1.2 截圖對照。App-u 22 處、App-i 38 處同型待查。
 
