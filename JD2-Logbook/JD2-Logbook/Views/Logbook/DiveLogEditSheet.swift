@@ -29,6 +29,15 @@ struct DiveLogEditSheet: View {
     @State private var location: String
     @State private var maxDepth: Double
     @State private var durationMinutes: Int     // 儲存為整數分鐘（精度足夠手動輸入）
+    /// 編輯：原始潛水時間（秒）。分鐘數沒改 ⇒ 存檔保留原秒數，不截成整分鐘
+    /// （PM 2026-10-10「保留輸入值不更改」；原本 4674 s 只要按儲存就變 4620 s，出水時間與水面間隔跟著變）。
+    private let originalDiveTimeSeconds: Int?
+
+    /// 實際要存／顯示的潛水時間（秒）。
+    private var effectiveDiveTimeSeconds: Int {
+        if let original = originalDiveTimeSeconds, durationMinutes == max(1, original / 60) { return original }
+        return durationMinutes * 60
+    }
     /// nil = 未記錄。C2（2026-09-07）：原預填 28.0（一個「合理的熱帶水溫」，使用者
     /// 不會覺得需要改它，於是預設值悄悄變成記錄值）。比照 `airTemperature`／
     /// `weightTotal`／`cylinderStartPressure` 既有作法，改為 nil 起始，使用者不填
@@ -99,6 +108,7 @@ struct DiveLogEditSheet: View {
             // 不會把假的英制換算數字（原本 18.0m→59.1ft）誤植成使用者沒填過的資料。
             _maxDepth           = State(initialValue: 0)
             _durationMinutes    = State(initialValue: 45)
+            originalDiveTimeSeconds = nil
             // 不給預設值（C2）：28.0 是一個合理的熱帶水溫，使用者不會覺得需要改
             // 它，於是預設值就變成了記錄值。比照 airTemperature 等既有欄位。
             _waterTemperature   = State(initialValue: nil)
@@ -137,6 +147,7 @@ struct DiveLogEditSheet: View {
             _location           = State(initialValue: dive.location)
             _maxDepth           = State(initialValue: dive.maxDepth)
             _durationMinutes    = State(initialValue: max(1, dive.diveTimeSeconds / 60))
+            originalDiveTimeSeconds = dive.diveTimeSeconds
             _waterTemperature   = State(initialValue: dive.waterTemperature)
             _environmentType    = State(initialValue: dive.environmentType)
             _notes              = State(initialValue: dive.notes)
@@ -324,8 +335,8 @@ struct DiveLogEditSheet: View {
                             .foregroundStyle(.primary)
                         Spacer()
                         if let exit = Calendar.current.date(
-                            byAdding: .minute,
-                            value: durationMinutes,
+                            byAdding: .second,
+                            value: effectiveDiveTimeSeconds,
                             to: entryTime
                         ) {
                             Text(formatTime(exit))
@@ -430,14 +441,15 @@ struct DiveLogEditSheet: View {
                             }
                             Text(verbatim: GasMix.percentText(nitroxO2Percent / 100) + "%")
                                 .monospacedDigit()
-                                .frame(width: 44, alignment: .trailing)
+                                .frame(minWidth: 44, alignment: .trailing)
+                                .fixedSize()
                                 .foregroundStyle(.primary)
                         }
                         .accessibilityElement(children: .combine)
                         .accessibilityLabel(
                             String(format: languageManager.localized("Nitrox O2: %@ percent"),
                                    locale: languageManager.locale,
-                                   Int(nitroxO2Percent))
+                                   GasMix.percentText(nitroxO2Percent / 100))
                         )
                     }
                 } header: {
@@ -706,7 +718,7 @@ struct DiveLogEditSheet: View {
     // MARK: - Save
 
     private func save() {
-        let totalSeconds = durationMinutes * 60
+        let totalSeconds = effectiveDiveTimeSeconds
         // 編輯：使用者沒動氣體 ⇒ 原樣保留（含可信 Trimix、不可信氣體、32.5% 這類非整數值）。
         let originalGasMixJSON: String? = {
             if case .edit(let dive) = mode, !gasEdited { return dive.gasMixJSON }
@@ -716,8 +728,8 @@ struct DiveLogEditSheet: View {
 
         // 計算出水時間：基於入水時間 + 潛水時間
         let calculatedExitTime = Calendar.current.date(
-            byAdding: .minute,
-            value: durationMinutes,
+            byAdding: .second,
+            value: totalSeconds,
             to: entryTime
         )
 
