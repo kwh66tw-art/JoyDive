@@ -11,7 +11,7 @@
 
 - 最後 push：見 `git log -1 origin/main`（10/10 晚 PM 同意 push 至本檔所在提交）。**App-lb 自 10/10 晚由 App-lb session 負責，總指揮不再寫入**（除非 PM 另行指示）。工作樹只剩 `docs/l10n_v1.3_待翻譯.csv`（工作檔，刻意不提交）。
 - 共用層：DiveKit **v9.3.0**、DiveImportKit **v0.7.8**。🔒 兩 Kit 凍結（僅 bug 修正；本輪改動皆經 PM 核准）。
-- 測試：`run_tests.sh logbook` **171／0／1**。版號 1.3（4）。送審複核：`docs/SUBMISSION_CHECK_NEXT.md` 10/10 段——**程式與送審檢查皆完成，剩 PM 上傳 ASC**。
+- 測試：`run_tests.sh logbook` **171／0／1**。版號 1.3（4）。送審複核：`docs/SUBMISSION_CHECK_NEXT.md` 10/10 段——**程式與送審檢查皆完成；10/10 晚已上傳並送審（Waiting for Review）**。
 
 ## 10/10 晚：送審截圖與交接（總指揮 → App-lb）
 
@@ -20,7 +20,10 @@
   PM 確認：Mac 截圖含滑鼠指標可接受。其餘截圖沿用 v1.2。
 - ✅ 已 push（PM 10/10 晚同意）：`2c27ecc`、`65cd1f0`、`00ed34c`、`99a3444` 與本次 HANDOFF 更新。
 - ✅ PM 10/10 上架設定（`d38a277`）：類別 `public.app-category.sports`（Release 產物讀回驗證）、英文關鍵字只放各國潛水日誌用詞（100 字元／114 bytes）、說明文去 GPS 座標／氣體混合→氣體、品牌加 ATMOS；CLAUDE.md 現況更新（`1db588f`）。
-- ⏳ **PM 上傳 ASC**：類別手動改「運動」；三組關鍵字在 ASC 實貼確認上限；換上新截圖 12 張。
+- ✅ **v1.3 已上傳並送審（PM 2026-10-10 晚）**：iOS／macOS 兩平台 Build 4（1.3）皆為 **Waiting for Review**。ASC 內容由 App-lb 以 Chrome 建立 1.3 版本草稿並填入（主類別 Sports；副標英／繁中／日；說明、宣傳文字、What's New、關鍵字三語；選 Build 4），逐項重載後讀回驗證；截圖 12 張由 PM 上傳。
+- ✅ **ASC 關鍵字上限以「字元」計**（實測：英文組 100 字元／114 bytes 完整接受、剩餘 0）。
+- ⚠️ ASC 說明欄為純文字，不可帶 Markdown `**`；填表單時 `form_input` 對非主要語系的說明欄不可靠（四組曾沒寫進去），一律重載後讀回驗證。
+- ⏳ **等 Apple 審核結果**；通過後：手動／自動上架依 ASC 設定，再做舊文件整理與 v1.4 待辦。
 - 環境狀態（之後可還原）：iPhone 18 Pro Max 模擬器（`EFF901CA`）已匯入 70 支範例、`DEBUG_forceHideAds`=YES、狀態列覆寫 9:41（`xcrun simctl status_bar EFF901CA… clear` 還原）；
   Mac 版 App 以 Debug 產物 `-jd2logbook.appLanguage` 參數重開過（資料未動，70 支範例），`defaults` 也寫了 `DEBUG_forceHideAds`=YES。
 - 送審後工作交 App-lb：舊文件整理（下一版待辦）、v1.4 待辦。

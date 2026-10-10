@@ -40,11 +40,11 @@
 > 保留為歷史紀錄。
 
 - **狀態（2026-10-10）**：線上版本 **v1.2 (Build 3)**（2026-07-29 上架，iOS + macOS）；
-  **v1.3 (Build 4) 程式與送審檢查皆完成，待 PM 上傳 App Store Connect**。
+  **v1.3 (Build 4) 已於 2026-10-10 晚送審（iOS／macOS 皆 Waiting for Review），等 Apple 審核**。
   v1.3 工作紀錄見 `docs/V1_3_WORK_PLAN.md`，送審檢查見 `docs/SUBMISSION_CHECK_NEXT.md`
   （10/10 段），上架文案見 `docs/APPSTORE_COPY.md`，變更見 `CHANGELOG.md` [v1.3.0]。
   v1.1／v1.0 為已完成的歷史階段，見下方小節與 `V1_1_BACKLOG.md`。
-- **目標上線**：v1.3 待 PM 上傳送審，無固定日期。
+- **目標上線**：v1.3 已送審，視 Apple 審核結果，無固定日期。
 - **App 類別**：運動（`LSApplicationCategoryType = public.app-category.sports`，PM 2026-10-10；
   ASC 主類別由 PM 手動設定）。
 - **平台**：iOS 17.0+ / macOS 14.0+，Swift 6
@@ -58,8 +58,8 @@
 - **IAP**：`com.jd2logbook.premium`，Non-Consumable，$1.99，隨 v1.2 版本上架
 - **關鍵字策略（v1.2 上架後發現非品牌詞搜不到）**：✅ **v1.3 已處理**——PM 2026-10-03
   裁示移除品牌、台灣／日本在地化；2026-10-10 再改英文組為只放各國「潛水日誌」用詞
-  （100 字元）。現行三組見 `docs/APPSTORE_COPY.md`。⚠️ ASC 關鍵字上限算字元或位元組
-  未查到出處，上傳時實貼確認。
+  （100 字元）。現行三組見 `docs/APPSTORE_COPY.md`。✅ ASC 關鍵字上限以**字元**計
+  （2026-10-10 實測：英文組 100 字元／114 bytes 完整接受）。
 
 ### v1.1 開發（2026-07-14 啟動，2026-07-17 完工 13/14 項）
 - 詳細紀錄見 `V1_1_BACKLOG.md`、`CHANGELOG.md` 2026-07-17 條目

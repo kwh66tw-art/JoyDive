@@ -19,7 +19,7 @@
 | 模擬器目視 | ✅ 克羅埃西亞文（系統繁中）：列表、新增、編輯、詳細、匯入、選單、剖面讀數無中文殘留；編輯頁各情境；ATMOS FIT 匯入。Ceiling 膠囊、Mac ⓘ：PM 確認；UDDF 逐點水溫：PM 確認（ATMOS） | iPhone Air 模擬器 |
 | What's New | ✅ 三語加 ATMOS FIT 一句（PM 10/10） | `APPSTORE_COPY.md` |
 | App 類別（PM 10/10 追加） | ✅ `public.app-category.sports`；**ASC 主類別要 PM 手動改 Sports** | Release 產物 macOS／iOS `plutil -extract LSApplicationCategoryType` 皆為 `public.app-category.sports` |
-| 英文關鍵字（PM 10/10 追加） | ✅ 只放各國潛水日誌用詞，100 字元／114 bytes；⚠️ ASC 上限算字元或位元組未查證，上傳時實貼確認 | `APPSTORE_COPY.md` Keywords |
+| 英文關鍵字（PM 10/10 追加） | ✅ 只放各國潛水日誌用詞，100 字元／114 bytes；✅ ASC 以字元計（10/10 實測，剩餘 0） | `APPSTORE_COPY.md` Keywords |
 | 說明文（PM 10/10 追加） | ✅ 手動記錄句去掉 GPS 座標、氣體混合→氣體；品牌加 ATMOS（三語） | `APPSTORE_COPY.md` |
 | ASC 上傳、問卷、送審 | PM | — |
 

@@ -57,7 +57,7 @@ dive log,divelog,Tauchlogbuch,duiklogboek,plongée,buceo,bitácora,immersioni,me
 > ✅ **v1.3（2026-10-03，PM 裁示）**：移除品牌名（2.3.7＋艦隊紅線）；台灣／日本在地化，其他 storefront 用英文組。依據 `docs/KEYWORDS_NEXT_DRAFT.md`。舊組（v1.2）：`dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`
 
 > ✅ **v1.3 再修訂（PM 2026-10-10）**：英文組**只放各國「潛水日誌」用詞**（不放品牌、不放泛用詞）——英 dive log／divelog、德 Tauchlogbuch、荷 duiklogboek、法 plongée、西 buceo／bitácora、義 immersioni、葡 mergulho、韓 다이빙로그、印尼／馬來 selam、越 lặn。片語拆成單字（App Store 會自動組合搜尋），18 語全放約 200 字元放不下，PM 選此組（未涵蓋：泰、希、克、簡中）。10/03 那組（logbook,scuba,diving,…,depth）已換掉。
-> ⚠️ 100 characters / 114 bytes (no spaces after commas). Apple limit: 100 — **上限是算字元還是位元組未查到出處，上傳前在 ASC 實貼確認**；若被擋，先拿掉 lặn 或 selam。
+> ⚠️ 100 characters / 114 bytes (no spaces after commas). Apple limit: 100 — ✅ **ASC 以字元計（2026-10-10 實測：100 字元／114 bytes 完整接受、剩餘 0）**，不必拿掉 lặn 或 selam。
 > 📜 History: the v1.2 set (brand names such as Shearwater/Garmin/Suunto/Subsurface) was found unsearchable after launch
 >   (2026-07-29); replaced in v1.3 per PM 2026-10-03. Details: `docs/KEYWORDS_NEXT_DRAFT.md`.
 
@@ -175,7 +175,7 @@ JoyDive²，陪你從第一次下水到每一次進階潛水的潛水日誌。
 
 > ✅ **v1.3（2026-10-03，PM 裁示）**：移除品牌名（2.3.7＋艦隊紅線）；台灣／日本在地化，其他 storefront 用英文組。依據 `docs/KEYWORDS_NEXT_DRAFT.md`。舊組（v1.2）：`dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`
 
-> ⚠️ 76 字元／158 bytes（逗號後無空格）。上限 100——**ASC 以字元或 bytes 計未查到出處，上傳前在 ASC 實際貼一次確認**。
+> ⚠️ 76 字元／158 bytes（逗號後無空格）。上限 100——✅ ASC 以字元計（2026-10-10 實測，繁中組貼入後剩餘 24＝76 字元）。
 > 📜 歷史：v1.2 舊組（含 Shearwater／Garmin／Suunto／Subsurface 等品牌）2026-07-29 上架後確認搜尋不到；v1.3 已依 PM 2026-10-03 裁示更換。
 >   詳見 `docs/KEYWORDS_NEXT_DRAFT.md`。
 
@@ -272,7 +272,7 @@ GPS座標から地図上へ自動的にピンをドロップ。これまで訪�
 
 > ✅ **v1.3（2026-10-03，PM 裁示）**：移除品牌名（2.3.7＋艦隊紅線）；台灣／日本在地化，其他 storefront 用英文組。依據 `docs/KEYWORDS_NEXT_DRAFT.md`。舊組（v1.2）：`dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`
 
-> ⚠️ 84文字／202 bytes（カンマの後にスペースなし）。上限100——**ASCが文字数・バイト数のどちらで数えるかは出典未確認。アップロード前にASCで実際に貼り付けて確認**。
+> ⚠️ 84文字／202 bytes（カンマの後にスペースなし）。上限100——**ASCは文字数で数える（2026-10-10 実測：日本語組は貼り付け後の残り16＝84文字）**。
 > 📜 履歴：v1.2の旧セット（Shearwater／Garmin／Suunto／Subsurface などブランド名）は2026-07-29にリリース後検索されないことが判明。v1.3でPM 2026-10-03の裁示により差し替え済み。
 >   詳細は `docs/KEYWORDS_NEXT_DRAFT.md`。
 
