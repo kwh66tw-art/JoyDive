@@ -10,7 +10,7 @@
 ## 目前狀態
 
 - 最後 push：見 `git log -1 origin/main`（10/10 晚 PM 同意 push 至本檔所在提交）。**App-lb 自 10/10 晚由 App-lb session 負責，總指揮不再寫入**（除非 PM 另行指示）。工作樹乾淨（10/10 PM 裁示：還原 Xcode 自動重排的 Localizable.xcstrings、刪除用完的 `l10n_v1.3_待翻譯.csv`）。⚠️ `%lld%%` 已被標 `extractionState: stale`（編輯頁改用 percentText 後無人引用），排 v1.4 清理；之後 Xcode build／Archive 還會重排 xcstrings，提交前先 `git diff --stat` 確認，需要時 `git checkout --` 還原。
-- 共用層：DiveKit **v9.3.0**、DiveImportKit **v0.7.8**。🔒 兩 Kit 凍結（僅 bug 修正；本輪改動皆經 PM 核准）。
+- 共用層：v1.3 (Build 4) 是在 DiveKit **v9.3.0**／DiveImportKit **v0.7.8** 上送審。**目前 Kit 現況 v9.5.0／v0.8.0（10/14 PM 通知兩 Kit 解凍）**。⚠️ Logbook 以 `project.pbxproj:682-684` 的 `XCLocalSwiftPackageReference`（local path，**無版本鎖定**）引用 Kit，下一次建置就會吃目前的 v9.5.0／v0.8.0；已送審的 Build 4 不受影響。**v1.4 開工前先跑 `run_tests.sh logbook`，對照 171／0／1 基準確認 v9.4.0（policy knob ⑨＋ModeSwitchGate 演算法鎖定中放行 Gauge）、v9.5.0（eventNotice 兩種 policy 都產生）、v0.8.0（新增 SignedRecordCanonicalizer，既有 API 不變）無回歸**（總指揮預期影響很小，須實測）。
 - 測試：`run_tests.sh logbook` **171／0／1**。版號 1.3（4）。送審複核：`docs/SUBMISSION_CHECK_NEXT.md` 10/10 段——**程式與送審檢查皆完成；10/10 晚已上傳並送審（Waiting for Review）**。
 
 ## 10/10 晚：送審截圖與交接（總指揮 → App-lb）
@@ -23,7 +23,7 @@
 - ✅ **v1.3 已上傳並送審（PM 2026-10-10 晚）**：iOS／macOS 兩平台 Build 4（1.3）皆為 **Waiting for Review**。ASC 內容由 App-lb 以 Chrome 建立 1.3 版本草稿並填入（主類別 Sports；副標英／繁中／日；說明、宣傳文字、What's New、關鍵字三語；選 Build 4），逐項重載後讀回驗證；截圖 12 張由 PM 上傳。
 - ✅ **ASC 關鍵字上限以「字元」計**（實測：英文組 100 字元／114 bytes 完整接受、剩餘 0）。
 - ⚠️ ASC 說明欄為純文字，不可帶 Markdown `**`；填表單時 `form_input` 對非主要語系的說明欄不可靠（四組曾沒寫進去），一律重載後讀回驗證。
-- ⏳ **等 Apple 審核結果**；通過後：手動／自動上架依 ASC 設定，再做舊文件整理與 v1.4 待辦。
+- ✅ **v1.3 (Build 4) 已上架（PM 2026-10-14 通知；非本 session 讀 ASC 所得——10/16 ASC 登入過期，頁面狀態待 PM 登入後確認）**。紀錄見 `_JD2-family/F-01-FAMILY_ROADMAP.md` 第 9 行、`_App管理/週報/2026-10-14_變更紀錄.md` 第 5 行。接下來：舊文件整理與 v1.4 待辦（PM 未指示前不動）。
 - 環境狀態（之後可還原）：iPhone 18 Pro Max 模擬器（`EFF901CA`）已匯入 70 支範例、`DEBUG_forceHideAds`=YES、狀態列覆寫 9:41（`xcrun simctl status_bar EFF901CA… clear` 還原）；
   Mac 版 App 以 Debug 產物 `-jd2logbook.appLanguage` 參數重開過（資料未動，70 支範例），`defaults` 也寫了 `DEBUG_forceHideAds`=YES。
 - 送審後工作交 App-lb：舊文件整理（下一版待辦）、v1.4 待辦。
@@ -74,6 +74,9 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 #8 6/4 不顯示組織負荷＝96 h 內有 DAN DL7 範例檔（6/1、6/2，氣體不可信），非 6/3 DM5。
 
 ## 下一版待辦（PM 10/07）
+
+- **v1.4 開工前置（總指揮 10/16 提醒）**：先跑 `bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook` 對照 171／0／1，確認 Kit v9.5.0／v0.8.0 無回歸（見「目前狀態」共用層）。
+- **驗 App-i 紀錄簽章（總指揮 10/16 備忘，排 v1.4 之後、不急）**：用 DiveImportKit v0.8.0 的 `SignedRecordCanonicalizer`，以 `sourceApp` 辨識 App-i 紀錄，用 `ndlExceeded` 重建簽章內容，**不得**把 `decoOccurred`／`erViolation` 兩個相容鍵納入。
 
 - **匯入頁支援格式清單補 ATMOS FIT（PM 10/10 排 v1.4）**：`ImportWizardView.swift:281-306` `supportedFormatGroups` 無 ATMOS（`grep -ci atmos` 0），
   但 What's New 與三語 Description 已寫支援。補上後重拍 macOS 匯入頁截圖（兩欄會完整顯示清單）。
