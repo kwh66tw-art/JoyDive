@@ -26,7 +26,7 @@
 - ✅ **v1.3 (Build 4) 已上架（PM 2026-10-14 通知，2026-10-16 PM 確認已上架、不需再查 ASC；本 session 未讀 ASC 頁面）**。紀錄見 `_JD2-family/F-01-FAMILY_ROADMAP.md` 第 9 行、`_App管理/週報/2026-10-14_變更紀錄.md` 第 5 行。接下來：舊文件整理與 v1.4 待辦（PM 未指示前不動）。
 - 環境狀態（之後可還原）：iPhone 18 Pro Max 模擬器（`EFF901CA`）已匯入 70 支範例、`DEBUG_forceHideAds`=YES、狀態列覆寫 9:41（`xcrun simctl status_bar EFF901CA… clear` 還原）；
   Mac 版 App 以 Debug 產物 `-jd2logbook.appLanguage` 參數重開過（資料未動，70 支範例），`defaults` 也寫了 `DEBUG_forceHideAds`=YES。
-- 送審後工作交 App-lb：舊文件整理（下一版待辦）、v1.4 待辦。
+- 送審後工作交 App-lb：舊文件整理（✅ 10/17 完成）、v1.4 待辦。
 
 ## v1.3 已完成
 
@@ -84,7 +84,7 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 - **詳細頁「來源格式」手動新增顯示英文 "Manual Entry"（PM 10/10 排 v1.4；既有問題）**：`DiveLogDetailView.swift:496` 回傳字面字串，
   未走 `languageManager.localized`（catalog 已有 `Manual Entry` 鍵）。
 
-- **文件整理（PM 10/10：送審後做，交給 App-lb）**：`V1_2_BACKLOG.md`（停在 9/13）、`docs/KNOWN_ISSUES.md`（停在 8/17）跟上 v1.3 結果
+- ✅ **文件整理已完成（2026-10-17，提交 `132ab3d`）**——`V1_2_BACKLOG.md` 文末新增「v1.3 結果對照」、`docs/KNOWN_ISSUES.md` 新增「v1.3 已解決／仍開放」、文件登錄表補登四份並更新過時狀態；細節見這些檔案。以下為原待辦（保留供對照）：**文件整理（PM 10/10：送審後做，交給 App-lb）**：`V1_2_BACKLOG.md`（停在 9/13）、`docs/KNOWN_ISSUES.md`（停在 8/17）跟上 v1.3 結果
   （R-06 定位權限在地化、D7 ATS、P1-3 效能門檻 500 ms、181e441 SIGABRT 已修、D6 GDPR 延下一版）；文件登錄表補登 `V1_3_WORK_PLAN`／`SUBMISSION_CHECK_NEXT`／`KEYWORDS_NEXT_DRAFT`。
 
 - **文字自動縮小 4 處（PM 10/10 排 v1.4）**：`DiveLogListView.swift:307,313`（統計列）、`DiveRowView.swift:114`（日期區塊）、`ImportWizardView.swift:694`（副檔名）。
