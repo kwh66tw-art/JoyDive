@@ -10,7 +10,7 @@
 ## 目前狀態
 
 - 最後 push：見 `git log -1 origin/main`（10/10 晚 PM 同意 push 至本檔所在提交）。**App-lb 自 10/10 晚由 App-lb session 負責，總指揮不再寫入**（除非 PM 另行指示）。工作樹乾淨（10/10 PM 裁示：還原 Xcode 自動重排的 Localizable.xcstrings、刪除用完的 `l10n_v1.3_待翻譯.csv`）。⚠️ `%lld%%` 已被標 `extractionState: stale`（編輯頁改用 percentText 後無人引用），排 v1.4 清理；之後 Xcode build／Archive 還會重排 xcstrings，提交前先 `git diff --stat` 確認，需要時 `git checkout --` 還原。
-- 共用層：v1.3 (Build 4) 是在 DiveKit **v9.3.0**／DiveImportKit **v0.7.8** 上送審。**目前 Kit 現況 v9.5.0／v0.8.0（10/14 PM 通知兩 Kit 解凍）**。⚠️ Logbook 以 `project.pbxproj:682-684` 的 `XCLocalSwiftPackageReference`（local path，**無版本鎖定**）引用 Kit，下一次建置就會吃目前的 v9.5.0／v0.8.0；已送審的 Build 4 不受影響。**v1.4 開工前先跑 `run_tests.sh logbook`，對照 171／0／1 基準確認 v9.4.0（policy knob ⑨＋ModeSwitchGate 演算法鎖定中放行 Gauge）、v9.5.0（eventNotice 兩種 policy 都產生）、v0.8.0（新增 SignedRecordCanonicalizer，既有 API 不變）無回歸**（總指揮預期影響很小，須實測）。
+- 共用層：v1.3 (Build 4) 是在 DiveKit **v9.3.0**／DiveImportKit **v0.7.8** 上送審。**目前 Kit 現況 v9.6.0／v0.8.0（10/14 PM 通知兩 Kit 解凍；DiveKit 10/17 升 v9.6.0）**。⚠️ Logbook 以 `project.pbxproj:682-684` 的 `XCLocalSwiftPackageReference`（local path，**無版本鎖定**）引用 Kit，下一次建置就會吃目前的 v9.6.0／v0.8.0；已送審的 Build 4 不受影響。**v1.4 開工前先跑 `run_tests.sh logbook`，對照 171／0／1 基準確認 v9.4.0（policy knob ⑨＋ModeSwitchGate 演算法鎖定中放行 Gauge）、v9.5.0（eventNotice 兩種 policy 都產生）、v9.6.0（10/17：只重新設計展示剖面＝32m Deep 改 30m NDL Countdown，新增 40m Depth Limit／EAN32 MOD／Stop Off-Depth／12m Long 54min；演算法零改動；Logbook 零引用 `SimulatedDiveProfile`／`.builtin`）、v0.8.0（新增 SignedRecordCanonicalizer，既有 API 不變）無回歸**（總指揮預期影響很小，須實測）。
 - 測試：`run_tests.sh logbook` **171／0／1**。版號 1.3（4）。送審複核：`docs/SUBMISSION_CHECK_NEXT.md` 10/10 段——**程式與送審檢查皆完成；10/10 晚送審，已上架（PM 10/14 通知、10/16 確認）**。
 
 ## 10/10 晚：送審截圖與交接（總指揮 → App-lb）
@@ -75,7 +75,7 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 
 ## 下一版待辦（PM 10/07）
 
-- **v1.4 開工前置（總指揮 10/16 提醒）**：先跑 `bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook` 對照 171／0／1，確認 Kit v9.5.0／v0.8.0 無回歸（見「目前狀態」共用層）。
+- **v1.4 開工前置（總指揮 10/16 提醒）**：先跑 `bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook` 對照 171／0／1，確認 Kit v9.6.0／v0.8.0 無回歸（見「目前狀態」共用層）。
 - **驗 App-i 紀錄簽章（總指揮 10/16 備忘，排 v1.4 之後、不急）**：用 DiveImportKit v0.8.0 的 `SignedRecordCanonicalizer`，以 `sourceApp` 辨識 App-i 紀錄，用 `ndlExceeded` 重建簽章內容，**不得**把 `decoOccurred`／`erViolation` 兩個相容鍵納入。
 
 - **匯入頁支援格式清單補 ATMOS FIT（PM 10/10 排 v1.4）**：`ImportWizardView.swift:281-306` `supportedFormatGroups` 無 ATMOS（`grep -ci atmos` 0），

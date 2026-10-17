@@ -49,10 +49,14 @@ SPM 套件外部引用，本地 JD2Core/Algorithm **僅存 `DiveReplayInput.swif
 | `DiveLog.swift` | 主要 SwiftData 模型，包含潛水所有欄位（深度、時間、氣體、GPS 等）。`DiveProfileSample` 使用短 CodingKey (`t`/`d`) 節省 JSON 儲存體積。 |
 | `DiveLogBackup.swift` | Export/Import 備份格式（v1.1 新增），供裝置間搬移/還原完整資料庫。 |
 | `DiveLogDatabase.swift` | ModelContainer 單例，`DiveLogDatabase.shared.modelContainer` 提供全 App 存取。 |
-| `DiveSettings.swift` | 使用者偏好設定模型（v1.1 新增）。 |
-| `GasMix.swift` | 氣體混合（空氣、EAN、Trimix、純氧），含 O₂ / He / N₂ 百分比。 |
-| `DiveEnvironment.swift` | 潛水環境枚舉（海水、淡水、高鹽）。 |
-| `SimulatedDiveProfile.swift` | 匯入時若來源無逐秒剖面樣本，用於合成模擬剖面（v1.1 新增）。 |
+| `UnitSystem.swift` | 公制／英制單位系統（v1.2）；內部儲存永遠是公制，只負責顯示層與輸入層的雙向換算。 |
+
+> **2026-10-17 修正**：本表原還列了 `DiveSettings`／`GasMix`／`DiveEnvironment`／`SimulatedDiveProfile` 四個檔案，
+> 實測（`find JD2-Logbook -name`）本 repo 都沒有——F5 之後這四個型別屬統一 `DiveKit`
+> （`DiveKit/Sources/DiveKit/Models/`）。引用情形（`grep -rlw` 於 `*.swift`）：`GasMix` 10 檔、`DiveEnvironment` 2 檔
+> 以 `import DiveKit` 使用；`DiveSettings`、`SimulatedDiveProfile` 在 Logbook **零引用**（後者是 DiveKit 的展示剖面，
+> v9.6.0 重新設計，`.builtin` 在 Logbook 也是 0 筆）。
+> 表內原本「匯入時合成模擬剖面」的說明與實際不符，已移除。
 
 ### ~~JD2Core/State~~（F5 已移除，2026-07-18）
 

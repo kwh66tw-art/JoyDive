@@ -10,7 +10,7 @@
 
 - **F5 已完成（2026-07-18）**：`JD2Core/Algorithm/` 的 DiveKit-fork（`Buhlmann`／
   `DiveEngine`／`AlgorithmConstants`／`GasMix`／`DiveEnvironment` 等）已整包刪除，
-  改用統一 DiveKit 外部引用（`../../_JD2-family/DiveKit`，SPM local path、無版本鎖定；v1.3 (Build 4) 以 v9.3.0 送審，**目前 Kit 現況 v9.5.0**，2026-10-16）。
+  改用統一 DiveKit 外部引用（`../../_JD2-family/DiveKit`，SPM local path、無版本鎖定；v1.3 (Build 4) 以 v9.3.0 送審，**目前 Kit 現況 v9.6.0**，2026-10-17）。
   **本 repo 已無任何演算法拷貝**。**2026-09-02修正**：本條原寫「`JD2Core/Algorithm/`
   僅留`DiveReplayEngine.swift`」——該檔已不存在，DiveKit v1.9.0（2026-08-22）把
   剖面重放引擎本體上收為`DiveReplay.swift`後，本repo已改用DiveKit的版本，
@@ -18,7 +18,7 @@
   本身）。發現演算法問題→回統一 DiveKit修（單一戰場），不得在本 repo 繞道；
   `SYNC_TO_JD2-ULTRA.md` 仍是 Logbook↔ultra單向記錄機制（非 DiveKit 相關問題才用）。
 - **F6/F8/B組已完成（2026-07-19）**：Importers 全部（15 種格式）搬遷至獨立的
-  `DiveImportKit`（`../../_JD2-family/DiveImportKit`，**v1.3 (Build 4) 以 v0.7.8 送審，目前 Kit 現況 v0.8.0**，2026-10-16），本 repo 已無任何本地
+  `DiveImportKit`（`../../_JD2-family/DiveImportKit`，**v1.3 (Build 4) 以 v0.7.8 送審，目前 Kit 現況 v0.8.0**，2026-10-17 核對），本 repo 已無任何本地
   解析器/去重邏輯拷貝，只剩 `JD2Core/Importers/DiveImportKitAdapter.swift`
   （全 App 唯一 import 點）。**解析器 bug 同樣回統一 DiveImportKit 修**。
   **本地複製的 `DiveLogImportError`（`JD2Core/Importers/DiveLogImporter.swift`）
@@ -44,7 +44,7 @@
   v1.3 工作紀錄見 `docs/V1_3_WORK_PLAN.md`，送審檢查見 `docs/SUBMISSION_CHECK_NEXT.md`
   （10/10 段），上架文案見 `docs/APPSTORE_COPY.md`，變更見 `CHANGELOG.md` [v1.3.0]。
   v1.1／v1.0 為已完成的歷史階段，見下方小節與 `V1_1_BACKLOG.md`。
-- **目標上線**：v1.3 已上架；下一版 v1.4 待 PM 排程（開工前先跑 `run_tests.sh logbook` 確認 Kit v9.5.0／v0.8.0 無回歸，見 `HANDOFF.md`）。
+- **目標上線**：v1.3 已上架；下一版 v1.4 待 PM 排程（開工前先跑 `run_tests.sh logbook` 確認 Kit v9.6.0／v0.8.0 無回歸，見 `HANDOFF.md`）。
 - **App 類別**：運動（`LSApplicationCategoryType = public.app-category.sports`，PM 2026-10-10；
   ASC 主類別由 PM 手動設定）。
 - **平台**：iOS 17.0+ / macOS 14.0+，Swift 6
