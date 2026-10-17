@@ -75,6 +75,7 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 
 ## 下一版待辦（PM 10/07）
 
+- **v1.4 換用 v5 新 App Icon（總指揮 10/17 通知；等 PM 排 v1.4 才做，現在不動）**：新圖 `_JD2-family/brand-assets/ICON_v5/jd2_lb_v5_1024.png`（實測 1024×1024），規範見 `_App管理/COLOR_SYSTEM.md` §6（JD² Logo／App Icon 規格 v5.0）～§7；舊 v33 已歸檔 `brand-assets/archive/ICON_v33/`。⚠️ 待釐清：Logbook 目前 `Assets.xcassets/AppIcon.appiconset` 有 `AppIcon_light_1024.png`／`AppIcon_tinted_1024.png` 等多個變體，v5 只提供單一 1024 圖——換圖時 dark／tinted 變體要不要另做、怎麼做，開工時先問 PM／總指揮；換完須重新 Archive 驗 Icon（含 macOS）。
 - **v1.4 開工前置（總指揮 10/16 提醒）**：先跑 `bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook` 對照 171／0／1，確認 Kit v9.6.0／v0.8.0 無回歸（見「目前狀態」共用層）。
 - **驗 App-i 紀錄簽章（總指揮 10/16 備忘，排 v1.4 之後、不急）**：用 DiveImportKit v0.8.0 的 `SignedRecordCanonicalizer`，以 `sourceApp` 辨識 App-i 紀錄，用 `ndlExceeded` 重建簽章內容，**不得**把 `decoOccurred`／`erViolation` 兩個相容鍵納入。
 
