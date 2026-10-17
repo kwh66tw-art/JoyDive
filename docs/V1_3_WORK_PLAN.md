@@ -1,5 +1,7 @@
 # App-lb v1.3(4) 工作計劃——修錯與功能增修（2026-10-04 晚，待 PM 核准）
 
+> ✅ **2026-10-17 註記**：本計劃 PM 10/04 夜核准 D1–D7 後已執行完畢，v1.3 (Build 4) 已上架（PM 10/14 通知、10/16 確認）。標題「待 PM 核准」與下方〇、一～六節是 **10/04 當時的計劃原文**，實際結果以 §七～§九 為準。
+
 > PM 10/04：v1.3 由總指揮直接更新；先列計劃，PM 看過沒問題再開工；**翻譯最後做**。
 > 來源：App-lb session（JD2-lb_CC01）整理的 18 項＋本 repo `V1_2_BACKLOG.md`／`HANDOFF.md`／`docs/KNOWN_ISSUES.md`／`docs/SUBMISSION_CHECK_NEXT.md`，逐項以指令查證。
 > 基準：HEAD `b893a9c`；DiveKit v9.2.0／DiveImportKit v0.7.1 **凍結**（只修 bug）；`run_tests.sh logbook` **147/0/1**（v9.2.0）。

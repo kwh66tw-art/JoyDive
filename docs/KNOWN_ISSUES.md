@@ -17,6 +17,36 @@
 
 ---
 
+## ✅ v1.3 已解決（2026-10-17 整理；逐項證據見 `docs/V1_3_WORK_PLAN.md` §七～§九，對照表見 `V1_2_BACKLOG.md` 文末）
+
+| 項目 | 說明 | 解決方式／現況驗證 |
+|------|------|------------------|
+| v1.2→v1.3 升級是否丟資料；開資料庫失敗即 `fatalError`（升級失敗者每次開 App 閃退） | v1.2 之後模型改兩處（`waterTemperature` 改選填、新增 `diveMode`），從未實測升級；失敗時直接 `fatalError` | P0-1 模擬器實測：真 v1.2(3) 建 105 筆→覆蓋安裝 v1.3(4)，資料指紋逐欄相同、無閃退。D2（`6eb6552`）：失敗改顯示錯誤頁＋記憶體後備容器，**不刪、不重建、不覆寫資料檔**；現在 `DiveLogDatabase.swift` 的 `fatalError` 只剩「記憶體後備容器也建不起來」一處 |
+| 匯入精靈關閉時閃退（SIGABRT，`181e441`） | 關閉匯入精靈後崩潰 | P0-3：2026-10-10 模擬器以「檔案」App 選檔匯入多次、關閉精靈不閃退（模擬器實測，本次整理未重跑） |
+| 定位權限說明只有英文（稽核 R-06） | `NSLocationWhenInUseUsageDescription` 18 種語言都顯示英文 | P1-1 新增 `JD2-Logbook/InfoPlist.xcstrings`（`09ac3f5`），10/06 翻譯補齊 15 語 |
+| `NSAllowsArbitraryLoads` 全面放行 ATS（稽核 R-01） | 當初為 AdMob 真機廣告加入 | D7：改 AdMob 官方寫法，移除全面放行、補 `NSAllowsArbitraryLoadsInWebContent`，`ForMedia` 保留。`Info.plist` 現只剩這兩鍵；測試廣告照常顯示 |
+| 不穩定的匯入效能測試 | `ImportCoordinatorTests` SuuntoJSON 單次解析門檻 100 ms 貼著常態上緣（58–100 ms），全套並行偶發失敗 | P1-3：門檻改 **500 ms**（常態約 5 倍，抓回歸用），註明「本專案決定」，見 `ImportCoordinatorTests.swift:474`；門檻 100 ms 本來就沒有出處 |
+| 死碼 `getStatistics()`（稽核 R-04，平均深度算法錯誤） | 無呼叫端 | P1-2 移除；全專案 `*.swift` 搜尋 0 筆 |
+| Garmin FIT 氣體全變 air | 讀錯訊息號 | DiveImportKit **v0.7.2**（269→259）；舊版匯入的 Garmin 紀錄標為氣體不可信（`jd2GarminGasVerified`），含 v1.2 資料與備份還原 |
+| 剖面讀數 5 個 label 在 Xcode 27 建置下被縮到 65% | `.minimumScaleFactor(0.65)` 放得下也縮小 | 改 `ViewThatFits`：先原字級，放不下才可縮小（`DiveAnalysisView.swift`）。**另 4 處同型問題尚未改，見下方「v1.3 後仍開放」** |
+| `Swift 6` 隔離警告、Catalog 孤兒鍵 | App 層警告 3 個；未使用鍵 | P1-4（`a560f1f`）警告 3→0；P1-5（`fd9b1cf`）移除 50 個未使用鍵、補 `Developer Tools` |
+
+---
+
+## ⏳ v1.3 後仍開放（2026-10-17 整理）
+
+| 項目 | 說明 | 影響 | 排定版本 |
+|------|------|------|---------|
+| GDPR／UMP 廣告同意流程未做 | `GoogleUserMessagingPlatform` 被解析為相依套件，但程式碼 UMP 呼叫 0 筆；非個人化廣告仍需同意（`docs/V1_3_D6_D7_RESEARCH.md`） | 歐洲區廣告合規 | 下一版（PM 10/05 裁示） |
+| 另 4 處 `.minimumScaleFactor` 在 Xcode 27 建置下放得下也縮小 | `DiveLogListView.swift:307,313`（統計列）、`DiveRowView.swift:114`（日期區塊）、`ImportWizardView.swift:694`（副檔名）；改法同剖面讀數的 `ViewThatFits`，改完與 v1.2 截圖對照 | 版面外觀 | v1.4（PM 10/10） |
+| SwiftData 無 `SchemaMigrationPlan`（稽核 R-07） | 目前單一版本 `Schema`；v1.3 實測 lightweight migration 105 筆正常，但 breaking schema 變更沒有遷移路徑 | 日後改資料模型 | 下次改資料模型時一起做 |
+| 最大字級（XXXL）＋窄機時剖面讀數數值被「…」截斷 | v1.2 起即有 | 極端字級 | PM 10/05：不處理（系統字級放到最大，各 App 皆如此） |
+| 上升速率警示功能關閉中 | `showWarningEvents=false`（`DiveAnalysisView.swift:31`），使用者看不到；重開前須改家族色 | 功能未啟用 | 未排程（8/13 PM：呈現方式未定） |
+| 匯入不辨識潛水模式（自潛／浮潛皆當水肺） | DiveImportKit 尚無欄位；PM 10/04 裁示等 App-u 日誌格式定案 | 匯入資料的潛水類型 | 待 App-u |
+| `Localizable.xcstrings` 的 `%lld%%` 被 Xcode 標 `extractionState: stale` | 編輯頁改用 percentText 後無人引用；Xcode 每次 build／Archive 也會自動重排整份 xcstrings（2026-10-10 還原過一次），**提交前先 `git diff --stat`，需要時 `git checkout --` 還原** | 無功能影響 | v1.4 清理 |
+
+---
+
 ## v1.0 已知限制
 
 | 項目 | 說明 | 影響 | 排定版本 |
