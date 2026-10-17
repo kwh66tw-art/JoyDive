@@ -75,7 +75,7 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 
 ## 下一版待辦（PM 10/07）
 
-- **v1.4 換用 v5 新 App Icon（總指揮 10/17 通知；等 PM 排 v1.4 才做，現在不動）**：新圖 `_JD2-family/brand-assets/ICON_v5/jd2_lb_v5_1024.png`（實測 1024×1024），規範見 `_App管理/COLOR_SYSTEM.md` §6（JD² Logo／App Icon 規格 v5.0）～§7；舊 v33 已歸檔 `brand-assets/archive/ICON_v33/`。⚠️ 待釐清：Logbook 目前 `Assets.xcassets/AppIcon.appiconset` 有 `AppIcon_light_1024.png`／`AppIcon_tinted_1024.png` 等多個變體，v5 只提供單一 1024 圖——換圖時 dark／tinted 變體要不要另做、怎麼做，開工時先問 PM／總指揮；換完須重新 Archive 驗 Icon（含 macOS）。
+- **v1.4 換用 v5 新 App Icon（總指揮 10/17 通知；PM 已看預覽同意，但**排 v1.4 前不動**）**：四張新圖在 `_JD2-family/brand-assets/ICON_v5/`（family 提交 `153ae27`），規格 `_App管理/COLOR_SYSTEM.md` §6.6。對應 `Assets.xcassets/AppIcon.appiconset` 現有四欄位，**只換圖檔、`Contents.json` 不用改**（已核對：light／dark／tinted 三個 iOS 欄位＋mac 2x 512，共四個 filename）：`AppIcon_light_1024.png`←`jd2_lb_v5_1024.png`（不透明）；`AppIcon_dark_1024.png`←`jd2_lb_v5_dark_1024.png`（不透明）；`AppIcon_tinted_1024.png`←`jd2_lb_v5_tinted_1024.png`（透明、全白）；`AppIcon_mac_1024.png`←`jd2_lb_v5_mac_1024.png`（透明邊、824 主體）。四張實測皆 1024×1024（hasAlpha：light／dark=no，tinted／mac=yes）。總指揮提到的 `jd2_lb_dark_1024.png`／`jd2_lb_tinted_1024.png` 舊檔：**實測 appiconset 內沒有**（只有上述四張＋Contents.json），不需清除，若在別處再確認。換用後驗證：模擬器看一般／深色／著色（iOS 主畫面設定）＋Mac Dock；重產圖檔用 `bash _JD2-family/brand-assets/tools/icon_render/render_icons.sh`，**不手改圖檔**。舊 v33 在 `brand-assets/archive/ICON_v33/`。
 - **v1.4 開工前置（總指揮 10/16 提醒）**：先跑 `bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook` 對照 171／0／1，確認 Kit v9.6.0／v0.8.0 無回歸（見「目前狀態」共用層）。
 - **驗 App-i 紀錄簽章（總指揮 10/16 備忘，排 v1.4 之後、不急）**：用 DiveImportKit v0.8.0 的 `SignedRecordCanonicalizer`，以 `sourceApp` 辨識 App-i 紀錄，用 `ndlExceeded` 重建簽章內容，**不得**把 `decoOccurred`／`erViolation` 兩個相容鍵納入。
 
