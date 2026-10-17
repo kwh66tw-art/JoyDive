@@ -23,7 +23,7 @@
 - ✅ **v1.3 已上傳並送審（PM 2026-10-10 晚）**：iOS／macOS 兩平台 Build 4（1.3）皆為 **Waiting for Review**。ASC 內容由 App-lb 以 Chrome 建立 1.3 版本草稿並填入（主類別 Sports；副標英／繁中／日；說明、宣傳文字、What's New、關鍵字三語；選 Build 4），逐項重載後讀回驗證；截圖 12 張由 PM 上傳。
 - ✅ **ASC 關鍵字上限以「字元」計**（實測：英文組 100 字元／114 bytes 完整接受、剩餘 0）。
 - ⚠️ ASC 說明欄為純文字，不可帶 Markdown `**`；填表單時 `form_input` 對非主要語系的說明欄不可靠（四組曾沒寫進去），一律重載後讀回驗證。
-- ✅ **v1.3 (Build 4) 已上架（PM 2026-10-14 通知，2026-10-16 PM 確認已上架、不需再查 ASC；本 session 未讀 ASC 頁面）**。紀錄見 `_JD2-family/F-01-FAMILY_ROADMAP.md` 第 9 行、`_App管理/週報/2026-10-14_變更紀錄.md` 第 5 行。接下來：舊文件整理與 v1.4 待辦（PM 未指示前不動）。
+- ✅ **v1.3 (Build 4) 已上架（PM 2026-10-14 通知，2026-10-16 PM 確認已上架、不需再查 ASC；本 session 未讀 ASC 頁面）**。紀錄見 `_JD2-family/F-01-FAMILY_ROADMAP.md` §1 表格的 App-lb 列（10/17 家族文件整併後的新版，**不寫行號**；舊版整份歸檔於 `_JD2-family/docs/roadmap-archive/F-01_2026-07-17至10-14_含F1-F13里程碑帳.md`）、`_App管理/週報/2026-10-14_變更紀錄.md` 第 5 行。接下來：v1.4 待辦（舊文件整理已於 10/17 完成；PM 未指示前不動）。
 - 環境狀態（之後可還原）：iPhone 18 Pro Max 模擬器（`EFF901CA`）已匯入 70 支範例、`DEBUG_forceHideAds`=YES、狀態列覆寫 9:41（`xcrun simctl status_bar EFF901CA… clear` 還原）；
   Mac 版 App 以 Debug 產物 `-jd2logbook.appLanguage` 參數重開過（資料未動，70 支範例），`defaults` 也寫了 `DEBUG_forceHideAds`=YES。
 - 送審後工作交 App-lb：舊文件整理（✅ 10/17 完成）、v1.4 待辦。
