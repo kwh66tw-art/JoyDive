@@ -87,6 +87,8 @@ v1.1 曾新增此資料夾（`DiveComputerState.swift`／`SurfaceStatus.swift`�
 原本分散在本 repo 的 `TestFiles/`（測試 fixture）與 `file_format_research/`（格式研究樣本）
 已集中至家族共用目錄 `_JD2-family/dive-log-samples/`（供 ultra 等其他專案未來重用），
 測試檔的 fixture 路徑已同步更新。詳見 `_JD2-family/F-00-文件登錄表.md`。
+**2026-10-18 起樣本實際位置在 `~/Documents/ProjectRecDocs/_JD2-family/`（AppProject 之外，授權／隱私待確認；相對路徑不變）**，
+測試經 `JD2-LogbookTests/FixtureRoot.swift` 取得路徑（環境變數 `JD2_FIXTURE_ROOT` 可覆寫；根目錄不存在 ⇒ 測試失敗，不跳過）。
 
 ### JD2Core/Algorithm（F5 已完成遷移，2026-07-18；2026-09-13 修正）
 

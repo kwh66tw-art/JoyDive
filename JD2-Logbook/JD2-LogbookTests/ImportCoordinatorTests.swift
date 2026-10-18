@@ -25,15 +25,11 @@ final class ImportCoordinatorTests: XCTestCase {
 
     // MARK: - 路徑工具
 
-    /// repo 根目錄（TestFiles/ 的父目錄）
-    private var repoRoot: String {
-        let here       = (#filePath as NSString).deletingLastPathComponent  // .../JD2-LogbookTests
-        let moduleRoot = (here as NSString).deletingLastPathComponent       // .../JD2-Logbook
-        return (moduleRoot as NSString).deletingLastPathComponent           // .../JD2-Logbook (repo)
-    }
-
+    /// 樣本路徑：一律經 `FixtureRoot`（2026-10-18 起樣本在 `ProjectRecDocs/_JD2-family/dive-log-samples/`，
+    /// 可用環境變數 `JD2_FIXTURE_ROOT` 覆寫）。用到樣本的測試第一行要呼叫 `try FixtureRoot.requireRoot()`，
+    /// 根目錄不存在 ⇒ 失敗，不是跳過。
     private func testFilePath(_ relativePath: String) -> String {
-        (repoRoot as NSString).appendingPathComponent("../_JD2-family/dive-log-samples/\(relativePath)")
+        FixtureRoot.path(relativePath)
     }
 
     // MARK: - 輔助：建立最小合法 DiveLog
@@ -237,7 +233,8 @@ final class ImportCoordinatorTests: XCTestCase {
 
     // MARK: - DiveLogImporterFactory 格式偵測
 
-    func testFactorySelectsUDDFParser() {
+    func testFactorySelectsUDDFParser() throws {
+        try FixtureRoot.requireRoot()
         let path = testFilePath("UDDF/test42.uddf")
         let importer = DiveLogImporterFactory.selectImporter(for: path)
         XCTAssertNotNil(importer, "應找到 UDDF 解析器")
@@ -245,6 +242,7 @@ final class ImportCoordinatorTests: XCTestCase {
     }
 
     func testFactorySelectsCSVParser() throws {
+        try FixtureRoot.requireRoot()
         let path = testFilePath("CSV/test41.csv")
         try XCTSkipUnless(FileManager.default.fileExists(atPath: path),
                           "測試檔案不存在，略過：test41.csv")
@@ -254,6 +252,7 @@ final class ImportCoordinatorTests: XCTestCase {
     }
 
     func testFactorySelectsSuuntoJSONParser() throws {
+        try FixtureRoot.requireRoot()
         let path = testFilePath("Suunto/suunto_eon_core_nitrox.json")
         try XCTSkipUnless(FileManager.default.fileExists(atPath: path),
                           "測試檔案不存在，略過：suunto_eon_core_nitrox.json")
@@ -275,15 +274,17 @@ final class ImportCoordinatorTests: XCTestCase {
     // MARK: - 路徑存在性斷言（CH-3：家族層路徑解析稽核）
     //
     // 本檔案其餘測試對缺檔一律 XCTSkip（見上／下方各處），這是刻意的：CI／不同
-    // 開發者機器上 _JD2-family/dive-log-samples/ 不一定簽出完整。但這代表若一次
-    // repo 搬遷／改名讓 repoRoot／testFilePath() 的相對路徑算式本身算錯（而非「檔案
+    // 開發者機器上樣本（ProjectRecDocs/_JD2-family/dive-log-samples/）不一定存在完整。但這代表若一次
+    // repo 搬遷／改名讓 FixtureRoot 的路徑算式本身算錯（而非「檔案
     // 剛好沒簽出」），所有依賴它的測試會集體靜默 skip、綠燈掩蓋真正的路徑斷裂
     // ——這正是家族稽核點名的 T-01（`RealDiveSimulationTests` 上溯層數對不上、
     // 缺檔優雅跳過、空轉六週）同一種失效形狀。這支測試不 skip，直接斷言，
     // 用來把「路徑算式本身壞了」和「單純沒簽出樣本檔」分開：本機（樣本已簽出）
-    // 執行本測試理應必過；若失敗，代表 testFilePath() 的路徑解析算式壞了，
+    // 執行本測試理應必過；若失敗，代表 FixtureRoot 的路徑解析（或樣本根目錄）壞了，
     // 不是樣本檔案問題。
     func testFixturePathsResolveToExistingFiles() {
+        XCTAssertTrue(FixtureRoot.rootExists,
+                      "測試素材根目錄應存在：\(FixtureRoot.familyRoot)（樣本 2026-10-18 起在 ProjectRecDocs/_JD2-family/；可用 JD2_FIXTURE_ROOT 覆寫）")
         let fixtures = [
             "UDDF/test42.uddf",
             "CSV/test41.csv",
@@ -294,7 +295,7 @@ final class ImportCoordinatorTests: XCTestCase {
             let path = testFilePath(relativePath)
             XCTAssertTrue(
                 FileManager.default.fileExists(atPath: path),
-                "樣本檔案應存在於 \(path)——若失敗，代表 repoRoot／testFilePath() 的相對路徑" +
+                "樣本檔案應存在於 \(path)——若失敗，代表 FixtureRoot 的路徑" +
                 "解析算式與目前 repo 目錄結構不符（例如 repo 被搬移／改名），而非單純缺少樣本檔"
             )
         }
@@ -303,9 +304,10 @@ final class ImportCoordinatorTests: XCTestCase {
     // MARK: - 跨格式整合：各解析器 parse(from:) 回傳合理結果
 
     func testUDDFParserProducesDives() throws {
+        try FixtureRoot.requireRoot()
         let path = testFilePath("UDDF/test42.uddf")
         guard FileManager.default.fileExists(atPath: path) else {
-            throw XCTSkip("../_JD2-family/dive-log-samples/UDDF/test42.uddf 不存在")
+            throw XCTSkip("ProjectRecDocs/_JD2-family/dive-log-samples/UDDF/test42.uddf 不存在")
         }
         let parser = UDDFParser()
         let dives = try parser.parse(from: path)
@@ -318,9 +320,10 @@ final class ImportCoordinatorTests: XCTestCase {
     }
 
     func testCSVParserProducesDivesWithEmptyLocation() throws {
+        try FixtureRoot.requireRoot()
         let path = testFilePath("CSV/test41.csv")
         guard FileManager.default.fileExists(atPath: path) else {
-            throw XCTSkip("../_JD2-family/dive-log-samples/CSV/test41.csv 不存在")
+            throw XCTSkip("ProjectRecDocs/_JD2-family/dive-log-samples/CSV/test41.csv 不存在")
         }
         // SubsurfaceCSVParser 為 DiveLogImporter（透過工廠取得）
         guard let parser = DiveLogImporterFactory.selectImporter(for: path) else {
@@ -338,9 +341,10 @@ final class ImportCoordinatorTests: XCTestCase {
     }
 
     func testSuuntoJSONParserProducesDivesWithEmptyLocation() throws {
+        try FixtureRoot.requireRoot()
         let path = testFilePath("Suunto/suunto_ocean_air.json")
         guard FileManager.default.fileExists(atPath: path) else {
-            throw XCTSkip("../_JD2-family/dive-log-samples/Suunto/suunto_ocean_air.json 不存在")
+            throw XCTSkip("ProjectRecDocs/_JD2-family/dive-log-samples/Suunto/suunto_ocean_air.json 不存在")
         }
         // 2026-07-19 家族層 import 共用第二階段：SuuntoJSONParser 實作已搬遷至
         // DiveImportKit，本地薄包裝只透過 DiveLogImporter 協定的 parse(from:) 存取，
@@ -359,6 +363,7 @@ final class ImportCoordinatorTests: XCTestCase {
     }
 
     func testCrossFormatAllParsersPassValidation() throws {
+        try FixtureRoot.requireRoot()
         // 四種格式的解析結果都應能通過 validateDives
         let files: [(String, String)] = [
             ("UDDF/test42.uddf",                       "UDDF"),
@@ -368,12 +373,14 @@ final class ImportCoordinatorTests: XCTestCase {
         ]
 
         let coordinator = makeCoordinator()
+        var checkedFiles = 0
 
         for (relativePath, expectedFormat) in files {
             let path = testFilePath(relativePath)
             guard FileManager.default.fileExists(atPath: path) else {
-                continue  // 測試環境中缺少該檔案則略過
+                continue  // 根目錄存在但缺單一檔案：略過該檔；全部缺則由下方 checkedFiles 斷言擋下（不再零斷言綠燈）
             }
+            checkedFiles += 1
             guard let parser = DiveLogImporterFactory.selectImporter(for: path) else {
                 XCTFail("找不到 \(relativePath) 的解析器")
                 continue
@@ -385,6 +392,7 @@ final class ImportCoordinatorTests: XCTestCase {
             XCTAssertEqual(validated.count, dives.count,
                 "\(relativePath)（\(expectedFormat)）的所有日誌都應通過 validateDives")
         }
+        XCTAssertGreaterThan(checkedFiles, 0, "四個樣本一個都沒找到——樣本根目錄 \(FixtureRoot.familyRoot) 可能路徑有誤；不得零斷言通過")
     }
 
     // MARK: - 效能基線測試（Week 8）
@@ -404,6 +412,7 @@ final class ImportCoordinatorTests: XCTestCase {
     }
 
     func testPerformance_BatchParse_AllFormats() throws {
+        try FixtureRoot.requireRoot()
         let allTestFiles: [String] = [
             testFilePath("UDDF/test42.uddf"),
             testFilePath("UDDF/test-apd-inspiration.uddf"),
@@ -454,9 +463,10 @@ final class ImportCoordinatorTests: XCTestCase {
 
     /// 測試單一格式的重複解析效能（Suunto JSON，純 Swift 解析，速度最快）
     func testPerformance_SuuntoJSON_Repeated() throws {
+        try FixtureRoot.requireRoot()
         let path = testFilePath("Suunto/suunto_eon_core_nitrox.json")
         guard FileManager.default.fileExists(atPath: path) else {
-            throw XCTSkip("../_JD2-family/dive-log-samples/Suunto/suunto_eon_core_nitrox.json 不存在")
+            throw XCTSkip("ProjectRecDocs/_JD2-family/dive-log-samples/Suunto/suunto_eon_core_nitrox.json 不存在")
         }
         let parser = SuuntoJSONParser()
         let iterations = 50

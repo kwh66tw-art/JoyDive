@@ -18,33 +18,32 @@ import Foundation
 
 final class DiveImportKitAdapterTests: XCTestCase {
 
-    /// 家族共用樣本目錄：../_JD2-family/dive-log-samples/UDDF/
+    /// 家族共用樣本：`dive-log-samples/UDDF/test42.uddf`——一律經 `FixtureRoot`
+    /// （2026-10-18 起在 `ProjectRecDocs/_JD2-family/`，可用環境變數 `JD2_FIXTURE_ROOT` 覆寫）。
     private var test42Path: String {
-        URL(fileURLWithPath: #file)
-            .deletingLastPathComponent()   // JD2-LogbookTests/
-            .deletingLastPathComponent()   // JD2-Logbook/
-            .deletingLastPathComponent()   // JD2-Logbook/ (project root)
-            .appendingPathComponent("../_JD2-family/dive-log-samples/UDDF/test42.uddf")
-            .path
+        FixtureRoot.path("UDDF/test42.uddf")
     }
 
+    /// 根目錄不存在 ⇒ 失敗（不跳過）；根目錄在但缺單一檔案才 XCTSkip。
     private func skipIfMissing(_ path: String) throws {
+        try FixtureRoot.requireRoot()
         try XCTSkipUnless(FileManager.default.fileExists(atPath: path),
                           "測試檔案不存在，略過：\((path as NSString).lastPathComponent)")
     }
 
     // MARK: - 路徑存在性斷言（CH-3：家族層路徑解析稽核）
     //
-    // 下方 skipIfMissing() 對缺檔一律 XCTSkip——刻意保留，因為不同機器上樣本
-    // 檔可能沒簽出。但這支測試不 skip，直接斷言：若 test42Path 的三層
-    // deletingLastPathComponent() 相對路徑算式因 repo 搬遷／改名而算錯，這支
-    // 測試會失敗（不是被靜默略過），與家族稽核點名的 T-01 失效形狀
+    // 下方 skipIfMissing() 在素材根目錄不存在時直接**失敗**（`FixtureRoot.requireRoot()`），
+    // 只有「根目錄在、單一檔案缺」才 XCTSkip。這支測試直接斷言：若樣本被搬移／改名而路徑
+    // 解析斷裂，測試會失敗（不是被靜默略過），與家族稽核點名的 T-01 失效形狀
     // （路徑算式壞了卻被優雅跳過掩蓋）明確區分開。
     func testFixturePathResolvesToExistingFile() {
+        XCTAssertTrue(FixtureRoot.rootExists,
+                      "測試素材根目錄應存在：\(FixtureRoot.familyRoot)（可用 JD2_FIXTURE_ROOT 覆寫）")
         XCTAssertTrue(
             FileManager.default.fileExists(atPath: test42Path),
-            "樣本檔案應存在於 \(test42Path)——若失敗，代表 test42Path 的相對路徑解析" +
-            "算式與目前 repo 目錄結構不符（例如 repo 被搬移／改名），而非單純缺少樣本檔"
+            "樣本檔案應存在於 \(test42Path)——若失敗，代表 FixtureRoot 的路徑解析" +
+            "（或樣本根目錄）有誤，而非單純缺少樣本檔"
         )
     }
 

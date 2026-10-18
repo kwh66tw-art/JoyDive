@@ -77,7 +77,12 @@ JD2-Logbook/                        ← 本 repo 根目錄
 
 > 測試樣本原本放在本 repo 的 `TestFiles/`，已於 2026-07-18 集中搬遷至家族共用
 > 目錄 `_JD2-family/dive-log-samples/`（供 ultra 等其他專案重用），本 repo 已
-> 無此資料夾。
+> 無此資料夾。**2026-10-18 起樣本再搬出 AppProject**（含第三方來源與真實潛水紀錄，授權／隱私待確認），
+> 平行放到 `~/Documents/ProjectRecDocs/_JD2-family/`（`dive-log-samples/`、`00_Import_samples/`、
+> `00_Import_submission/`、`00_Import_test_scenes/`，相對路徑不變）。測試一律經
+> `JD2-LogbookTests/FixtureRoot.swift` 取得路徑：先讀環境變數 `JD2_FIXTURE_ROOT`（＝該 `_JD2-family` 目錄），
+> 沒設時由檔案位置上溯算出（AppProject 的上一層＋`ProjectRecDocs/_JD2-family`）；**根目錄不存在 ⇒ 測試失敗，不是跳過**。
+> 換機器或 CI 沒有樣本時，要設 `JD2_FIXTURE_ROOT`（xcodebuild 需加 `TEST_RUNNER_` 前綴）。
 
 ---
 

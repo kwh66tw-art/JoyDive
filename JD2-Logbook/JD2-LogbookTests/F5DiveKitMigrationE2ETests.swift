@@ -20,11 +20,9 @@ import DiveKit
 @MainActor
 final class F5DiveKitMigrationE2ETests: XCTestCase {
 
+    /// 樣本一律經 `FixtureRoot`（2026-10-18 起在 `ProjectRecDocs/_JD2-family/`，可用 `JD2_FIXTURE_ROOT` 覆寫）。
     private var samplesDir: String {
-        let here = (#filePath as NSString).deletingLastPathComponent
-        let repoRoot = (((here as NSString).deletingLastPathComponent) as NSString).deletingLastPathComponent
-        return (((repoRoot as NSString).deletingLastPathComponent) as NSString)
-            .appendingPathComponent("_JD2-family/00_Import_samples/UDDF")
+        FixtureRoot.familyPath("00_Import_samples/UDDF")
     }
 
     private var trimixSamplePath: String {
@@ -32,23 +30,19 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
     }
 
     private var subsurfaceSamplePath: String {
-        let here = (#filePath as NSString).deletingLastPathComponent
-        let repoRoot = (((here as NSString).deletingLastPathComponent) as NSString).deletingLastPathComponent
-        let familyRoot = (((repoRoot as NSString).deletingLastPathComponent) as NSString)
-            .appendingPathComponent("_JD2-family/dive-log-samples/Subsurface")
-        return (familyRoot as NSString).appendingPathComponent("abitofeverything.ssrf")
+        FixtureRoot.path("Subsurface/abitofeverything.ssrf")
     }
 
     // MARK: - 路徑存在性斷言（CH-3：家族層路徑解析稽核）
     //
-    // 下方兩支 E2E 測試對缺檔一律 XCTSkipUnless——刻意保留（樣本檔不一定簽出到
-    // 每台機器）。但這支測試不 skip，直接斷言 samplesDir／trimixSamplePath／
-    // subsurfaceSamplePath 三組相對路徑算式（各自四層 deletingLastPathComponent()
-    // 回溯到 AppProject 根目錄）目前都解得到真實檔案。若 repo 被搬移／改名導致
-    // 回溯層數對不上，這支測試會失敗，而不是任由上面兩支測試集體靜默 skip
-    // 掩蓋路徑斷裂——即家族稽核點名的 T-01 失效形狀（六週空轉、缺檔優雅跳過）
-    // 在本檔案的對應防線。
+    // 下方兩支 E2E 測試：樣本根目錄不存在 ⇒ `FixtureRoot.requireRoot()` 讓它們**失敗**（不 skip）；
+    // 根目錄在但缺單一檔案才 XCTSkipUnless。這支測試直接斷言 samplesDir／trimixSamplePath／
+    // subsurfaceSamplePath 都解得到真實檔案。若樣本被搬移／改名導致路徑解析斷裂，
+    // 這支測試會失敗，而不是任由其他測試靜默 skip 掩蓋路徑斷裂——即家族稽核點名的
+    // T-01 失效形狀（六週空轉、缺檔優雅跳過）在本檔案的對應防線。
     func testFixturePathsResolveToExistingFiles() {
+        XCTAssertTrue(FixtureRoot.rootExists,
+                      "測試素材根目錄應存在：\(FixtureRoot.familyRoot)（可用 JD2_FIXTURE_ROOT 覆寫）")
         XCTAssertTrue(
             FileManager.default.fileExists(atPath: trimixSamplePath),
             "樣本檔案應存在於 \(trimixSamplePath)——若失敗，代表 samplesDir／" +
@@ -69,8 +63,9 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
     /// 交叉驗證（OVM Dive Planner）；此測試不重複跑黑盒工具，只驗證 App 層
     /// 呼叫 DiveKit 之後的資料完整性與物理合理性（不崩潰、單調性、範圍）。
     func testRealTrimixSample_RunsFullDecoReplayThroughDiveKit() throws {
+        try FixtureRoot.requireRoot()
         try XCTSkipUnless(FileManager.default.fileExists(atPath: trimixSamplePath),
-                          "_JD2-family/00_Import_samples/UDDF/dive_2026-06-20.uddf 不存在")
+                          "00_Import_samples/UDDF/dive_2026-06-20.uddf 不存在（ProjectRecDocs/_JD2-family/ 之下）")
 
         guard let importer = DiveLogImporterFactory.selectImporter(for: trimixSamplePath) else {
             XCTFail("Factory 未能為真實 UDDF 樣本選出解析器"); return
@@ -147,8 +142,9 @@ final class F5DiveKitMigrationE2ETests: XCTestCase {
     /// 樣本 dive333（Trimix 18/28→EAN46）與驗證方法見 DiveImportKit
     /// `SubsurfaceXMLParserTests.testParseRealSample_AbitOfEverything_Dive333_Trimix1828ToEAN46`。
     func testRealSubsurfaceXMLSample_TrimixHeliumSurvivesToAnalysis() throws {
+        try FixtureRoot.requireRoot()
         try XCTSkipUnless(FileManager.default.fileExists(atPath: subsurfaceSamplePath),
-                          "_JD2-family/dive-log-samples/Subsurface/abitofeverything.ssrf 不存在")
+                          "dive-log-samples/Subsurface/abitofeverything.ssrf 不存在（ProjectRecDocs/_JD2-family/ 之下）")
 
         guard let importer = DiveLogImporterFactory.selectImporter(for: subsurfaceSamplePath) else {
             XCTFail("Factory 未能為真實 Subsurface XML 樣本選出解析器"); return
