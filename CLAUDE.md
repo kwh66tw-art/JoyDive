@@ -46,7 +46,7 @@
   v1.1／v1.0 為已完成的歷史階段，見下方小節與 `V1_1_BACKLOG.md`。
 - **目標上線**：v1.3 已上架；下一版 v1.4 待 PM 排程（開工前先跑 `run_tests.sh logbook` 確認 Kit v9.6.0／v0.8.0 無回歸，見 `HANDOFF.md`）。
 - **App 類別**：運動（`LSApplicationCategoryType = public.app-category.sports`，PM 2026-10-10；
-  ASC 主類別由 PM 手動設定）。
+  ASC 主類別已於 2026-10-10 改為 Sports——由 App-lb 在建立 1.3 版本草稿後自動化操作，PM 10/18 確認）。
 - **平台**：iOS 17.0+ / macOS 14.0+，Swift 6
 - **Bundle ID**：`com.jd2logbook.JD2-Logbook`
 - **Apple Team**：HUA SHENG Huang（77UHM3NN7J）

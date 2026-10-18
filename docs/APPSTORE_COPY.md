@@ -90,7 +90,7 @@ New in this update:
 | Subtitle | Log Every Dive, Every Story | Optional |
 | Description | See above | |
 | Keywords | See above | 100 chars max |
-| Primary Category | **Sports**（v1.3 PM 2026-10-10 裁示：對齊其他潛水日誌 App；v1.2 為 Health & Fitness）——ASC 手動改 | Required |
+| Primary Category | **Sports**（v1.3 PM 2026-10-10 裁示：對齊其他潛水日誌 App；v1.2 為 Health & Fitness）——✅ 2026-10-10 已於 ASC 改為 Sports（建立 1.3 版本草稿後在 App Information 改，PM 10/18 確認） | Required |
 | Support URL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | Required |
 | Marketing URL | (leave blank) | Optional |
 | Privacy Policy URL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | Required |
@@ -302,7 +302,7 @@ GPS座標から地図上へ自動的にピンをドロップ。これまで訪�
 | 副題 | ダイビングログを、すべての潜水に | オプション |
 | 説明 | 上記を参照 | |
 | キーワード | 上記を参照 | 最大100文字 |
-| プライマリカテゴリ | **スポーツ**（v1.3 PM 2026-10-10：他のダイブログAppに合わせる；v1.2はヘルスケア／フィットネス）——ASCで手動変更 | 必須 |
+| プライマリカテゴリ | **スポーツ**（v1.3 PM 2026-10-10：他のダイブログAppに合わせる；v1.2はヘルスケア／フィットネス）——✅ 2026-10-10 ASCでスポーツに変更済み（1.3バージョン作成後にApp情報で変更、PM 10/18確認） | 必須 |
 | サポートURL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | 必須 |
 | マーケティングURL | （空欄のまま） | オプション |
 | プライバシーポリシーURL | https://kwh66tw-art.github.io/JoyDive/logbook/privacy | 必須 |
