@@ -284,7 +284,7 @@ final class DiveLog {
         hasher.combine(diveMode)
         hasher.combine(surfacePressureBar)
         hasher.combine(metersPerBar)
-        // v1.4 A1：重放本身不讀它，但 App 層閘門 `isReplayBlockedByLegacyAltitude` 讀——
+        // v1.4 A1／D-A：`isReplayBlockedByLegacyAltitude` 讀它、映射成 Kit 的 `environmentUntrusted`——
         // 使用者把舊標籤高海拔改成海水後，要立刻解除「不支援」而不是沿用舊狀態。
         hasher.combine(environmentType)
         return hasher.finalize()
@@ -374,11 +374,13 @@ final class DiveLog {
     /// `surfacePressureBar` 的模型預設值（匯入沒帶氣壓、手動新增都會是它）。
     static let defaultSurfacePressureBar = 1.0
 
-    /// 重放 App 層閘門：舊標籤 `"altitude"` 但水面氣壓仍是預設 1.0 ⇒ 不支援（PM 2026-10-26 裁示 2）。
+    /// 舊標籤 `"altitude"` 但水面氣壓仍是預設 1.0 ⇒ 氣壓不可信（PM 2026-10-26 裁示 2）。
+    /// 映射成 DiveKit v9.7.0 `DiveInput.environmentUntrusted`（`replayInput`）——是否擋下由 Kit 判
+    /// （目標一律擋；前導只在殘氮上界截斷之後仍留在鏈中才擋，D-A 主案 a'）。
     ///
     /// 使用者標了高海拔、實際水面氣壓卻沒有記錄——用 1.0 bar 算會低估組織負荷（偏樂觀）。
     /// 「是預設值」用**明確等於** `defaultSurfacePressureBar` 判斷，不另設容差（PM 裁示）。
-    /// 🔴 詳細頁重放與日後列表篩選（A3）**都必須呼叫這一個屬性**，不得各自重寫條件（D4）。
+    /// 🔴 詳細頁重放與日後列表篩選（A3）**都必須經由這一個屬性→Kit**，不得各自重寫條件（D4）。
     var isReplayBlockedByLegacyAltitude: Bool {
         environmentType == Self.legacyAltitudeEnvironmentType
             && surfacePressureBar == Self.defaultSurfacePressureBar

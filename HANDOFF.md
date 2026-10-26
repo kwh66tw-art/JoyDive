@@ -12,13 +12,13 @@
 ### 🔴 2026-10-26 晚 v1.4 進度（壓縮前交接；以此段為準）
 
 - **已完成並 push**：A1 環境「未記錄」（含 SwiftData 版本化：`DiveLogSchemaV1_0／V1_2／V1_3／V1_4`，跳版升級 v1.0／v1.2／v1.3→v1.4 模擬器實測全過）、
-  A2 搜尋擴充（潛點＋備註＋潛伴＋標籤）、D-A 暫行 a（`LegacyAltitudeReplayGate`，前導舊標籤也擋）。測試 `run_tests.sh logbook` **199/0/0～198/0/1**（唯一可跳＝StoreKit 價格測試）。
+  A2 搜尋擴充（潛點＋備註＋潛伴＋標籤）、D-A 主案 a'（DiveKit v9.7.0 `environmentUntrusted`；暫行 a 已移除）。測試 `run_tests.sh logbook` **202/0/0**（唯一可跳＝StoreKit 價格測試）。
 - **決策檔**：`docs/decisions/D-2026-10-26-環境欄位未記錄.md`、`…-v1.4-D3至D7裁示.md`、`…-DA-舊標籤高海拔前導潛水-聯合提案.md`（皆 PM 已裁示）。
 - **稽核計劃** `docs/V1_4_AUDIT_TEST_PLAN.md`（31 項）：✅ T1–T3（跳版升級）、T17、T18、T21；**下一步＝單元測試批次 T9、T10、T20、T22–T26**，
   再模擬器批次（T4–T6、T11–T14、T27–T28）、macOS 批次（T16、T27、T31）、收尾 T29–T30。
-- **等外部**：Kit a'（`DiveInput.environmentUntrusted`）由總指揮排程；版號到了再把目標＋前導閘門改走 Kit、移除暫行 a。
+- ~~等外部 Kit a'~~ ✅ v9.7.0 已上線、已改走 Kit（10/26）。故障注入待 commit 後跑（`inject.sh` 需乾淨工作樹）。
 - **文案**：A1 三段＋D-A 前導原因句 ⏸ 上架前收尾再定稿（PM 10/26）；A2 搜尋提示仍草稿（未在該裁示內）；其餘 14 語待補。
-- **未做的 v1.4 項目**：A3 列表篩選（須共用 `LegacyAltitudeReplayGate`；統計／地圖不跟篩選）、B1 座標跳地圖、B2 同座標聚合、C 小項。
+- **未做的 v1.4 項目**：A3 列表篩選（組織負荷篩選須以 Kit 重放結果為準、不得另寫條件；統計／地圖不跟篩選）、B1 座標跳地圖、B2 同座標聚合、C 小項。
 - **待 PM**：D-B（手動新增要不要潛伴／標籤欄位）、D-C（水面氣壓 0／負數怎麼處理）。
 - **模擬器**（專用、可刪）：JD2-LB-UpgradeTest、JD2-LB-Upgrade-v10／v12／v13。測試取數技巧：`TEST_RUNNER_JD2_T18_OUT=<路徑>` 讓測試寫檔。
 - **陷阱**：①zsh 不會把 `$var` 拆詞（迴圈請寫成 bash 腳本）；②測試中釋放 `AppLanguageManager` 會 SIGABRT（共用 static 實例）；

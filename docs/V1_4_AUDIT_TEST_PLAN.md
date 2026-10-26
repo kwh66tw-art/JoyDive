@@ -16,7 +16,7 @@
 |---|---|---|---|
 | F1 | ✅（10/26 修正並實測，見 T1–T3）~~跳版升級未測~~：v1.2（或更早）使用者若跳過 v1.3 直接裝 v1.4，store 模型雜湊對不上 `DiveLogSchemaV1`。v1.3 以前靠 SwiftData 隱式推斷遷移；**改用 `SchemaMigrationPlan` 後，未列在計劃內的舊版 store 能否開檔，未查證**。若失敗會進 `DatabaseOpenErrorView`（資料不刪，但打不開）。 | `DiveLogDatabase.swift` 改帶 `migrationPlan`；v1.2 送審 commit `3ba4bd2` 可簽出 | P0 |
 | F2 | V1 凍結拷貝的欄位與 v1.3 `DiveLog` 逐欄一致（`diveMode` 預設值寫法不同但值相同；比對時 `gasMixJSON` 因行尾註解被 regex 漏抓、`waterTemp` 屬另一個 struct）——**機器比對＋v1.3 真實 store 實測（1.0.0→2.0.0、6 筆全欄位不變）雙重確認** | 決策檔 §四之三 | 已驗 |
-| F3 | ✅ 10/26 裁示並實作暫行 a（Kit a' 待排程）。~~舊標籤閘門只擋**目標潛水**；舊標籤高海拔（1.0 bar）若是**前導潛水**，仍以 1.0 bar 進殘氮鏈，後一支潛水的組織負荷可能偏樂觀。PM 未裁示。 | `DiveAnalysisView.swift` `.task`；`DiveReplayChainQuery.precedingDives` 未過濾 | P0（待 PM 裁示） |
+| F3 | ✅ 10/26 裁示；**Kit v9.7.0 a' 已上線、App-lb 已改走 Kit，暫行 a 已移除**。~~舊標籤閘門只擋**目標潛水**；舊標籤高海拔（1.0 bar）若是**前導潛水**，仍以 1.0 bar 進殘氮鏈，後一支潛水的組織負荷可能偏樂觀。PM 未裁示。 | `DiveAnalysisView.swift` `.task`；`DiveReplayChainQuery.precedingDives` 未過濾 | P0（待 PM 裁示） |
 | F4 | **macOS 完全未實機看過**：編輯頁 Picker、詳細頁環境列、組織負荷原因句、搜尋欄提示（macOS 走 `TextField` 分支） | 只截了 iOS | P1 |
 | F5 | **地圖面板**（`DiveSiteSheetView`）環境列改用共用函式，未截圖 | — | P1 |
 | F6 | 4 個新字串只有 en／en-GB／zh-Hant／ja；其餘 14 語顯示英文。術語未比對 F-10 術語表；「Search location…」為 App-u 共用鍵，App-lb 已不再使用 ⇒ 需回報總指揮 | `Localizable.xcstrings` | P1 |
@@ -101,7 +101,7 @@
 
 ## 四、需要 PM 決定的事（不等執行完）
 
-- ~~**D-A**~~ ✅ PM 10/26 裁示：主案 a'（Kit）、v1.4 暫行 a（App 層，已實作）——見 `docs/decisions/D-2026-10-26-DA-舊標籤高海拔前導潛水-聯合提案.md`
+- ~~**D-A**~~ ✅ PM 10/26 裁示：主案 a'（Kit v9.7.0，已改走）；暫行 a 已移除——見 `docs/decisions/D-2026-10-26-DA-舊標籤高海拔前導潛水-聯合提案.md`
 - **D-B**（F11）：手動新增是否要加潛伴／標籤欄位（會動 schema → V3），或列為已知限制？
 - **D-C**（F8）：水面氣壓 0／負數是否視為「未記錄」而非高海拔？
 - **D-D**（F6）：新字串定稿（4 句）與 14 語翻譯排程。

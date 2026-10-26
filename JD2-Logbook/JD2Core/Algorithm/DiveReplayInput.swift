@@ -190,7 +190,10 @@ extension DiveLog {
             environment: replayEnvironment,
             recordedSeriesIndex: nil,
             isBreathHold: diveModeValue.isBreathHold,
-            gasMixConfidence: replayGasMixConfidence
+            gasMixConfidence: replayGasMixConfidence,
+            // v1.4 D-A（PM 2026-10-26 主案 a'，DiveKit v9.7.0）：舊標籤高海拔＋預設氣壓 ⇒ 氣壓不可信。
+            // 目標與前導共用這一個映射；前導是否擋下由 Kit 在殘氮上界截斷之後判（§六之二）。
+            environmentUntrusted: isReplayBlockedByLegacyAltitude
         )
     }
 }
@@ -224,29 +227,25 @@ enum DiveReplayChainQuery {
 
 // MARK: - App 層重放閘門（舊標籤高海拔）
 
-/// 舊標籤高海拔＋預設 1.0 bar 紀錄的重放閘門——**詳細頁與日後列表篩選（A3）唯一的判定來源**（D4）。
+/// 舊標籤高海拔＋預設 1.0 bar 紀錄被擋時，顯示哪一句原因（D-A，PM 2026-10-26）。
 ///
-/// - 目標本身被擋：PM 2026-10-26 裁示 2（`docs/decisions/D-2026-10-26-環境欄位未記錄.md` §四之二）。
-/// - ⏸ **暫行**：96h 候選前導中有一筆被擋 ⇒ 目標也判不支援（PM 2026-10-26 D-A 裁示「v1.4 暫行 a」，
-///   `docs/decisions/D-2026-10-26-DA-舊標籤高海拔前導潛水-聯合提案.md`）。
-///   **這是暫時偏離** `_JD2-family/decisions/2026-08-22_重放連續潛水殘氮與前置判斷-設計.md` §六之二
-///   （Kit 先以殘氮上界截掉可忽略的前導，再判環境）：這裡不做截斷，96h 內的舊紀錄一律擋，會過度觸發。
-///   Kit a'（`DiveInput.environmentUntrusted`）上線後改走 Kit、**移除本暫行規則**。
-/// - 閉氣前導不檢查：Kit 在建鏈時就把閉氣前導濾掉，它們不會進鏈（`DiveInput.isBreathHold`）。
+/// **判定本身在 Kit**（DiveKit v9.7.0 `DiveInput.environmentUntrusted`，由 `replayInput` 映射）：
+/// 目標被標記、或被標記的前導在殘氮上界截斷之後仍留在鏈中 ⇒ `Anomaly.untrustedEnvironment`。
+/// 本 enum 只把那個 anomaly 轉成文案分類；**不得在 App 層另寫判定條件**（D4：A3 篩選同樣以
+/// Kit 的重放結果為準）。原 v1.4 暫行 a（96h 候選有一筆就擋、偏離 §六之二）已由 Kit v9.7.0 取代、移除。
+///
+/// ⚠️ 本 App 只對舊標籤高海拔設 `environmentUntrusted`，故 `.untrustedEnvironment` 必定是這個原因；
+/// 日後若有別的來源設此旗標，須同步改這裡。
 enum LegacyAltitudeReplayGate {
     enum Reason: Equatable {
         /// 目標潛水本身是舊標籤高海拔＋預設氣壓
         case target
-        /// ⏸ 暫行：96h 候選前導中有舊標籤高海拔＋預設氣壓的紀錄
+        /// 鏈中（截斷後）有舊標籤高海拔＋預設氣壓的前導潛水
         case precedingDive
     }
 
-    /// - Parameter precedingDives: 與送進 Kit 的同一份候選（`DiveReplayChainQuery.precedingDives`）。
-    static func blockReason(target: DiveLog, precedingDives: [DiveLog]) -> Reason? {
-        if target.isReplayBlockedByLegacyAltitude { return .target }
-        let blockedPreceding = precedingDives.contains {
-            !$0.diveModeValue.isBreathHold && $0.isReplayBlockedByLegacyAltitude
-        }
-        return blockedPreceding ? .precedingDive : nil
+    static func reason(for anomaly: DiveReplayEngine.Anomaly) -> Reason? {
+        guard case .untrustedEnvironment(_, let isTargetDive) = anomaly else { return nil }
+        return isTargetDive ? .target : .precedingDive
     }
 }
