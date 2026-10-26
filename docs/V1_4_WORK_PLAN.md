@@ -25,13 +25,13 @@ A1 → A2 → A3 → B1＋B2（兩者相依、同批）→ C（順手帶）。A 
 
 | 順序 | 項目 | 估時 | 風險 |
 |---|---|---|---|
-| 1 | A1 環境「未記錄」 | 1 天 | 低（純顯示層，演算法零變動） |
+| 1 | A1 環境「未記錄」 | 2–2.5 天（10/26 改 `String?`＋遷移＋高海拔閘門 D8） | 中（SwiftData 遷移；演算法零變動） |
 | 2 | A2 搜尋擴充 | 0.5 天（搜 JSON 文字）／1.5 天（新增欄位＋migration） | 低／中 |
 | 3 | A3 列表篩選 | 3–4 天 | 中（效能未量） |
 | 4 | B1 座標跳轉 | 0.5–1 天 | 低 |
 | 5 | B2 聚合 | 1–1.5 天 | 中（成因未實機重現） |
 | 6 | C 小項 | 約 2 天 | 低 |
-| | **合計（不含 GDPR／UMP）** | **約 8–11 天** | |
+| | **合計（不含 GDPR／UMP）** | **約 9–12.5 天**（10/26 因 A1 改估上調） | |
 
 ## 二、A 組（PM 優先）
 
@@ -40,8 +40,9 @@ A1 → A2 → A3 → B1＋B2（兩者相依、同批）→ C（順手帶）。A 
 - **現況（已查證）**：`DiveLog.environmentType` 預設 `"seawater"`（`JD2Core/Models/DiveLog.swift:108`）；DiveImportKit 所有解析器都不填此欄（唯一提及是 `DivingLogSQLiteParser.swift` 一則「刻意不映射 Water」的註解）⇒ **每筆資料現在都是預設值**，無法分辨真海水或沒記錄。
 - **重放與環境字串無關**：重放讀 `surfacePressureBar`／`metersPerBar`（`JD2Core/Algorithm/DiveReplayInput.swift:20-29`），註解明寫「不做 environmentType 字串分支」。
 - **家族裁示（總指揮 10/26 轉述，我未逐檔核對）**：匯入與重放不依 environmentType 調整密度（`_JD2-family/decisions/2026-09-12_P3查證結果-匯入端壓力欄位盤點.md` §5.4）。⇒ **「未記錄」時重放仍用 1.0 bar／10.0 m/bar（現況），演算法輸出零變動。**
-- **做法**：新增字串值 `"unknown"`（`environmentType` 是 String，**不需改 SwiftData schema**；備份 `DiveLogBackup` 欄位亦為 String，相容）。需補：`DiveLogDetailView.swift:48`、`Views/Map/DiveSiteSheetView.swift:56` 兩處 `switch`（目前 default 落到海水）；匯入時 `parsed.environmentType == nil` 的新紀錄設 `"unknown"`（`DiveImportKitAdapter.swift:47`）。
-- **限制**：舊資料（含全部既有紀錄）**不回溯**，維持顯示「海水」，因為無法區分預設值與真實選擇（建議，待 PM 確認，見 D2）。
+- **做法（10/26 裁示，見 `docs/decisions/D-2026-10-26-環境欄位未記錄.md`）**：`environmentType` 改 `String?`，`nil`＝未記錄（**不用 `"unknown"` 哨兵**——原草稿做法作廢）。需 SwiftData 遷移（v1.3 真實 store 實測）＋`DiveLogBackup` 改可選（舊備份相容測試）；手動新增預設未記錄、Picker 加選項；詳細頁／地圖面板 `switch` 補 nil 分支；「重放限制說明」頁加一句揭露（三語草稿在決策檔 §四，待 PM 看）。**有值的紀錄絕不覆寫**（簽章欄位）。
+- **限制**：舊資料（含全部既有紀錄）**不回溯**，維持顯示「海水」（D2 已裁示採納）。
+- **估時更新**：因改 schema，A1 由 1 天改估 **1.5–2 天**；再加高海拔閘門（D8）＋0.5 天 ⇒ **2–2.5 天**。
 - **已知殘留風險**：湖泊潛水仍以海水密度計算深度換算（家族「深度顯示換算密度」仍列待確認，`2026-09-29_入水前出水後畫面-盤點與裁示.md` §三-3）；本項不處理，需在說明中標明。
 - **驗證**：新匯入無環境資料的檔案 → 詳細頁顯示「未記錄」；既有紀錄不變；重放輸出前後比對一致。
 
@@ -114,8 +115,9 @@ A1 → A2 → A3 → B1＋B2（兩者相依、同批）→ C（順手帶）。A 
 
 | # | 決定 | 我的建議 |
 |---|---|---|
-| D1 | A1：編輯頁 Picker（`DiveLogEditSheet.swift:501`）要不要提供「未記錄」選項 | 提供，讓使用者可把錯填的改回來（待 PM） |
-| D2 | A1：既有舊資料不回溯，維持顯示「海水」 | 同意（無法區分預設值與真實選擇） |
+| D1 | A1：編輯頁 Picker（`DiveLogEditSheet.swift:501`）要不要提供「未記錄」選項 | ✅ 10/26 裁示：提供；手動新增預設未記錄（PM 10/26 於本 session 確認） |
+| D2 | A1：既有舊資料不回溯，維持顯示「海水」 | ✅ 10/26 裁示：不回溯（同上） |
+| D8 | A1 衍生：編輯頁選「高海拔」不改 `surfacePressureBar`，重放仍用 1.0 bar（會低估組織負荷；`DiveLogEditSheet.swift:504`）——只靠揭露，還是另做處理 | ✅ 10/26 裁示（PM 確認）：移除 Altitude 選項、改由 `surfacePressureBar < 0.95` 推導顯示；既有 altitude＋1.0 bar 紀錄重放判不支援（A3 篩選共用閘門）。見決策檔 §四之二；A1 估時再 +0.5 天 |
 | D3 | A2：潛伴／標籤用 A2-1（搜 JSON 文字）或 A2-2（新增欄位）；「潛點名稱」是否就是 `location` | 先 A2-1；A2-2 等 `SchemaMigrationPlan` 建立後再議 |
 | D4 | A3：組織負荷篩選採總指揮方案 B（共用 Kit `precheck`） | 同意；先做效能量測再定是否需要 Kit 改動 |
 | D5 | A3：地圖與頂部統計是否跟著篩選 | 未定（PM 10/07 已列待定） |
