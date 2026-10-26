@@ -43,8 +43,9 @@ func makeDiveLog(from kitParsed: DiveImportKit.ParsedDiveLog) -> DiveLog {
     dive.latitude  = parsed.latitude
     dive.longitude = parsed.longitude
 
-    // 環境信息（Kit 為 optional；本地為帶預設值的必填欄位，nil = 維持預設）
-    if let environmentType    = parsed.environmentType    { dive.environmentType    = environmentType }
+    // 環境信息：水域類型兩邊都是 optional，原樣帶入（nil = 未記錄，v1.4 A1；有值絕不改寫）。
+    // 氣壓／換算係數本地為帶預設值的必填欄位，nil = 維持預設。
+    dive.environmentType = parsed.environmentType
     if let surfacePressureBar = parsed.surfacePressureBar { dive.surfacePressureBar = surfacePressureBar }
     if let metersPerBar       = parsed.metersPerBar       { dive.metersPerBar       = metersPerBar }
 
@@ -220,6 +221,7 @@ func dedupeLocalDivesAgainstExisting(
 /// C2（2026-09-07）：新增 `waterTemperature` 參數（預設 nil，與 Kit 側
 /// `ParsedDiveLog.init` 的預設一致），供 `WaterTemperatureOptionalTests` 驗證
 /// `makeDiveLog(from:)` 對水溫的 nil/非 nil 都原樣傳遞、不重新填入編造值。
+/// v1.4 A1：新增 `environmentType`（預設 nil），供 `EnvironmentUnrecordedTests` 驗證水域類型原樣傳遞。
 func makeTestParsedDiveLog(
     dateTime: Date,
     location: String,
@@ -227,9 +229,10 @@ func makeTestParsedDiveLog(
     diveTimeSeconds: Int,
     roundtripID: String?,
     waterTemperature: Double? = nil,
-    sourceFormat: String = "manual"
+    sourceFormat: String = "manual",
+    environmentType: String? = nil
 ) -> DiveImportKit.ParsedDiveLog {
-    DiveImportKit.ParsedDiveLog(
+    var parsed = DiveImportKit.ParsedDiveLog(
         dateTime: dateTime,
         location: location,
         maxDepth: maxDepth,
@@ -240,6 +243,8 @@ func makeTestParsedDiveLog(
             [DiveImportKit.ImportExtra(key: DiveImportKit.jd2RoundtripIDKey, value: $0)]
         } ?? []
     )
+    parsed.environmentType = environmentType
+    return parsed
 }
 
 /// 格式顯示名稱（供 log 訊息用，不需要讓呼叫端知道 Kit 的 DiveLogFormat 型別存在）。

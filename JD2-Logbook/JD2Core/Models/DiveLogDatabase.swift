@@ -25,10 +25,8 @@ final class DiveLogDatabase {
     // MARK: - 初始化
 
     private init() {
-        // 設定 SwiftData schema
-        let schema = Schema([
-            DiveLog.self
-        ])
+        // 設定 SwiftData schema（v1.4 起版本化，見 `DiveLogSchema.swift`）
+        let schema = Schema(versionedSchema: DiveLogSchemaV2.self)
 
         // 設定 ModelConfiguration
         let modelConfiguration = ModelConfiguration(
@@ -59,7 +57,9 @@ final class DiveLogDatabase {
     static func openPersistentContainer(schema: Schema,
                                         configuration: ModelConfiguration) -> Result<ModelContainer, Error> {
         do {
-            return .success(try ModelContainer(for: schema, configurations: [configuration]))
+            return .success(try ModelContainer(for: schema,
+                                               migrationPlan: DiveLogMigrationPlan.self,
+                                               configurations: [configuration]))
         } catch {
             return .failure(error)
         }

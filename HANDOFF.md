@@ -101,6 +101,7 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
   有固定選項的（氣體、類型、組織負荷）交給篩選。提示文字一併改（不再只寫「地點」）。
 - **環境：原始檔沒有就顯示「未記錄」（PM 10/07 採納）**：目前沒有任何解析器填 `environmentType`（全 Parsers 0 處；`DiveLog.swift:108` 預設 `seawater`）。
   ✅ **10/26 已查**：重放讀 `surfacePressureBar`／`metersPerBar`（`DiveReplayInput.swift:20-29`），不是環境字串；家族裁示匯入與重放**不依 environmentType 調整密度**（總指揮轉述 `decisions/2026-09-12_P3查證結果-匯入端壓力欄位盤點.md` §5.4，我未逐檔核對）⇒「未記錄」時重放維持 1.0 bar／10.0 m/bar、演算法零變動。湖泊潛水仍以海水密度換算的限制不處理。細節與待 PM 裁示（編輯頁 Picker 是否加「未記錄」、舊資料不回溯）見 `docs/V1_4_WORK_PLAN.md` A1。
+  ✅ **10/26 A1 程式已完成**（決策檔 `docs/decisions/D-2026-10-26-環境欄位未記錄.md`；截圖 `docs/screenshots/v1.4-A1/`）。待辦：三段新文案 PM 定稿＋補 15 語；真機與 v1.2→v1.4 跳升未測。
 
 - 「原始匯入資料」6 個來源鍵名（`cns`／`minPPO2`／`maxPPO2`／`altitudeRange`／`decoRequired`／`gasSwitches`）補在地化名稱（18 語）；`gasSwitches` 值是 JSON，需整理成可讀格式。
 

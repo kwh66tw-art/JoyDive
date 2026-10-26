@@ -26608,6 +26608,96 @@
           }
         }
       }
+    },
+    "Altitude (legacy label)": {
+      "comment": "v1.4 A1: edit-sheet Water Type option shown only for old records stored as 'altitude'. DRAFT — PM to finalize; other 14 languages pending.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Altitude (legacy label)"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Altitude (legacy label)"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高海拔潛水（舊標籤）"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高所（旧ラベル）"
+          }
+        }
+      }
+    },
+    "This dive is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated.": {
+      "comment": "v1.4 A1: reason shown before the 'not available' notice for legacy altitude records at default 1.0 bar. DRAFT — PM to finalize; other 14 languages pending.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This dive is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This dive is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這支潛水標記為高海拔，但沒有記錄水面氣壓，無法推算組織負荷。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このダイブは高所として記録されていますが、水面気圧が記録されていないため、組織負荷を推定できません。"
+          }
+        }
+      }
+    },
+    "Tissue loading is calculated from the surface pressure and depth-to-pressure factor stored with the dive (sea-level seawater by default: 1.0 bar, 10 m per bar). The water type (salt or fresh) is for your records only and does not affect the calculation.": {
+      "comment": "v1.4 A1: Tissue loading info page disclosure (decision D-2026-10-26 §4 draft v2). DRAFT — PM to finalize; other 14 languages pending.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tissue loading is calculated from the surface pressure and depth-to-pressure factor stored with the dive (sea-level seawater by default: 1.0 bar, 10 m per bar). The water type (salt or fresh) is for your records only and does not affect the calculation."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tissue loading is calculated from the surface pressure and depth-to-pressure factor stored with the dive (sea-level seawater by default: 1.0 bar, 10 m per bar). The water type (salt or fresh) is for your records only and does not affect the calculation."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組織負荷依紀錄中的水面氣壓與深度換算係數計算（預設為海平面海水：1.0 bar、每 10 公尺 1 bar）。水域類型（海水／淡水）僅供紀錄，不影響計算。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組織負荷は、ログに保存された水面気圧と深度換算係数から計算します（初期値は海抜0mの海水：1.0 bar、10 mごとに1 bar）。水域の種類（海水／淡水）は記録用で、計算には影響しません。"
+          }
+        }
+      }
     }
   },
   "version": "1.1"

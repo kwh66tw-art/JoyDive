@@ -51,6 +51,9 @@ struct DiveAnalysisView: View {
     @State private var replay: DiveReplayEngine.ReplayResult?
     /// 前置判斷 P1–P6 攔下來的原因（nil = 通過，正常顯示組織艙/ceiling/NDL）
     @State private var anomaly: DiveReplayEngine.Anomaly?
+    /// App 層閘門（v1.4 A1，PM 2026-10-26 裁示 2）：舊標籤高海拔＋水面氣壓仍是預設值 ⇒ 不重放。
+    /// 不經 Kit（Kit 的 `Anomaly` 沒有這個原因，也不該有——這是 Logbook 資料層的問題）。
+    @State private var blockedByLegacyAltitude = false
     /// 選取的**原始剖面樣本**索引（不是重放點索引——見 `selectedPoint` 的說明）。
     @State private var selectedIndex: Int?
     /// ⓘ 限制說明頁（2026-09-12 裁示 4.5：8 種異常 ＋ 2 項一般性限制全部羅列）
@@ -122,8 +125,12 @@ struct DiveAnalysisView: View {
 
             // 組織艙區塊：算得出來就畫長條，算不出來就**在同一個位置**說明為什麼
             // ——而不是讓這塊空間靜默消失（使用者無從分辨「沒選點」與「不支援」）。
-            if let anomaly {
-                tissueUnavailableNotice(anomaly)
+            if blockedByLegacyAltitude {
+                tissueUnavailableNotice(reason: languageManager.localized(
+                    "This dive is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated."
+                ))
+            } else if anomaly != nil {
+                tissueUnavailableNotice(reason: nil)
             } else if let point = selectedPoint {
                 TissueBarsView(loadPercents: DiveReplayEngine.tissueLoadPercent(
                     pN2: point.tissuePN2,
@@ -141,6 +148,14 @@ struct DiveAnalysisView: View {
         }
         .animation(.easeInOut(duration: 0.15), value: selectedIndex)
         .task {
+            // 同一個判定（`DiveLog.isReplayBlockedByLegacyAltitude`）日後也供列表篩選使用（D4），不得另寫條件。
+            if dive.isReplayBlockedByLegacyAltitude {
+                replay = nil
+                anomaly = nil
+                blockedByLegacyAltitude = true
+                return
+            }
+            blockedByLegacyAltitude = false
             // 鏈式重放（樣本 ≤300、步長 10s；鏈長實務上 1–3 筆——主執行緒毫秒級）。
             // 候選前導潛水給 96h 內全部，窗口過濾／排序／保守上界截斷由 Kit 自理。
             let outcome = DiveReplayEngine.replayChain(
@@ -177,13 +192,15 @@ struct DiveAnalysisView: View {
     // 字串一律走 `languageManager.localized(_:)`：App 內語言切換後才會即時生效（v1.2 #17）。
 
     /// 不支援：「本次潛水無法顯示互動式組織負荷 — 查看詳情 ⓘ」。
-    private func tissueUnavailableNotice(_ anomaly: DiveReplayEngine.Anomaly) -> some View {
+    /// `reason`：App 層閘門的原因句（v1.4 A1 舊標籤高海拔），放在通用句前；Kit 拒算為 nil（維持原樣）。
+    private func tissueUnavailableNotice(reason: String?) -> some View {
         Button {
             showingLimitations = true
         } label: {
             // ⓘ 與「— 查看詳情」同一段文字、以不斷行空格相接：換行時跟著句尾走
             // （PM 10/06：先前 HStack 分欄，ⓘ 會停在第一行最右邊）。寫法對齊下方提示列。
-            Text(verbatim: languageManager.localized("Interactive tissue loading is not available for this dive — see detail") + "\u{00A0}ⓘ")
+            Text(verbatim: (reason.map(Self.sentencePrefix) ?? "")
+                 + languageManager.localized("Interactive tissue loading is not available for this dive — see detail") + "\u{00A0}ⓘ")
             .font(.caption)
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -191,6 +208,13 @@ struct DiveAnalysisView: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("replayAnomalyNotice")
+    }
+
+    /// 原因句接在通用句前：全形句末標點（中日文）直接相接，其餘補一個半形空格
+    /// （模擬器 2026-10-26：中文原本顯示成「負荷。 本次」）。
+    static func sentencePrefix(_ sentence: String) -> String {
+        guard let last = sentence.last else { return "" }
+        return "。！？".contains(last) ? sentence : sentence + " "
     }
 
     /// 支援時的提示句＋句尾「— 有限支援 ⓘ」連結（PM 2026-10-05 定稿；文案見 Localizable 對應鍵）。

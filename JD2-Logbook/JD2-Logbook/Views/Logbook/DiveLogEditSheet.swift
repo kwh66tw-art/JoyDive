@@ -43,7 +43,11 @@ struct DiveLogEditSheet: View {
     /// `weightTotal`／`cylinderStartPressure` 既有作法，改為 nil 起始，使用者不填
     /// 就存 nil。
     @State private var waterTemperature: Double?
-    @State private var environmentType: String
+    /// 水域類型；nil = 未記錄（v1.4 A1，PM 2026-10-26：新增預設未記錄，不再預設海水）。
+    @State private var environmentType: String?
+    /// 舊標籤 `"altitude"` 的紀錄才額外列出「高海拔（舊標籤）」選項，讓選單不空白；
+    /// 使用者可改成其他值，新紀錄選不到它（PM 2026-10-26 裁示 (a)）。
+    private let showsLegacyAltitudeOption: Bool
     @State private var notes: String
 
     /// 潛水類型（水肺／自由潛水／浮潛）。預設水肺——Logbook 是水肺日誌。
@@ -118,7 +122,8 @@ struct DiveLogEditSheet: View {
             // 不給預設值（C2）：28.0 是一個合理的熱帶水溫，使用者不會覺得需要改
             // 它，於是預設值就變成了記錄值。比照 airTemperature 等既有欄位。
             _waterTemperature   = State(initialValue: nil)
-            _environmentType    = State(initialValue: "seawater")
+            _environmentType    = State(initialValue: nil)
+            showsLegacyAltitudeOption = false
             _notes              = State(initialValue: "")
             _diveMode           = State(initialValue: .scuba)
             modeStartsBlank     = false
@@ -159,6 +164,7 @@ struct DiveLogEditSheet: View {
             originalDiveTimeSeconds = dive.diveTimeSeconds
             _waterTemperature   = State(initialValue: dive.waterTemperature)
             _environmentType    = State(initialValue: dive.environmentType)
+            showsLegacyAltitudeOption = dive.environmentType == DiveLog.legacyAltitudeEnvironmentType
             _notes              = State(initialValue: dive.notes)
             let blankMode = dive.displayGasMix == nil && dive.diveModeValue == .scuba
             _diveMode           = State(initialValue: blankMode ? nil : dive.diveModeValue)
@@ -498,10 +504,15 @@ struct DiveLogEditSheet: View {
                 // BLOCK 3: 環境 (Environment)
                 // ═════════════════════════════════════════════════════════
                 Section(header: Text(verbatim: languageManager.localized("Conditions"))) {
+                    // 水域類型（nil = 未記錄）。「高海拔」不再是選項：改由水面氣壓推導（v1.4 A1）。
                     Picker(languageManager.localized("Water Type"), selection: $environmentType) {
-                        Text(verbatim: languageManager.localized("Seawater")).tag("seawater")
-                        Text(verbatim: languageManager.localized("Freshwater")).tag("freshwater")
-                        Text(verbatim: languageManager.localized("Altitude")).tag("altitude")
+                        Text(languageManager.localized("Not Recorded")).tag(String?.none)
+                        Text(verbatim: languageManager.localized("Seawater")).tag(String?.some(DiveLog.WaterType.seawater.rawValue))
+                        Text(verbatim: languageManager.localized("Freshwater")).tag(String?.some(DiveLog.WaterType.freshwater.rawValue))
+                        if showsLegacyAltitudeOption {
+                            Text(verbatim: languageManager.localized("Altitude (legacy label)"))
+                                .tag(String?.some(DiveLog.legacyAltitudeEnvironmentType))
+                        }
                     }
 
                     // 天氣（nil = 未記錄）

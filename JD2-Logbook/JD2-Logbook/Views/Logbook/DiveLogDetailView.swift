@@ -44,13 +44,7 @@ struct DiveLogDetailView: View {
             || dive.cylinderEndPressure != nil
     }
 
-    private var environmentText: String {
-        switch dive.environmentType {
-        case "freshwater": return languageManager.localized("Freshwater")
-        case "altitude":   return languageManager.localized("Altitude")
-        default:           return languageManager.localized("Seawater")
-        }
-    }
+    private var environmentText: String { dive.environmentDisplayText(languageManager) }
 
     /// R-058：解碼失敗時不再靜默顯示「Air」——那會讓一支解碼失敗的 trimix 潛水
     /// 看起來像是真的空氣潛水，使用者完全無從察覺。見 `DiveLog.decodedGasMix` 說明。

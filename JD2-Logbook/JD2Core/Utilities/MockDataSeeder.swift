@@ -120,9 +120,10 @@ final class MockDataSeeder {
             let lonJitter = Double.random(in: -0.0005...0.0005)
             log.setLocation(latitude: site.lat + latJitter, longitude: site.lon + lonJitter)
             
-            // 設定環境類型
+            // 設定環境類型。v1.4 A1：新紀錄不再寫舊標籤 "altitude"——高海拔湖泊存成淡水，
+            // 「高海拔」由 0.85 bar 的水面氣壓推導（`DiveLog.isHighAltitude`）。
             log.setEnvironment(
-                type: site.env,
+                type: site.env == DiveLog.legacyAltitudeEnvironmentType ? DiveLog.WaterType.freshwater.rawValue : site.env,
                 surfacePressure: site.env == "altitude" ? 0.85 : 1.0,
                 metersPerBar: site.env == "freshwater" ? 10.3 : 10.0
             )

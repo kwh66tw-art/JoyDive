@@ -19,7 +19,10 @@ struct DiveLogBackupEntry: Codable {
     /// 舊備份檔（C2 之前匯出）一律帶非 nil 數字，新備份檔可能帶 nil——兩者都要能
     /// 正確還原，型別必須跟 `DiveLog.waterTemperature` 同步保持 optional。
     var waterTemperature: Double?
-    var environmentType: String
+    /// 水域類型。nil = 未記錄（v1.4 A1）。**Optional 是刻意的**，理由同 `waterTemperature`：
+    /// 舊備份檔一律帶字串（照原值還原），新備份檔可能沒有這個 key——合成的 `init(from:)` 對
+    /// Optional 用 `decodeIfPresent`，兩者都能還原。型別必須跟 `DiveLog.environmentType` 同步。
+    var environmentType: String?
     var surfacePressureBar: Double
     var metersPerBar: Double
     var weather: String?

@@ -104,8 +104,21 @@ final class DiveLog {
 
     // MARK: - 環境信息
 
-    /// 潛水環境類型: "seawater", "freshwater", "altitude"
-    var environmentType: String = "seawater"
+    /// 水域類型：`"seawater"`／`"freshwater"`；nil = 未記錄（v1.4 A1，PM 2026-10-26）。
+    ///
+    /// 原為非 optional、預設 `"seawater"`——DiveImportKit 解析器都不填此欄、手動新增也預設海水
+    /// ⇒ 「海水」大多是 App 補的，分不出真海水或沒記錄。改 optional 與 `weather`、DiveImportKit
+    /// `ParsedDiveLog.environmentType`（String?）一致；**不用 "unknown" 之類的哨兵字串**（App-u 同類
+    /// 畫面 default 會顯示成海水，共用資料庫時是靜默錯）。
+    ///
+    /// - 既有紀錄**不回溯**：遷移後原值照舊（多數是補上的 "seawater"）。
+    /// - **有值的紀錄絕不覆寫**：App-u／App-i 手錶寫入的值在簽章欄位內，改了驗章失敗；
+    ///   nil 只來自「匯入本來沒有」或「新建時沒選」。
+    /// - `"altitude"` 是**舊標籤**（編輯頁已移除此選項）：高海拔改由 `surfacePressureBar` 推導
+    ///   （`isHighAltitude`），顯示層把它當成「水域未記錄」，見 `waterType`。
+    /// - 重放**不讀**這個字串（只讀 `surfacePressureBar`／`metersPerBar`，見 `replayEnvironment`）。
+    /// 決策：`docs/decisions/D-2026-10-26-環境欄位未記錄.md`。
+    var environmentType: String?
 
     /// 海平面氣壓（bar），用於高海拔環境
     var surfacePressureBar: Double = 1.0
@@ -271,6 +284,9 @@ final class DiveLog {
         hasher.combine(diveMode)
         hasher.combine(surfacePressureBar)
         hasher.combine(metersPerBar)
+        // v1.4 A1：重放本身不讀它，但 App 層閘門 `isReplayBlockedByLegacyAltitude` 讀——
+        // 使用者把舊標籤高海拔改成海水後，要立刻解除「不支援」而不是沿用舊狀態。
+        hasher.combine(environmentType)
         return hasher.finalize()
     }
 
@@ -328,6 +344,46 @@ final class DiveLog {
     /// 自由潛水／浮潛是閉氣，沒有呼吸氣體 ⇒ 列表、詳細頁、地圖卡片、編輯頁都不顯示氣體（PM 2026-10-10）。
     var showsGas: Bool { diveModeValue == .scuba }
 
+    // MARK: 環境（v1.4 A1，PM 2026-10-26；決策 `docs/decisions/D-2026-10-26-環境欄位未記錄.md`）
+
+    /// 水域類型（顯示用）。存的是 `environmentType`；這裡只認海水／淡水兩種。
+    enum WaterType: String, CaseIterable {
+        case seawater, freshwater
+    }
+
+    /// 儲存值 → 水域類型。nil、舊標籤 `"altitude"`、未知值 ⇒ nil（顯示「未記錄」）。
+    /// 只讀不寫：推導結果**不寫回** `environmentType`。
+    var waterType: WaterType? {
+        environmentType.flatMap(WaterType.init(rawValue:))
+    }
+
+    /// 編輯頁已移除的舊選項值。舊紀錄可能還存著它（顯示層＝水域未記錄）。
+    static let legacyAltitudeEnvironmentType = "altitude"
+
+    /// 高海拔判定門檻（bar）：水面氣壓**低於**此值 ⇒ 顯示「高海拔」徽章。
+    /// 本專案決定，僅供日誌分類（約海拔 450 m）；比照 App-u 手錶同一門檻
+    /// （`JD2-ultra/JD2UltraApp/Data/DiveLogRecorder.swift:279-280`，該處註解同為「本專案決定，僅供日誌分類」）。
+    /// **不是**外部標準，不影響計算。
+    static let highAltitudeSurfacePressureThresholdBar = 0.95
+
+    /// 「高海拔」徽章：由實際存的水面氣壓推導，和水域類型是兩件獨立的事（可並列「海水・高海拔」）。
+    var isHighAltitude: Bool {
+        surfacePressureBar < Self.highAltitudeSurfacePressureThresholdBar
+    }
+
+    /// `surfacePressureBar` 的模型預設值（匯入沒帶氣壓、手動新增都會是它）。
+    static let defaultSurfacePressureBar = 1.0
+
+    /// 重放 App 層閘門：舊標籤 `"altitude"` 但水面氣壓仍是預設 1.0 ⇒ 不支援（PM 2026-10-26 裁示 2）。
+    ///
+    /// 使用者標了高海拔、實際水面氣壓卻沒有記錄——用 1.0 bar 算會低估組織負荷（偏樂觀）。
+    /// 「是預設值」用**明確等於** `defaultSurfacePressureBar` 判斷，不另設容差（PM 裁示）。
+    /// 🔴 詳細頁重放與日後列表篩選（A3）**都必須呼叫這一個屬性**，不得各自重寫條件（D4）。
+    var isReplayBlockedByLegacyAltitude: Bool {
+        environmentType == Self.legacyAltitudeEnvironmentType
+            && surfacePressureBar == Self.defaultSurfacePressureBar
+    }
+
     /// 解碼後的匯入原始資料（Detail view「原始資料」區塊用）
     var importExtras: [String: String] {
         guard let data = importExtrasJSON.data(using: .utf8),
@@ -374,9 +430,9 @@ final class DiveLog {
         self.updatedAt = Date()
     }
 
-    /// 設定環境信息（海水/淡水/高海拔）
+    /// 設定環境信息（水域類型 nil = 未記錄；高海拔由 `surfacePressure` 推導）
     func setEnvironment(
-        type: String,
+        type: String?,
         surfacePressure: Double? = nil,
         metersPerBar: Double? = nil
     ) {

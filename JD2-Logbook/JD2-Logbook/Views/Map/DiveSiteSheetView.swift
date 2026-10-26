@@ -52,13 +52,7 @@ struct DiveSiteSheetView: View {
         return gas.localizedDisplayName(languageManager)
     }
 
-    private var environmentText: String {
-        switch dive.environmentType {
-        case "freshwater": return languageManager.localized("Freshwater")
-        case "altitude":   return languageManager.localized("Altitude")
-        default:           return languageManager.localized("Seawater")
-        }
-    }
+    private var environmentText: String { dive.environmentDisplayText(languageManager) }
 
     private var coordinatesText: String? {
         guard let lat = dive.latitude, let lon = dive.longitude else { return nil }
