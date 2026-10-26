@@ -1,11 +1,13 @@
 # HANDOFF — JD2-Logbook
 
-> 交接文件（固定檔名滾動式；前一版在 `docs/handoff-archive/HANDOFF_2026-10-06午.md`）。
+> 交接文件（固定檔名滾動式；前一版在 `docs/handoff-archive/HANDOFF_2026-10-18.md`）。
 > v1.3 的逐項紀錄與裁示全文在 `docs/V1_3_WORK_PLAN.md`（§七、§八）；本檔只寫目前狀態與下一步。
 
 ## 交接時間
 
-2026-10-10（滾動更新；狀態以指令查證）。前一版：`docs/handoff-archive/HANDOFF_2026-10-06午.md`。
+2026-10-26（滾動更新；狀態以指令查證）。前一版：`docs/handoff-archive/HANDOFF_2026-10-18.md`。
+
+**2026-10-26 本次重點**：PM 要 v1.4 優先做 #6 列表篩選、#7 搜尋擴充、#8 環境「未記錄」，並新增 GPS 座標跳地圖、地圖同座標聚合兩項。已完成**僅文件**：`docs/V1_4_WORK_PLAN.md`（優先順序、工時、待 PM 裁示 D1–D7）。**v1.4 仍未動工，程式碼零變動**，等 PM 排程。總指揮 10/26 兩次回覆（家族紀錄、組織負荷篩選方案 B）已併入該計劃。
 
 ## 目前狀態
 
@@ -75,6 +77,9 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 
 ## 下一版待辦（PM 10/07）
 
+> 🔴 **10/26 起 v1.4 的優先順序、工時估計、待 PM 裁示事項統一看 `docs/V1_4_WORK_PLAN.md`**（A1 環境「未記錄」→ A2 搜尋 → A3 篩選 → B1 座標跳轉＋B2 聚合 → C 小項）。以下各條保留為原始登記與位置線索。
+> **新增（PM 10/26）**：①詳細頁 GPS 座標有內容時可點，跳地圖頁並置中該地點（`DiveLogDetailView.swift:223`、`DiveSiteSheetView.swift:242`；分頁狀態在 `MainTabView` 本地 `@State`）。②地圖同座標 2 筆以上聚合後無法點開看 log——成因為讀碼推斷（`DiveMapRepresentable.swift:54-56` 只 `showAnnotations`，座標相同永遠拆不開），**未實機重現**；建議解法為偵測重疊時改列清單，不用 jitter；重疊門檻先實測再定。修完依鐵律 8 回報總指揮（App-u 同寫法 `JD2UltraPhone/UI/Map/DiveMapRepresentable.swift:53-54`）。
+
 - **v1.4 換用 v5 新 App Icon（總指揮 10/17 通知；PM 已看預覽同意，但**排 v1.4 前不動**）**：四張新圖在 `_JD2-family/brand-assets/ICON_v5/`（family 提交 `153ae27`），規格 `_App管理/COLOR_SYSTEM.md` §6.6。對應 `Assets.xcassets/AppIcon.appiconset` 現有四欄位，**只換圖檔、`Contents.json` 不用改**（已核對：light／dark／tinted 三個 iOS 欄位＋mac 2x 512，共四個 filename）：`AppIcon_light_1024.png`←`jd2_lb_v5_1024.png`（不透明）；`AppIcon_dark_1024.png`←`jd2_lb_v5_dark_1024.png`（不透明）；`AppIcon_tinted_1024.png`←`jd2_lb_v5_tinted_1024.png`（透明、全白）；`AppIcon_mac_1024.png`←`jd2_lb_v5_mac_1024.png`（透明邊、824 主體）。四張實測皆 1024×1024（hasAlpha：light／dark=no，tinted／mac=yes）。`jd2_lb_dark_1024.png`／`jd2_lb_tinted_1024.png` 是 v33 歸檔母版，在 `_JD2-family/brand-assets/archive/ICON_v33/`（總指揮 10/17 更正），**不在本 repo**；appiconset 內只有上述四張＋Contents.json，**沒有要清除的檔案**。換用後驗證：模擬器看一般／深色／著色（iOS 主畫面設定）＋Mac Dock；重產圖檔用 `bash _JD2-family/brand-assets/tools/icon_render/render_icons.sh`，**不手改圖檔**。舊 v33 在 `brand-assets/archive/ICON_v33/`。
 - **v1.4 開工前置（總指揮 10/16 提醒）**：先跑 `bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook` 對照 171／0／1（**skipped 唯一允許的是 `PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded` 這支 StoreKit 測試**——它依執行時機跳過，10/18 早上的 172／0／0 是例外，總指揮已接受此基準），確認 Kit v9.6.1／v0.8.1 無回歸（見「目前狀態」共用層）。
 - **驗 App-i 紀錄簽章（總指揮 10/16 備忘，排 v1.4 之後、不急）**：用 DiveImportKit v0.8.0 的 `SignedRecordCanonicalizer`，以 `sourceApp` 辨識 App-i 紀錄，用 `ndlExceeded` 重建簽章內容，**不得**把 `decoOccurred`／`erViolation` 兩個相容鍵納入。
@@ -95,8 +100,7 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 - **搜尋範圍擴充（PM 10/07 採納，與篩選同批）**：目前「搜尋地點…」只比對地點與備註（`DiveLogListView.swift:43-44`）⇒ 加潛伴、標籤、潛點名稱；
   有固定選項的（氣體、類型、組織負荷）交給篩選。提示文字一併改（不再只寫「地點」）。
 - **環境：原始檔沒有就顯示「未記錄」（PM 10/07 採納）**：目前沒有任何解析器填 `environmentType`（全 Parsers 0 處；`DiveLog.swift:108` 預設 `seawater`）。
-  🔴 **先查再改**：重放讀的是 `surfacePressureBar`／`metersPerBar`（`DiveReplayInput.swift:25-30`），不是環境字串——
-  匯入時 `metersPerBar` 是否依淡水調整**未查證**；湖泊潛水（例 Lake Coleridge）可能以海水密度計算。改「未記錄」時要決定重放的預設密度。
+  ✅ **10/26 已查**：重放讀 `surfacePressureBar`／`metersPerBar`（`DiveReplayInput.swift:20-29`），不是環境字串；家族裁示匯入與重放**不依 environmentType 調整密度**（總指揮轉述 `decisions/2026-09-12_P3查證結果-匯入端壓力欄位盤點.md` §5.4，我未逐檔核對）⇒「未記錄」時重放維持 1.0 bar／10.0 m/bar、演算法零變動。湖泊潛水仍以海水密度換算的限制不處理。細節與待 PM 裁示（編輯頁 Picker 是否加「未記錄」、舊資料不回溯）見 `docs/V1_4_WORK_PLAN.md` A1。
 
 - 「原始匯入資料」6 個來源鍵名（`cns`／`minPPO2`／`maxPPO2`／`altitudeRange`／`decoRequired`／`gasSwitches`）補在地化名稱（18 語）；`gasSwitches` 值是 JSON，需整理成可讀格式。
 
@@ -119,4 +123,4 @@ P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位�
 
 ## 開場指令建議
 
-先讀本檔與 `docs/V1_3_WORK_PLAN.md` §八。驗證：`bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook`（預期 171/0/1）。
+先讀本檔與 `docs/V1_4_WORK_PLAN.md`（v1.3 逐項紀錄在 `docs/V1_3_WORK_PLAN.md` §七、§八）。v1.4 開工前置：先跑 `run_tests.sh logbook`；PM 排程前不動工。驗證：`bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook`（預期 171/0/1）。

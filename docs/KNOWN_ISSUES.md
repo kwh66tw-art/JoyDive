@@ -44,6 +44,8 @@
 | 上升速率警示功能關閉中 | `showWarningEvents=false`（`DiveAnalysisView.swift:31`），使用者看不到；重開前須改家族色 | 功能未啟用 | 未排程（8/13 PM：呈現方式未定） |
 | 匯入不辨識潛水模式（自潛／浮潛皆當水肺） | DiveImportKit 尚無欄位；PM 10/04 裁示等 App-u 日誌格式定案 | 匯入資料的潛水類型 | 待 App-u |
 | `Localizable.xcstrings` 的 `%lld%%` 被 Xcode 標 `extractionState: stale` | 編輯頁改用 percentText 後無人引用；Xcode 每次 build／Archive 也會自動重排整份 xcstrings（2026-10-10 還原過一次），**提交前先 `git diff --stat`，需要時 `git checkout --` 還原** | 無功能影響 | v1.4 清理 |
+| 地圖同座標 2 筆以上聚合後無法點開看 log（PM 2026-10-26） | 讀碼推斷：`DiveMapRepresentable.swift:54-56` 點聚合只 `showAnnotations`，成員座標相同時縮放無法拆開。**未實機重現**；App-u 同寫法（總指揮 10/26 讀碼，未重現） | 同座標多筆紀錄看不到 | v1.4（`V1_4_WORK_PLAN.md` B2；修完回報總指揮評估 App-u） |
+| 環境欄位無「未記錄」：解析器皆不填 `environmentType`，每筆預設 `seawater` | `DiveLog.swift:108`；舊資料無法分辨預設值與真實選擇 | 淡水／高海拔紀錄顯示為海水 | v1.4（`V1_4_WORK_PLAN.md` A1；舊資料不回溯） |
 
 ---
 
