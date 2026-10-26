@@ -51,12 +51,12 @@ final class EnvironmentUnrecordedTests: XCTestCase {
         let cases: [(String, Double)] = [("seawater", 1.0), ("freshwater", 1.0), ("altitude", 1.0), ("altitude", 0.8)]
 
         do {
-            let v1Schema = Schema(versionedSchema: DiveLogSchemaV1.self)
+            let v1Schema = Schema(versionedSchema: DiveLogSchemaV1_3.self)
             let container = try ModelContainer(for: v1Schema,
                                                configurations: [ModelConfiguration(schema: v1Schema, url: storeURL)])
             let context = ModelContext(container)
             for (index, (env, pressure)) in cases.enumerated() {
-                let old = DiveLogSchemaV1.DiveLog(dateTime: Date(timeIntervalSince1970: Double(index) * 86_400),
+                let old = DiveLogSchemaV1_3.DiveLog(dateTime: Date(timeIntervalSince1970: Double(index) * 86_400),
                                                   location: "case\(index)", maxDepth: 20, diveTimeSeconds: 2400)
                 old.environmentType = env
                 old.surfacePressureBar = pressure
@@ -65,7 +65,7 @@ final class EnvironmentUnrecordedTests: XCTestCase {
             try context.save()
         }
 
-        let v2Schema = Schema(versionedSchema: DiveLogSchemaV2.self)
+        let v2Schema = Schema(versionedSchema: DiveLogSchemaV1_4.self)
         let result = DiveLogDatabase.openPersistentContainer(
             schema: v2Schema, configuration: ModelConfiguration(schema: v2Schema, url: storeURL))
         guard case .success(let container) = result else {
@@ -82,7 +82,7 @@ final class EnvironmentUnrecordedTests: XCTestCase {
     /// 遷移後的 V2 store 可寫入 nil（新紀錄未記錄）並讀回 nil。
     func testV2StoreRoundtripsNil() throws {
         let storeURL = tempDir.appendingPathComponent("v2.store")
-        let schema = Schema(versionedSchema: DiveLogSchemaV2.self)
+        let schema = Schema(versionedSchema: DiveLogSchemaV1_4.self)
         let config = ModelConfiguration(schema: schema, url: storeURL)
         do {
             guard case .success(let container) = DiveLogDatabase.openPersistentContainer(schema: schema, configuration: config)

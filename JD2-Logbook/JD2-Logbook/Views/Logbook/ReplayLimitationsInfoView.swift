@@ -12,7 +12,7 @@ struct ReplayLimitationsInfoView: View {
 
     // PM 2026-10-05 晚：只留一段（原第 1、2 條合併）；GF High、建模保守度揭露、「其他潛水僅顯示剖面」三條移除。
     // v1.4 A1（PM 2026-10-26 裁示 4）：加一句計算環境揭露——重放只用紀錄裡的水面氣壓與深度換算係數，
-    // 水域類型不影響計算。文案為草稿 v2，待 PM 定稿（`docs/decisions/D-2026-10-26-環境欄位未記錄.md` §四）。
+    // 水域類型不影響計算。文案為草稿 v2，上架前收尾再定稿（PM 10/26）（`docs/decisions/D-2026-10-26-環境欄位未記錄.md` §四）。
     private let lines = [
         "Tissue loading uses the Bühlmann ZHL-16C model to calculate reference values for recreational scuba dives. Repetitive dives in the same series include residual nitrogen from the earlier dives.",
         "Tissue loading is calculated from the surface pressure and depth-to-pressure factor stored with the dive (sea-level seawater by default: 1.0 bar, 10 m per bar). The water type (salt or fresh) is for your records only and does not affect the calculation.",

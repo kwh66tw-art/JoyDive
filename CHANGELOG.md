@@ -10,13 +10,13 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ### A1 環境「未記錄」（PM 2026-10-26；決策 `docs/decisions/D-2026-10-26-環境欄位未記錄.md`）
 - `DiveLog.environmentType` 改 `String?`（nil＝未記錄）；匯入沒帶就是未記錄，不再補海水；手動新增預設未記錄。既有紀錄不回溯。
-- **SwiftData 首次版本化**：`DiveLogSchemaV1`（v1.3 凍結拷貝）→ `DiveLogSchemaV2`，輕量遷移。v1.3 真實 store 模擬器覆蓋安裝實測：6 筆全欄位不變、store 版本 1.0.0 → 2.0.0。
+- **SwiftData 首次版本化**：每個上架版本一份凍結拷貝（`DiveLogSchemaV1_0`／`V1_2`／`V1_3`）→ `V1_4`，三段輕量遷移。初版只列 v1.3，稽核實測 v1.2 → v1.4 打不開（資料未動）⇒ PM 裁示補齊歷代版本。v1.0／v1.2／v1.3 當年 build 的真實 store 覆蓋安裝實測皆通過、全欄位不變（`docs/V1_4_AUDIT_TEST_PLAN.md` T1–T3）。
 - 編輯頁水域類型：未記錄／海水／淡水；「高海拔」移除，只對舊紀錄顯示「高海拔（舊標籤）」。
 - 「高海拔」改由水面氣壓 < 0.95 bar 推導、與水域並列顯示（本專案決定，僅供日誌，比照 App-u 手錶）。
 - 舊標籤高海拔＋水面氣壓為預設 1.0 ⇒ 組織負荷判不支援並顯示原因（App 層閘門，不改 Kit）。
 - 「關於組織負荷」頁加計算環境揭露；備份欄位改 optional（舊備份照原值還原）。
-- ⚠️ 三段新文案為草稿（英／繁中／日），其餘 15 語待 PM 定稿後補。
-- 測試：新增 `EnvironmentUnrecordedTests`（14 支）；`run_tests.sh logbook` 基準 171/0/1 → 185/0/1。
+- ⚠️ 三段新文案為草稿（英／繁中／日），其餘語言 ⏸ 上架前收尾再定稿（PM 10/26，總指揮轉述）。
+- 測試：新增 `EnvironmentUnrecordedTests`（14 支）、`SchemaMigrationHistoryTests`（2 支）；A2 另加 `DiveSearchTests`（8 支）；`run_tests.sh logbook` 基準 171/0/1 → 195/0/1。
 
 ---
 

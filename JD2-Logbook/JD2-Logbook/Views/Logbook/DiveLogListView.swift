@@ -39,10 +39,8 @@ struct DiveLogListView: View {
 
     var filteredDives: [DiveLog] {
         guard !searchText.isEmpty else { return dives }
-        return dives.filter {
-            $0.location.localizedCaseInsensitiveContains(searchText) ||
-            $0.notes.localizedCaseInsensitiveContains(searchText)
-        }
+        // v1.4 A2：潛點＋備註＋潛伴＋標籤（見 `DiveLog.matchesSearch`）
+        return dives.filter { $0.matchesSearch(searchText) }
     }
 
     #if !os(iOS)
@@ -125,7 +123,7 @@ struct DiveLogListView: View {
                     .searchable(
                         text: $searchText,
                         placement: .navigationBarDrawer(displayMode: .always),
-                        prompt: Text(verbatim: languageManager.localized("Search location…"))
+                        prompt: Text(verbatim: languageManager.localized("Search site, buddy, tags…"))
                     )
 
                     #else
@@ -135,7 +133,7 @@ struct DiveLogListView: View {
                         HStack(spacing: 8) {
                             Image(systemName: "magnifyingglass")
                                 .foregroundStyle(.secondary)
-                            TextField(languageManager.localized("Search location…"), text: $searchText)
+                            TextField(languageManager.localized("Search site, buddy, tags…"), text: $searchText)
                                 .textFieldStyle(.plain)
                             if !searchText.isEmpty {
                                 Button {

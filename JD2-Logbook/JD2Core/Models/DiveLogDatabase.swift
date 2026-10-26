@@ -26,7 +26,7 @@ final class DiveLogDatabase {
 
     private init() {
         // 設定 SwiftData schema（v1.4 起版本化，見 `DiveLogSchema.swift`）
-        let schema = Schema(versionedSchema: DiveLogSchemaV2.self)
+        let schema = Schema(versionedSchema: DiveLogSchemaV1_4.self)
 
         // 設定 ModelConfiguration
         let modelConfiguration = ModelConfiguration(

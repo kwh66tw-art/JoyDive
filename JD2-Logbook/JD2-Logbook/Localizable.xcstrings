@@ -26610,7 +26610,7 @@
       }
     },
     "Altitude (legacy label)": {
-      "comment": "v1.4 A1: edit-sheet Water Type option shown only for old records stored as 'altitude'. DRAFT — PM to finalize; other 14 languages pending.",
+      "comment": "v1.4 A1: edit-sheet Water Type option shown only for old records stored as 'altitude'. DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages pending.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -26640,7 +26640,7 @@
       }
     },
     "This dive is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated.": {
-      "comment": "v1.4 A1: reason shown before the 'not available' notice for legacy altitude records at default 1.0 bar. DRAFT — PM to finalize; other 14 languages pending.",
+      "comment": "v1.4 A1: reason shown before the 'not available' notice for legacy altitude records at default 1.0 bar. DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages pending.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -26670,7 +26670,7 @@
       }
     },
     "Tissue loading is calculated from the surface pressure and depth-to-pressure factor stored with the dive (sea-level seawater by default: 1.0 bar, 10 m per bar). The water type (salt or fresh) is for your records only and does not affect the calculation.": {
-      "comment": "v1.4 A1: Tissue loading info page disclosure (decision D-2026-10-26 §4 draft v2). DRAFT — PM to finalize; other 14 languages pending.",
+      "comment": "v1.4 A1: Tissue loading info page disclosure (decision D-2026-10-26 §4 draft v2). DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages pending.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -26695,6 +26695,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "組織負荷は、ログに保存された水面気圧と深度換算係数から計算します（初期値は海抜0mの海水：1.0 bar、10 mごとに1 bar）。水域の種類（海水／淡水）は記録用で、計算には影響しません。"
+          }
+        }
+      }
+    },
+    "Search site, buddy, tags…": {
+      "comment": "v1.4 A2: list search prompt (searches site/location, notes, buddy, tags). DRAFT — PM to finalize; other 14 languages pending. Replaces 'Search location…' (F-10 shared key with App-u, left untouched).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search site, buddy, tags…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search site, buddy, tags…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜尋潛點、潛伴、標籤…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ポイント・バディ・タグを検索…"
           }
         }
       }
