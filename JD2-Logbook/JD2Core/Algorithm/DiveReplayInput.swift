@@ -221,3 +221,32 @@ enum DiveReplayChainQuery {
         return fetched.filter { $0.persistentModelID != targetID && !$0.hasUnknownDateTime }
     }
 }
+
+// MARK: - App 層重放閘門（舊標籤高海拔）
+
+/// 舊標籤高海拔＋預設 1.0 bar 紀錄的重放閘門——**詳細頁與日後列表篩選（A3）唯一的判定來源**（D4）。
+///
+/// - 目標本身被擋：PM 2026-10-26 裁示 2（`docs/decisions/D-2026-10-26-環境欄位未記錄.md` §四之二）。
+/// - ⏸ **暫行**：96h 候選前導中有一筆被擋 ⇒ 目標也判不支援（PM 2026-10-26 D-A 裁示「v1.4 暫行 a」，
+///   `docs/decisions/D-2026-10-26-DA-舊標籤高海拔前導潛水-聯合提案.md`）。
+///   **這是暫時偏離** `_JD2-family/decisions/2026-08-22_重放連續潛水殘氮與前置判斷-設計.md` §六之二
+///   （Kit 先以殘氮上界截掉可忽略的前導，再判環境）：這裡不做截斷，96h 內的舊紀錄一律擋，會過度觸發。
+///   Kit a'（`DiveInput.environmentUntrusted`）上線後改走 Kit、**移除本暫行規則**。
+/// - 閉氣前導不檢查：Kit 在建鏈時就把閉氣前導濾掉，它們不會進鏈（`DiveInput.isBreathHold`）。
+enum LegacyAltitudeReplayGate {
+    enum Reason: Equatable {
+        /// 目標潛水本身是舊標籤高海拔＋預設氣壓
+        case target
+        /// ⏸ 暫行：96h 候選前導中有舊標籤高海拔＋預設氣壓的紀錄
+        case precedingDive
+    }
+
+    /// - Parameter precedingDives: 與送進 Kit 的同一份候選（`DiveReplayChainQuery.precedingDives`）。
+    static func blockReason(target: DiveLog, precedingDives: [DiveLog]) -> Reason? {
+        if target.isReplayBlockedByLegacyAltitude { return .target }
+        let blockedPreceding = precedingDives.contains {
+            !$0.diveModeValue.isBreathHold && $0.isReplayBlockedByLegacyAltitude
+        }
+        return blockedPreceding ? .precedingDive : nil
+    }
+}

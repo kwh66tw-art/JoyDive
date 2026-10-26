@@ -26728,6 +26728,36 @@
           }
         }
       }
+    },
+    "An earlier dive within 96 hours is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated.": {
+      "comment": "v1.4 D-A interim (PM 10/26): reason when a preceding dive within 96h is a legacy altitude record at default 1.0 bar. Remove when Kit a' ships. DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages pending.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An earlier dive within 96 hours is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An earlier dive within 96 hours is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "96 小時內有一支較早的潛水標記為高海拔，但沒有記錄水面氣壓，無法推算組織負荷。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "96時間以内の以前のダイブが高所として記録されていますが、水面気圧が記録されていないため、組織負荷を推定できません。"
+          }
+        }
+      }
     }
   },
   "version": "1.1"

@@ -51,9 +51,9 @@ struct DiveAnalysisView: View {
     @State private var replay: DiveReplayEngine.ReplayResult?
     /// 前置判斷 P1–P6 攔下來的原因（nil = 通過，正常顯示組織艙/ceiling/NDL）
     @State private var anomaly: DiveReplayEngine.Anomaly?
-    /// App 層閘門（v1.4 A1，PM 2026-10-26 裁示 2）：舊標籤高海拔＋水面氣壓仍是預設值 ⇒ 不重放。
-    /// 不經 Kit（Kit 的 `Anomaly` 沒有這個原因，也不該有——這是 Logbook 資料層的問題）。
-    @State private var blockedByLegacyAltitude = false
+    /// App 層閘門（v1.4 A1，PM 2026-10-26）：舊標籤高海拔＋水面氣壓仍是預設值 ⇒ 不重放；nil＝通過。
+    /// 判定只走 `LegacyAltitudeReplayGate`（目標本身，及⏸暫行的前導）。Kit a' 上線後改走 Kit。
+    @State private var legacyAltitudeBlock: LegacyAltitudeReplayGate.Reason?
     /// 選取的**原始剖面樣本**索引（不是重放點索引——見 `selectedPoint` 的說明）。
     @State private var selectedIndex: Int?
     /// ⓘ 限制說明頁（2026-09-12 裁示 4.5：8 種異常 ＋ 2 項一般性限制全部羅列）
@@ -125,10 +125,8 @@ struct DiveAnalysisView: View {
 
             // 組織艙區塊：算得出來就畫長條，算不出來就**在同一個位置**說明為什麼
             // ——而不是讓這塊空間靜默消失（使用者無從分辨「沒選點」與「不支援」）。
-            if blockedByLegacyAltitude {
-                tissueUnavailableNotice(reason: languageManager.localized(
-                    "This dive is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated."
-                ))
+            if let legacyAltitudeBlock {
+                tissueUnavailableNotice(reason: languageManager.localized(Self.legacyAltitudeReasonKey(legacyAltitudeBlock)))
             } else if anomaly != nil {
                 tissueUnavailableNotice(reason: nil)
             } else if let point = selectedPoint {
@@ -148,21 +146,20 @@ struct DiveAnalysisView: View {
         }
         .animation(.easeInOut(duration: 0.15), value: selectedIndex)
         .task {
-            // 同一個判定（`DiveLog.isReplayBlockedByLegacyAltitude`）日後也供列表篩選使用（D4），不得另寫條件。
-            if dive.isReplayBlockedByLegacyAltitude {
+            // 候選前導潛水給 96h 內全部，窗口過濾／排序／保守上界截斷由 Kit 自理。
+            let preceding = DiveReplayChainQuery.precedingDives(of: dive, in: modelContext)
+            // 同一個判定（`LegacyAltitudeReplayGate`）日後也供列表篩選使用（D4），不得另寫條件。
+            if let reason = LegacyAltitudeReplayGate.blockReason(target: dive, precedingDives: preceding) {
                 replay = nil
                 anomaly = nil
-                blockedByLegacyAltitude = true
+                legacyAltitudeBlock = reason
                 return
             }
-            blockedByLegacyAltitude = false
+            legacyAltitudeBlock = nil
             // 鏈式重放（樣本 ≤300、步長 10s；鏈長實務上 1–3 筆——主執行緒毫秒級）。
-            // 候選前導潛水給 96h 內全部，窗口過濾／排序／保守上界截斷由 Kit 自理。
             let outcome = DiveReplayEngine.replayChain(
                 target: dive.replayInput,
-                precedingDives: DiveReplayChainQuery
-                    .precedingDives(of: dive, in: modelContext)
-                    .map(\.replayInput)
+                precedingDives: preceding.map(\.replayInput)
             )
             switch outcome {
             case .replayed(let result):
@@ -208,6 +205,16 @@ struct DiveAnalysisView: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("replayAnomalyNotice")
+    }
+
+    /// App 層閘門的原因句（字串鍵）。草稿，⏸ 上架前收尾再定稿（PM 10/26）。
+    static func legacyAltitudeReasonKey(_ reason: LegacyAltitudeReplayGate.Reason) -> String {
+        switch reason {
+        case .target:
+            return "This dive is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated."
+        case .precedingDive:
+            return "An earlier dive within 96 hours is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated."
+        }
     }
 
     /// 原因句接在通用句前：全形句末標點（中日文）直接相接，其餘補一個半形空格

@@ -9,6 +9,21 @@
 
 **2026-10-26 本次重點**：PM 要 v1.4 優先做 #6 列表篩選、#7 搜尋擴充、#8 環境「未記錄」，並新增 GPS 座標跳地圖、地圖同座標聚合兩項。已完成**僅文件**：`docs/V1_4_WORK_PLAN.md`（優先順序、工時、待 PM 裁示 D1–D7）。**v1.4 仍未動工，程式碼零變動**，等 PM 排程。總指揮 10/26 兩次回覆（家族紀錄、組織負荷篩選方案 B）已併入該計劃。
 
+### 🔴 2026-10-26 晚 v1.4 進度（壓縮前交接；以此段為準）
+
+- **已完成並 push**：A1 環境「未記錄」（含 SwiftData 版本化：`DiveLogSchemaV1_0／V1_2／V1_3／V1_4`，跳版升級 v1.0／v1.2／v1.3→v1.4 模擬器實測全過）、
+  A2 搜尋擴充（潛點＋備註＋潛伴＋標籤）、D-A 暫行 a（`LegacyAltitudeReplayGate`，前導舊標籤也擋）。測試 `run_tests.sh logbook` **199/0/0～198/0/1**（唯一可跳＝StoreKit 價格測試）。
+- **決策檔**：`docs/decisions/D-2026-10-26-環境欄位未記錄.md`、`…-v1.4-D3至D7裁示.md`、`…-DA-舊標籤高海拔前導潛水-聯合提案.md`（皆 PM 已裁示）。
+- **稽核計劃** `docs/V1_4_AUDIT_TEST_PLAN.md`（31 項）：✅ T1–T3（跳版升級）、T17、T18、T21；**下一步＝單元測試批次 T9、T10、T20、T22–T26**，
+  再模擬器批次（T4–T6、T11–T14、T27–T28）、macOS 批次（T16、T27、T31）、收尾 T29–T30。
+- **等外部**：Kit a'（`DiveInput.environmentUntrusted`）由總指揮排程；版號到了再把目標＋前導閘門改走 Kit、移除暫行 a。
+- **文案**：A1 三段＋D-A 前導原因句 ⏸ 上架前收尾再定稿（PM 10/26）；A2 搜尋提示仍草稿（未在該裁示內）；其餘 14 語待補。
+- **未做的 v1.4 項目**：A3 列表篩選（須共用 `LegacyAltitudeReplayGate`；統計／地圖不跟篩選）、B1 座標跳地圖、B2 同座標聚合、C 小項。
+- **待 PM**：D-B（手動新增要不要潛伴／標籤欄位）、D-C（水面氣壓 0／負數怎麼處理）。
+- **模擬器**（專用、可刪）：JD2-LB-UpgradeTest、JD2-LB-Upgrade-v10／v12／v13。測試取數技巧：`TEST_RUNNER_JD2_T18_OUT=<路徑>` 讓測試寫檔。
+- **陷阱**：①zsh 不會把 `$var` 拆詞（迴圈請寫成 bash 腳本）；②測試中釋放 `AppLanguageManager` 會 SIGABRT（共用 static 實例）；
+  ③simctl 貼上文字到搜尋欄不可靠（T27 iOS 輸入受阻）；④模擬器 app 舊版編譯要用當年 Kit（`git archive` 匯出，不要在 Kit repo 開 worktree）。
+
 ## 目前狀態
 
 - 最後 push：見 `git log -1 origin/main`（10/10 晚 PM 同意 push 至本檔所在提交）。**App-lb 自 10/10 晚由 App-lb session 負責，總指揮不再寫入**（除非 PM 另行指示）。工作樹乾淨（10/10 PM 裁示：還原 Xcode 自動重排的 Localizable.xcstrings、刪除用完的 `l10n_v1.3_待翻譯.csv`）。⚠️ `%lld%%` 已被標 `extractionState: stale`（編輯頁改用 percentText 後無人引用），排 v1.4 清理；之後 Xcode build／Archive 還會重排 xcstrings，提交前先 `git diff --stat` 確認，需要時 `git checkout --` 還原。

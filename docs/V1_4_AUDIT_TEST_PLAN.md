@@ -16,7 +16,7 @@
 |---|---|---|---|
 | F1 | ✅（10/26 修正並實測，見 T1–T3）~~跳版升級未測~~：v1.2（或更早）使用者若跳過 v1.3 直接裝 v1.4，store 模型雜湊對不上 `DiveLogSchemaV1`。v1.3 以前靠 SwiftData 隱式推斷遷移；**改用 `SchemaMigrationPlan` 後，未列在計劃內的舊版 store 能否開檔，未查證**。若失敗會進 `DatabaseOpenErrorView`（資料不刪，但打不開）。 | `DiveLogDatabase.swift` 改帶 `migrationPlan`；v1.2 送審 commit `3ba4bd2` 可簽出 | P0 |
 | F2 | V1 凍結拷貝的欄位與 v1.3 `DiveLog` 逐欄一致（`diveMode` 預設值寫法不同但值相同；比對時 `gasMixJSON` 因行尾註解被 regex 漏抓、`waterTemp` 屬另一個 struct）——**機器比對＋v1.3 真實 store 實測（1.0.0→2.0.0、6 筆全欄位不變）雙重確認** | 決策檔 §四之三 | 已驗 |
-| F3 | 舊標籤閘門只擋**目標潛水**；舊標籤高海拔（1.0 bar）若是**前導潛水**，仍以 1.0 bar 進殘氮鏈，後一支潛水的組織負荷可能偏樂觀。PM 未裁示。 | `DiveAnalysisView.swift` `.task`；`DiveReplayChainQuery.precedingDives` 未過濾 | P0（待 PM 裁示） |
+| F3 | ✅ 10/26 裁示並實作暫行 a（Kit a' 待排程）。~~舊標籤閘門只擋**目標潛水**；舊標籤高海拔（1.0 bar）若是**前導潛水**，仍以 1.0 bar 進殘氮鏈，後一支潛水的組織負荷可能偏樂觀。PM 未裁示。 | `DiveAnalysisView.swift` `.task`；`DiveReplayChainQuery.precedingDives` 未過濾 | P0（待 PM 裁示） |
 | F4 | **macOS 完全未實機看過**：編輯頁 Picker、詳細頁環境列、組織負荷原因句、搜尋欄提示（macOS 走 `TextField` 分支） | 只截了 iOS | P1 |
 | F5 | **地圖面板**（`DiveSiteSheetView`）環境列改用共用函式，未截圖 | — | P1 |
 | F6 | 4 個新字串只有 en／en-GB／zh-Hant／ja；其餘 14 語顯示英文。術語未比對 F-10 術語表；「Search location…」為 App-u 共用鍵，App-lb 已不再使用 ⇒ 需回報總指揮 | `Localizable.xcstrings` | P1 |
@@ -63,7 +63,7 @@
 | ID | 案例 | 方法 | 預期 | 優先 | 狀態 |
 |---|---|---|---|---|---|
 | T17 | 閘門邊界：altitude × {1.0, 0.9999, 1.0001, 0.8}；非 altitude × 1.0 | U | 只有 altitude＋1.0 擋 | P0 | ✅ 已有 |
-| T18 | 舊標籤 1.0 bar 作為**前導潛水**（F3）：記錄現況輸出（前導是否進鏈、後一支組織負荷數值） | U | **只記錄事實、不改程式**，交 PM 裁示 | P0 | 未做 |
+| T18 | 舊標籤 1.0 bar 作為**前導潛水**（F3）：記錄現況 | U | 只記錄事實、不改程式，交 PM 裁示 | P0 | ✅ **事實已記錄（2026-10-26，`LegacyAltitudePrecedingDiveFactsTests`）**：①前導查詢**會**把它放進候選（不過濾）；②Kit **照算**（兩筆皆 1.0 bar，環境一致）；③殘氮有算進去：25 m／40 min 方形剖面、間隔 3 h，後一支最終負荷最高隔室 116.4% vs 單獨 116.3%，慢隔室差異較大（第 8 隔室 98.3% vs 90.6%、第 16 隔室 72.2% vs 66.8%）；④若前一支當初存的是真實氣壓 0.8 bar，Kit 判 `inconsistentEnvironment` **拒算**（容差 0.05 bar）。⇒ 現況：資料誠實時會顯示「不支援」，資料是舊標籤預設值時卻顯示數字（以 1.0 bar 算出的殘氮）。待 PM 裁示 D-A |
 | T19 | 閘門與 Kit 拒算同時成立時，只顯示 App 原因句（不重複） | U／讀碼 | 同 | P2 | 讀碼成立，未測 |
 | T20 | 原因句接法：中日文全形句號不加空格、其他語言加空格；14 語回退英文時 | U | 同 | P1 | 中日英已測 |
 
@@ -101,7 +101,7 @@
 
 ## 四、需要 PM 決定的事（不等執行完）
 
-- **D-A**（F3）：舊標籤高海拔 1.0 bar 當**前導潛水**時，後一支潛水是否也判不支援？
+- ~~**D-A**~~ ✅ PM 10/26 裁示：主案 a'（Kit）、v1.4 暫行 a（App 層，已實作）——見 `docs/decisions/D-2026-10-26-DA-舊標籤高海拔前導潛水-聯合提案.md`
 - **D-B**（F11）：手動新增是否要加潛伴／標籤欄位（會動 schema → V3），或列為已知限制？
 - **D-C**（F8）：水面氣壓 0／負數是否視為「未記錄」而非高海拔？
 - **D-D**（F6）：新字串定稿（4 句）與 14 語翻譯排程。
