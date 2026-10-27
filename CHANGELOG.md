@@ -17,7 +17,15 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - D-A（PM 2026-10-26 主案 a'；決策 `docs/decisions/D-2026-10-26-DA-舊標籤高海拔前導潛水-聯合提案.md`）：舊標籤紀錄映射成 DiveKit v9.7.0 `environmentUntrusted`；作為前導潛水時，殘氮可忽略者照常截斷、仍在鏈中者判不支援並顯示另一句原因。同日的 App 層暫行規則（96h 內一律擋）已移除。
 - 「關於組織負荷」頁加計算環境揭露；備份欄位改 optional（舊備份照原值還原）。
 - ⚠️ 三段新文案為草稿（英／繁中／日），其餘語言 ⏸ 上架前收尾再定稿（PM 10/26，總指揮轉述）。
+- D-C（PM 2026-10-27 採 (a)；決策 `docs/decisions/D-2026-10-27-DC-水面氣壓不合理值顯示-聯合提案.md`）：「高海拔」只在 DiveKit 合理範圍（0.60–1.10 bar）內且 < 0.95 才顯示；水面氣壓 0／負數／NaN 等錯誤資料不再顯示成高海拔。
+- 跟進 DiveImportKit v0.8.2（F15）：Subsurface XML 的不合理水面氣壓（0、負數、nan）視為未提供，存預設 1.0。
 - 測試：新增 `EnvironmentUnrecordedTests`（14 支）、`SchemaMigrationHistoryTests`（2 支）；A2 另加 `DiveSearchTests`（8 支）；`run_tests.sh logbook` 基準 171/0/1 → 195/0/1。
+  10/27 稽核批次另加 `EnvironmentEdgeCaseTests`、`DiveSearchPerformanceTests`、`DiveSearchTests` +6、`LegacyAltitudePrecedingDiveFactsTests` 改 6 支 ⇒ **212/0/1**。
+
+### A2 搜尋擴充（PM 2026-10-26 裁示 D3；決策 `docs/decisions/D-2026-10-26-v1.4-D3至D7裁示.md`）
+- 列表搜尋由「地點＋備註」擴充為「潛點＋備註＋潛伴＋標籤」：解析 `importExtrasJSON`，只比對 `buddy`／`tags` 的值（不搜鍵名與其他欄位）。
+- 搜尋提示改為「Search site, buddy, tags…」（草稿，英／繁中／日；其餘語言待上架前收尾）。
+- ⚠️ 已知限制：手動新增的潛水沒有潛伴／標籤欄位（D-B 待 PM）；UDDF 以 link 引用的潛伴未匯入（F16，DiveImportKit 範圍）；2,000 筆時每鍵 30–38 ms（D-E 待 PM）。
 
 ---
 

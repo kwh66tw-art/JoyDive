@@ -102,7 +102,8 @@
 | `docs/KNOWN_ISSUES.md` | 已知問題、技術雷區 |
 | `HANDOFF.md` | 交接文件（最新狀態、待辦、陷阱） |
 | `docs/V1_3_WORK_PLAN.md` | v1.3 工作計劃與完成紀錄 |
-| `docs/V1_4_WORK_PLAN.md` | v1.4 優先順序、工時估計與待 PM 裁示（2026-10-26 草稿；未動工） |
+| `docs/V1_4_WORK_PLAN.md` | v1.4 優先順序、工時估計與裁示（2026-10-26 起；A1／A2 完成，A3／B1／B2／C 未做） |
+| `docs/V1_4_AUDIT_TEST_PLAN.md` | v1.4 全盤稽核與邊界測試計劃（31 項＋發現 F1–F19；逐項狀態） |
 | `docs/SUBMISSION_CHECK_NEXT.md` | 送審前檢查（依日期分段，最上面一段為最新） |
 | `docs/APPSTORE_COPY.md` | App Store 上架文案（三語：說明、副標、關鍵字、What's New） |
 

@@ -1,142 +1,52 @@
 # HANDOFF — JD2-Logbook
 
-> 交接文件（固定檔名滾動式；前一版在 `docs/handoff-archive/HANDOFF_2026-10-18.md`）。
-> v1.3 的逐項紀錄與裁示全文在 `docs/V1_3_WORK_PLAN.md`（§七、§八）；本檔只寫目前狀態與下一步。
+> 交接文件（固定檔名滾動式；前一版在 `docs/handoff-archive/HANDOFF_2026-10-26.md`，v1.3 送審與更早紀錄在 `HANDOFF_2026-10-18.md`）。
 
 ## 交接時間
-
-2026-10-26（滾動更新；狀態以指令查證）。前一版：`docs/handoff-archive/HANDOFF_2026-10-18.md`。
-
-**2026-10-26 本次重點**：PM 要 v1.4 優先做 #6 列表篩選、#7 搜尋擴充、#8 環境「未記錄」，並新增 GPS 座標跳地圖、地圖同座標聚合兩項。已完成**僅文件**：`docs/V1_4_WORK_PLAN.md`（優先順序、工時、待 PM 裁示 D1–D7）。**v1.4 仍未動工，程式碼零變動**，等 PM 排程。總指揮 10/26 兩次回覆（家族紀錄、組織負荷篩選方案 B）已併入該計劃。
-
-### 🔴 2026-10-26 晚 v1.4 進度（壓縮前交接；以此段為準）
-
-- **已完成並 push**：A1 環境「未記錄」（含 SwiftData 版本化：`DiveLogSchemaV1_0／V1_2／V1_3／V1_4`，跳版升級 v1.0／v1.2／v1.3→v1.4 模擬器實測全過）、
-  A2 搜尋擴充（潛點＋備註＋潛伴＋標籤）、D-A 主案 a'（DiveKit v9.7.0 `environmentUntrusted`；暫行 a 已移除）。測試 `run_tests.sh logbook` **202/0/0**（唯一可跳＝StoreKit 價格測試）。
-- **決策檔**：`docs/decisions/D-2026-10-26-環境欄位未記錄.md`、`…-v1.4-D3至D7裁示.md`、`…-DA-舊標籤高海拔前導潛水-聯合提案.md`（皆 PM 已裁示）。
-- **稽核計劃** `docs/V1_4_AUDIT_TEST_PLAN.md`（31 項）：✅ T1–T3（跳版升級）、T17、T18、T21；10/27 單元測試批次 T9、T10(U)、T20、T22–T26 完成（新發現 F14–F16 已回報總指揮、D-E 待 PM）；**下一步＝**
-  10/27 模擬器批次：✅ T5、T10、T11、T12、T14，部分 T4／T13，缺 T6(S)、T27(iOS)、T28（**模擬器文字輸入受阻**，需 PM 手動或 UI 測試 target；新發現 F17 既有 AX5 版面）；10/27 macOS 批次（獨立 bundle ID `…JD2-Logbook.audit`，不碰 PM 真實資料）：✅ T16、T27(macOS)、T28 刪除、D-C (a) 畫面；T6(S) 不適用（備份介面自 v1.2 隱藏）；T31 部分（F18 MockDataSeeder、F19 xcstrings.backup 進 Release）；D-C 已裁示並實作；接著（T16、T27、T31）、收尾 T29–T30。
-- ~~等外部 Kit a'~~ ✅ v9.7.0 已上線、已改走 Kit（10/26）。故障注入待 commit 後跑（`inject.sh` 需乾淨工作樹）。
-- **文案**：A1 三段＋D-A 前導原因句 ⏸ 上架前收尾再定稿（PM 10/26）；A2 搜尋提示仍草稿（未在該裁示內）；其餘 14 語待補。
-- **未做的 v1.4 項目**：A3 列表篩選（組織負荷篩選須以 Kit 重放結果為準、不得另寫條件；統計／地圖不跟篩選）、B1 座標跳地圖、B2 同座標聚合、C 小項。
-- **待 PM**：D-B（手動新增要不要潛伴／標籤欄位）、D-C（水面氣壓 0／負數怎麼處理；重放面在 Kit，F14）、D-E（搜尋 2,000 筆每鍵 30–38 ms）。測試 212/0/1。
-- **模擬器**（專用、可刪）：JD2-LB-UpgradeTest、JD2-LB-Upgrade-v10／v12／v13、JD2-LB-Audit（10/27 模擬器批次：105 筆假資料＋8 筆特製紀錄）。測試取數技巧：`TEST_RUNNER_JD2_T18_OUT=<路徑>` 讓測試寫檔。
-- **陷阱**：①zsh 不會把 `$var` 拆詞（迴圈請寫成 bash 腳本）；②測試中釋放 `AppLanguageManager` 會 SIGABRT（共用 static 實例）；
-  ③模擬器文字輸入三種方式皆失敗（simctl 貼上、模擬器工具 text、螢幕鍵盤點擊）；改語言用 App 內選單，`simctl spawn defaults write` 不可靠；④模擬器 app 舊版編譯要用當年 Kit（`git archive` 匯出，不要在 Kit repo 開 worktree）。
+2026-10-27 12:03（產生方式：/handoff skill）
 
 ## 目前狀態
+- **所在里程碑**：v1.4 開發中（v1.3 Build 4 已上架）。A1 環境「未記錄」✅、A2 搜尋擴充 ✅、D-A ✅、D-C ✅；A3／B1／B2／C 未做。
+  進度與裁示：`docs/V1_4_WORK_PLAN.md`（已同步）；全盤稽核：`docs/V1_4_AUDIT_TEST_PLAN.md`（逐項狀態＋發現 F1–F19）。
+- **未 commit 變更**：本次交接的文件更新（CHANGELOG、KNOWN_ISSUES、V1_4_WORK_PLAN、CLAUDE.md、本檔、歸檔）——待 PM 確認後提交。程式最後提交 `04c9af6`（= origin/main）。
+- **測試**：`run_tests.sh logbook` **212／0／1**（唯一允許的 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`，依 StoreKit 載入時機浮動）。
+- **共用層**：DiveKit **v9.7.0**、DiveImportKit **v0.8.2**（local path、無版本鎖定；`check_doc_version_sync.sh` 通過）。COMPAT_MATRIX 的 App-lb 列由總指揮在 v9.8.0 合併後一起補。
+- **已裁示的決策檔**（皆 `docs/decisions/`）：`D-2026-10-26-環境欄位未記錄.md`、`D-2026-10-26-v1.4-D3至D7裁示.md`、
+  `D-2026-10-26-DA-舊標籤高海拔前導潛水-聯合提案.md`（主案 a' 已由 Kit v9.7.0 取代暫行 a；10/27 更正 a'' 理由）、`D-2026-10-27-DC-水面氣壓不合理值顯示-聯合提案.md`。
 
-- 最後 push：見 `git log -1 origin/main`（10/10 晚 PM 同意 push 至本檔所在提交）。**App-lb 自 10/10 晚由 App-lb session 負責，總指揮不再寫入**（除非 PM 另行指示）。工作樹乾淨（10/10 PM 裁示：還原 Xcode 自動重排的 Localizable.xcstrings、刪除用完的 `l10n_v1.3_待翻譯.csv`）。⚠️ `%lld%%` 已被標 `extractionState: stale`（編輯頁改用 percentText 後無人引用），排 v1.4 清理；之後 Xcode build／Archive 還會重排 xcstrings，提交前先 `git diff --stat` 確認，需要時 `git checkout --` 還原。
-- 共用層：v1.3 (Build 4) 是在 DiveKit **v9.3.0**／DiveImportKit **v0.7.8** 上送審。**目前 Kit 現況 v9.6.1／v0.8.1（10/14 PM 通知兩 Kit 解凍；DiveKit 10/17 升 v9.6.0、10/18 v9.6.1 純註解；DiveImportKit 10/18 v0.8.1 test-only＋註解，皆零行為變更）**。⚠️ Logbook 以 `project.pbxproj:682-684` 的 `XCLocalSwiftPackageReference`（local path，**無版本鎖定**）引用 Kit，下一次建置就會吃目前的 v9.6.0／v0.8.0；已送審的 Build 4 不受影響。**v1.4 開工前先跑 `run_tests.sh logbook`，對照 171／0／1 基準確認 v9.4.0（policy knob ⑨＋ModeSwitchGate 演算法鎖定中放行 Gauge）、v9.5.0（eventNotice 兩種 policy 都產生）、v9.6.0（10/17：只重新設計展示剖面＝32m Deep 改 30m NDL Countdown，新增 40m Depth Limit／EAN32 MOD／Stop Off-Depth／12m Long 54min；演算法零改動；Logbook 零引用 `SimulatedDiveProfile`／`.builtin`）、v0.8.0（新增 SignedRecordCanonicalizer，既有 API 不變）無回歸**（總指揮預期影響很小，須實測）。
-- 測試：`run_tests.sh logbook` **171／0／1**。版號 1.3（4）。送審複核：`docs/SUBMISSION_CHECK_NEXT.md` 10/10 段——**程式與送審檢查皆完成；10/10 晚送審，已上架（PM 10/14 通知、10/16 確認）**。
+## 進行中的決策（尚未定案）
+- **D-B**：手動新增要不要加潛伴／標籤欄位（會動 schema → V1_5）。未裁示。
+- **D-E**：搜尋 2,000 筆每鍵 30–38 ms（> 16 ms，本專案門檻）。App-lb 建議先記已知限制、有回報再做記憶體快取。未裁示。
+- **F17／F18／F19**（既有，非 v1.4）：AX5 版面、`MockDataSeeder` 進 Release、`Localizable.xcstrings.backup` 進 App。PM 10/27：另行排程，現在不處理。
+- **文案**：A1 三段、D-A 兩句原因、A2 搜尋提示皆為草稿（英／繁中／日）；⏸ 上架前收尾定稿＋其餘 14 語（PM 10/26）。
 
-## 10/10 晚：送審截圖與交接（總指揮 → App-lb）
-
-- ✅ **v1.3 送審截圖**（`00ed34c`）：`_ScreenCaptures/iOS_v1.3/`（#2 新增潛水、#3 詳細；中英日；iPhone 18 Pro Max 1320×2868 拍、交付 1260×2736；
-  無廣告、狀態列 9:41；詳細頁＝9/20 14:23）＋ `_ScreenCaptures/macOS_v1.3/`（#1 列表＋詳細、#5 新增潛水；中英日；PM ⌘⇧4 原檔在 `Original/`，交付透明 1280×800）。
-  PM 確認：Mac 截圖含滑鼠指標可接受。其餘截圖沿用 v1.2。
-- ✅ 已 push（PM 10/10 晚同意）：`2c27ecc`、`65cd1f0`、`00ed34c`、`99a3444` 與本次 HANDOFF 更新。
-- ✅ PM 10/10 上架設定（`d38a277`）：類別 `public.app-category.sports`（Release 產物讀回驗證）、英文關鍵字只放各國潛水日誌用詞（100 字元／114 bytes）、說明文去 GPS 座標／氣體混合→氣體、品牌加 ATMOS；CLAUDE.md 現況更新（`1db588f`）。
-- ✅ **v1.3 已上傳並送審（PM 2026-10-10 晚）**：iOS／macOS 兩平台 Build 4（1.3）皆為 **Waiting for Review**。ASC 內容由 App-lb 以 Chrome 建立 1.3 版本草稿並填入（主類別 Sports；副標英／繁中／日；說明、宣傳文字、What's New、關鍵字三語；選 Build 4），逐項重載後讀回驗證；截圖 12 張由 PM 上傳。
-- ✅ **ASC 關鍵字上限以「字元」計**（實測：英文組 100 字元／114 bytes 完整接受、剩餘 0）。
-- ⚠️ ASC 說明欄為純文字，不可帶 Markdown `**`；填表單時 `form_input` 對非主要語系的說明欄不可靠（四組曾沒寫進去），一律重載後讀回驗證。
-- ✅ **v1.3 (Build 4) 已上架（PM 2026-10-14 通知，2026-10-16 PM 確認已上架、不需再查 ASC；本 session 未讀 ASC 頁面）**。紀錄見 `_JD2-family/F-01-FAMILY_ROADMAP.md` §1 表格的 App-lb 列（10/17 家族文件整併後的新版，**不寫行號**；舊版整份歸檔於 `_JD2-family/docs/roadmap-archive/F-01_2026-07-17至10-14_含F1-F13里程碑帳.md`）、`_App管理/週報/2026-10-14_變更紀錄.md` 第 5 行。接下來：v1.4 待辦（舊文件整理已於 10/17 完成；PM 未指示前不動）。
-- 環境狀態（之後可還原）：iPhone 18 Pro Max 模擬器（`EFF901CA`）已匯入 70 支範例、`DEBUG_forceHideAds`=YES、狀態列覆寫 9:41（`xcrun simctl status_bar EFF901CA… clear` 還原）；
-  Mac 版 App 以 Debug 產物 `-jd2logbook.appLanguage` 參數重開過（資料未動，70 支範例），`defaults` 也寫了 `DEBUG_forceHideAds`=YES。
-- 送審後工作交 App-lb：舊文件整理（✅ 10/17 完成）、v1.4 待辦。
-
-## v1.3 已完成
-
-P0／P1、D7、D9、翻譯 18 語、送審收尾複核、隱私權政策定位段、What's New（三語，含時區修正句）、ⓘ 接在句尾（截圖 24）、
-匯入修正（時區、舊資料氣體記號 `jd2GasVerified`、剖面 CSV 不進殘氮鏈、自由潛水模式、Suunto FIT 顯示名）。
-細節：`docs/V1_3_WORK_PLAN.md` §七～§九、`_JD2-family/decisions/2026-10-06_匯入格式全面稽核與DIK-v0.7.3修正計畫.md`。
-
-## 下一步（依序）
-
-1. ✅ **SDE 舊紀錄 0 °C → 未記錄**（`065403d`）：`DiveLogDatabase.migrateLegacySDEZeroWaterTemperature`，旗標 `jd2.migration.v13.sdeZeroWaterTemp`；
-   測試 +2；**模擬器 LB-Upgrade 實測**：唯一一筆 SDE 紀錄水溫 0 → NULL（sqlite 查證；此為預期遷移，不還原）。
-2. ✅ Kit 側 **UDDF／剖面 CSV 逐樣本水溫，不補值**（DIK v0.7.5，395/0/0，注入 4 項 RED；匯出也寫逐點水溫）；App 映射已接（`DiveImportKitAdapter.swift:85`）。
-   ✅ App 拖曳剖面 Temp 顯示：PM 10/10 確認 ATMOS（UDDF）正常。舊匯入的 UDDF 不會自動補，屬預期。
-3. ⏳ 送審：「送審前還要做」全部完成（10/10）；剩 PM 上傳 ASC。
-
-## 🔴 送審前還要做（PM 10/07 已裁示「全採納」）——10/10 進度
-
-依據：`_JD2-family/decisions/2026-10-06_匯入格式全面稽核與DIK-v0.7.3修正計畫.md` §十九、§二十二。commit `baa7c6a`、`0f7255b`（已 push）。
-
-| # | 項目 | 狀態 | 驗證 |
-|---|---|---|---|
-| 1 | 編輯頁氣體：不可信不預選；沒動就原值保留（32.5% 不再變 33%）；百分比不取整（PM 10/10 裁示 A） | ✅ | 模擬器：EAN32.5 未動存檔，DB 仍 `0.325`、extras 不變；Lake Coleridge 不可信 Trimix 未動存檔仍原值＋unknown |
-| 2 | 不可信 Trimix 開放選擇；可信 Trimix 鎖住 | ✅ | 模擬器截圖兩種情境（Lake Coleridge 可選、Garmin Tx18/20 鎖住＋提示） |
-| 3 | 自由潛水時間軸改秒 | ✅（App-lb） | 模擬器：70 s Suunto 改自由潛水 ⇒ 0s/12s/…/60s。DiveKit v9.3.0 待 DK 全測試＋App-u/App-i 重跑 |
-| 4 | App 內語言殘留 | ✅（主要畫面） | 約 110 處改走 `languageManager.localized`；克羅埃西亞文（系統繁中）截圖：列表、新增、編輯、詳細、匯入、選單、callout 無中文殘留。xcstrings 格式符號 0 不符 |
-| 5 | ATMOS FIT | ✅ | DIK v0.7.7（402/0/0）；模擬器匯入成功、顯示 ATMOS FIT。⏳ 送審樣本資料夾**未放**：FIT 內部日期依規則不改＝6 月，PM 要的是 7 月 ⇒ 待 PM 決定 |
-| 6 | 新增潛水不選模式 | ✅ | 模擬器截圖：新增頁無「潛水模式」，編輯頁有 |
-| 7 | 收尾 | ✅ | Ceiling 膠囊、Mac ⓘ：PM 10/10 確認；`SUBMISSION_CHECK_NEXT.md` 10/10 複核；已 push。剩 PM 上傳 ASC |
-
-**10/10 下午 PM 追加（皆已完成，`fc9aabc`、`fc6a3de`，171/0/1，模擬器克羅埃西亞文驗證）**：
-- 剖面時間軸：自由潛水**或短於 4 分鐘**用秒。
-- 編輯頁：未知氣體的水肺紀錄潛水模式先**空白**；重選水肺後「沒寫氣體」才可補選；**多氣體／循環呼吸器鎖住**（DIK v0.7.8 原因標記）。
-- 自由潛水／浮潛：列表、詳細、地圖、編輯都不顯示氣體。
-- Zenobia、Shag Rock 等多氣體潛水：v1.3 維持未知氣體（PM 裁示 A）；**換氣重放排 v1.4（B）**。
-- PM 10/10：無原因的舊資料（例：v0.7.2 前匯入的 Garmin FIT 技術潛水）**維持現狀**——重選水肺後可補選單一氣體。已 push 至 `32cab28`。
-
-**10/10 驗證中另抓到並已修**：
-- 🔴 自己引入的閃退：無障礙鍵改 `%@` 卻仍傳 Int ⇒ 開高氧潛水編輯頁 EXC_BAD_ACCESS（`0f7255b` 修）。
-- 既有 bug：編輯頁存檔把潛水時間截成整分鐘（4674 → 4620 s，出水時間與水面間隔跟著變）⇒ 分鐘沒改就保留原秒數。
-  ⚠️ App-u 的 `JD2UltraPhone/UI/Logbook/DiveLogEditSheet.swift` 結構相同，**未查**是否同病（家族待辦）。
-- 已知未翻譯（使用者看不到）：DEBUG 開發者工具 4 鍵；上升速率警示 2 鍵（`showWarningEvents=false`）。
-
-✅ 10/07 已完成：#3 Mac ⓘ 視窗空白（補 macOS 尺寸）、#4 Ceiling 膠囊 A 案（#1F66E0＋白字）——**macOS build 通過、165/0/1，未截圖目視**。
-已答覆不改：#5 Suunto FIT 自由潛水判為水肺（模式欄讀不到，已是未知氣體；PM 接受）、#7 去重＝先匯入者留下、無格式優先、
-#8 6/4 不顯示組織負荷＝96 h 內有 DAN DL7 範例檔（6/1、6/2，氣體不可信），非 6/3 DM5。
-
-## 下一版待辦（PM 10/07）
-
-> 🔴 **10/26 起 v1.4 的優先順序、工時估計、待 PM 裁示事項統一看 `docs/V1_4_WORK_PLAN.md`**（A1 環境「未記錄」→ A2 搜尋 → A3 篩選 → B1 座標跳轉＋B2 聚合 → C 小項）。以下各條保留為原始登記與位置線索。
-> **新增（PM 10/26）**：①詳細頁 GPS 座標有內容時可點，跳地圖頁並置中該地點（`DiveLogDetailView.swift:223`、`DiveSiteSheetView.swift:242`；分頁狀態在 `MainTabView` 本地 `@State`）。②地圖同座標 2 筆以上聚合後無法點開看 log——成因為讀碼推斷（`DiveMapRepresentable.swift:54-56` 只 `showAnnotations`，座標相同永遠拆不開），**未實機重現**；建議解法為偵測重疊時改列清單，不用 jitter；重疊門檻先實測再定。修完依鐵律 8 回報總指揮（App-u 同寫法 `JD2UltraPhone/UI/Map/DiveMapRepresentable.swift:53-54`）。
-
-- **v1.4 換用 v5 新 App Icon（總指揮 10/17 通知；PM 已看預覽同意，但**排 v1.4 前不動**）**：四張新圖在 `_JD2-family/brand-assets/ICON_v5/`（family 提交 `153ae27`），規格 `_App管理/COLOR_SYSTEM.md` §6.6。對應 `Assets.xcassets/AppIcon.appiconset` 現有四欄位，**只換圖檔、`Contents.json` 不用改**（已核對：light／dark／tinted 三個 iOS 欄位＋mac 2x 512，共四個 filename）：`AppIcon_light_1024.png`←`jd2_lb_v5_1024.png`（不透明）；`AppIcon_dark_1024.png`←`jd2_lb_v5_dark_1024.png`（不透明）；`AppIcon_tinted_1024.png`←`jd2_lb_v5_tinted_1024.png`（透明、全白）；`AppIcon_mac_1024.png`←`jd2_lb_v5_mac_1024.png`（透明邊、824 主體）。四張實測皆 1024×1024（hasAlpha：light／dark=no，tinted／mac=yes）。`jd2_lb_dark_1024.png`／`jd2_lb_tinted_1024.png` 是 v33 歸檔母版，在 `_JD2-family/brand-assets/archive/ICON_v33/`（總指揮 10/17 更正），**不在本 repo**；appiconset 內只有上述四張＋Contents.json，**沒有要清除的檔案**。換用後驗證：模擬器看一般／深色／著色（iOS 主畫面設定）＋Mac Dock；重產圖檔用 `bash _JD2-family/brand-assets/tools/icon_render/render_icons.sh`，**不手改圖檔**。舊 v33 在 `brand-assets/archive/ICON_v33/`。
-- **v1.4 開工前置（總指揮 10/16 提醒）**：先跑 `bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook` 對照 171／0／1（**skipped 唯一允許的是 `PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded` 這支 StoreKit 測試**——它依執行時機跳過，10/18 早上的 172／0／0 是例外，總指揮已接受此基準），確認 Kit v9.6.1／v0.8.1 無回歸（見「目前狀態」共用層）。
-- **驗 App-i 紀錄簽章（總指揮 10/16 備忘，排 v1.4 之後、不急）**：用 DiveImportKit v0.8.0 的 `SignedRecordCanonicalizer`，以 `sourceApp` 辨識 App-i 紀錄，用 `ndlExceeded` 重建簽章內容，**不得**把 `decoOccurred`／`erViolation` 兩個相容鍵納入。
-
-- **匯入頁支援格式清單補 ATMOS FIT（PM 10/10 排 v1.4）**：`ImportWizardView.swift:281-306` `supportedFormatGroups` 無 ATMOS（`grep -ci atmos` 0），
-  但 What's New 與三語 Description 已寫支援。補上後重拍 macOS 匯入頁截圖（兩欄會完整顯示清單）。
-- **詳細頁「來源格式」手動新增顯示英文 "Manual Entry"（PM 10/10 排 v1.4；既有問題）**：`DiveLogDetailView.swift:496` 回傳字面字串，
-  未走 `languageManager.localized`（catalog 已有 `Manual Entry` 鍵）。
-
-- ✅ **文件整理已完成（2026-10-17，提交 `132ab3d`）**——`V1_2_BACKLOG.md` 文末新增「v1.3 結果對照」、`docs/KNOWN_ISSUES.md` 新增「v1.3 已解決／仍開放」、文件登錄表補登四份並更新過時狀態；細節見這些檔案。以下為原待辦（保留供對照）：**文件整理（PM 10/10：送審後做，交給 App-lb）**：`V1_2_BACKLOG.md`（停在 9/13）、`docs/KNOWN_ISSUES.md`（停在 8/17）跟上 v1.3 結果
-  （R-06 定位權限在地化、D7 ATS、P1-3 效能門檻 500 ms、181e441 SIGABRT 已修、D6 GDPR 延下一版）；文件登錄表補登 `V1_3_WORK_PLAN`／`SUBMISSION_CHECK_NEXT`／`KEYWORDS_NEXT_DRAFT`。
-
-- **文字自動縮小 4 處（PM 10/10 排 v1.4）**：`DiveLogListView.swift:307,313`（統計列）、`DiveRowView.swift:114`（日期區塊）、`ImportWizardView.swift:694`（副檔名）。
-  Xcode 27 建置下 `.minimumScaleFactor` 放得下也縮小（10/05 剖面讀數已改 `ViewThatFits`）；逐處改法相同，改完與 v1.2 截圖對照。App-u 22 處、App-i 38 處同型待查。
-
-- **列表篩選（PM 10/07 同意記入）**：氣體（空氣／高氧／未知氣體）、潛水類型（水肺／自由潛水）、組織負荷（可顯示／不可顯示）。
-  目的：找出「未知氣體」逐筆補正、分開自由潛水、找出拖累殘氮鏈的紀錄。待定：地圖與頂部統計是否跟著篩選。需 18 語字串＋ui-verify。
-- **搜尋範圍擴充（PM 10/07 採納，與篩選同批）**：目前「搜尋地點…」只比對地點與備註（`DiveLogListView.swift:43-44`）⇒ 加潛伴、標籤、潛點名稱；
-  有固定選項的（氣體、類型、組織負荷）交給篩選。提示文字一併改（不再只寫「地點」）。
-- **環境：原始檔沒有就顯示「未記錄」（PM 10/07 採納）**：目前沒有任何解析器填 `environmentType`（全 Parsers 0 處；`DiveLog.swift:108` 預設 `seawater`）。
-  ✅ **10/26 已查**：重放讀 `surfacePressureBar`／`metersPerBar`（`DiveReplayInput.swift:20-29`），不是環境字串；家族裁示匯入與重放**不依 environmentType 調整密度**（總指揮轉述 `decisions/2026-09-12_P3查證結果-匯入端壓力欄位盤點.md` §5.4，我未逐檔核對）⇒「未記錄」時重放維持 1.0 bar／10.0 m/bar、演算法零變動。湖泊潛水仍以海水密度換算的限制不處理。細節與待 PM 裁示（編輯頁 Picker 是否加「未記錄」、舊資料不回溯）見 `docs/V1_4_WORK_PLAN.md` A1。
-  ✅ **10/26 A1 程式已完成**（決策檔 `docs/decisions/D-2026-10-26-環境欄位未記錄.md`；截圖 `docs/screenshots/v1.4-A1/`）。待辦：三段新文案 PM 定稿＋補 15 語；真機與 v1.2→v1.4 跳升未測。
-
-- 「原始匯入資料」6 個來源鍵名（`cns`／`minPPO2`／`maxPPO2`／`altitudeRange`／`decoRequired`／`gasSwitches`）補在地化名稱（18 語）；`gasSwitches` 值是 JSON，需整理成可讀格式。
-
-## 待 PM（未裁示，不阻擋送審）
-
-- ~~App-lb 另有 4 處 `minimumScaleFactor`~~ → **PM 10/10：排 v1.4**（見「下一版待辦」）。
-- ~~匯入不辨識潛水模式~~ ✅ 10/06：DM5 Mode=3、Seabear APNEA 帶入自由潛水（其他格式無證據不推測）。
-- ~~使用者手動改氣體不會清掉「氣體不可信」標記~~ ✅ 10/07 PM：改了氣體＝已確認（`DiveLog.userEditConfirmations`）。
+## 下一步（按順序）
+1. **等總指揮通知 DiveKit v9.8.0 合併**（F14：環境數值不合理 ⇒ 新 case `Anomaly.implausibleEnvironment`，`.untrustedEnvironment` 語意不變）。合併後：
+   跑 `bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook` ⇒ 預期 `EnvironmentEdgeCaseTests.testImplausibleSurfacePressureCurrentBehavior` 紅 ⇒
+   把重放段改成斷言 `.implausibleEnvironment`（顯示段已是 D-C (a)，不動）；`LegacyAltitudeReplayGate.reason(for:)` 不用改（新 case 自然走通用句）；
+   CLAUDE.md DiveKit 版號改 v9.8.0、跑 `check_doc_version_sync.sh`；回報總指揮三數字。
+2. **稽核收尾**：T29（全 repo grep `environmentType`／`"altitude"`／`Search location…`／`importExtras[` 逐處審查）、T30（`check_privacy_manifest.py`、版號、機敏掃描）。
+   T19 已因判定移到 Kit 而不再適用（App 只顯示 Kit 的原因，不會重複）；T7 同 T6，備份介面自 v1.2 隱藏 ⇒ 不適用。回填稽核計劃。
+3. **待 PM 手動**：iOS 模擬器文字輸入（T4 存檔後重開、T27 iOS、T28 iOS）。或加 UI 測試 target 自動輸入（需 PM 同意）。
+4. **v1.4 剩餘功能**（PM 排序）：A3 列表篩選（組織負荷篩選以 Kit 重放結果為準、不得另寫條件；統計／地圖不跟篩選）→ B1＋B2 → C。
 
 ## 陷阱提醒
+- **提交閘門**：commit 前用 `set -e` 串機敏掃描＋`check_doc_version_sync.sh`，失敗就停（10/27 曾在版號檢查回 1 時照推，因 DiveImportKit v0.8.2 未通知就上 main）。**逐檔 `git add`，不用 `-A`**（總指揮要求）。
+- **Kit 可能未通知就更新**：local path 引用 ⇒ 下一次 build 就吃新版。開工前先 `git -C ../_JD2-family/DiveKit describe --tags`、`DiveImportKit` 同。
+- **macOS 實測不得用正式 bundle ID**：PM 這台 Mac 的 `~/Library/Containers/com.jd2logbook.JD2-Logbook` 是 **v1.3 真實資料（70 筆，結構 1.0.0/48ac84ec）**，v1.4 開啟會遷移、v1.3 就打不開。
+  做法（PM 10/27 指定）：`xcodebuild … PRODUCT_BUNDLE_IDENTIFIER=com.jd2logbook.JD2-Logbook.audit CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=`，測前測後比對真實 store 的 SHA-256。
+- **iOS 模擬器文字輸入**：simctl 貼上、模擬器工具 text、螢幕鍵盤點擊三種都進不了欄位 ⇒ 不要再試；macOS 的 app_type 可以。改 App 語言用 App 內選單（`simctl spawn defaults write` 第二次起不生效）。
+- **假資料剖面 JSON 鍵是 `t`／`d`／`w`**（`DiveProfileSample` CodingKeys），不是 `timeSeconds`；氣體 JSON 是 `"air"` 或 `{"nitrox":{"fO2":0.32}}`。
+- 測試中不得釋放 `AppLanguageManager`（SIGABRT）⇒ 用 static 共用實例；zsh 不拆 `$var` ⇒ 迴圈寫成 bash 腳本；測試取數用 `TEST_RUNNER_JD2_T18_OUT=<主機路徑>`。
+- 舊版 App 編譯要用當年的 Kit（`git archive` 匯出到 scratchpad，不要在 Kit repo 開 worktree）。
+- 量具自我驗證：`grep -rlF` 在 .app 上對照組失效（10/27），改用 `strings -a <binary>`，先確認 Debug 對照組找得到再判 Release。
 
-- 🔴 **Xcode 27 的模擬器（Device Hub）不接受 Finder 拖曳檔案**。放檔案進「檔案」App：
-  `xcrun simctl get_app_container booted com.apple.DocumentsApp groups` 取 `group.com.apple.FileProvider.LocalStorage`，
-  複製到同目錄暫存夾再 `mv` 進 `File Provider Storage/`。**用 `find` 找到的其他 AppGroup 是錯的**（10/04 夜因此看不到檔案）。
-- 🔴 **Xcode 27 建置下 `.minimumScaleFactor` 放得下也會縮小**（同程式碼 v1.2 真機正常）——改用 `ViewThatFits`。
-- 測試模擬器 `LB-Upgrade-v12to13`（`F13F80D4-…`，iOS 26.4）有 PM 匯入的 27 筆資料；**拍截圖時臨時改過的資料都已還原**（10/05：Z_PK 17、137）。
-- App 語言切換：`xcrun simctl launch … -jd2logbook.appLanguage zh-Hant -AppleLanguages "(zh-Hant)"`。
-- 模擬器點擊偶爾漏：截圖要 `sleep 2` 後再拍；返回用左緣 swipe。
-- 字串目錄（xcstrings）插入新鍵要照既有順序（近似不分大小寫排序），整檔重排會產生上萬行 diff。
+## 專用模擬器與測試資料（可刪）
+- iOS：`JD2-LB-UpgradeTest`、`JD2-LB-Upgrade-v10／v12／v13`（跳版升級 T1–T3）、`JD2-LB-Audit`（10/27：105 筆假資料＋8 筆特製紀錄；語言已還原為跟隨系統）。
+- macOS：`~/Library/Containers/com.jd2logbook.JD2-Logbook.audit`（audit 版本的獨立資料，可整個刪除）。
+- 截圖：`docs/screenshots/v1.4-A1/`、`v1.4-A2/`、`v1.4-audit-sim/`（01–29）。
 
-## 開場指令建議
-
-先讀本檔與 `docs/V1_4_WORK_PLAN.md`（v1.3 逐項紀錄在 `docs/V1_3_WORK_PLAN.md` §七、§八）。v1.4 開工前置：先跑 `run_tests.sh logbook`；PM 排程前不動工。驗證：`bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook`（預期 171/0/1）。
+## 開場指令建議（給下一個 session）
+先讀本檔與 `docs/V1_4_AUDIT_TEST_PLAN.md`（逐項狀態）、`docs/V1_4_WORK_PLAN.md`；確認 Kit 版號：
+`git -C /Users/kevin/Documents/AppProject/_JD2-family/DiveKit describe --tags`（v9.7.0 或已到 v9.8.0）；
+跑 `bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook`，對照 **212／0／1**。

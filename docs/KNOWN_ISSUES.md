@@ -44,6 +44,11 @@
 | 上升速率警示功能關閉中 | `showWarningEvents=false`（`DiveAnalysisView.swift:31`），使用者看不到；重開前須改家族色 | 功能未啟用 | 未排程（8/13 PM：呈現方式未定） |
 | 匯入不辨識潛水模式（自潛／浮潛皆當水肺） | DiveImportKit 尚無欄位；PM 10/04 裁示等 App-u 日誌格式定案 | 匯入資料的潛水類型 | 待 App-u |
 | `Localizable.xcstrings` 的 `%lld%%` 被 Xcode 標 `extractionState: stale` | 編輯頁改用 percentText 後無人引用；Xcode 每次 build／Archive 也會自動重排整份 xcstrings（2026-10-10 還原過一次），**提交前先 `git diff --stat`，需要時 `git checkout --` 還原** | 無功能影響 | v1.4 清理 |
+| UDDF 以 `<link ref>` 引用的潛伴未匯入、搜不到（稽核 F16，2026-10-27） | DiveImportKit `UDDFParser.swift:483-489` 只讀直寫的 firstname；測試 `DiveSearchTests.testUDDFLinkedBuddyIsNotImportedYet` 鎖現況 | 標準寫法 UDDF 的潛伴不可搜尋 | DiveImportKit（已回報總指揮，未排程） |
+| 搜尋 2,000 筆時每鍵 30–38 ms（稽核 T26／D-E，2026-10-27） | 每次按鍵對每筆解碼 `importExtrasJSON`；A2 前 12 ms。門檻 16 ms 為本專案決定；Debug、模擬器量測 | 大量資料打字略頓 | D-E 待 PM（App-lb 建議先記已知限制） |
+| 最大字級（AX5）版面：列表統計列占約六成、潛水列截斷；剖面圖時間刻度重疊；德文編輯頁標題截斷（稽核 F17） | 既有版面，`git diff ae3a629..HEAD` 佐證非 v1.4 引入 | 無障礙大字級可讀性 | 待 PM 排程 |
+| `MockDataSeeder` 類別隨 Release 出貨（稽核 F18） | `MockDataSeeder.swift:10` 未包 `#if DEBUG`；入口在 `#if DEBUG` 內，Release 無呼叫點 | 死碼，無功能影響 | PM 另行排程（10/27） |
+| `Localizable.xcstrings.backup` 被打包進 App（稽核 F19） | 400 KB 舊翻譯檔，2026-05-29 起在版控，fileSystemSynchronizedGroups 帶進 bundle；推定 v1.0–v1.3 已出貨 | App 多 400 KB，無機敏資料 | PM 另行排程（10/27） |
 | 地圖同座標 2 筆以上聚合後無法點開看 log（PM 2026-10-26） | 讀碼推斷：`DiveMapRepresentable.swift:54-56` 點聚合只 `showAnnotations`，成員座標相同時縮放無法拆開。**未實機重現**；App-u 同寫法（總指揮 10/26 讀碼，未重現） | 同座標多筆紀錄看不到 | v1.4（`V1_4_WORK_PLAN.md` B2；修完回報總指揮評估 App-u） |
 | 環境欄位無「未記錄」：解析器皆不填 `environmentType`，每筆預設 `seawater` | `DiveLog.swift:108`；舊資料無法分辨預設值與真實選擇 | 淡水／高海拔紀錄顯示為海水 | ✅ v1.4 A1 已實作（未發布；2026-10-26，`docs/decisions/D-2026-10-26-環境欄位未記錄.md`）；舊資料不回溯 |
 
