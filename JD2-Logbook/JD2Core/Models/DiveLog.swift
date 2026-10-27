@@ -367,8 +367,14 @@ final class DiveLog {
     static let highAltitudeSurfacePressureThresholdBar = 0.95
 
     /// 「高海拔」徽章：由實際存的水面氣壓推導，和水域類型是兩件獨立的事（可並列「海水・高海拔」）。
+    ///
+    /// D-C（PM 2026-10-27 採 (a)，`docs/decisions/D-2026-10-27-DC-水面氣壓不合理值顯示-聯合提案.md`）：
+    /// 氣壓須在 DiveKit 的合理範圍內（`DiveEnvironment.plausibleSurfacePressureRangeBar`）才判高海拔——
+    /// 0、負數、NaN 是錯誤資料，不顯示徽章（舊版 Subsurface XML 匯入可能留下）。範圍直接取 Kit 的常數、不另寫，
+    /// 與重放的「環境不合理」同一把尺（D4）。
     var isHighAltitude: Bool {
-        surfacePressureBar < Self.highAltitudeSurfacePressureThresholdBar
+        DiveEnvironment.plausibleSurfacePressureRangeBar.contains(surfacePressureBar)
+            && surfacePressureBar < Self.highAltitudeSurfacePressureThresholdBar
     }
 
     /// `surfacePressureBar` 的模型預設值（匯入沒帶氣壓、手動新增都會是它）。

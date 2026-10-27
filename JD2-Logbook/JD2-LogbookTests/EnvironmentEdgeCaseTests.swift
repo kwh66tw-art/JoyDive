@@ -53,8 +53,8 @@ final class EnvironmentEdgeCaseTests: XCTestCase {
                     XCTAssertNil(dive.waterType, "\(label)：只有 seawater／freshwater 有名稱（空字串、未知值都不得落到海水）")
                 }
 
-                // 徽章：嚴格「< 0.95」；NaN 比較恆 false ⇒ 不判高海拔。
-                let expectedBadge = pressure < 0.95
+                // 徽章（D-C (a)，PM 10/27）：在 Kit 合理範圍（0.60...1.10）內且嚴格「< 0.95」；0／負數／NaN 不判高海拔。
+                let expectedBadge = (0.60...1.10).contains(pressure) && pressure < 0.95
                 XCTAssertEqual(dive.isHighAltitude, expectedBadge, label)
                 if pressure.isNaN { XCTAssertFalse(dive.isHighAltitude, "\(label)：NaN 不判高海拔") }
 
@@ -70,13 +70,15 @@ final class EnvironmentEdgeCaseTests: XCTestCase {
         }
     }
 
-    /// ⚠️ 現況紀錄（D-C 待 PM；2026-10-27 已回報總指揮）：水面氣壓 0／負數／NaN 時，
-    /// App 層把 0 與負數顯示成「高海拔」，而 **DiveKit v9.7.0 照常重放、不回異常**——NaN 時組織負荷為 NaN。
-    /// 本 App 不另寫判定（D4：判定在 Kit）；Kit 或 PM 改行為後，這支會紅，屆時照新裁示更新。
+    /// 顯示：D-C (a)（PM 2026-10-27）——0／負數／NaN 不顯示高海拔徽章；合理範圍下緣 0.60 仍顯示。
+    /// 重放：⚠️ 現況紀錄——**DiveKit v9.7.0 照常重放、不回異常**（NaN 時組織負荷為 NaN）。
+    /// DiveKit v9.8.0（F14）改回 `.implausibleEnvironment` 後這段會紅，屆時改斷言（總指揮合併時通知）。
     func testImplausibleSurfacePressureCurrentBehavior() {
-        XCTAssertTrue(makeDive(environment: nil, surfacePressure: 0).isHighAltitude, "現況：0 bar 顯示高海拔")
-        XCTAssertTrue(makeDive(environment: nil, surfacePressure: -1).isHighAltitude, "現況：負數顯示高海拔")
+        XCTAssertFalse(makeDive(environment: nil, surfacePressure: 0).isHighAltitude, "D-C (a)：0 bar 不顯示高海拔")
+        XCTAssertFalse(makeDive(environment: nil, surfacePressure: -1).isHighAltitude, "D-C (a)：負數不顯示高海拔")
         XCTAssertFalse(makeDive(environment: nil, surfacePressure: .nan).isHighAltitude)
+        XCTAssertTrue(makeDive(environment: nil, surfacePressure: 0.60).isHighAltitude, "合理範圍下緣仍判高海拔")
+        XCTAssertFalse(makeDive(environment: nil, surfacePressure: 0.5999).isHighAltitude)
 
         for pressure in [0.0, -1.0, .nan] {
             let dive = makeDive(environment: "seawater", surfacePressure: pressure, withProfile: true)

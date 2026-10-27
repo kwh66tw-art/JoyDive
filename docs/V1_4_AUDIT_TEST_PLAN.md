@@ -31,6 +31,8 @@
 | F15 | ✅ **DiveImportKit v0.8.2 已修（10/27）**：不合理值視為未提供 ⇒ App 存預設 1.0（`EnvironmentEdgeCaseTests` 已改斷言）。原問題：DiveImportKit Subsurface XML 的 `<surface pressure>` 不經 `SurfacePressureParsing` 合理範圍檢查（其他解析器有），0 bar／`nan` 原樣匯入 | DIK `SubsurfaceXMLParser.swift:222` | P1（跨 repo，已回報總指揮） |
 | F16 | DiveImportKit UDDF 只讀 `informationbeforedive` 內直寫的潛伴名字，不解析 `<link ref>` 引用的 `<buddy>` ⇒ 標準寫法的潛伴未匯入、搜不到 | DIK `UDDFParser.swift:483-489` | P2（跨 repo，已回報總指揮） |
 | F17 | 最大字級（AX5）下既有版面問題（**非 v1.4 改動**，10/27 模擬器）：列表頂部統計列固定佔約六成畫面、潛水列只剩「T12…」與縱排日期；剖面圖時間軸刻度重疊（0min10min20min…）。德文編輯頁標題截成「Tauchgang bea…」（一般字級）。依據：`git diff ae3a629..HEAD` 列表只改 filter 與提示字串鍵、剖面圖只改重放判定、編輯頁只改水域 Picker ⇒ 版面非 v1.4 引入（未另以 v1.3 build 對照截圖） | `DiveLogListView`、剖面圖、編輯頁工具列 | P2（記錄，交 PM 排程） |
+| F18 | `MockDataSeeder` 類別未包 `#if DEBUG`，隨 Release 出貨（iOS／macOS 皆是）；入口在 `#if DEBUG` 內，Release 無呼叫點 ⇒ 死碼、無功能風險。既有（非 v1.4） | `JD2Core/Utilities/MockDataSeeder.swift:10` | P2（建議包 `#if DEBUG`） |
+| F19 | `Localizable.xcstrings.backup`（400 KB，2026-05-29 起在版控）因 fileSystemSynchronizedGroups 被打包進 App（Release iOS／macOS 皆有）⇒ 推定 v1.0–v1.3 已隨 App 出貨。內容只是舊翻譯，無機敏資料 | `JD2-Logbook/JD2-Logbook/Localizable.xcstrings.backup` | P2（建議刪除或移出 App 資料夾，需 PM 同意） |
 
 ## 二、邊界測試矩陣
 
@@ -45,7 +47,7 @@
 | T3 | v1.3 → v1.4（全新 v1.3 store，含 nil 水溫、free 模式、tags）；升級後再開第二次 | S | 版本維持、資料不變 | P0 | ✅ **通過**：3 筆全欄位不變、`48ac84ec` → `f1c58c3f`（截圖 14）；T1 模擬器升級後重開一次正常（不重複遷移） |
 | T4 | 遷移後新增一筆未記錄 ⇒ 重開 ⇒ 仍為 nil | S | nil | P1 | 部分（10/27 模擬器）：新增頁水域預設「未記錄」✅（`docs/screenshots/v1.4-audit-sim/`11）；存檔需輸入最大深度 ⇒ **模擬器文字輸入受阻**（停止條件），存後重開未驗 ⇒ 缺，請 PM 手動輸入或併 UI 測試 target |
 | T5 | 空資料庫（全新安裝）啟動 | S | 正常、store 2.0.0 | P1 | ✅ 10/27：全新模擬器安裝啟動正常（空狀態頁），store 0 筆、版本識別 **1.4.0**（原寫 2.0.0 為舊預期，v1.4 改版號命名後即 1.4.0）、hash f1c58c3f |
-| T6 | 備份：v1.3 匯出 → v1.4 還原；v1.4（含 nil）匯出 → v1.4 還原 | U＋S | 原值保留；nil 往返 | P1 | U ✅（單元測試）；S 缺：備份匯出／還原走分享面板與檔案挑選器，本批未做——建議併 macOS 批次（檔案對話框較易操作）或 PM 手動 |
+| T6 | 備份：v1.3 匯出 → v1.4 還原；v1.4（含 nil）匯出 → v1.4 還原 | U＋S | 原值保留；nil 往返 | P1 | U ✅；S **不適用**：備份匯出／匯入介面自 v1.2 起隱藏（`SettingsView.swift:24` `showBackupSection = false`，提交 e4194ca，理由「尚未經過完整測試」），使用者碰不到；開放前須另做實檔測試 |
 | T7 | 備份：v1.4（含 nil）→ v1.3 還原 | S | 預期整份失敗（F13），確認錯誤訊息不閃退 | P2 | 未做 |
 | T8 | 匯入：無環境欄位的真實樣本（UDDF／FIT 各一）⇒ 未記錄；DIK 若帶值 ⇒ 原樣 | U | 同 | P1 | 只有合成資料測試 |
 
@@ -60,7 +62,7 @@
 | T13 | 18 語各切一次：詳細頁環境列、編輯頁 Picker、原因句、揭露句、搜尋提示 | S | 無截斷、無遺漏鍵（14 語顯示英文為已知） | P1 | 部分 ✅ 10/27：zh-Hant、en、ja、de 實機檢查——原因句接法（中日直接接、英德補空格）、環境列、Picker、揭露句、搜尋提示皆無截斷；de 的新字串顯示英文（14 語待補，已知）（`docs/screenshots/v1.4-audit-sim/`01、17–24）。其餘 14 語：新字串皆回退英文、版面同英文，接法由 T20 單元測試 18 語覆蓋 ⇒ 未逐一截圖。⚠️ `simctl spawn defaults write` 改語言第二次不生效 ⇒ 改用 App 內語言選單 |
 | T14 | 最大字級（Dynamic Type AX5）＋深色模式：原因句與「· 高海拔潛水」換行 | S | 不截斷、不重疊 | P1 | ✅ 10/27（AX5＋深色）：原因句、「海水 · 高海拔潛水」完整換行不截斷（`docs/screenshots/v1.4-audit-sim/`15、16）。⚠️ 另見 F17（既有版面，非 v1.4 改動） |
 | T15 | VoiceOver 讀環境列與原因句 | S | 讀得出完整句 | P2 | 未做 |
-| T16 | macOS：T10–T14 的代表案例＋編輯頁 Picker | M | 同 iOS | P1 | 未做 |
+| T16 | macOS：T10–T14 的代表案例＋編輯頁 Picker | M | 同 iOS | P1 | ✅ 10/27（macOS 以獨立 bundle ID `com.jd2logbook.JD2-Logbook.audit`（PM 10/27 指定，只在編譯指令覆寫，不改專案檔）測試，PM 真實資料庫前後 SHA-256 相同）：T10 未知值編輯頁水域選單空白、取消後值不變；舊標籤詳細頁原因句；D-C (a) 0 bar 海水只顯示「海水」無徽章（`docs/screenshots/v1.4-audit-sim/`26、28、29）。選單展開在背景操作模式下不能開，選項內容由 iOS T11 覆蓋 |
 
 ### A1 重放閘門
 
@@ -81,8 +83,8 @@
 | T24 | 重音／全半形（F12）：記錄現況 | U | 與 A2 前一致 | P2 | ✅ 10/27 記錄現況：分重音、分全半形、分半形片假名；只不分大小寫（與 A2 前同一函式） |
 | T25 | `importExtrasJSON` 損毀、空字串、含非字串值（F10） | U | 地點照常命中、不崩潰 | P2 | ✅ 10/27：空字串、非字串值、null 皆不崩潰、地點照常；非字串值 ⇒ 整包潛伴／標籤搜不到（F10 現況） |
 | T26 | 效能（F9）：2,000 筆（含 extras）逐字輸入，量 `filteredDives` 耗時 | U（measure）＋S | 每次按鍵 < 1 幀（16 ms）為目標；**門檻為本專案決定**，超過就回報、不自行改快取 | P2 | ⚠️ 10/27 **超過門檻**：2,000 筆每次按鍵 30–38 ms（Debug，模擬器）；A2 前（只比地點＋備註）12 ms，extras 解碼本身 18 ms ⇒ 交 D-E，未自行改 |
-| T27 | 模擬器實際輸入搜尋（iOS）；macOS 搜尋欄 | S＋M | 只剩命中筆數；清除後回全部 | P1 | ❌ iOS 受阻：10/27 再試兩種方式（模擬器工具貼上、螢幕數字鍵盤點擊）皆輸入不進欄位 ⇒ 依停止條件停，**請 PM 手動輸入**或改 UI 測試 target；macOS 未做（macOS 批次） |
-| T28 | 搜尋中刪除一筆、搜尋中匯入新資料 ⇒ 結果即時更新 | S | 同 | P2 | 缺：需搜尋輸入（同 T27 受阻） |
+| T27 | 模擬器實際輸入搜尋（iOS）；macOS 搜尋欄 | S＋M | 只剩命中筆數；清除後回全部 | P1 | iOS ❌ 受阻（模擬器文字輸入三種方式皆失敗，待 PM 手動或 UI 測試 target）；**macOS ✅ 10/27**：搜潛伴「zelda」只剩 1 筆、清除後回全部（`docs/screenshots/v1.4-audit-sim/`25） |
+| T28 | 搜尋中刪除一筆、搜尋中匯入新資料 ⇒ 結果即時更新 | S | 同 | P2 | 刪除部分 macOS ✅ 10/27：搜「T11」2 筆 ⇒ 刪 1 筆 ⇒ 列表即時剩 1 筆、統計 105→104（`docs/screenshots/v1.4-audit-sim/`27）；搜尋中匯入、iOS 缺（文字輸入受阻） |
 
 ### 跨項目
 
@@ -90,7 +92,7 @@
 |---|---|---|---|---|---|
 | T29 | 全 repo grep：`environmentType`、`"altitude"`、`Search location…`、`importExtras[` 每一處都經過審查 | R | 無遺漏的 switch／default 落海水 | P1 | A1 時做過一次，A2 後再跑 |
 | T30 | `check_privacy_manifest.py`、`check_doc_version_sync.sh`、機敏掃描 | R | 皆過 | P1 | 版號／機敏 A1 已過 |
-| T31 | Release build（非 Debug）iOS＋macOS 編得過、`#if DEBUG` 的 MockDataSeeder 不進 Release | M | 同 | P1 | 未做 |
+| T31 | Release build（非 Debug）iOS＋macOS 編得過、`#if DEBUG` 的 MockDataSeeder 不進 Release | M | 同 | P1 | 部分 ✅ 10/27：Release iOS／macOS 皆 BUILD SUCCEEDED；⚠️ `MockDataSeeder` 類別**有**編進 Release（`strings` 對照組：Debug 也找得到同字串），只有設定頁入口包在 `#if DEBUG`，Release 無呼叫點（callers.sh）⇒ F18 |
 
 ## 三、執行順序與停止條件
 
