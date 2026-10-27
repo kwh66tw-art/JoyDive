@@ -94,33 +94,35 @@ final class EnvironmentEdgeCaseTests: XCTestCase {
                        "Kit 已有合理範圍常數（0.60...1.10），但重放前置判斷未使用")
     }
 
-    /// 匯入路徑：Subsurface XML 的 `<surface pressure>` 不經 DiveImportKit 的合理範圍檢查
-    /// （`SurfacePressureParsing`；其他解析器有用），0 bar 原樣進資料庫（2026-10-27 讀碼：
-    /// `SubsurfaceXMLParser.swift:222` `parseBar` 只做 `Double(…)`）。⚠️ 現況紀錄，已回報總指揮。
-    func testSubsurfaceXMLZeroSurfacePressureIsStoredVerbatim() throws {
-        let xml = """
-        <divelog program='subsurface' version='3'>
-        <dives>
-        <dive number='1' date='2023-11-14' time='10:00:00' duration='40:00 min'>
-          <surface pressure='0.0 bar' />
-          <divecomputer model='Test'>
-          <depth max='20.0 m' mean='15.0 m' />
-          <sample time='0:00 min' depth='0.0 m' />
-          <sample time='2:00 min' depth='20.0 m' />
-          <sample time='38:00 min' depth='20.0 m' />
-          <sample time='40:00 min' depth='0.0 m' />
-          </divecomputer>
-        </dive>
-        </dives>
-        </divelog>
-        """
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("T9-\(UUID().uuidString).ssrf")
-        try xml.write(to: url, atomically: true, encoding: .utf8)
-        defer { try? FileManager.default.removeItem(at: url) }
+    /// 匯入路徑：Subsurface XML 的 `<surface pressure>` 不合理（0、負數、`nan`）⇒ 視為未提供，存成預設 1.0。
+    /// F15：DiveImportKit v0.8.2（PM 2026-10-27）起改走 `SurfacePressureParsing.isPlausible`（0.5–1.2 bar）；
+    /// v0.8.1 以前 0 bar 原樣寫入。合理值（0.8）照常帶入，確認不是一律丟掉。
+    func testSubsurfaceXMLImplausibleSurfacePressureFallsBackToDefault() throws {
+        for (raw, expected) in [("0.0 bar", 1.0), ("-1.0 bar", 1.0), ("nan bar", 1.0), ("0.8 bar", 0.8)] {
+            let xml = """
+            <divelog program='subsurface' version='3'>
+            <dives>
+            <dive number='1' date='2023-11-14' time='10:00:00' duration='40:00 min'>
+              <surface pressure='\(raw)' />
+              <divecomputer model='Test'>
+              <depth max='20.0 m' mean='15.0 m' />
+              <sample time='0:00 min' depth='0.0 m' />
+              <sample time='2:00 min' depth='20.0 m' />
+              <sample time='38:00 min' depth='20.0 m' />
+              <sample time='40:00 min' depth='0.0 m' />
+              </divecomputer>
+            </dive>
+            </dives>
+            </divelog>
+            """
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent("T9-\(UUID().uuidString).ssrf")
+            try xml.write(to: url, atomically: true, encoding: .utf8)
+            defer { try? FileManager.default.removeItem(at: url) }
 
-        let dives = try SubsurfaceXMLParser().parse(from: url.path)
-        let dive = try XCTUnwrap(dives.first, "合成樣本應解析出一筆")
-        XCTAssertEqual(dive.surfacePressureBar, 0, "現況：0 bar 原樣寫入；Kit 改為套用合理範圍後應回到預設 1.0")
+            let dives = try SubsurfaceXMLParser().parse(from: url.path)
+            let dive = try XCTUnwrap(dives.first, "合成樣本應解析出一筆（\(raw)）")
+            XCTAssertEqual(dive.surfacePressureBar, expected, "\(raw)")
+        }
     }
 
     // MARK: - T20 原因句接法（18 語）

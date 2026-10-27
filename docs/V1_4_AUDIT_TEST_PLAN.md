@@ -28,7 +28,7 @@
 | F12 | `localizedCaseInsensitiveContains` 不忽略重音（Café ≠ Cafe）、全形／半形不等價——與 A2 前行為相同 | — | P2（記錄即可） |
 | F13 | v1.4 匯出的備份若含 nil 環境，**v1.3 讀不回整份備份**（v1.3 該欄非可選）——與 C2 水溫同一類取捨 | `DiveLogBackup.swift` | 已知，需 PM 知悉 |
 | F14 | 🔴 **DiveKit 重放不檢查水面氣壓是否合理**：0／負數／NaN 照常重放、不回異常（NaN ⇒ 組織負荷 NaN；0 bar ⇒ 最高隔室 173%）。Kit 已有 `plausibleSurfacePressureRangeBar`（0.60...1.10）但前置判斷未用。（10/27 實測；總指揮讀碼確認）。**跨 App 差異**（總指揮 10/27）：App-u 的 `replayEnvironment` 把 ≤0／NaN 靜默換成 1.0 bar，App-lb 傳原值 ⇒ 同一筆資料兩 App 結果不同，由 Kit 統一處理（修法併 D-C 交 PM） | DiveKit `precheck` | P1（跨 repo，總指揮已確認；裁示前 Kit／DIK 不動） |
-| F15 | DiveImportKit Subsurface XML 的 `<surface pressure>` 不經 `SurfacePressureParsing` 合理範圍檢查（其他解析器有），0 bar／`nan` 原樣匯入 | DIK `SubsurfaceXMLParser.swift:222` | P1（跨 repo，已回報總指揮） |
+| F15 | ✅ **DiveImportKit v0.8.2 已修（10/27）**：不合理值視為未提供 ⇒ App 存預設 1.0（`EnvironmentEdgeCaseTests` 已改斷言）。原問題：DiveImportKit Subsurface XML 的 `<surface pressure>` 不經 `SurfacePressureParsing` 合理範圍檢查（其他解析器有），0 bar／`nan` 原樣匯入 | DIK `SubsurfaceXMLParser.swift:222` | P1（跨 repo，已回報總指揮） |
 | F16 | DiveImportKit UDDF 只讀 `informationbeforedive` 內直寫的潛伴名字，不解析 `<link ref>` 引用的 `<buddy>` ⇒ 標準寫法的潛伴未匯入、搜不到 | DIK `UDDFParser.swift:483-489` | P2（跨 repo，已回報總指揮） |
 | F17 | 最大字級（AX5）下既有版面問題（**非 v1.4 改動**，10/27 模擬器）：列表頂部統計列固定佔約六成畫面、潛水列只剩「T12…」與縱排日期；剖面圖時間軸刻度重疊（0min10min20min…）。德文編輯頁標題截成「Tauchgang bea…」（一般字級）。依據：`git diff ae3a629..HEAD` 列表只改 filter 與提示字串鍵、剖面圖只改重放判定、編輯頁只改水域 Picker ⇒ 版面非 v1.4 引入（未另以 v1.3 build 對照截圖） | `DiveLogListView`、剖面圖、編輯頁工具列 | P2（記錄，交 PM 排程） |
 

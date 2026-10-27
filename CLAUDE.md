@@ -18,7 +18,7 @@
   本身）。發現演算法問題→回統一 DiveKit修（單一戰場），不得在本 repo 繞道；
   `SYNC_TO_JD2-ULTRA.md` 仍是 Logbook↔ultra單向記錄機制（非 DiveKit 相關問題才用）。
 - **F6/F8/B組已完成（2026-07-19）**：Importers 全部（15 種格式）搬遷至獨立的
-  `DiveImportKit`（`../../_JD2-family/DiveImportKit`，**v1.3 (Build 4) 以 v0.7.8 送審，目前 Kit 現況 v0.8.1**，2026-10-18 核對），本 repo 已無任何本地
+  `DiveImportKit`（`../../_JD2-family/DiveImportKit`，**v1.3 (Build 4) 以 v0.7.8 送審，目前 Kit 現況 v0.8.2**（F15 Subsurface XML 水面氣壓合理範圍），2026-10-27 核對），本 repo 已無任何本地
   解析器/去重邏輯拷貝，只剩 `JD2Core/Importers/DiveImportKitAdapter.swift`
   （全 App 唯一 import 點）。**解析器 bug 同樣回統一 DiveImportKit 修**。
   **本地複製的 `DiveLogImportError`（`JD2Core/Importers/DiveLogImporter.swift`）
@@ -44,7 +44,7 @@
   v1.3 工作紀錄見 `docs/V1_3_WORK_PLAN.md`，送審檢查見 `docs/SUBMISSION_CHECK_NEXT.md`
   （10/10 段），上架文案見 `docs/APPSTORE_COPY.md`，變更見 `CHANGELOG.md` [v1.3.0]。
   v1.1／v1.0 為已完成的歷史階段，見下方小節與 `V1_1_BACKLOG.md`。
-- **目標上線**：v1.3 已上架；v1.4 開發中（2026-10-26 起，Kit v9.7.0／v0.8.1，進度見 `HANDOFF.md`）。
+- **目標上線**：v1.3 已上架；v1.4 開發中（2026-10-26 起，Kit v9.7.0／v0.8.2，進度見 `HANDOFF.md`）。
 - **App 類別**：運動（`LSApplicationCategoryType = public.app-category.sports`，PM 2026-10-10；
   ASC 主類別已於 2026-10-10 改為 Sports——由 App-lb 在建立 1.3 版本草稿後自動化操作，PM 10/18 確認）。
 - **平台**：iOS 17.0+ / macOS 14.0+，Swift 6
