@@ -10,7 +10,7 @@
   進度與裁示：`docs/V1_4_WORK_PLAN.md`（已同步）；全盤稽核：`docs/V1_4_AUDIT_TEST_PLAN.md`（逐項狀態＋發現 F1–F19）。
 - **未 commit 變更**：本次交接的文件更新（CHANGELOG、KNOWN_ISSUES、V1_4_WORK_PLAN、CLAUDE.md、本檔、歸檔）——待 PM 確認後提交。程式最後提交 `04c9af6`（= origin/main）。
 - **測試**：`run_tests.sh logbook` **212／0／1**（唯一允許的 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`，依 StoreKit 載入時機浮動）。
-- **共用層**：DiveKit **v9.7.0**、DiveImportKit **v0.8.2**（local path、無版本鎖定；`check_doc_version_sync.sh` 通過）。COMPAT_MATRIX 的 App-lb 列由總指揮在 v9.8.0 合併後一起補。
+- **共用層**：DiveKit **v9.8.0**（10/28 跟進）、DiveImportKit **v0.8.2**（local path、無版本鎖定；`check_doc_version_sync.sh` 通過）。COMPAT_MATRIX 的 App-lb 列由總指揮在 v9.8.0 合併後一起補。
 - **已裁示的決策檔**（皆 `docs/decisions/`）：`D-2026-10-26-環境欄位未記錄.md`、`D-2026-10-26-v1.4-D3至D7裁示.md`、
   `D-2026-10-26-DA-舊標籤高海拔前導潛水-聯合提案.md`（主案 a' 已由 Kit v9.7.0 取代暫行 a；10/27 更正 a'' 理由）、`D-2026-10-27-DC-水面氣壓不合理值顯示-聯合提案.md`。
 
@@ -21,6 +21,8 @@
 - **文案**：A1 三段、D-A 兩句原因、A2 搜尋提示皆為草稿（英／繁中／日）；⏸ 上架前收尾定稿＋其餘 14 語（PM 10/26）。
 
 ## 下一步（按順序）
+0. ✅ **v9.8.0 跟進（10/28）**：總指揮已通知 v9.8.0 合併（DiveKit e7526ff）。`EnvironmentEdgeCaseTests` 改前 3/1/0（預期的紅），
+   改後全套 **212／0／1**（skip 為允許的那一支）；CLAUDE.md 已改 v9.8.0。待 PM 確認 commit。下面第 1 步已完成，保留作紀錄。
 1. **等總指揮通知 DiveKit v9.8.0 合併**（F14：環境數值不合理 ⇒ 新 case `Anomaly.implausibleEnvironment`，`.untrustedEnvironment` 語意不變）。合併後：
    跑 `bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook` ⇒ 預期 `EnvironmentEdgeCaseTests.testImplausibleSurfacePressureCurrentBehavior` 紅 ⇒
    把重放段改成斷言 `.implausibleEnvironment`（顯示段已是 D-C (a)，不動）；`LegacyAltitudeReplayGate.reason(for:)` 不用改（新 case 自然走通用句）；

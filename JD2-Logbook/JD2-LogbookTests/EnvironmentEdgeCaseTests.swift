@@ -71,8 +71,8 @@ final class EnvironmentEdgeCaseTests: XCTestCase {
     }
 
     /// 顯示：D-C (a)（PM 2026-10-27）——0／負數／NaN 不顯示高海拔徽章；合理範圍下緣 0.60 仍顯示。
-    /// 重放：⚠️ 現況紀錄——**DiveKit v9.7.0 照常重放、不回異常**（NaN 時組織負荷為 NaN）。
-    /// DiveKit v9.8.0（F14）改回 `.implausibleEnvironment` 後這段會紅，屆時改斷言（總指揮合併時通知）。
+    /// 重放：DiveKit v9.8.0（F14）起，環境數值不合理 ⇒ `.implausibleEnvironment` 拒算（v9.7.0 照常重放、NaN 時組織負荷為 NaN）。
+    /// 這不是舊標籤問題 ⇒ `LegacyAltitudeReplayGate` 不給原因句，畫面只顯示通用句。
     func testImplausibleSurfacePressureCurrentBehavior() {
         XCTAssertFalse(makeDive(environment: nil, surfacePressure: 0).isHighAltitude, "D-C (a)：0 bar 不顯示高海拔")
         XCTAssertFalse(makeDive(environment: nil, surfacePressure: -1).isHighAltitude, "D-C (a)：負數不顯示高海拔")
@@ -83,17 +83,12 @@ final class EnvironmentEdgeCaseTests: XCTestCase {
         for pressure in [0.0, -1.0, .nan] {
             let dive = makeDive(environment: "seawater", surfacePressure: pressure, withProfile: true)
             let outcome = DiveReplayEngine.replayChain(target: dive.replayInput, precedingDives: [])
-            guard case .replayed(let result) = outcome, let last = result.points.last else {
-                return XCTFail("現況：Kit 照常重放（p=\(pressure)）；若已改為異常，請依 D-C 裁示更新本測試。實際：\(outcome)")
+            guard case .anomaly(let anomaly) = outcome,
+                  case .implausibleEnvironment(chainIndex: 0, isTargetDive: true) = anomaly else {
+                return XCTFail("DiveKit v9.8.0：不合理水面氣壓應回 .implausibleEnvironment（p=\(pressure)）。實際：\(outcome)")
             }
-            let loads = DiveReplayEngine.tissueLoadPercent(pN2: last.tissuePN2, pHe: last.tissuePHe,
-                                                          environment: dive.replayEnvironment)
-            if pressure.isNaN {
-                XCTAssertTrue(loads.contains { $0.isNaN }, "現況：NaN 氣壓 ⇒ 組織負荷 NaN")
-            }
+            XCTAssertNil(LegacyAltitudeReplayGate.reason(for: anomaly), "不合理數值不是舊標籤 ⇒ 無原因句（p=\(pressure)）")
         }
-        XCTAssertFalse(DiveEnvironment.plausibleSurfacePressureRangeBar.contains(0),
-                       "Kit 已有合理範圍常數（0.60...1.10），但重放前置判斷未使用")
     }
 
     /// 匯入路徑：Subsurface XML 的 `<surface pressure>` 不合理（0、負數、`nan`）⇒ 視為未提供，存成預設 1.0。
