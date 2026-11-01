@@ -207,21 +207,92 @@ enum DiveReplayChainQuery {
     /// 只負責給候選集合——真正的窗口過濾、排序與保守上界截斷都由
     /// `DiveReplayEngine.replayChain` 自己做（96h 是殘氮物理上界，**不是** 12h
     /// 系列判定窗口，兩者概念不同、不得共用同一個常數）。
+    /// 96h 內不可能有更多真實潛水；防呆上界（取窗口內最早的這麼多筆）。
+    static let candidateLimit = 64
+
+    /// 詳細頁用：從資料庫取窗口內紀錄，再交給 `precedingDives(of:inAscending:)` 挑——挑法只有那一份。
     @MainActor
     static func precedingDives(of target: DiveLog, in context: ModelContext) -> [DiveLog] {
-        let lookback = Double(AlgorithmConstants.replayChainMaxLookbackHours) * 3600
-        let windowStart = target.dateTime.addingTimeInterval(-lookback)
-        let targetStart = target.dateTime
-        let targetID = target.persistentModelID
-
+        let (windowStart, targetStart) = window(of: target)
         var descriptor = FetchDescriptor<DiveLog>(
             predicate: #Predicate { $0.dateTime >= windowStart && $0.dateTime < targetStart },
             sortBy: [SortDescriptor(\.dateTime, order: .forward)]
         )
-        descriptor.fetchLimit = 64   // 96h 內不可能有更多真實潛水；防呆上界
+        descriptor.fetchLimit = candidateLimit
         let fetched = (try? context.fetch(descriptor)) ?? []
+        return precedingDives(of: target, inAscending: fetched)
+    }
+
+    /// 前導候選的唯一挑法（v1.4 A3 條件 1：詳細頁與列表篩選共用，不得各寫一份）。
+    ///
+    /// - Parameter sorted: 依 `dateTime` **遞增**排序的紀錄（可以是全部紀錄，也可以是已取好的窗口）。
+    /// 窗口 `[target − 96h, target)`、取最早 `candidateLimit` 筆、排除目標本身與日期代填的紀錄。
+    static func precedingDives(of target: DiveLog, inAscending sorted: [DiveLog]) -> [DiveLog] {
+        precedingIndices(of: target, inAscending: sorted).map { sorted[$0] }
+    }
+
+    /// 同上，回傳 `sorted` 內的索引（列表篩選用：輸入映射每筆只做一次，見 `TissueLoadingSupport`）。
+    static func precedingIndices(of target: DiveLog, inAscending sorted: [DiveLog]) -> [Int] {
+        let (windowStart, targetStart) = window(of: target)
+        let lower = firstIndex(in: sorted) { $0.dateTime >= windowStart }
+        let upper = firstIndex(in: sorted) { $0.dateTime >= targetStart }
+        guard lower < upper else { return [] }
+        let targetID = target.persistentModelID
         // PM 2026-10-06 裁示 B：日期是代填值的紀錄（剖面 CSV）不參與殘氮鏈——它的時間不是潛水發生的時間。
-        return fetched.filter { $0.persistentModelID != targetID && !$0.hasUnknownDateTime }
+        return (lower..<min(upper, lower + candidateLimit))
+            .filter { sorted[$0].persistentModelID != targetID && !sorted[$0].hasUnknownDateTime }
+    }
+
+    private static func window(of target: DiveLog) -> (start: Date, end: Date) {
+        let lookback = Double(AlgorithmConstants.replayChainMaxLookbackHours) * 3600
+        return (target.dateTime.addingTimeInterval(-lookback), target.dateTime)
+    }
+
+    /// 遞增陣列中第一個滿足 `predicate` 的索引（`predicate` 須單調：前段 false、後段 true）；沒有則回 `count`。
+    private static func firstIndex(in sorted: [DiveLog], where predicate: (DiveLog) -> Bool) -> Int {
+        var low = 0, high = sorted.count
+        while low < high {
+            let mid = (low + high) / 2
+            if predicate(sorted[mid]) { high = mid } else { low = mid + 1 }
+        }
+        return low
+    }
+}
+
+// MARK: - 組織負荷支援判定（v1.4 A3）
+
+/// 「這筆潛水的詳細頁會不會顯示互動式組織負荷」——列表篩選用，與詳細頁同一套判定。
+///
+/// 詳細頁：剖面樣本 ≥ 2 才進重放畫面（`DiveLogDetailView`），再以 `replayChain` 是否 `.anomaly` 決定
+/// 畫長條或顯示「不支援」（`DiveAnalysisView`）。這裡改呼叫 Kit 的 `precheck`（只跑前置判斷、不模擬；
+/// `replayChain` 內部先跑同一個 `precheck`，有異常才回 `.anomaly`）——**不在 App 層另寫條件**（D4）。
+enum TissueLoadingSupport {
+    /// 詳細頁進重放畫面的樣本下限（`DiveLogDetailView` 同一個條件）。
+    static let minimumProfileSamples = 2
+
+    /// - Parameter sortedAscending: 全部紀錄，依 `dateTime` 遞增。回傳「支援」的紀錄 ID。
+    ///
+    /// `replayInput` 每筆只映射一次（含剖面 JSON 解碼，約佔逐筆判定成本的九成）：每筆平均有十幾筆前導候選，
+    /// 逐筆各自映射會重複解碼同一批剖面（2,000 筆實測 11 s → 見 `TissueLoadingSupportPerformanceTests`）。
+    @MainActor
+    static func supportedIDs(in sortedAscending: [DiveLog]) -> Set<PersistentIdentifier> {
+        let inputs = sortedAscending.map(\.replayInput)
+        var supported = Set<PersistentIdentifier>()
+        for (index, dive) in sortedAscending.enumerated() {
+            let preceding = DiveReplayChainQuery.precedingIndices(of: dive, inAscending: sortedAscending)
+            if isSupported(target: inputs[index], preceding: preceding.map { inputs[$0] }) {
+                supported.insert(dive.persistentModelID)
+            }
+        }
+        return supported
+    }
+
+    /// 單筆判定（唯一的條件）：樣本 ≥ 2 且 Kit `precheck` 回 nil。`preceding` 須由
+    /// `DiveReplayChainQuery.precedingIndices` 挑出（列表的逐步判定 `TissueLoadingJudge` 亦呼叫本函式）。
+    @MainActor
+    static func isSupported(target: DiveReplayEngine.DiveInput, preceding: [DiveReplayEngine.DiveInput]) -> Bool {
+        guard target.profileSamples.count >= minimumProfileSamples else { return false }
+        return DiveReplayEngine.precheck(target: target, precedingDives: preceding) == nil
     }
 }
 

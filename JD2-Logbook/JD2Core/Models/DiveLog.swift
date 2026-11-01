@@ -269,9 +269,9 @@ final class DiveLog {
     /// 進入減壓、Ceiling=0m／No Deco=0'，改成 EANx32 存檔後兩者維持不變，即使
     /// 「Dive Info → Gas」已正確顯示 EANx32）。
     ///
-    /// 只組合會實際餵進 `DiveReplayEngine.DiveInput`（見 `replayInput`）、且使用者能
+    /// 只組合會實際餵進 `DiveReplayEngine.DiveInput`（見 `replayInput`）或前導挑選、且使用者能
     /// 透過 `DiveLogEditSheet` 編輯到的欄位：氣體、深度、時長、入水時間、潛水模式
-    /// （影響 `isBreathHold`）、環境氣壓／深度換算係數。**刻意不含**
+    /// （影響 `isBreathHold`）、環境氣壓／深度換算係數、水域類型、匯入標記與格式。**刻意不含**
     /// `profileSamplesJSON`——剖面樣本只在匯入當下寫入、編輯畫面不會改到它，納入只會
     /// 讓每次呼叫端重新計算這個指紋時多雜湊一段可能數百筆樣本的大字串，沒有對應的
     /// 「防止殘留」效益。
@@ -287,6 +287,12 @@ final class DiveLog {
         // v1.4 A1／D-A：`isReplayBlockedByLegacyAltitude` 讀它、映射成 Kit 的 `environmentUntrusted`——
         // 使用者把舊標籤高海拔改成海水後，要立刻解除「不支援」而不是沿用舊狀態。
         hasher.combine(environmentType)
+        // v1.4 A3（PM 2026-11-01）：`replayGasMixConfidence`（importExtras 的 user／unknown 標記、Garmin 驗證標記＋格式）
+        // 與 `hasUnknownDateTime`（格式＋dateTimeConfidence）都讀這兩欄。編輯頁對「氣體不可信」的紀錄選了與佔位值
+        // 相同的氣體時只改 `importExtrasJSON`（`userEditConfirmations`）——不納入的話存檔後仍顯示「不支援」，
+        // 離開再進才更新（模擬器重現：`docs/screenshots/v1.4-A3/01–03`）。列表篩選的判定快取共用本指紋。
+        hasher.combine(importExtrasJSON)
+        hasher.combine(sourceFormat)
         return hasher.finalize()
     }
 

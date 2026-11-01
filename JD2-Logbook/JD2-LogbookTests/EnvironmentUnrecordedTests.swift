@@ -12,6 +12,7 @@
 import XCTest
 import Foundation
 import SwiftData
+import DiveKit
 @testable import JoyDive_
 
 @MainActor
@@ -221,6 +222,31 @@ final class EnvironmentUnrecordedTests: XCTestCase {
         let dive = makeDive(environment: "altitude")
         let before = dive.replayInputsFingerprint
         dive.environmentType = "seawater"
+        XCTAssertNotEqual(before, dive.replayInputsFingerprint)
+    }
+
+    /// v1.4 A3：氣體不可信的紀錄，使用者選了與佔位值相同的氣體——只有 importExtras 變（unknown → user）、
+    /// 氣體 JSON 不變。指紋必須跟著變，否則詳細頁存檔後仍顯示「不支援」（模擬器重現 `docs/screenshots/v1.4-A3/01–03`）。
+    func testFingerprintChangesWhenOnlyGasConfirmationChanges() {
+        let dive = makeDive(environment: "seawater")
+        dive.importExtrasJSON = "{\"gasMixConfidence\":\"unknown\"}"
+        XCTAssertEqual(dive.replayGasMixConfidence, .unknown)
+        let before = dive.replayInputsFingerprint
+        let gasBefore = dive.gasMixJSON
+
+        let confirmed = try! XCTUnwrap(dive.userEditConfirmations(newDateTime: dive.dateTime, newGasMixJSON: gasBefore))
+        dive.importExtrasJSON = String(data: try! JSONEncoder().encode(confirmed), encoding: .utf8)!
+
+        XCTAssertEqual(dive.gasMixJSON, gasBefore, "情境前提：氣體 JSON 沒變")
+        XCTAssertEqual(dive.replayGasMixConfidence, .confirmed)
+        XCTAssertNotEqual(before, dive.replayInputsFingerprint)
+    }
+
+    /// 格式也會改變判定（Garmin 舊匯入、剖面 CSV 日期代填）⇒ 納入指紋。
+    func testFingerprintChangesWithSourceFormat() {
+        let dive = makeDive(environment: "seawater")
+        let before = dive.replayInputsFingerprint
+        dive.sourceFormat = "csv-profile"
         XCTAssertNotEqual(before, dive.replayInputsFingerprint)
     }
 }

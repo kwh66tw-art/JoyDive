@@ -26758,6 +26758,300 @@
           }
         }
       }
+    },
+    "Filter": {
+      "comment": "Filter button accessibility label / help. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages pending (PM 10/26).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filter"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filter"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "篩選"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "フィルタ"
+          }
+        }
+      }
+    },
+    "With Tissue Loading": {
+      "comment": "Filter option: dives whose detail page shows interactive tissue loading. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages pending (PM 10/26).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "With Tissue Loading"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "With Tissue Loading"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有組織負荷"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組織負荷あり"
+          }
+        }
+      }
+    },
+    "No Tissue Loading": {
+      "comment": "Filter option: dives without tissue loading (no profile, or not computable). Deliberately not 'Not supported' (PM 11/01). v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages pending (PM 10/26).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Tissue Loading"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Tissue Loading"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無組織負荷"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "組織負荷なし"
+          }
+        }
+      }
+    },
+    "No matching dives": {
+      "comment": "Empty state when filters (and search) match nothing. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages pending (PM 10/26).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No matching dives"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No matching dives"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒有符合的潛水"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "該当するダイビングはありません"
+          }
+        }
+      }
+    },
+    "Clear Filters": {
+      "comment": "Clears list filters only (not the search text). v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages pending (PM 10/26).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear Filters"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear Filters"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清除篩選"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "フィルタをクリア"
+          }
+        }
+      }
+    },
+    "Calculating…": {
+      "comment": "Shown at the bottom of the list while tissue-loading filter results are being computed. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages pending (PM 10/26).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calculating…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calculating…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計算中…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計算中…"
+          }
+        }
+      }
+    },
+    "Trimix": {
+      "comment": "Gas filter option (v1.4 A3). Translations from F-10 glossary 'trimix' (needsReview=false); trimix is outside calculation scope but displayed (PM 2026-09-15 boundary is computational).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "hr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トライミックス"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "ms": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trimix"
+          }
+        }
+      }
     }
   },
   "version": "1.1"

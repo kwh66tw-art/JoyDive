@@ -10,6 +10,13 @@ struct DiveLogListView: View {
     @Query(sort: \DiveLog.dateTime, order: .reverse) var dives: [DiveLog]
     @State private var searchText = ""
 
+    // v1.4 A3：篩選（`DiveListFilter`）。統計列（`StatsHeaderView`）仍吃全部紀錄（D5）。
+    @State private var filter = DiveListFilter()
+    @State private var judge = TissueLoadingJudge()
+    /// 只列資料裡實際存在的選項；資料變動時重算（`datasetKey`），不在每次重繪時重算（要解碼每筆的匯入資料）。
+    @State private var availableGases: [DiveGasCategory] = []
+    @State private var availableModes: [DiveLogMode] = []
+
     /// 匯入後高亮顯示的潛水 ID（由 MainTabView / ImportWizardView 傳入）
     var highlightedDiveID: PersistentIdentifier? = nil
     @State private var highlightFlash: PersistentIdentifier? = nil   // iOS flash 動畫用
@@ -38,9 +45,64 @@ struct DiveLogListView: View {
     }
 
     var filteredDives: [DiveLog] {
-        guard !searchText.isEmpty else { return dives }
-        // v1.4 A2：潛點＋備註＋潛伴＋標籤（見 `DiveLog.matchesSearch`）
-        return dives.filter { $0.matchesSearch(searchText) }
+        guard !searchText.isEmpty || filter.isActive else { return dives }
+        // v1.4 A2：潛點＋備註＋潛伴＋標籤（見 `DiveLog.matchesSearch`）；A3：篩選再 AND。
+        return dives.filter { dive in
+            (searchText.isEmpty || dive.matchesSearch(searchText))
+                && (!filter.isActive || filter.matches(dive, tissueSupported: judge.results[dive.persistentModelID]))
+        }
+    }
+
+    /// 紀錄集合或任何會影響篩選判定的欄位變了 ⇒ 值改變（ID＋`replayInputsFingerprint`，後者含氣體、模式、匯入標記）。
+    private var datasetKey: Int {
+        var hasher = Hasher()
+        for dive in dives {
+            hasher.combine(dive.persistentModelID)
+            hasher.combine(dive.replayInputsFingerprint)
+        }
+        return hasher.finalize()
+    }
+
+    private struct JudgeTaskKey: Equatable {
+        let dataset: Int
+        let needed: Bool
+    }
+
+    /// 有組織負荷條件、且還在算或還有紀錄沒有結果。後者涵蓋剛勾選、`.task` 尚未開始的那幾幀——
+    /// 只看 `isComputing` 會在那一瞬間誤顯示「沒有符合的潛水」（2,000 筆模擬器實測）。
+    private var isJudgingForFilter: Bool {
+        filter.needsTissueJudgement && (judge.isComputing || judge.results.count < dives.count)
+    }
+
+    private var filterMenu: some View {
+        DiveListFilterMenu(filter: $filter, gases: availableGases, modes: availableModes)
+    }
+
+    /// 篩選中、算完仍沒有結果 ⇒「沒有符合的潛水」＋清除篩選（只清篩選、不清搜尋字）。
+    private var showsNoMatches: Bool {
+        filter.isActive && filteredDives.isEmpty && !isJudgingForFilter
+    }
+
+    private var noMatchesView: some View {
+        ContentUnavailableView {
+            Label(languageManager.localized("No matching dives"), systemImage: "line.3.horizontal.decrease.circle")
+        } actions: {
+            Button(languageManager.localized("Clear Filters")) { filter = DiveListFilter() }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    /// 組織負荷逐步判定中：列表底部顯示，算完消失。
+    private var calculatingRow: some View {
+        HStack(spacing: 8) {
+            ProgressView()
+            Text(verbatim: languageManager.localized("Calculating…"))
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .accessibilityElement(children: .combine)
     }
 
     #if !os(iOS)
@@ -111,8 +173,19 @@ struct DiveLogListView: View {
                                 }
                             }
                         }
+                        if isJudgingForFilter {
+                            calculatingRow
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color.clear)
+                        }
                     }
                     .listStyle(.plain)
+                    .overlay {
+                        if showsNoMatches { noMatchesView }
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) { filterMenu }
+                    }
                     .onChange(of: highlightedDiveID) { _, newID in
                         guard let newID else { return }
                         withAnimation(.easeIn(duration: 0.3)) { highlightFlash = newID }
@@ -144,6 +217,11 @@ struct DiveLogListView: View {
                                 }
                                 .buttonStyle(.plain)
                             }
+                            // v1.4 A3：篩選放搜尋欄旁（決策檔 §三）
+                            filterMenu
+                                .menuStyle(.borderlessButton)
+                                .menuIndicator(.hidden)
+                                .fixedSize()
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 7)
@@ -187,9 +265,13 @@ struct DiveLogListView: View {
                                         }
                                         .id(dive.persistentModelID)
                                     }
+                                    if isJudgingForFilter { calculatingRow }
                                 }
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 8)
+                            }
+                            .overlay {
+                                if showsNoMatches { noMatchesView }
                             }
                             // 讓 ScrollView 可接收鍵盤焦點與方向鍵；關閉焦點框避免又出現藍框
                             .focusable()
@@ -212,6 +294,16 @@ struct DiveLogListView: View {
                         }
                     }
                     #endif
+                }
+                .task(id: datasetKey) {
+                    availableGases = DiveListFilter.availableGases(in: dives)
+                    availableModes = DiveListFilter.availableModes(in: dives)
+                    filter = filter.pruned(gases: availableGases, modes: availableModes)
+                }
+                // 只有勾了組織負荷條件才判定；資料變動 ⇒ 舊工作取消、依快取鍵只重算受影響的紀錄。
+                .task(id: JudgeTaskKey(dataset: datasetKey, needed: filter.needsTissueJudgement)) {
+                    guard filter.needsTissueJudgement else { return }
+                    await judge.update(sortedAscending: Array(dives.reversed()))
                 }
             }
         }

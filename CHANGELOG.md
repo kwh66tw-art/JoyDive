@@ -22,6 +22,12 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 測試：新增 `EnvironmentUnrecordedTests`（14 支）、`SchemaMigrationHistoryTests`（2 支）；A2 另加 `DiveSearchTests`（8 支）；`run_tests.sh logbook` 基準 171/0/1 → 195/0/1。
   10/27 稽核批次另加 `EnvironmentEdgeCaseTests`、`DiveSearchPerformanceTests`、`DiveSearchTests` +6、`LegacyAltitudePrecedingDiveFactsTests` 改 6 支 ⇒ **212/0/1**。
 
+### A3 列表篩選（PM 2026-11-01；規格 `docs/decisions/D-2026-11-01-A3-列表篩選規格.md`，App-u 亦照此做）
+- 篩選三類：氣體（空氣／高氧／Trimix／未知氣體，與列表標籤同源）、潛水類型（水肺／自由潛水／浮潛）、組織負荷（有／無，＝詳細頁實際有沒有畫出組織負荷）。只列資料裡存在的選項；同類 OR、跨類 AND、再與搜尋 AND；空結果顯示「沒有符合的潛水」＋清除篩選。統計列與地圖不跟篩選（D5）。
+- 組織負荷判定只有一份：樣本 ≥ 2 且 DiveKit `precheck` 回 nil；前導候選挑法抽成詳細頁與列表共用的純函式。由新到舊逐步判定、算好才顯示（2,000 筆 × 300 樣本全部約 1.8 s，Debug）。
+- 修正：`replayInputsFingerprint` 補 `importExtrasJSON`、`sourceFormat`——氣體不可信的紀錄在編輯頁確認相同氣體後，詳細頁原本要離開再進才更新（模擬器重現）。
+- 新字串 7 個（英／繁中／日草稿；Trimix 取 F-10 譯文）。測試 212/0/1 → **228/0/1**。
+
 ### A2 搜尋擴充（PM 2026-10-26 裁示 D3；決策 `docs/decisions/D-2026-10-26-v1.4-D3至D7裁示.md`）
 - 列表搜尋由「地點＋備註」擴充為「潛點＋備註＋潛伴＋標籤」：解析 `importExtrasJSON`，只比對 `buddy`／`tags` 的值（不搜鍵名與其他欄位）。
 - 搜尋提示改為「Search site, buddy, tags…」（草稿，英／繁中／日；其餘語言待上架前收尾）。
