@@ -7,7 +7,7 @@
 
 ## 目前狀態
 - **所在里程碑**：v1.4 開發中（v1.3 Build 4 已上架）。A1 環境「未記錄」✅、A2 搜尋擴充 ✅、D-A ✅、D-C ✅；A3／B1／B2／C 未做。
-  進度與裁示：`docs/V1_4_WORK_PLAN.md`（已同步）；全盤稽核：`docs/V1_4_AUDIT_TEST_PLAN.md`（逐項狀態＋發現 F1–F19）。
+  進度與裁示：`docs/V1_4_WORK_PLAN.md`（已同步）；全盤稽核：`docs/V1_4_AUDIT_TEST_PLAN.md`（逐項狀態＋發現 F1–F21）。
 - **未 commit 變更**：本次交接的文件更新（CHANGELOG、KNOWN_ISSUES、V1_4_WORK_PLAN、CLAUDE.md、本檔、歸檔）——待 PM 確認後提交。程式最後提交 `04c9af6`（= origin/main）。
 - **測試**：`run_tests.sh logbook` **212／0／1**（唯一允許的 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`，依 StoreKit 載入時機浮動）。
 - **共用層**：DiveKit **v9.8.0**（10/28 跟進）、DiveImportKit **v0.8.2**（local path、無版本鎖定；`check_doc_version_sync.sh` 通過）。COMPAT_MATRIX 的 App-lb 列由總指揮在 v9.8.0 合併後一起補。
@@ -27,7 +27,7 @@
    跑 `bash /Users/kevin/Documents/AppProject/_JD2-family/scripts/run_tests.sh logbook` ⇒ 預期 `EnvironmentEdgeCaseTests.testImplausibleSurfacePressureCurrentBehavior` 紅 ⇒
    把重放段改成斷言 `.implausibleEnvironment`（顯示段已是 D-C (a)，不動）；`LegacyAltitudeReplayGate.reason(for:)` 不用改（新 case 自然走通用句）；
    CLAUDE.md DiveKit 版號改 v9.8.0、跑 `check_doc_version_sync.sh`；回報總指揮三數字。
-2. **稽核收尾**：T29（全 repo grep `environmentType`／`"altitude"`／`Search location…`／`importExtras[` 逐處審查）、T30（`check_privacy_manifest.py`、版號、機敏掃描）。
+2. ✅ **稽核收尾（11/01 完成，結果回填稽核計劃；新發現 F20 孤兒翻譯鍵、F21 假資料 m/bar，皆 P3 不處理）**：T29（全 repo grep `environmentType`／`"altitude"`／`Search location…`／`importExtras[` 逐處審查）、T30（`check_privacy_manifest.py`、版號、機敏掃描）。
    T19 已因判定移到 Kit 而不再適用（App 只顯示 Kit 的原因，不會重複）；T7 同 T6，備份介面自 v1.2 隱藏 ⇒ 不適用。回填稽核計劃。
 3. **待 PM 手動**：iOS 模擬器文字輸入（T4 存檔後重開、T27 iOS、T28 iOS）。或加 UI 測試 target 自動輸入（需 PM 同意）。
 4. **v1.4 剩餘功能**（PM 排序）：A3 列表篩選（組織負荷篩選以 Kit 重放結果為準、不得另寫條件；統計／地圖不跟篩選）→ B1＋B2 → C。

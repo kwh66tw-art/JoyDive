@@ -27,12 +27,14 @@
 | F11 | 手動新增的潛水**沒有潛伴／標籤欄位可填**，搜尋擴充只對匯入紀錄有效（產品限制，需寫進說明或排後續） | 編輯頁無 buddy 欄位 | P2（產品決策） |
 | F12 | `localizedCaseInsensitiveContains` 不忽略重音（Café ≠ Cafe）、全形／半形不等價——與 A2 前行為相同 | — | P2（記錄即可） |
 | F13 | v1.4 匯出的備份若含 nil 環境，**v1.3 讀不回整份備份**（v1.3 該欄非可選）——與 C2 水溫同一類取捨 | `DiveLogBackup.swift` | 已知，需 PM 知悉 |
-| F14 | 🔴 **DiveKit 重放不檢查水面氣壓是否合理**：0／負數／NaN 照常重放、不回異常（NaN ⇒ 組織負荷 NaN；0 bar ⇒ 最高隔室 173%）。Kit 已有 `plausibleSurfacePressureRangeBar`（0.60...1.10）但前置判斷未用。（10/27 實測；總指揮讀碼確認）。**跨 App 差異**（總指揮 10/27）：App-u 的 `replayEnvironment` 把 ≤0／NaN 靜默換成 1.0 bar，App-lb 傳原值 ⇒ 同一筆資料兩 App 結果不同，由 Kit 統一處理（修法併 D-C 交 PM） | DiveKit `precheck` | P1（跨 repo，總指揮已確認；裁示前 Kit／DIK 不動） |
+| F14 | ✅ **DiveKit v9.8.0 已修（10/28 跟進，App-lb 349d6c8）**：環境數值不合理 ⇒ `Anomaly.implausibleEnvironment` 拒算；`EnvironmentEdgeCaseTests` 已改斷言，全套 212/0/1。原問題：**DiveKit 重放不檢查水面氣壓是否合理**：0／負數／NaN 照常重放、不回異常（NaN ⇒ 組織負荷 NaN；0 bar ⇒ 最高隔室 173%）。Kit 已有 `plausibleSurfacePressureRangeBar`（0.60...1.10）但前置判斷未用。（10/27 實測；總指揮讀碼確認）。**跨 App 差異**（總指揮 10/27）：App-u 的 `replayEnvironment` 把 ≤0／NaN 靜默換成 1.0 bar，App-lb 傳原值 ⇒ 同一筆資料兩 App 結果不同，由 Kit 統一處理（修法併 D-C 交 PM） | DiveKit `precheck` | P1（跨 repo，總指揮已確認；裁示前 Kit／DIK 不動） |
 | F15 | ✅ **DiveImportKit v0.8.2 已修（10/27）**：不合理值視為未提供 ⇒ App 存預設 1.0（`EnvironmentEdgeCaseTests` 已改斷言）。原問題：DiveImportKit Subsurface XML 的 `<surface pressure>` 不經 `SurfacePressureParsing` 合理範圍檢查（其他解析器有），0 bar／`nan` 原樣匯入 | DIK `SubsurfaceXMLParser.swift:222` | P1（跨 repo，已回報總指揮） |
 | F16 | DiveImportKit UDDF 只讀 `informationbeforedive` 內直寫的潛伴名字，不解析 `<link ref>` 引用的 `<buddy>` ⇒ 標準寫法的潛伴未匯入、搜不到 | DIK `UDDFParser.swift:483-489` | P2（跨 repo，已回報總指揮） |
 | F17 | 最大字級（AX5）下既有版面問題（**非 v1.4 改動**，10/27 模擬器）：列表頂部統計列固定佔約六成畫面、潛水列只剩「T12…」與縱排日期；剖面圖時間軸刻度重疊（0min10min20min…）。德文編輯頁標題截成「Tauchgang bea…」（一般字級）。依據：`git diff ae3a629..HEAD` 列表只改 filter 與提示字串鍵、剖面圖只改重放判定、編輯頁只改水域 Picker ⇒ 版面非 v1.4 引入（未另以 v1.3 build 對照截圖） | `DiveLogListView`、剖面圖、編輯頁工具列 | P2（記錄，交 PM 排程） |
 | F18 | `MockDataSeeder` 類別未包 `#if DEBUG`，隨 Release 出貨（iOS／macOS 皆是）；入口在 `#if DEBUG` 內，Release 無呼叫點 ⇒ 死碼、無功能風險。既有（非 v1.4） | `JD2Core/Utilities/MockDataSeeder.swift:10` | P2（建議包 `#if DEBUG`） |
 | F19 | `Localizable.xcstrings.backup`（400 KB，2026-05-29 起在版控）因 fileSystemSynchronizedGroups 被打包進 App（Release iOS／macOS 皆有）⇒ 推定 v1.0–v1.3 已隨 App 出貨。內容只是舊翻譯，無機敏資料 | `JD2-Logbook/JD2-Logbook/Localizable.xcstrings.backup` | P2（建議刪除或移出 App 資料夾，需 PM 同意） |
+| F20 | `Search location…` 翻譯鍵已無程式引用（A2 起搜尋提示改用 `Search site, buddy, tags…`，`DiveLogListView.swift:126`），但仍留在 `Localizable.xcstrings:19396`（18 語），未標 stale。無功能影響 | `Localizable.xcstrings` | P3（建議上架前文案收尾時一併清除） |
+| F21 | `MockDataSeeder`：高海拔湖泊（翠峰湖、Lake Tahoe）存成淡水，但 `metersPerBar` 仍給 10.0（海水密度；淡水給 10.3）——A1 改水域時沒同步。只影響 DEBUG 假資料 | `JD2Core/Utilities/MockDataSeeder.swift:126-128` | P3（與 F18 一起排程，現在不處理） |
 
 ## 二、邊界測試矩陣
 
@@ -48,14 +50,14 @@
 | T4 | 遷移後新增一筆未記錄 ⇒ 重開 ⇒ 仍為 nil | S | nil | P1 | 部分（10/27 模擬器）：新增頁水域預設「未記錄」✅（`docs/screenshots/v1.4-audit-sim/`11）；存檔需輸入最大深度 ⇒ **模擬器文字輸入受阻**（停止條件），存後重開未驗 ⇒ 缺，請 PM 手動輸入或併 UI 測試 target |
 | T5 | 空資料庫（全新安裝）啟動 | S | 正常、store 2.0.0 | P1 | ✅ 10/27：全新模擬器安裝啟動正常（空狀態頁），store 0 筆、版本識別 **1.4.0**（原寫 2.0.0 為舊預期，v1.4 改版號命名後即 1.4.0）、hash f1c58c3f |
 | T6 | 備份：v1.3 匯出 → v1.4 還原；v1.4（含 nil）匯出 → v1.4 還原 | U＋S | 原值保留；nil 往返 | P1 | U ✅；S **不適用**：備份匯出／匯入介面自 v1.2 起隱藏（`SettingsView.swift:24` `showBackupSection = false`，提交 e4194ca，理由「尚未經過完整測試」），使用者碰不到；開放前須另做實檔測試 |
-| T7 | 備份：v1.4（含 nil）→ v1.3 還原 | S | 預期整份失敗（F13），確認錯誤訊息不閃退 | P2 | 未做 |
+| T7 | 備份：v1.4（含 nil）→ v1.3 還原 | S | 預期整份失敗（F13），確認錯誤訊息不閃退 | P2 | **不適用**（同 T6 S：備份介面自 v1.2 隱藏，`SettingsView.swift:24`）；開放前與 T6 一起做 |
 | T8 | 匯入：無環境欄位的真實樣本（UDDF／FIT 各一）⇒ 未記錄；DIK 若帶值 ⇒ 原樣 | U | 同 | P1 | 只有合成資料測試 |
 
 ### A1 顯示與編輯
 
 | ID | 案例 | 方法 | 預期 | 優先 | 狀態 |
 |---|---|---|---|---|---|
-| T9 | 環境值 × 氣壓組合表：{nil, seawater, freshwater, altitude, 未知值, ""} × {1.0, 0.95, 0.9499, 0.8, 0, -1, NaN} | U | 水域：只有 seawater／freshwater 有名稱；徽章：只有 `< 0.95`；NaN 不判高海拔；0／負數行為**先記錄現況再交 PM** | P1 | ✅ 10/27 `EnvironmentEdgeCaseTests`：6×7＝42 格全過（空字串／未知值＝未記錄；NaN 不判高海拔）。⚠️ 0／負數顯示高海拔、**Kit 照常重放（NaN ⇒ 負荷 NaN）**、Subsurface XML 0 bar 原樣匯入——記錄現況（F14／F15），交 D-C |
+| T9 | 環境值 × 氣壓組合表：{nil, seawater, freshwater, altitude, 未知值, ""} × {1.0, 0.95, 0.9499, 0.8, 0, -1, NaN} | U | 水域：只有 seawater／freshwater 有名稱；徽章：只有 `< 0.95`；NaN 不判高海拔；0／負數行為**先記錄現況再交 PM** | P1 | ✅ 10/27 `EnvironmentEdgeCaseTests`：6×7＝42 格全過（空字串／未知值＝未記錄；NaN 不判高海拔）。⚠️ 0／負數顯示高海拔、**Kit 照常重放（NaN ⇒ 負荷 NaN）**、Subsurface XML 0 bar 原樣匯入——記錄現況（F14／F15），交 D-C。後續：D-C (a) 顯示已改（04c9af6）、F15 DIK v0.8.2、F14 DiveKit v9.8.0 ⇒ 重放拒算（349d6c8） |
 | T10 | 未知值紀錄開編輯頁 ⇒ Picker 空白 ⇒ 不動直接存 ⇒ 值不變 | S＋U | 原值 | P1 | ✅ 10/27：U 讀碼＋S 模擬器——未知值 brackish 開編輯頁 Picker 空白、不動直接存（updatedAt 09:49:25 證實有存）⇒ 值仍 brackish（`docs/screenshots/v1.4-audit-sim/`02） |
 | T11 | 舊標籤紀錄改成未記錄／淡水 ⇒ 存 ⇒ 舊標籤選項消失、閘門解除 | S | 同 | P1 | ✅ 10/27：舊標籤 A 改未記錄、B 改淡水 ⇒ 存（資料庫 nil／freshwater）⇒ 原因句消失、提示列回來；重開編輯頁舊標籤選項消失（`docs/screenshots/v1.4-audit-sim/`03–07） |
 | T12 | 地圖面板環境列（3 種代表值） | S | 與詳細頁一致 | P1 | ✅ 10/27：地圖面板 未記錄／海水·高海拔潛水／舊標籤（顯示未記錄）三種皆與詳細頁一致（`docs/screenshots/v1.4-audit-sim/`08–10） |
@@ -70,7 +72,7 @@
 |---|---|---|---|---|---|
 | T17 | 閘門邊界：altitude × {1.0, 0.9999, 1.0001, 0.8}；非 altitude × 1.0 | U | 只有 altitude＋1.0 擋 | P0 | ✅ 已有 |
 | T18 | 舊標籤 1.0 bar 作為**前導潛水**（F3）：記錄現況 | U | 只記錄事實、不改程式，交 PM 裁示 | P0 | ✅ **事實已記錄（2026-10-26，`LegacyAltitudePrecedingDiveFactsTests`）**：①前導查詢**會**把它放進候選（不過濾）；②Kit **照算**（兩筆皆 1.0 bar，環境一致）；③殘氮有算進去：25 m／40 min 方形剖面、間隔 3 h，後一支最終負荷最高隔室 116.4% vs 單獨 116.3%，慢隔室差異較大（第 8 隔室 98.3% vs 90.6%、第 16 隔室 72.2% vs 66.8%）；④若前一支當初存的是真實氣壓 0.8 bar，Kit 判 `inconsistentEnvironment` **拒算**（容差 0.05 bar）。⇒ 現況：資料誠實時會顯示「不支援」，資料是舊標籤預設值時卻顯示數字（以 1.0 bar 算出的殘氮）。待 PM 裁示 D-A |
-| T19 | 閘門與 Kit 拒算同時成立時，只顯示 App 原因句（不重複） | U／讀碼 | 同 | P2 | 讀碼成立，未測 |
+| T19 | 閘門與 Kit 拒算同時成立時，只顯示 App 原因句（不重複） | U／讀碼 | 同 | P2 | **不適用**（D-A 改走 Kit v9.7.0 後，App 已無自己的閘門，只把 Kit 的 `Anomaly` 對成原因句——`LegacyAltitudeReplayGate.reason(for:)`，`DiveReplayInput.swift`；原因句與通用句的接法由 T20 測過） |
 | T20 | 原因句接法：中日文全形句號不加空格、其他語言加空格；14 語回退英文時 | U | 同 | P1 | ✅ 10/27：18 語逐一（含回退英文的 14 語）兩句皆只會「全形句末直接接」或「補一個空格」，無「。 」、無雙空格 |
 
 ### A2 搜尋
@@ -90,8 +92,8 @@
 
 | ID | 案例 | 方法 | 預期 | 優先 | 狀態 |
 |---|---|---|---|---|---|
-| T29 | 全 repo grep：`environmentType`、`"altitude"`、`Search location…`、`importExtras[` 每一處都經過審查 | R | 無遺漏的 switch／default 落海水 | P1 | A1 時做過一次，A2 後再跑 |
-| T30 | `check_privacy_manifest.py`、`check_doc_version_sync.sh`、機敏掃描 | R | 皆過 | P1 | 版號／機敏 A1 已過 |
+| T29 | 全 repo grep：`environmentType`、`"altitude"`、`Search location…`、`importExtras[` 每一處都經過審查 | R | 無遺漏的 switch／default 落海水 | P1 | ✅ 11/01（bash `grep -rnE --include='*.swift'`；zsh 會展開 glob 回 0，不算數）。命中（全部／App 程式）：`environmentType` 56／30、`"altitude"` 38／11、`Search location` 0／0（xcstrings 4）、`importExtras[` 9／2。**沒有落到海水的 switch／default**：顯示只走 `waterType`（`DiveLog.swift:356`，未知值⇒nil）＋窮舉 switch（`DiveLog+EnvironmentDisplay.swift:18-21`）；編輯 Picker 有 nil 標籤（`DiveLogEditSheet.swift:508-515`）；重放不依字串分支（`DiveReplayInput.swift:21-25`）；備份 `decodeIfPresent`（`DiveLogBackup.swift:24`）；`DiveLogSchema.swift:42/95/150` 的 `"seawater"` 預設是凍結的舊版 schema（應保留）。`importExtras[` 兩處都用鍵常數（`DiveReplayInput.swift:152`；`:45` 是註解）。另有兩項發現 ⇒ F20、F21 |
+| T30 | `check_privacy_manifest.py`、`check_doc_version_sync.sh`、機敏掃描 | R | 皆過 | P1 | ✅ 11/01：隱私清單 rc=0（掃 38 檔＝App 25＋JD2Core 13，數量吻合；**對照組**：複本加一支 `systemUptime` ⇒ rc=1、指出 SystemBootTime 未申報）；兩 Kit 原始碼 Required Reason API 0 命中（同 pattern 在 App 有 28 處，量具有效）。`check_doc_version_sync.sh` rc=0（DiveKit v9.8.0／DIK v0.8.2）。版號：build settings 為 1.3／4（6 個 configuration 一致）；Info.plist 不寫死、由設定產生，Debug build 實測 `1.3 (4)` ⇒ 變數有接上。⏸ v1.4 送審前要改 `MARKETING_VERSION`（由 PM 定）並把 `CURRENT_PROJECT_VERSION` 改成 5，Release 實測再驗。機敏：版控檔 token 樣式 0、密碼樣式 0、憑證類檔案 0，remote URL 不含 token；對照樣本命中 1 |
 | T31 | Release build（非 Debug）iOS＋macOS 編得過、`#if DEBUG` 的 MockDataSeeder 不進 Release | M | 同 | P1 | 部分 ✅ 10/27：Release iOS／macOS 皆 BUILD SUCCEEDED；⚠️ `MockDataSeeder` 類別**有**編進 Release（`strings` 對照組：Debug 也找得到同字串），只有設定頁入口包在 `#if DEBUG`，Release 無呼叫點（callers.sh）⇒ F18 |
 
 ## 三、執行順序與停止條件
