@@ -30,7 +30,7 @@
 2. ✅ **稽核收尾（11/01 完成，結果回填稽核計劃；新發現 F21 假資料 m/bar（P3 不處理）；F20 孤兒翻譯鍵 11/01 撤回——是與 App-u 共用的 F-10 鍵）**：T29（全 repo grep `environmentType`／`"altitude"`／`Search location…`／`importExtras[` 逐處審查）、T30（`check_privacy_manifest.py`、版號、機敏掃描）。
    T19 已因判定移到 Kit 而不再適用（App 只顯示 Kit 的原因，不會重複）；T7 同 T6，備份介面自 v1.2 隱藏 ⇒ 不適用。回填稽核計劃。
 3. **待 PM 手動**：iOS 模擬器文字輸入（T4 存檔後重開、T27 iOS、T28 iOS）。或加 UI 測試 target 自動輸入（需 PM 同意）。
-4. **A3 收尾**：commit 後跑 `inject.sh` 驗一致性測試會紅（條件 2，需乾淨工作樹）；通知總指揮 A3 字串已提交（他重建 F-10 術語表）。
+4. ✅ **A3 收尾（11/01）**：故障注入 2/2 RED；已通知總指揮 A3 字串提交（F-10 術語表由他重建）。
 5. **v1.4 剩餘功能**（PM 排序）：B1＋B2 → C。
 
 ## 陷阱提醒
