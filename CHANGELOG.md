@@ -22,6 +22,12 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 測試：新增 `EnvironmentUnrecordedTests`（14 支）、`SchemaMigrationHistoryTests`（2 支）；A2 另加 `DiveSearchTests`（8 支）；`run_tests.sh logbook` 基準 171/0/1 → 195/0/1。
   10/27 稽核批次另加 `EnvironmentEdgeCaseTests`、`DiveSearchPerformanceTests`、`DiveSearchTests` +6、`LegacyAltitudePrecedingDiveFactsTests` 改 6 支 ⇒ **212/0/1**。
 
+### B1＋B2 地圖跳轉與重疊潛點（PM 2026-10-26 D6／D7；🟡 iOS 模擬器已實測，macOS 未測，未 commit）
+- B1：詳細頁座標列可點 ⇒ 切到地圖分頁、選取並置中該筆（`MapFocusRequest`）；地圖卡片內點座標只置中。首次 zoom-to-fit 不蓋掉跳轉目標。
+- B2：點聚合點時，成員座標完全相同、或已無法再放大 ⇒ 列出「此潛點的潛水」清單（iOS 底部卡片／macOS 側面板），點一筆進潛點卡片；否則照常放大。不錯開圖釘、不自訂距離門檻（D7）。
+- 新字串 2 個（英／繁中／日草稿）。測試 +5（`MapClusterAndFocusTests`）。
+- 實測修正：iOS 清單卡片第一次打開是空白（卡片閉包讀到舊的 `clusterDives`）⇒ 卡片內容改以 Binding 傳入。MapKit 實測結果見 D3–D7 決策檔「MapKit 實測結果」。
+
 ### A3 列表篩選（PM 2026-11-01；規格 `docs/decisions/D-2026-11-01-A3-列表篩選規格.md`，App-u 亦照此做）
 - 篩選三類：氣體（空氣／高氧／Trimix／未知氣體，與列表標籤同源）、潛水類型（水肺／自由潛水／浮潛）、組織負荷（有／無，＝詳細頁實際有沒有畫出組織負荷）。只列資料裡存在的選項；同類 OR、跨類 AND、再與搜尋 AND；空結果顯示「沒有符合的潛水」＋清除篩選。統計列與地圖不跟篩選（D5）。
 - 組織負荷判定只有一份：樣本 ≥ 2 且 DiveKit `precheck` 回 nil；前導候選挑法抽成詳細頁與列表共用的純函式。由新到舊逐步判定、算好才顯示（2,000 筆 × 300 樣本全部約 1.8 s，Debug）。

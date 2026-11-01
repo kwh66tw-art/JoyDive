@@ -27,6 +27,8 @@ struct DiveSiteSheetView: View {
     // AppLanguageManager.swift 文件註解的「四段式解法」③，全面改走
     // languageManager.localized(_:) 手動查表。
     @Environment(AppLanguageManager.self) private var languageManager
+    /// v1.4 B1：地圖頁內點座標 ⇒ 只置中（本來就在地圖分頁）。
+    @Environment(MapFocusRequest.self) private var mapFocus: MapFocusRequest?
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     // MARK: - Computed helpers
@@ -234,9 +236,19 @@ struct DiveSiteSheetView: View {
                                    value: dive.location)
                 }
                 if let coords = coordinatesText {
-                    SheetDetailRow(icon:  "globe",
-                                   label: languageManager.localized("Coordinates"),
-                                   value: coords)
+                    if let mapFocus {
+                        Button { mapFocus.focus(on: dive) } label: {
+                            SheetDetailRow(icon:  "globe",
+                                           label: languageManager.localized("Coordinates"),
+                                           value: coords)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityHint(languageManager.localized("Show on Map"))
+                    } else {
+                        SheetDetailRow(icon:  "globe",
+                                       label: languageManager.localized("Coordinates"),
+                                       value: coords)
+                    }
                 }
             }
 

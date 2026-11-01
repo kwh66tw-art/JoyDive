@@ -6,7 +6,9 @@
 //   • Tap a different pin → sheet content updates in-place, haptic fires; sheet stays open
 //   • Pull sheet up       → .large detent reveals full dive details
 //   • Swipe sheet down    → dismisses; map pin deselects via onDismiss
-//   • Tap cluster badge   → map zooms in to fit member pins (handled in Coordinator)
+//   • Tap cluster badge   → map zooms in to fit member pins (handled in Coordinator);
+//                           can't split (same coordinates / max zoom) → list of dives there (v1.4 B2)
+//   • Detail page coords  → switches to this tab, selects + centers that dive (v1.4 B1, `MapFocusRequest`)
 //   • Top-right button    → toggles Standard / Hybrid map layer
 
 import SwiftUI
@@ -35,6 +37,11 @@ struct MapView: View {
     /// tapping a second pin while the sheet is open updates content without
     /// dismissing and re-presenting.
     @State private var isSheetPresented = false
+    /// v1.4 B2：聚合點拆不開時列出的潛水（非空且尚未選取 ⇒ 卡片／面板顯示清單）。
+    @State private var clusterDives: [DiveLog] = []
+
+    /// v1.4 B1：詳細頁「在地圖上顯示」的請求（`MainTabView` 注入；預覽沒有 ⇒ nil）。
+    @Environment(MapFocusRequest.self) private var mapFocus: MapFocusRequest?
 
     // v1.1 #11：回到我的位置。開關本身在 Settings 頁，這裡只讀取。
     @AppStorage(UserLocationProvider.isEnabledKey) private var gpsLocationEnabled = false
@@ -69,7 +76,15 @@ struct MapView: View {
                 showsUserLocation:  showsUserLocationDot,
                 recenterCoordinate: $recenterCoordinate,
                 onAnnotationTapped: { dive in
+                    clusterDives = []
                     selectedDive = dive
+                    #if os(iOS)
+                    isSheetPresented = true
+                    #endif
+                },
+                onClusterListRequested: { dives in
+                    selectedDive = nil
+                    clusterDives = dives
                     #if os(iOS)
                     isSheetPresented = true
                     #endif
@@ -86,7 +101,9 @@ struct MapView: View {
             locationProvider.onLocationUpdate = { location in
                 recenterCoordinate = location.coordinate
             }
+            handleFocusRequest()
         }
+        .onChange(of: mapFocus?.targetDiveID) { _, _ in handleFocusRequest() }
         .navigationTitle(Text(verbatim: languageManager.localized("Map")))
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
@@ -107,14 +124,14 @@ struct MapView: View {
             // selectedDive changes to a different pin.
             .sheet(isPresented: $isSheetPresented, onDismiss: {
                 selectedDive = nil
+                clusterDives = []
             }) {
-                if let dive = selectedDive {
-                    DiveSiteSheetView(dive: dive)
-                        .presentationDetents([.fraction(0.35), .large])
-                        .presentationDragIndicator(.visible)
-                        // Map remains fully interactive behind the sheet
-                        .presentationBackgroundInteraction(.enabled(upThrough: .large))
-                }
+                // 以 Binding 傳入：body 本身不讀 `clusterDives`，若在閉包內直接讀會拿到舊值（卡片空白，11/01 實測）。
+                IOSMapSheetContent(selectedDive: $selectedDive, clusterDives: $clusterDives)
+                .presentationDetents([.fraction(0.35), .large])
+                .presentationDragIndicator(.visible)
+                // Map remains fully interactive behind the sheet
+                .presentationBackgroundInteraction(.enabled(upThrough: .large))
             }
             .sensoryFeedback(
                 .impact(flexibility: .solid, intensity: 0.7),
@@ -130,8 +147,8 @@ struct MapView: View {
             mapPane
                 .frame(minWidth: 360, maxWidth: .infinity, maxHeight: .infinity)
 
-            if let dive = selectedDive {
-                macSidePanel(dive: dive)
+            if selectedDive != nil || !clusterDives.isEmpty {
+                macSidePanel
                     .frame(width: 320)
                     .frame(maxHeight: .infinity)
                     .background(Color(NSColor.windowBackgroundColor))
@@ -139,14 +156,17 @@ struct MapView: View {
         }
     }
 
-    private func macSidePanel(dive: DiveLog) -> some View {
+    private var macSidePanel: some View {
         VStack(spacing: 0) {
             HStack {
                 Text(verbatim: languageManager.localized("Dive Site"))
                     .font(.headline)
                 Spacer()
                 Button {
-                    withAnimation(.easeInOut(duration: 0.2)) { selectedDive = nil }
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        selectedDive = nil
+                        clusterDives = []
+                    }
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(.secondary)
@@ -160,10 +180,54 @@ struct MapView: View {
 
             Divider()
 
-            DiveSiteSheetView(dive: dive)
+            if let dive = selectedDive {
+                DiveSiteSheetView(dive: dive)
+            } else {
+                DiveSiteClusterList(dives: clusterDives) { dive in selectFromCluster(dive) }
+            }
         }
     }
     #endif
+
+    // MARK: - v1.4 B1／B2
+
+    #if os(iOS)
+    /// iOS 卡片內容：選取的潛水，或拆不開的聚合點清單（點一筆 ⇒ 換成該筆）。
+    private struct IOSMapSheetContent: View {
+        @Binding var selectedDive: DiveLog?
+        @Binding var clusterDives: [DiveLog]
+
+        var body: some View {
+            if let dive = selectedDive {
+                DiveSiteSheetView(dive: dive)
+            } else if !clusterDives.isEmpty {
+                DiveSiteClusterList(dives: clusterDives) { dive in
+                    clusterDives = []
+                    selectedDive = dive
+                }
+            }
+        }
+    }
+    #endif
+
+    private func selectFromCluster(_ dive: DiveLog) {
+        clusterDives = []
+        selectedDive = dive
+    }
+
+    /// 取走 `MapFocusRequest` 的目標：選取並置中（D6）。置中用 recenter 路徑（span 與「回到我的位置」相同），
+    /// 讓目標若原本被聚合也有機會拆開；座標完全相同仍聚合時，卡片／面板直接顯示這筆，不影響。
+    private func handleFocusRequest() {
+        guard let id = mapFocus?.take(),
+              let dive = mappableDives.first(where: { $0.persistentModelID == id }),
+              let lat = dive.latitude, let lon = dive.longitude else { return }
+        clusterDives = []
+        selectedDive = dive
+        recenterCoordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        #if os(iOS)
+        isSheetPresented = true
+        #endif
+    }
 
     // MARK: - Control Buttons（圖層切換 + 回到我的位置；指北交由 MapKit 內建羅盤）
 

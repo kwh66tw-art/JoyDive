@@ -14,6 +14,8 @@ struct DiveLogDetailView: View {
 
     @Environment(AppLanguageManager.self) private var languageManager
     @Environment(\.modelContext) private var modelContext
+    /// v1.4 B1：座標列跳地圖（`MainTabView` 注入；預覽沒有 ⇒ nil）。
+    @Environment(MapFocusRequest.self) private var mapFocus: MapFocusRequest?
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var showEditSheet     = false
@@ -215,7 +217,23 @@ struct DiveLogDetailView: View {
                     DetailRow(icon: "location.fill",  label: "Location", value: dive.location)
                 }
                 if let coords = coordinatesText {
-                    DetailRow(icon: "globe",           label: "Coordinates", value: coords)
+                    // v1.4 B1（D6）：點座標 ⇒ 切到地圖並選取、置中這筆。沒有注入請求（預覽）時維持純文字。
+                    if let mapFocus {
+                        Button { mapFocus.focus(on: dive) } label: {
+                            HStack(spacing: 6) {
+                                DetailRow(icon: "globe", label: "Coordinates", value: coords)
+                                Image(systemName: "map")
+                                    .font(.caption)
+                                    .foregroundStyle(.tint)
+                                    .accessibilityHidden(true)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityHint(languageManager.localized("Show on Map"))
+                        .accessibilityIdentifier("coordinatesShowOnMap")
+                    } else {
+                        DetailRow(icon: "globe",       label: "Coordinates", value: coords)
+                    }
                 }
             }
 

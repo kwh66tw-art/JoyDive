@@ -46,6 +46,8 @@ struct MainTabView: View {
 
     /// 匯入成功後要 highlight 的潛水 ID（iOS + macOS 共用）
     @State private var postImportHighlightID: PersistentIdentifier? = nil
+    /// v1.4 B1：詳細頁「在地圖上顯示」⇒ 切到地圖分頁，由 `MapView` 選取並置中（`MapFocusRequest`）。
+    @State private var mapFocus = MapFocusRequest()
 
     #if os(iOS)
     @State private var selectedTab: Int = 0
@@ -56,11 +58,22 @@ struct MainTabView: View {
     #endif
 
     var body: some View {
-        #if os(iOS)
-        iOSBody
-        #else
-        macOSBody
-        #endif
+        Group {
+            #if os(iOS)
+            iOSBody
+            #else
+            macOSBody
+            #endif
+        }
+        .environment(mapFocus)
+        .onChange(of: mapFocus.targetDiveID) { _, target in
+            guard target != nil else { return }
+            #if os(iOS)
+            selectedTab = 1
+            #else
+            sidebarSelection = .map
+            #endif
+        }
     }
 
     // MARK: - iOS：TabView

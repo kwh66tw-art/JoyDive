@@ -17,14 +17,34 @@ import MapKit
 final class DiveMapCoordinator: NSObject, MKMapViewDelegate {
 
     var onAnnotationTapped: (DiveLog) -> Void
+    /// v1.4 B2：聚合點拆不開時，改列出該處的潛水（`clusterResolution`）。
+    var onClusterListRequested: ([DiveLog]) -> Void
     /// 首次 zoom-to-fit 是否已完成。置於 coordinator（reference type），
     /// 可在 update 內「同步」設值 → 杜絕重複 async fit 排程。
     var hasZoomedToFit = false
     /// 已平移置中過的潛點 ID，確保每次選取只置中一次。
     var lastCenteredID: PersistentIdentifier? = nil
 
-    init(onAnnotationTapped: @escaping (DiveLog) -> Void) {
+    init(onAnnotationTapped: @escaping (DiveLog) -> Void,
+         onClusterListRequested: @escaping ([DiveLog]) -> Void) {
         self.onAnnotationTapped = onAnnotationTapped
+        self.onClusterListRequested = onClusterListRequested
+    }
+
+    /// 點聚合點的處置（D7，PM 2026-10-26：不錯開圖釘、**不自訂距離門檻**）：
+    /// ① 成員座標完全相同 ⇒ 列清單（再怎麼放大都拆不開）；
+    /// ② 否則照常放大到框住成員；若地圖已無法再放大（可見範圍沒有變小）⇒ 列清單。
+    /// ②的判斷交給 MapKit 自己的縮放上限，不另算公尺數。
+    enum ClusterTapResolution: Equatable { case list, zoom }
+
+    static func clusterResolution(memberCoordinates: [CLLocationCoordinate2D],
+                                  visibleWidthBefore: Double,
+                                  visibleWidthAfterFit: Double) -> ClusterTapResolution {
+        if let first = memberCoordinates.first,
+           memberCoordinates.allSatisfy({ $0.latitude == first.latitude && $0.longitude == first.longitude }) {
+            return .list
+        }
+        return visibleWidthAfterFit < visibleWidthBefore ? .zoom : .list
     }
 
     // MARK: viewFor annotation
@@ -52,8 +72,23 @@ final class DiveMapCoordinator: NSObject, MKMapViewDelegate {
 
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         if let cluster = view.annotation as? MKClusterAnnotation {
-            mapView.showAnnotations(cluster.memberAnnotations, animated: true)
             mapView.deselectAnnotation(cluster, animated: false)
+            let members = cluster.memberAnnotations.compactMap { $0 as? DiveSiteAnnotation }
+            // 先不帶動畫試算「框住成員」後的可見範圍，再還原、決定要放大還是列清單。
+            // 同一個 run loop 內設定再還原，畫面不會畫出中間狀態。
+            let before = mapView.visibleMapRect
+            mapView.showAnnotations(cluster.memberAnnotations, animated: false)
+            let fitted = mapView.visibleMapRect
+            mapView.setVisibleMapRect(before, animated: false)
+
+            switch Self.clusterResolution(memberCoordinates: members.map(\.coordinate),
+                                          visibleWidthBefore: before.size.width,
+                                          visibleWidthAfterFit: fitted.size.width) {
+            case .zoom:
+                mapView.setVisibleMapRect(fitted, animated: true)
+            case .list:
+                onClusterListRequested(members.map(\.dive))
+            }
         } else if let diveAnnotation = view.annotation as? DiveSiteAnnotation {
             onAnnotationTapped(diveAnnotation.dive)
         }
@@ -75,11 +110,14 @@ struct DiveMapRepresentable: UIViewRepresentable {
     /// v1.1 #11：recenter 按鈕觸發的目標座標；套用後由 _updateMapView 清空。
     @Binding var recenterCoordinate: CLLocationCoordinate2D?
     var onAnnotationTapped: (DiveLog) -> Void
+    /// v1.4 B2：聚合點拆不開 ⇒ 列出該處潛水。
+    var onClusterListRequested: ([DiveLog]) -> Void = { _ in }
 
     @Environment(AppLanguageManager.self) private var languageManager
 
     func makeCoordinator() -> DiveMapCoordinator {
-        DiveMapCoordinator(onAnnotationTapped: onAnnotationTapped)
+        DiveMapCoordinator(onAnnotationTapped: onAnnotationTapped,
+                           onClusterListRequested: onClusterListRequested)
     }
 
     func makeUIView(context: Context) -> MKMapView {
@@ -104,11 +142,14 @@ struct DiveMapRepresentable: NSViewRepresentable {
     /// v1.1 #11：recenter 按鈕觸發的目標座標；套用後由 _updateMapView 清空。
     @Binding var recenterCoordinate: CLLocationCoordinate2D?
     var onAnnotationTapped: (DiveLog) -> Void
+    /// v1.4 B2：聚合點拆不開 ⇒ 列出該處潛水。
+    var onClusterListRequested: ([DiveLog]) -> Void = { _ in }
 
     @Environment(AppLanguageManager.self) private var languageManager
 
     func makeCoordinator() -> DiveMapCoordinator {
-        DiveMapCoordinator(onAnnotationTapped: onAnnotationTapped)
+        DiveMapCoordinator(onAnnotationTapped: onAnnotationTapped,
+                           onClusterListRequested: onClusterListRequested)
     }
 
     func makeNSView(context: Context) -> MKMapView {
@@ -151,6 +192,7 @@ private extension DiveMapRepresentable {
     func _updateMapView(_ mapView: MKMapView, coordinator: DiveMapCoordinator) {
         // 更新 callback 防止 stale closure
         coordinator.onAnnotationTapped = onAnnotationTapped
+        coordinator.onClusterListRequested = onClusterListRequested
 
         // ── Map type ─────────────────────────────────────────────────
         if mapView.mapType != mapType {
@@ -256,6 +298,12 @@ private extension DiveMapRepresentable {
 
             let all = mapView.annotations.filter { !($0 is MKUserLocation) }
             guard !all.isEmpty else { return }
+
+            // v1.4 B1：從詳細頁跳過來時已有選取目標，置中由選取／recenter 處理——首次 fit 不得把它蓋掉。
+            if selectedDive != nil {
+                coordinator.hasZoomedToFit = true
+                return
+            }
 
             // animated: false —— 避免首次 fit 的鏡頭動畫在結束時把地圖拉回正北。
             if all.count == 1 {
