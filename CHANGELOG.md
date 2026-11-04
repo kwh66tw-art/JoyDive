@@ -22,11 +22,22 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 測試：新增 `EnvironmentUnrecordedTests`（14 支）、`SchemaMigrationHistoryTests`（2 支）；A2 另加 `DiveSearchTests`（8 支）；`run_tests.sh logbook` 基準 171/0/1 → 195/0/1。
   10/27 稽核批次另加 `EnvironmentEdgeCaseTests`、`DiveSearchPerformanceTests`、`DiveSearchTests` +6、`LegacyAltitudePrecedingDiveFactsTests` 改 6 支 ⇒ **212/0/1**。
 
-### B1＋B2 地圖跳轉與重疊潛點（PM 2026-10-26 D6／D7；🟡 iOS 模擬器已實測，macOS 未測，未 commit）
+### B1＋B2 地圖跳轉與重疊潛點（PM 2026-10-26 D6／D7；32e369e＋212e606，已推送）
 - B1：詳細頁座標列可點 ⇒ 切到地圖分頁、選取並置中該筆（`MapFocusRequest`）；地圖卡片內點座標只置中。首次 zoom-to-fit 不蓋掉跳轉目標。
 - B2：點聚合點時，成員座標完全相同、或已無法再放大 ⇒ 列出「此潛點的潛水」清單（iOS 底部卡片／macOS 側面板），點一筆進潛點卡片；否則照常放大。不錯開圖釘、不自訂距離門檻（D7）。
 - 新字串 2 個（英／繁中／日草稿）。測試 +5（`MapClusterAndFocusTests`）。
 - 實測修正：iOS 清單卡片第一次打開是空白（卡片閉包讀到舊的 `clusterDives`）⇒ 卡片內容改以 Binding 傳入。MapKit 實測結果見 D3–D7 決策檔「MapKit 實測結果」。
+- B1 縮放改依資料決定（PM 2026-11-04，212e606）：跳轉不再沿用「回到我的位置」的 0.05°（約 5.5 km，無出處），改為讓目標與其他座標不同的潛點在畫面上不重疊所需的縮放（圖釘大小讀自實際 view，以 `mapRectThatFits` 補償安全區）；「回到我的位置」不變。
+  已知行為：MapKit 貼邊仍聚合，最近一筆可能仍與目標聚成小聚合點，點它照 D7。先前 A／H5 等四次嘗試皆撤，紀錄在決策檔。多尺寸實測：iPhone 402／375 pt、macOS 預設／最窄視窗。
+
+### B1-A 聚合點名稱與選取標示（PM 2026-11-04；決策 `docs/decisions/D-2026-10-26-v1.4-D3至D7裁示.md`「B1-A」節）
+- 聚合點不再由 MapKit 從成員任挑一筆當標題，改自建（`mapView(_:clusterAnnotationForMemberAnnotations:)`）：① 含選取中的潛水 ⇒ 用它的地點並標藍；② 地點都相同 ⇒ 該名稱；③ 不同地點 ⇒「多個潛點」；④ 空白 ⇒「未知地點」。副標「+其他 N 筆」走 App 內語言（MapKit 原生副標只跟啟動時語言）。規則為純函式 `DiveClusterLabeling`。
+- 選取改變、語言切換時重新聚合（移除再加回標註，不靠計時）。
+- 修正：開地圖會自動移到使用者位置（建立定位元件時的授權回呼就抓位置）——改為只有按「回到我的位置」觸發的授權詢問通過後才抓（PM 2026-11-04 裁示，v1.1 #11 規格只有按鈕）。
+- 修正：地圖已在遠處縮放時跳轉，選取置中在 4 ms 後蓋掉縮放動畫，地圖停在原縮放。
+- 新字串 2 個（英／繁中／日草稿）；「+%lld more」無複數形，上架前補 14 語時須處理（F-09）。
+- 測試 +12：`DiveClusterLabelTests` 7、`UserLocationAuthorizationTests` 5 ⇒ **245/0/1**（完整數字以提交前實跑為準）。提交前故障注入 4 次（拿掉規則 ① RED；判斷函式 RED；回呼繞過判斷函式原本 GREEN ⇒ 補回呼路徑測試後 RED）。
+- 實測：iPhone 17 Pro、iPhone SE、macOS（截圖 `docs/screenshots/v1.4-B/19–55`）。
 
 ### A3 列表篩選（PM 2026-11-01；規格 `docs/decisions/D-2026-11-01-A3-列表篩選規格.md`，App-u 亦照此做）
 - 篩選三類：氣體（空氣／高氧／Trimix／未知氣體，與列表標籤同源）、潛水類型（水肺／自由潛水／浮潛）、組織負荷（有／無，＝詳細頁實際有沒有畫出組織負荷）。只列資料裡存在的選項；同類 OR、跨類 AND、再與搜尋 AND；空結果顯示「沒有符合的潛水」＋清除篩選。統計列與地圖不跟篩選（D5）。
