@@ -128,8 +128,9 @@
 ## 下次發布流程
 
 1. 改 code，commit
-2. `CURRENT_PROJECT_VERSION` +1（實測目前為 **4**，已用於 v1.3 ⇒ **下次應改為 5**；
-   `MARKETING_VERSION` 目前 1.3，版本號由 PM 定。2026-10-10 更新：原寫「目前 3、下次 4」）
+2. `CURRENT_PROJECT_VERSION` +1（實測目前為 **5**，已用於 v1.4 ⇒ **下次應改為 6**；
+   `MARKETING_VERSION` 目前 1.4，版本號由 PM 定。2026-11-05 更新（PM 同意）：原寫「目前 4、下次 5」／1.3；
+   1.4（5）已用 Release 產物 `defaults read` 驗證）
 3. Xcode → Product → Archive（iOS 選 Any iOS Device，macOS 選 Any Mac）
 4. Distribute App → App Store Connect
 5. App Store Connect → 對應版本頁面 → Add Build → Add for Review
