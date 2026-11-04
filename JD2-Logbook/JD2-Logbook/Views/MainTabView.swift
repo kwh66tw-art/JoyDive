@@ -202,6 +202,30 @@ private struct MacLogbookSplitView: View {
     @State private var viewMode: LogbookViewMode = .list
     @State private var showNewDiveSheet = false
 
+    /// 列表／月曆切換＋新增潛水（左欄工具列）。
+    @ViewBuilder private var modeAndAddButtons: some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                viewMode = (viewMode == .list) ? .calendar : .list
+                selectedDive = nil // 切換時重設，防止右側錯位
+            }
+        } label: {
+            Image(systemName: viewMode == .list ? "calendar" : "list.bullet")
+        }
+        .help(viewMode == .list
+              ? languageManager.localized("Switch to Calendar View")
+              : languageManager.localized("Switch to List View"))
+        .accessibilityLabel(viewMode == .list
+              ? languageManager.localized("Switch to Calendar View")
+              : languageManager.localized("Switch to List View"))
+
+        Button { showNewDiveSheet = true } label: {
+            Image(systemName: "plus")
+        }
+        .help(languageManager.localized("Add New Dive"))
+        .accessibilityLabel(languageManager.localized("Add New Dive"))
+    }
+
     var body: some View {
         Group {
             if dives.isEmpty {
@@ -242,7 +266,8 @@ private struct MacLogbookSplitView: View {
                                         if selectedDive?.persistentModelID == deleted.persistentModelID {
                                             selectedDive = nil
                                         }
-                                    }
+                                    },
+                                    macToolbarExtras: AnyView(modeAndAddButtons)
                                 )
                             case .calendar:
                                 DiveCalendarView(onDiveTapped: { dive in
@@ -252,28 +277,11 @@ private struct MacLogbookSplitView: View {
                         }
                         .frame(maxHeight: .infinity)
                         .navigationTitle(Text(verbatim: languageManager.localized("Dive Logbook")))
+                        // v1.4 搜尋收合：列表模式下，放大鏡／篩選／切換／新增由 DiveLogListView 排成同一組
+                        //（父子各宣告一組時 macOS 固定把子的排在後面，放大鏡會跑到＋右邊）；月曆模式才由這裡宣告。
                         .toolbar {
-                            ToolbarItemGroup(placement: .primaryAction) {
-                                Button {
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        viewMode = (viewMode == .list) ? .calendar : .list
-                                        selectedDive = nil // 切換時重設，防止右側錯位
-                                    }
-                                } label: {
-                                    Image(systemName: viewMode == .list ? "calendar" : "list.bullet")
-                                }
-                                .help(viewMode == .list
-                                      ? languageManager.localized("Switch to Calendar View")
-                                      : languageManager.localized("Switch to List View"))
-                                .accessibilityLabel(viewMode == .list
-                                      ? languageManager.localized("Switch to Calendar View")
-                                      : languageManager.localized("Switch to List View"))
-
-                                Button { showNewDiveSheet = true } label: {
-                                    Image(systemName: "plus")
-                                }
-                                .help(languageManager.localized("Add New Dive"))
-                                .accessibilityLabel(languageManager.localized("Add New Dive"))
+                            if viewMode == .calendar {
+                                ToolbarItemGroup(placement: .primaryAction) { modeAndAddButtons }
                             }
                         }
                     }

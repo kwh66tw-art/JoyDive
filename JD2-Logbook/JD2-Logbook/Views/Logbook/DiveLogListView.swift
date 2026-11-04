@@ -10,6 +10,20 @@ struct DiveLogListView: View {
     @Query(sort: \DiveLog.dateTime, order: .reverse) var dives: [DiveLog]
     @State private var searchText = ""
 
+    // v1.4 搜尋收合（PM 2026-11-04）：搜尋框平時收成工具列的放大鏡，按了才展開。
+    // 本專案決定：iOS／macOS 都自己做，不用原生 `.searchToolbarBehavior(.minimize)`——
+    // 該 API 是 iOS 26.0+、macOS 不可用（iOS 27.1 SDK SwiftUI.swiftinterface），而本 App 支援 iOS 17、
+    // 模擬器只有 26+ ⇒ iOS 17–25 會是一套測不到的不同行為；按鈕位置也要實測才知道，PM 要的是上方工具列。
+    // 規則：點放大鏡 ⇒ 展開並聚焦；取消或清空 ⇒ 收回；有搜尋字時不收回（篩選結果不被藏起來）。
+    /// 搜尋列是否展開（iOS：是否掛 `.searchable`；macOS：是否顯示自製搜尋列）。
+    @State private var isSearchShown = false
+    #if os(iOS)
+    /// 系統搜尋狀態（`.searchable(isPresented:)`）：按取消會變 false。
+    @State private var isSearchPresented = false
+    #else
+    @FocusState private var searchFieldFocused: Bool
+    #endif
+
     // v1.4 A3：篩選（`DiveListFilter`）。統計列（`StatsHeaderView`）仍吃全部紀錄（D5）。
     @State private var filter = DiveListFilter()
     @State private var judge = TissueLoadingJudge()
@@ -33,6 +47,10 @@ struct DiveLogListView: View {
 
     /// 刪除後通知容器（macOS 用以清空右側被刪的詳情）
     var onDiveDeleted: ((DiveLog) -> Void)? = nil
+
+    /// macOS：容器的工具列按鈕（列表／月曆切換、新增），排在放大鏡與篩選之後、同一組內——
+    /// 父子各宣告一組時順序不由我們決定（11/04 實測子組固定在後）。
+    var macToolbarExtras: AnyView? = nil
 
     private func deleteDive(_ dive: DiveLog) {
         let id = dive.persistentModelID
@@ -76,6 +94,38 @@ struct DiveLogListView: View {
 
     private var filterMenu: some View {
         DiveListFilterMenu(filter: $filter, gases: availableGases, modes: availableModes)
+    }
+
+    /// 工具列放大鏡：收合時展開並聚焦；有搜尋字時改實心圖示＋強調色，看得出「搜尋中」。
+    private var searchButton: some View {
+        Button {
+            #if os(iOS)
+            isSearchShown = true
+            // 同一次更新裡掛上 `.searchable` 又設 isPresented，系統可能還沒建好搜尋列 ⇒ 下一輪再設。
+            DispatchQueue.main.async { isSearchPresented = true }
+            #else
+            if isSearchShown && searchText.isEmpty {
+                isSearchShown = false
+            } else {
+                isSearchShown = true
+                DispatchQueue.main.async { searchFieldFocused = true }
+            }
+            #endif
+        } label: {
+            Image(systemName: searchText.isEmpty ? "magnifyingglass" : "magnifyingglass.circle.fill")
+                .foregroundStyle(searchText.isEmpty ? AnyShapeStyle(.primary) : AnyShapeStyle(Color.accentColor))
+        }
+        .help(languageManager.localized("Search"))
+        .accessibilityLabel(languageManager.localized("Search"))
+    }
+
+    /// 取消或清空、且沒有搜尋字 ⇒ 收回成放大鏡。
+    private func collapseSearchIfIdle() {
+        #if os(iOS)
+        if !isSearchPresented && searchText.isEmpty { isSearchShown = false }
+        #else
+        if !searchFieldFocused && searchText.isEmpty { isSearchShown = false }
+        #endif
     }
 
     /// 篩選中、算完仍沒有結果 ⇒「沒有符合的潛水」＋清除篩選（只清篩選、不清搜尋字）。
@@ -184,7 +234,10 @@ struct DiveLogListView: View {
                         if showsNoMatches { noMatchesView }
                     }
                     .toolbar {
-                        ToolbarItem(placement: .topBarTrailing) { filterMenu }
+                        ToolbarItemGroup(placement: .topBarTrailing) {
+                            searchButton
+                            filterMenu
+                        }
                     }
                     .onChange(of: highlightedDiveID) { _, newID in
                         guard let newID else { return }
@@ -193,41 +246,50 @@ struct DiveLogListView: View {
                             withAnimation(.easeOut(duration: 0.5)) { highlightFlash = nil }
                         }
                     }
-                    .searchable(
+                    .modifier(CollapsibleSearch(
+                        isShown: isSearchShown,
                         text: $searchText,
-                        placement: .navigationBarDrawer(displayMode: .always),
-                        prompt: Text(verbatim: languageManager.localized("Search site, buddy, tags…"))
-                    )
+                        isPresented: $isSearchPresented,
+                        prompt: languageManager.localized("Search site, buddy, tags…")
+                    ))
+                    .onChange(of: isSearchPresented) { _, _ in collapseSearchIfIdle() }
+                    .onChange(of: searchText) { _, _ in collapseSearchIfIdle() }
 
                     #else
                     // ── macOS：搜尋欄內嵌列表上方 + ScrollView 卡片（卡片邊框顯示選取）──
                     VStack(spacing: 0) {
-                        // 搜尋欄（直接嵌入，避免 .toolbar placement 跑到視窗右上角）
-                        HStack(spacing: 8) {
-                            Image(systemName: "magnifyingglass")
-                                .foregroundStyle(.secondary)
-                            TextField(languageManager.localized("Search site, buddy, tags…"), text: $searchText)
-                                .textFieldStyle(.plain)
-                            if !searchText.isEmpty {
-                                Button {
-                                    searchText = ""
-                                } label: {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .foregroundStyle(.secondary)
+                        // 搜尋欄（直接嵌入，避免 .toolbar placement 跑到視窗右上角）；
+                        // v1.4 平時收合，按左欄工具列的放大鏡才出現（見 `isSearchShown`）。
+                        if isSearchShown {
+                            HStack(spacing: 8) {
+                                Image(systemName: "magnifyingglass")
+                                    .foregroundStyle(.secondary)
+                                TextField(languageManager.localized("Search site, buddy, tags…"), text: $searchText)
+                                    .textFieldStyle(.plain)
+                                    .focused($searchFieldFocused)
+                                    // Esc：清空並收回
+                                    .onExitCommand {
+                                        searchText = ""
+                                        isSearchShown = false
+                                    }
+                                if !searchText.isEmpty {
+                                    Button {
+                                        searchText = ""
+                                        isSearchShown = false
+                                    } label: {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
-                                .buttonStyle(.plain)
                             }
-                            // v1.4 A3：篩選放搜尋欄旁（決策檔 §三）
-                            filterMenu
-                                .menuStyle(.borderlessButton)
-                                .menuIndicator(.hidden)
-                                .fixedSize()
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
-                        .background(.bar)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
+                            .background(.bar)
+                            .onChange(of: searchFieldFocused) { _, _ in collapseSearchIfIdle() }
 
-                        Divider()
+                            Divider()
+                        }
 
                         // 不使用 List 的系統選取/焦點框（與卡片圓角衝突會產生偏移粗藍框）
                         // 改用 ScrollView + LazyVStack，選取狀態直接畫在卡片邊框上
@@ -293,6 +355,14 @@ struct DiveLogListView: View {
                             }
                         }
                     }
+                    // v1.4：放大鏡與篩選移到左欄工具列（原本篩選在搜尋欄旁，搜尋列收合後就看不到）。
+                    .toolbar {
+                        ToolbarItemGroup(placement: .primaryAction) {
+                            searchButton
+                            filterMenu
+                            if let macToolbarExtras { macToolbarExtras }
+                        }
+                    }
                     #endif
                 }
                 .task(id: datasetKey) {
@@ -309,6 +379,29 @@ struct DiveLogListView: View {
         }
     }
 }
+
+#if os(iOS)
+/// 搜尋收合時完全不掛 `.searchable`，展開時才掛（標題下方出現搜尋列並聚焦）。
+private struct CollapsibleSearch: ViewModifier {
+    let isShown: Bool
+    @Binding var text: String
+    @Binding var isPresented: Bool
+    let prompt: String
+
+    func body(content: Content) -> some View {
+        if isShown {
+            content.searchable(
+                text: $text,
+                isPresented: $isPresented,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: Text(verbatim: prompt)
+            )
+        } else {
+            content
+        }
+    }
+}
+#endif
 
 // MARK: - 統計 Header
 

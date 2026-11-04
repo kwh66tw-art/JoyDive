@@ -18905,6 +18905,36 @@
         }
       }
     },
+    "Search" : {
+      "comment" : "v1.4: accessibility label / tooltip of the toolbar magnifying-glass button that expands the collapsed dive-list search field. Verb per F-10 (search location: 検索／搜尋). DRAFT — other 14 languages pending.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜尋"
+          }
+        }
+      }
+    },
     "Search location…" : {
       "comment" : "Search bar placeholder in logbook list",
       "extractionState" : "stale",
