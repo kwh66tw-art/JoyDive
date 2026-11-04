@@ -45,6 +45,10 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 已知行為（PM 11/04 ①）：iOS 26 搜尋作用中，系統藏掉篩選與＋ ⇒ 先篩選再搜尋（`docs/KNOWN_ISSUES.md`）。
 - 新字串 `Search`（英／繁中／日草稿）。截圖 `docs/screenshots/v1.4-search/`（19 張＋README）。`run_tests.sh logbook` 245/0/1。
 
+### 跟進 DiveImportKit v0.8.3：Diving Log 備註匯入修正（PM 2026-11-04；Kit 91b960f）
+- Diving Log 的備註（RTF）轉純文字依規格重寫：跳過字型表／色彩表等目的地群組與 `\*` 群組，`\uN`、`\'hh` 依 code page 解碼。原本會把字型名稱（例：「Microsoft Sans Serif;」）當成備註匯入。
+- 已匯入的舊紀錄不自動清理（PM 11/04）；見 `docs/KNOWN_ISSUES.md`。App 層無程式變更；`run_tests.sh logbook` 248/0/1（Kit v0.8.3）。
+
 ### C 組小項（PM 2026-11-04 同意開始；GDPR 依 PM 10/05 延下一版）
 - 換用 v5 App Icon：`AppIcon.appiconset` 四張圖換成 `_JD2-family/brand-assets/ICON_v5/jd2_lb_v5_*`（`cmp` 相同），`Contents.json` 不動。
 - 匯入頁「其他品牌」補 ATMOS FIT（.fit；v1.3 起已支援，DiveImportKit v0.7.7）。

@@ -1,5 +1,14 @@
 # 下一版送審檢查（2026-10-03 建立；**2026-10-06 送審收尾複核**，依 `app-store-submission-guide` §0 清單）
 
+## v1.4 送審前待辦（2026-11-04 起累積；送審當天逐項以指令／實機查證）
+
+| 項目 | 狀態 | 驗證方式 |
+|---|---|---|
+| **TestFlight 覆蓋升級首次啟動不卡**（PM 11/04 實機：Xcode 安裝 v1.4 到 iPhone 16（既有 71 筆）後第一次啟動，整個畫面卡在日誌頁 10–20 秒，重開不再卡；模擬器全新安裝 0 筆、既有 105 筆皆未重現） | ⬜ | **候選（皆未量測）**：① Xcode 偵錯器首次附掛；③ Xcode 裝的是 **Debug** 建置（DiveKit 等未最佳化，啟動時任何重活都比 Release 慢很多）；② v1.4 首次資料庫遷移——v1.3→v1.4 為 **lightweight 遷移**（`DiveLogSchema.swift:211`，三段皆 lightweight），71 筆一般為毫秒級，**可能性較低**（推論，總指揮 11/04）。**驗證**：iPhone 先留 App Store v1.3＋既有資料 → 不經 Xcode，用 TestFlight（Release）升級到 v1.4 → 第一次啟動計時、確認可點分頁。TestFlight 為 Release ⇒ 同時排除 ①③。**不卡** ⇒ 結案。**仍卡 ⇒ 先量測再提案，不先猜做法**：Release 實機用 Instruments Time Profiler（或 `os_signpost` 包住 `ModelContainer` 建立與首頁 `.task`）量一次，看卡在哪一段；量完才提案（若卡在遷移，再提「背景遷移＋顯示準備中」），PM 決定後再改 |
+| macOS 匯入頁上架截圖重拍（多了 ATMOS FIT） | ⬜ PM | ASC 截圖 |
+| 新字串補 14 語＋審稿（清單見 `HANDOFF.md`「上架前補 14 語＋審稿」） | ⬜ | xcstrings 各鍵 18 語皆有、無 `needs_review` |
+| v5 圖示外觀（iOS 一般／深色／著色、Mac Dock） | ✅ | PM 11/04 iPhone 實機截圖；Mac Dock PM 11/04 Mac 實機截圖，經總指揮轉述 |
+
 ## 2026-10-10 送審前再複核（10/07 之後：送審前 7 項＋PM 追加；以指令查證）
 
 | 項目 | 結果 | 驗證 |

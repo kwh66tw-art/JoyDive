@@ -10,7 +10,7 @@
   進度：`docs/V1_4_WORK_PLAN.md`（已同步）；稽核：`docs/V1_4_AUDIT_TEST_PLAN.md`（F1–F21，F20 已撤回）。
 - **未 commit 變更**：無。**未推送**：df875d3 之後的提交（搜尋收合、C 組兩個）——推送等 PM 在本 session 直接說（總指揮轉述不算）。origin/main 最後推到 4b89ed7。
 - **測試**：`run_tests.sh logbook` **248／0／1**（11/04 C 組提交前實跑，總指揮重跑相同；唯一 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`）。
-- **共用層**：DiveKit **v9.8.0**、DiveImportKit **v0.8.2**（11/04 `describe --tags` 核對；`check_doc_version_sync.sh` 通過）。
+- **共用層**：DiveKit **v9.8.0**、DiveImportKit **v0.8.3**（11/04 `describe --tags` 核對；v0.8.3＝Diving Log 備註 RTF 修正，總指揮 91b960f）。
 - **B1／B1-A 的完整經過**：`docs/decisions/D-2026-10-26-v1.4-D3至D7裁示.md`（MapKit 實測、A／H5 失敗、問題重新定義、依資料縮放、多尺寸表、B1-A 規則與情境×平台表、開地圖自動置中根因、跳轉縮放被置中蓋掉、故障注入、字串檔事件）。截圖 `docs/screenshots/v1.4-B/00–55`。
 
 ## 進行中的決策（尚未定案）
@@ -27,13 +27,14 @@
 ## 下一步（按順序）
 1. ~~commit＋push 本次交接文件~~ ✅（PM 11/04 指示）。~~C 組小項~~ ✅（11/04）。
 2. **推送**本地未推的提交——等 PM 指示。
-3. **待 PM**：重拍 macOS 匯入頁上架截圖（多了 ATMOS FIT）；實機目視 v5 圖示深色／著色外觀與 Mac Dock。
+3. **待 PM**：重拍 macOS 匯入頁上架截圖（多了 ATMOS FIT）。v5 圖示 iOS 一般／深色／著色、Mac Dock 皆 PM 11/04 實機確認 ✅。
+   - **送審前必做**：TestFlight 覆蓋升級（App Store v1.3 → v1.4）第一次啟動是否卡住——PM 11/04 用 Xcode 安裝時卡 10–20 秒、重開不卡；候選：Xcode 偵錯器、Debug 建置、首次遷移（lightweight，可能性較低）；TestFlight 仍卡就先用 Time Profiler／`os_signpost` 在 Release 實機量測再提案，見 `docs/SUBMISSION_CHECK_NEXT.md` 最上段。
 4. **macOS 未驗證兩格**（可選）：「選取中按回到我的位置」、「GPS 開著冷啟動」在 macOS 判別力有限——要驗得先由 PM 在系統設定確認 audit App 的定位授權狀態；授權相關情境目前以 iOS 31–33、35、36 為準。
 5. **待 PM 手動**：iOS 模擬器文字輸入（T4、T27、T28）。
-6. **待查**：iOS 詳細頁「原始匯入資料」DisclosureGroup 在模擬器點不開——是模擬器操作還是程式問題未查（見陷阱）。
+6. ~~待查 iOS「原始匯入資料」展開~~ ✅ PM 11/04 實機正常（模擬器操作問題）。
 
 ## 陷阱提醒
-- 🆕 **iOS 詳細頁 DisclosureGroup（原始匯入資料）在模擬器點不開**（11/04 兩次）：詳細頁捲到底會回彈，點的時候列位置在動；macOS 同一段 AXPress 正常展開。是模擬器操作還是程式問題**未查**——要查就在實機點，或寫 UI 測試。
+- 🆕 **iOS 詳細頁 DisclosureGroup（原始匯入資料）在模擬器點不開**（11/04 兩次）：詳細頁捲到底會回彈，點的時候列位置在動。✅ 結案：PM 11/04 iPhone 實機截圖，經總指揮轉述三筆皆正常展開 ⇒ 模擬器操作問題、非程式問題。模擬器上要展開，等頁面完全停住再點，或改在 macOS 用 AXPress 驗。
 - 🆕 **模擬器文字輸入的替代做法**：貼上與鍵盤按鍵點擊都進不了欄位；要截「輸入中／有結果」就加**暫時的** DEBUG 啟動參數預填（`simctl launch … -Key value`，`UserDefaults` 讀），截完一定移除並 `grep` 確認 0 處。
 - 🆕 **Xcode 11/04 自動更新到 27.2**：第一次 xcodebuild 會自動裝模擬器元件（"CoreSimulator is out of date" → "Install Succeeded"），之後才正常。
 - 🆕 **macOS 工具列順序**：父子 view 各宣告一組 `.primaryAction`／`.automatic`，macOS 固定把子組排在後面——要固定順序就放進同一個 `ToolbarItemGroup`（見 `MainTabView` 的 `macToolbarExtras`）。
@@ -65,5 +66,5 @@
 
 ## 開場指令建議（給下一個 session）
 先讀本檔、`docs/V1_4_WORK_PLAN.md`（§四 C 組）、需要時讀 `docs/decisions/D-2026-10-26-v1.4-D3至D7裁示.md`；
-確認 Kit 版號：`git -C /Users/kevin/Documents/AppProject/_JD2-family/DiveKit describe --tags`（v9.8.0）、DiveImportKit（v0.8.2）；
+確認 Kit 版號：`git -C /Users/kevin/Documents/AppProject/_JD2-family/DiveKit describe --tags`（v9.8.0）、DiveImportKit（v0.8.3）；
 `git status` 應為乾淨；跑 `run_tests.sh logbook` 對照 **245／0／1**；再向總指揮確認下一項（C 組或 App-u 跟進）。
