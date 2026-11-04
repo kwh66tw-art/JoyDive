@@ -152,12 +152,17 @@ final class EnvironmentEdgeCaseTests: XCTestCase {
             }
         }
 
-        // 中日文有譯文、句末全形；尚未翻譯者回退英文原句（14 語待上架前收尾，PM 10/26）。
+        // 中日文有譯文、句末全形。其餘 14 語 v1.4 送審收尾已補草稿（needs_review，PM 審稿中，2026-11-05）
+        // ⇒ 不再回退英文原句；泰文句末無標點、走「補半形空格」分支（上方迴圈已涵蓋）。
         lm.appLanguage = "zh-Hant"
         XCTAssertEqual(lm.localized(keys[0]).last, "。")
         lm.appLanguage = "ja"
         XCTAssertEqual(lm.localized(keys[0]).last, "。")
-        lm.appLanguage = "ko"
-        XCTAssertEqual(lm.localized(keys[0]), keys[0], "現況：韓文尚未翻譯 ⇒ 回退英文")
+        for code in ["ko", "de", "th", "zh-Hans"] {
+            lm.appLanguage = code
+            for key in keys {
+                XCTAssertNotEqual(lm.localized(key), key, "\(code)：已有譯文，不應回退英文")
+            }
+        }
     }
 }

@@ -63,6 +63,16 @@ dive log,divelog,Tauchlogbuch,duiklogboek,plongée,buceo,bitácora,immersioni,me
 
 ---
 
+## What's New — v1.4（🟡 草稿，待 PM 定稿，2026-11-05）
+
+Search your logbook by dive site, buddy, tags, or notes, and filter dives by gas, dive type, or whether tissue loading is available. Tap a dive's coordinates to jump to it on the map; map clusters now show the dive site name. The dive detail page now shows more of the original data from imported files, such as CNS, PO₂ range, and gas switches. Plus a refreshed app icon and multiple minor bug fixes and improvements.
+
+> 草稿依據：總指揮派工 2026-11-05（搜尋與篩選、地圖跳轉、組織負荷篩選、原始匯入資料）。ATMOS FIT 已寫在 v1.3，不重複。
+> 「refreshed app icon」（v5 圖示，53117a5）為執行者自行加入，PM 可刪。不新增品牌名。
+> 篩選三類（氣體／潛水類型／組織負荷）依 `docs/decisions/D-2026-11-01-A3-列表篩選規格.md` §一；搜尋範圍（潛點／潛伴／標籤／備註）依 `Search site, buddy, tags…` 鍵註解（A2）。
+
+---
+
 ## What's New — v1.3（✅ PM 2026-10-05 定稿：籠統寫法，保留「提升準確度」；10-06 PM 同意加時區修正句；10-10 PM 加 ATMOS FIT）
 
 Improved accuracy of decompression estimates. Added import of FIT files from ATMOS dive computers. Fixed dive times from several import formats being shifted by your time zone. Plus multiple minor bug fixes and improvements.
@@ -181,6 +191,12 @@ JoyDive²，陪你從第一次下水到每一次進階潛水的潛水日誌。
 
 ---
 
+## 版本說明（What's New）— v1.4（🟡 草稿，待 PM 定稿，2026-11-05）
+
+新增日誌搜尋（潛點、潛伴、標籤、備註）與篩選（氣體、潛水類型、是否有組織負荷）；點潛水的座標可直接跳到地圖，地圖上的聚合圖釘會顯示潛點名稱；潛水詳細頁可查看更多匯入檔的原始資料，例如 CNS、PO₂ 範圍與換氣紀錄；更新 App 圖示，並修正多項小問題。
+
+---
+
 ## 版本說明（What's New）— v1.3（✅ PM 2026-10-05 定稿；10-06 加時區修正句；10-10 加 ATMOS FIT）
 
 提升減壓估算的準確度；新增匯入 ATMOS 潛水電腦錶的 FIT 檔；修正部分匯入格式的潛水時間因時區而偏移的問題；並修正多項小問題。
@@ -275,6 +291,12 @@ GPS座標から地図上へ自動的にピンをドロップ。これまで訪�
 > ⚠️ 84文字／202 bytes（カンマの後にスペースなし）。上限100——**ASCは文字数で数える（2026-10-10 実測：日本語組は貼り付け後の残り16＝84文字）**。
 > 📜 履歴：v1.2の旧セット（Shearwater／Garmin／Suunto／Subsurface などブランド名）は2026-07-29にリリース後検索されないことが判明。v1.3でPM 2026-10-03の裁示により差し替え済み。
 >   詳細は `docs/KEYWORDS_NEXT_DRAFT.md`。
+
+---
+
+## 新機能（What's New）— v1.4（🟡 下書き、PM 確定待ち、2026-11-05）
+
+ログの検索（ダイビングポイント・バディ・タグ・メモ）と絞り込み（ガス、ダイビングの種類、組織負荷の有無）に対応しました。ダイブの座標をタップするとマップに移動し、マップのクラスターにはダイビングポイント名が表示されます。ダイブ詳細画面で、インポートしたファイルの元データ（CNS、PO₂ の範囲、ガス切り替えなど）を確認できるようになりました。アプリアイコンを新しくし、そのほか複数の軽微な不具合を修正しました。
 
 ---
 

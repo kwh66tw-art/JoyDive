@@ -8,6 +8,14 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ## [v1.4.0] — 未發布（開發中）
 
+### 送審收尾（2026-11-05，總指揮派工，PM 11/05 同意）
+- 版號 1.4（5）：6 組 build setting；Release iOS／macOS 產物 `defaults read` 驗證。
+- 翻譯：v1.4 新鍵 16 個補其餘 14 語草稿（`needs_review`，待 PM 審）；`+%lld more` 改依數量變形（Vary by Plural，18 語；程式不動，`String(format:locale:)` 已帶 locale）。審稿表 `docs/reports/R-2026-11-05-v1.4翻譯審稿對照表.md`。
+- 稽核 F18：`MockDataSeeder` 整檔包 `#if DEBUG`，Release 不再含此類別。
+- 稽核 F19：刪除 `Localizable.xcstrings.backup`（原本被打包進 App）。
+- What's New v1.4 三語草稿（`docs/APPSTORE_COPY.md`，待 PM 定稿）。
+- 測試：`EnvironmentEdgeCaseTests.testReasonSentenceJoiningAcrossAllAppLanguages` 原本鎖定「韓文未翻譯 ⇒ 回退英文」的現況，改為檢查 ko／de／th／zh-Hans 已有譯文；`run_tests.sh logbook` 249/0/1。
+
 ### A1 環境「未記錄」（PM 2026-10-26；決策 `docs/decisions/D-2026-10-26-環境欄位未記錄.md`）
 - `DiveLog.environmentType` 改 `String?`（nil＝未記錄）；匯入沒帶就是未記錄，不再補海水；手動新增預設未記錄。既有紀錄不回溯。
 - **SwiftData 首次版本化**：每個上架版本一份凍結拷貝（`DiveLogSchemaV1_0`／`V1_2`／`V1_3`）→ `V1_4`，三段輕量遷移。初版只列 v1.3，稽核實測 v1.2 → v1.4 打不開（資料未動）⇒ PM 裁示補齊歷代版本。v1.0／v1.2／v1.3 當年 build 的真實 store 覆蓋安裝實測皆通過、全欄位不變（`docs/V1_4_AUDIT_TEST_PLAN.md` T1–T3）。

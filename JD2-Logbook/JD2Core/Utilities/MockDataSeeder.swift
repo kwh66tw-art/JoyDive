@@ -2,7 +2,11 @@
 // v1.0
 //
 // 大量 Mock 數據注入工具類別，用於性能與渲染測試
+//
+// v1.4（稽核 F18）：整檔包 #if DEBUG——唯一呼叫點是設定頁 Developer Tools（SettingsView 的 #if DEBUG 區塊），
+// 原本類別仍編進 Release（strings 可見類別名稱），現在 Release 不再含此類別。
 
+#if DEBUG
 import Foundation
 import SwiftData
 
@@ -142,3 +146,4 @@ final class MockDataSeeder {
         return dives
     }
 }
+#endif

@@ -53,8 +53,8 @@
 | v1.3 以前從 Diving Log 匯入的備註可能帶 RTF 殘留（字型名稱如「Microsoft Sans Serif;」等）（2026-11-04） | DiveImportKit v0.8.2 以前的 RTF 轉純文字不跳過字型表等目的地群組；**v0.8.3 已修**（`RTFPlainText`，總指揮 91b960f）。已匯入的紀錄**不自動清理**（PM 11/04） | 舊備註開頭或整段是字型名稱 | 使用者可自行編輯備註；重新匯入會被去重略過（`ImportCoordinator.swift:116`），要先刪除該筆再匯入 |
 | 搜尋 2,000 筆時每鍵 30–38 ms（稽核 T26／D-E，2026-10-27） | 每次按鍵對每筆解碼 `importExtrasJSON`；A2 前 12 ms。門檻 16 ms 為本專案決定；Debug、模擬器量測 | 大量資料打字略頓 | ✅ PM 11/04 裁示 D-E ①：接受，列為已知限制（一般使用者紀錄數遠少於 2,000）；有使用者回報再做解碼快取（`docs/decisions/D-2026-11-04-DB-DE已知限制與F-09複數形實驗.md`） |
 | 最大字級（AX5）版面：列表統計列占約六成、潛水列截斷；剖面圖時間刻度重疊；德文編輯頁標題截斷（稽核 F17） | 既有版面，`git diff ae3a629..HEAD` 佐證非 v1.4 引入 | 無障礙大字級可讀性 | 待 PM 排程 |
-| `MockDataSeeder` 類別隨 Release 出貨（稽核 F18） | `MockDataSeeder.swift:10` 未包 `#if DEBUG`；入口在 `#if DEBUG` 內，Release 無呼叫點 | 死碼，無功能影響 | PM 另行排程（10/27） |
-| `Localizable.xcstrings.backup` 被打包進 App（稽核 F19） | 400 KB 舊翻譯檔，2026-05-29 起在版控，fileSystemSynchronizedGroups 帶進 bundle；推定 v1.0–v1.3 已出貨 | App 多 400 KB，無機敏資料 | PM 另行排程（10/27） |
+| `MockDataSeeder` 類別隨 Release 出貨（稽核 F18） | `MockDataSeeder.swift:10` 未包 `#if DEBUG`；入口在 `#if DEBUG` 內，Release 無呼叫點 | 死碼，無功能影響 | ✅ v1.4 修正（2026-11-05）：整檔包 `#if DEBUG`，Release 產物不再含此類別 |
+| `Localizable.xcstrings.backup` 被打包進 App（稽核 F19） | 400 KB 舊翻譯檔，2026-05-29 起在版控，fileSystemSynchronizedGroups 帶進 bundle；推定 v1.0–v1.3 已出貨 | App 多 400 KB，無機敏資料 | ✅ v1.4 修正（2026-11-05）：檔案自 repo 移除，Release 產物 0 個 `.backup` |
 | 地圖同座標 2 筆以上聚合後無法點開看 log（PM 2026-10-26） | 讀碼推斷：`DiveMapRepresentable.swift:54-56` 點聚合只 `showAnnotations`，成員座標相同時縮放無法拆開。**未實機重現**；App-u 同寫法（總指揮 10/26 讀碼，未重現） | 同座標多筆紀錄看不到 | v1.4（`V1_4_WORK_PLAN.md` B2；修完回報總指揮評估 App-u） |
 | 環境欄位無「未記錄」：解析器皆不填 `environmentType`，每筆預設 `seawater` | `DiveLog.swift:108`；舊資料無法分辨預設值與真實選擇 | 淡水／高海拔紀錄顯示為海水 | ✅ v1.4 A1 已實作（未發布；2026-10-26，`docs/decisions/D-2026-10-26-環境欄位未記錄.md`）；舊資料不回溯 |
 
