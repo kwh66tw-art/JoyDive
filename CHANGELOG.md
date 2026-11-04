@@ -39,6 +39,21 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 測試 +12：`DiveClusterLabelTests` 7、`UserLocationAuthorizationTests` 5 ⇒ **245/0/1**（提交前實跑，總指揮重跑相同）。提交前故障注入 4 次（拿掉規則 ① RED；判斷函式 RED；回呼繞過判斷函式原本 GREEN ⇒ 補回呼路徑測試後 RED）。
 - 實測：iPhone 17 Pro、iPhone SE、macOS（截圖 `docs/screenshots/v1.4-B/19–55`）。
 
+### 日誌列表搜尋框收合成工具列放大鏡（PM 2026-11-04，B 案；df875d3；決策 `docs/decisions/D-2026-11-04-搜尋收合成按鈕.md`）
+- iOS：搜尋列平時不顯示，右上工具列放大鏡（月曆、放大鏡、篩選、＋）按了才展開並聚焦；取消／清空收回，有搜尋字不收回。不用原生 `.searchToolbarBehavior(.minimize)`（iOS 26.0+、macOS 不可用；本 App 支援 iOS 17）。
+- macOS：自製搜尋列平時隱藏，左欄工具列放大鏡（放大鏡、篩選、月曆、＋）；Esc／清除收回；有字時放大鏡改實心藍。篩選由搜尋欄旁移到工具列（PM 11/04 確認，A3 決策檔 §三已改）。
+- 已知行為（PM 11/04 ①）：iOS 26 搜尋作用中，系統藏掉篩選與＋ ⇒ 先篩選再搜尋（`docs/KNOWN_ISSUES.md`）。
+- 新字串 `Search`（英／繁中／日草稿）。截圖 `docs/screenshots/v1.4-search/`（19 張＋README）。`run_tests.sh logbook` 245/0/1。
+
+### C 組小項（PM 2026-11-04 同意開始；GDPR 依 PM 10/05 延下一版）
+- 換用 v5 App Icon：`AppIcon.appiconset` 四張圖換成 `_JD2-family/brand-assets/ICON_v5/jd2_lb_v5_*`（`cmp` 相同），`Contents.json` 不動。
+- 匯入頁「其他品牌」補 ATMOS FIT（.fit；v1.3 起已支援，DiveImportKit v0.7.7）。
+- 詳細頁來源格式「Manual Entry」改走在地化（catalog 既有 18 語）。
+- 4 處 `.minimumScaleFactor` 改「先試原字級、放不下才縮」（新 `View.shrinkOnlyIfNeeded`，與剖面讀數同做法）：列表統計列 2 處、列表日期月份、匯入頁副檔名。
+- 刪除 stale 鍵 `%lld%%`（無程式碼引用）。
+- 「原始匯入資料」6 個鍵給標籤：`cns`→CNS、`altitudeRange`→Altitude Range、`decoRequired`→Deco Required（值 Yes／No）、`minPPO2`／`maxPPO2`→Min／Max PO₂（拼法依家族 App）、`gasSwitches`→Gas Switches（值整理成「0:00 Air → 23:40 EANx50」，氣體分類沿用 DiveImportKit 同一規則）。新字串 8 個 × 18 語，**非英文皆為草稿、標 needs_review**。
+- 測試 +3（`ImportExtraDisplayTests`）⇒ **248/0/1**。截圖 `docs/screenshots/v1.4-C/`。
+
 ### A3 列表篩選（PM 2026-11-01；規格 `docs/decisions/D-2026-11-01-A3-列表篩選規格.md`，App-u 亦照此做）
 - 篩選三類：氣體（空氣／高氧／Trimix／未知氣體，與列表標籤同源）、潛水類型（水肺／自由潛水／浮潛）、組織負荷（有／無，＝詳細頁實際有沒有畫出組織負荷）。只列資料裡存在的選項；同類 OR、跨類 AND、再與搜尋 AND；空結果顯示「沒有符合的潛水」＋清除篩選。統計列與地圖不跟篩選（D5）。
 - 組織負荷判定只有一份：樣本 ≥ 2 且 DiveKit `precheck` 回 nil；前導候選挑法抽成詳細頁與列表共用的純函式。由新到舊逐步判定、算好才顯示（2,000 筆 × 300 樣本全部約 1.8 s，Debug）。

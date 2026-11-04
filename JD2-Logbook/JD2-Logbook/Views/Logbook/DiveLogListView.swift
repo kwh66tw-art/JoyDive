@@ -487,13 +487,13 @@ struct StatCell: View {
                 .monospacedDigit()
                 .foregroundStyle(.primary)
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
+                .shrinkOnlyIfNeeded(minimumScale: 0.7) // v1.4 C：原 .minimumScaleFactor(0.7)
 
             Text(verbatim: languageManager.localized(label))
                 .font(.caption2)
                 .foregroundStyle(Color.accessibleSecondary)
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
+                .shrinkOnlyIfNeeded(minimumScale: 0.7) // v1.4 C：原 .minimumScaleFactor(0.7)
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)

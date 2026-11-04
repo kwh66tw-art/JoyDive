@@ -3,13 +3,13 @@
 > 交接文件（固定檔名滾動式；前一版在 `docs/handoff-archive/HANDOFF_2026-11-04.md`，更早的在同目錄）。
 
 ## 交接時間
-2026-11-04 16:30（產生方式：/handoff skill）
+2026-11-04 16:30（產生方式：/handoff skill）；21:00 更新（搜尋收合、C 組、D-B／D-E、F-09 實驗）
 
 ## 目前狀態
-- **所在里程碑**：v1.4 開發中（v1.3 Build 4 已上架）。A1 ✅、A2 ✅、D-A ✅、D-C ✅、A3 ✅、B1＋B2 ✅、**B1-A ✅（cd9ecc8＋5fdc8e5，已推送）**；C 未做。
+- **所在里程碑**：v1.4 開發中（v1.3 Build 4 已上架）。A1 ✅、A2 ✅、D-A ✅、D-C ✅、A3 ✅、B1＋B2 ✅、**B1-A ✅（cd9ecc8＋5fdc8e5，已推送）**、**搜尋收合 ✅（df875d3）**、**C 組 ✅（Icon＋其餘兩個提交，見 `git log`）**；GDPR ⏸ 下一版。
   進度：`docs/V1_4_WORK_PLAN.md`（已同步）；稽核：`docs/V1_4_AUDIT_TEST_PLAN.md`（F1–F21，F20 已撤回）。
-- **未 commit 變更**：無。本次交接文件（本檔、歸檔 `docs/handoff-archive/HANDOFF_2026-11-04.md`、`CHANGELOG.md`／`docs/V1_4_WORK_PLAN.md` 補 B1-A 的 hash）已在 5fdc8e5 之後的「文件：交接」commit 提交並推送（hash 以 `git log -1` 為準）。
-- **測試**：`run_tests.sh logbook` **245／0／1**（11/04 提交前實跑，總指揮重跑相同；唯一 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`）。
+- **未 commit 變更**：無。**未推送**：df875d3 之後的提交（搜尋收合、C 組兩個）——推送等 PM 在本 session 直接說（總指揮轉述不算）。origin/main 最後推到 4b89ed7。
+- **測試**：`run_tests.sh logbook` **248／0／1**（11/04 C 組提交前實跑，總指揮重跑相同；唯一 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`）。
 - **共用層**：DiveKit **v9.8.0**、DiveImportKit **v0.8.2**（11/04 `describe --tags` 核對；`check_doc_version_sync.sh` 通過）。
 - **B1／B1-A 的完整經過**：`docs/decisions/D-2026-10-26-v1.4-D3至D7裁示.md`（MapKit 實測、A／H5 失敗、問題重新定義、依資料縮放、多尺寸表、B1-A 規則與情境×平台表、開地圖自動置中根因、跳轉縮放被置中蓋掉、故障注入、字串檔事件）。截圖 `docs/screenshots/v1.4-B/00–55`。
 
@@ -21,14 +21,23 @@
 - **F17／F18／F19／F21**：PM 10/27 另行排程，現在不處理。
 - **文案**：A1／D-A／A2／A3／B1／B2／B1-A 新字串皆為草稿（英／繁中／日）；⏸ 上架前收尾＋其餘 14 語。
   - ⚠️ **上架前補語言待辦**：B1-A 的「+%lld more」要依數量變形時，**只需在 xcstrings 加 Vary by Plural，程式碼不用動**（`DiveMapRepresentable.swift:72` 的 `String(format:locale:)` 已帶 `languageManager.locale`；11/04 實驗 hr 1／2／5／21 選出 one／few／other／one，見 `docs/decisions/D-2026-11-04-DB-DE已知限制與F-09複數形實驗.md` 第三節）。**hr 只有三類**：one（1, 21…）／few（2–4, 22–24…）／other（總指揮 11/04 核對 CLDR，F-09 已更正原寫的四類）。
+  - 📋 **上架前「補 14 語＋審稿」批次的鍵**（總指揮 11/04：草稿不另排審，併這一批）：`Multiple Dive Sites`、`+%lld more`、`Search`（以上只有英／繁中／日）；C 組 8 鍵 `CNS`、`Altitude Range`、`Deco Required`、`Min PO₂`、`Max PO₂`、`Gas Switches`、`Yes`、`No`（18 語草稿，非英文 `needs_review`）。另含 A1／D-A／A2／A3／B1／B2 的草稿字串。
+  - ⚠️ zh-Hant「最高／最低 PO₂」（本次潛水的紀錄值）與 App-i「PO₂ 上限」（設定的上限）**刻意不同**，不要統一（理由寫在 xcstrings comment）。
 
 ## 下一步（按順序）
-1. ~~commit＋push 本次交接文件~~ ✅（PM 11/04 指示）。
-2. **v1.4 剩餘**：C 組小項（`docs/V1_4_WORK_PLAN.md` §四）。
-3. **macOS 未驗證兩格**（可選）：「選取中按回到我的位置」、「GPS 開著冷啟動」在 macOS 判別力有限——要驗得先由 PM 在系統設定確認 audit App 的定位授權狀態；授權相關情境目前以 iOS 31–33、35、36 為準。
-4. **待 PM 手動**：iOS 模擬器文字輸入（T4、T27、T28）。
+1. ~~commit＋push 本次交接文件~~ ✅（PM 11/04 指示）。~~C 組小項~~ ✅（11/04）。
+2. **推送**本地未推的提交——等 PM 指示。
+3. **待 PM**：重拍 macOS 匯入頁上架截圖（多了 ATMOS FIT）；實機目視 v5 圖示深色／著色外觀與 Mac Dock。
+4. **macOS 未驗證兩格**（可選）：「選取中按回到我的位置」、「GPS 開著冷啟動」在 macOS 判別力有限——要驗得先由 PM 在系統設定確認 audit App 的定位授權狀態；授權相關情境目前以 iOS 31–33、35、36 為準。
+5. **待 PM 手動**：iOS 模擬器文字輸入（T4、T27、T28）。
+6. **待查**：iOS 詳細頁「原始匯入資料」DisclosureGroup 在模擬器點不開——是模擬器操作還是程式問題未查（見陷阱）。
 
 ## 陷阱提醒
+- 🆕 **iOS 詳細頁 DisclosureGroup（原始匯入資料）在模擬器點不開**（11/04 兩次）：詳細頁捲到底會回彈，點的時候列位置在動；macOS 同一段 AXPress 正常展開。是模擬器操作還是程式問題**未查**——要查就在實機點，或寫 UI 測試。
+- 🆕 **模擬器文字輸入的替代做法**：貼上與鍵盤按鍵點擊都進不了欄位；要截「輸入中／有結果」就加**暫時的** DEBUG 啟動參數預填（`simctl launch … -Key value`，`UserDefaults` 讀），截完一定移除並 `grep` 確認 0 處。
+- 🆕 **Xcode 11/04 自動更新到 27.2**：第一次 xcodebuild 會自動裝模擬器元件（"CoreSimulator is out of date" → "Install Succeeded"），之後才正常。
+- 🆕 **macOS 工具列順序**：父子 view 各宣告一組 `.primaryAction`／`.automatic`，macOS 固定把子組排在後面——要固定順序就放進同一個 `ToolbarItemGroup`（見 `MainTabView` 的 `macToolbarExtras`）。
+- 🆕 **xcstrings 的 `git diff --numstat` 會有對齊假象**：插很多鍵時預設演算法顯示的刪除行數會偏多；用 `--diff-algorithm=patience`，再以 JSON 對 HEAD 比舊鍵順序與內容。
 - 🆕 **提交前故障注入**：`inject.sh` 只能在乾淨工作樹跑（還原用 `git checkout`），`run_tests.sh logbook` 又固定測主 checkout ⇒ 提交前只能手動注入，並照搬守衛：恰好命中 1 次、備份＋SHA 還原比對、`run_tests.sh --only`、FAIL 但 failed=0／passed=0／無 RESULT 一律 ABORT。單一類別跑一次可能超過 10 分鐘，用背景執行；注入期間不得動該檔。
 - 🆕 **只測判斷函式會漏掉呼叫路徑**：B1-A 的 I2b（回呼繞過判斷函式）原本全綠。新邏輯要讓「實際副作用」可替換（如 `requestLocationAction`），測呼叫路徑本身。
 - 🆕 **`simctl spawn … defaults write` 寫的是模擬器全域偏好，不是 App 沙盒**：改 App 設定（如 `jd2logbook.appLanguage`）要先 `simctl shutdown`，再用 Python `plistlib` 改 container 內的 `Library/Preferences/com.jd2logbook.JD2-Logbook.plist`（鍵名有點，`plutil -replace` 會當成路徑）。

@@ -256,7 +256,7 @@ struct DiveLogDetailView: View {
                 Section {
                     DisclosureGroup(languageManager.localized("Raw Import Data")) {
                         ForEach(extras.keys.sorted(), id: \.self) { key in
-                            DetailRow(icon: "shippingbox", label: importExtraKeyLabel(key), value: extras[key] ?? "")
+                            DetailRow(icon: "shippingbox", label: importExtraKeyLabel(key), value: importExtraValueText(key, extras[key] ?? ""))
                         }
                     }
                 }
@@ -477,7 +477,26 @@ struct DiveLogDetailView: View {
         case "deviceModel":    return languageManager.localized("Device Model")
         case "deviceSerial":   return languageManager.localized("Device Serial")
         case "deviceFirmware": return languageManager.localized("Device Firmware")
+        // v1.4 C：Diving Log（cns／altitudeRange／decoRequired／minPPO2／maxPPO2）與 Subsurface（gasSwitches）
+        case "cns":            return languageManager.localized("CNS")
+        case "altitudeRange":  return languageManager.localized("Altitude Range")
+        case "decoRequired":   return languageManager.localized("Deco Required")
+        case "minPPO2":        return languageManager.localized("Min PO₂")
+        case "maxPPO2":        return languageManager.localized("Max PO₂")
+        case "gasSwitches":    return languageManager.localized("Gas Switches")
         default:               return key
+        }
+    }
+
+    /// importExtras 的值 → 顯示文字（v1.4 C）；其他 key 原樣顯示。
+    private func importExtraValueText(_ key: String, _ raw: String) -> String {
+        switch key {
+        case "decoRequired":
+            return ImportExtraDisplay.decoRequiredText(raw, yes: languageManager.localized("Yes"), no: languageManager.localized("No"))
+        case "gasSwitches":
+            return ImportExtraDisplay.gasSwitchesText(raw, airName: languageManager.localized("Air")) ?? raw
+        default:
+            return raw
         }
     }
 
@@ -505,7 +524,7 @@ struct DiveLogDetailView: View {
         case "suunto-sde":     return "Suunto SDE"
         case "reefnet-sensus": return "Reefnet Sensus"
         case "divinglog":      return "Diving Log 6.0"
-        case "manual":         return "Manual Entry"
+        case "manual":         return languageManager.localized("Manual Entry") // v1.4 C：catalog 已有 18 語
         default:               return raw.isEmpty ? "—" : raw
         }
     }

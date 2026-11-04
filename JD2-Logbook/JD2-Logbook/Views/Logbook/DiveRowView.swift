@@ -111,7 +111,7 @@ struct DiveRowView: View {
                     .font(.caption.uppercaseSmallCaps())
                     .foregroundStyle(Color.accessibleSecondary)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+                    .shrinkOnlyIfNeeded(minimumScale: 0.7) // v1.4 C：原 .minimumScaleFactor(0.7)
             } else {
                 Text(String(Calendar.current.component(.month, from: dive.dateTime)))
                     .font(.caption.uppercaseSmallCaps())

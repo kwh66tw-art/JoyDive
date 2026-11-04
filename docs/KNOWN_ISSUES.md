@@ -38,15 +38,17 @@
 | 項目 | 說明 | 影響 | 排定版本 |
 |------|------|------|---------|
 | GDPR／UMP 廣告同意流程未做 | `GoogleUserMessagingPlatform` 被解析為相依套件，但程式碼 UMP 呼叫 0 筆；非個人化廣告仍需同意（`docs/V1_3_D6_D7_RESEARCH.md`） | 歐洲區廣告合規 | 下一版（PM 10/05 裁示） |
-| 另 4 處 `.minimumScaleFactor` 在 Xcode 27 建置下放得下也縮小 | `DiveLogListView.swift:307,313`（統計列）、`DiveRowView.swift:114`（日期區塊）、`ImportWizardView.swift:694`（副檔名）；改法同剖面讀數的 `ViewThatFits`，改完與 v1.2 截圖對照 | 版面外觀 | v1.4（PM 10/10） |
+| 另 4 處 `.minimumScaleFactor` 在 Xcode 27 建置下放得下也縮小 | `DiveLogListView.swift:307,313`（統計列）、`DiveRowView.swift:114`（日期區塊）、`ImportWizardView.swift:694`（副檔名）；改法同剖面讀數的 `ViewThatFits`，改完與 v1.2 截圖對照 | 版面外觀 | ✅ v1.4 C 已改（`View.shrinkOnlyIfNeeded`）；⚠️ 未驗證效果：11/04 Xcode 27.2／iOS 26.2 建置改前改後逐像素相同、原症狀未重現、縮小路徑（放不下時）未實測 |
 | SwiftData 無 `SchemaMigrationPlan`（稽核 R-07） | 目前單一版本 `Schema`；v1.3 實測 lightweight migration 105 筆正常，但 breaking schema 變更沒有遷移路徑 | 日後改資料模型 | 下次改資料模型時一起做 |
 | 最大字級（XXXL）＋窄機時剖面讀數數值被「…」截斷 | v1.2 起即有 | 極端字級 | PM 10/05：不處理（系統字級放到最大，各 App 皆如此） |
 | 上升速率警示功能關閉中 | `showWarningEvents=false`（`DiveAnalysisView.swift:31`），使用者看不到；重開前須改家族色 | 功能未啟用 | 未排程（8/13 PM：呈現方式未定） |
 | 匯入不辨識潛水模式（自潛／浮潛皆當水肺） | DiveImportKit 尚無欄位；PM 10/04 裁示等 App-u 日誌格式定案 | 匯入資料的潛水類型 | 待 App-u |
-| `Localizable.xcstrings` 的 `%lld%%` 被 Xcode 標 `extractionState: stale` | 編輯頁改用 percentText 後無人引用；Xcode 每次 build／Archive 也會自動重排整份 xcstrings（2026-10-10 還原過一次），**提交前先 `git diff --stat`，需要時 `git checkout --` 還原** | 無功能影響 | v1.4 清理 |
+| `Localizable.xcstrings` 的 `%lld%%` 被 Xcode 標 `extractionState: stale` | 編輯頁改用 percentText 後無人引用；Xcode 每次 build／Archive 也會自動重排整份 xcstrings（2026-10-10 還原過一次），**提交前先 `git diff --stat`，需要時 `git checkout --` 還原** | 無功能影響 | ✅ v1.4 C 已刪除（11/04） |
 | UDDF 以 `<link ref>` 引用的潛伴未匯入、搜不到（稽核 F16，2026-10-27） | DiveImportKit `UDDFParser.swift:483-489` 只讀直寫的 firstname；測試 `DiveSearchTests.testUDDFLinkedBuddyIsNotImportedYet` 鎖現況 | 標準寫法 UDDF 的潛伴不可搜尋 | DiveImportKit（已回報總指揮，未排程） |
 | 手動新增的潛水沒有潛伴／標籤欄位（稽核 F11／D-B，2026-10-27） | 潛伴／標籤只存在匯入紀錄的 `importExtrasJSON`；編輯頁無對應欄位，不動 schema | 手動紀錄的潛伴／標籤無法填寫、搜尋擴充只對匯入紀錄有效 | ✅ PM 11/04 裁示 D-B ①：不加欄位、不動 schema，列為已知限制（`docs/decisions/D-2026-11-04-DB-DE已知限制與F-09複數形實驗.md`） |
 | iOS 26 搜尋作用中時無法改篩選（2026-11-04） | 搜尋列作用中，系統把導覽列右上的篩選與＋藏起來；按取消會清掉搜尋字。使用者要**先篩選再搜尋**（兩者 AND 照常） | 搜尋中想改篩選要先取消搜尋 | ✅ PM 11/04 裁示①：接受現況，記為已知行為（`docs/decisions/D-2026-11-04-搜尋收合成按鈕.md`） |
+| v5 App Icon 深色／著色外觀與 Mac Dock 未目視（v1.4 C，2026-11-04） | 已驗：四張圖與 ICON_v5 `cmp` 相同、iOS 主畫面一般外觀截圖、編譯出的 `Assets.car` 含 dark／tinted、macOS `AppIcon.icns` 為 v5。**未驗**：iOS 18+ 主畫面自訂切深色／著色、Mac Dock | 圖示外觀 | ⏸ 交 PM 實機目視 |
+| iOS 詳細頁「原始匯入資料」展開畫面未截（v1.4 C，2026-11-04） | 模擬器點 DisclosureGroup 兩次未展開（詳細頁捲到底回彈）；macOS 展開正常、6 個新標籤已截圖。是模擬器操作問題還是程式問題**未查** | iOS 展開後的版面未目視 | ⏸ 待查（實機或 UI 測試） |
 | 搜尋 2,000 筆時每鍵 30–38 ms（稽核 T26／D-E，2026-10-27） | 每次按鍵對每筆解碼 `importExtrasJSON`；A2 前 12 ms。門檻 16 ms 為本專案決定；Debug、模擬器量測 | 大量資料打字略頓 | ✅ PM 11/04 裁示 D-E ①：接受，列為已知限制（一般使用者紀錄數遠少於 2,000）；有使用者回報再做解碼快取（`docs/decisions/D-2026-11-04-DB-DE已知限制與F-09複數形實驗.md`） |
 | 最大字級（AX5）版面：列表統計列占約六成、潛水列截斷；剖面圖時間刻度重疊；德文編輯頁標題截斷（稽核 F17） | 既有版面，`git diff ae3a629..HEAD` 佐證非 v1.4 引入 | 無障礙大字級可讀性 | 待 PM 排程 |
 | `MockDataSeeder` 類別隨 Release 出貨（稽核 F18） | `MockDataSeeder.swift:10` 未包 `#if DEBUG`；入口在 `#if DEBUG` 內，Release 無呼叫點 | 死碼，無功能影響 | PM 另行排程（10/27） |

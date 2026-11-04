@@ -297,6 +297,8 @@ struct ImportWizardView: View {
                 ("Garmin Connect",                             ".json",        "curlybraces")
             ]),
             (languageManager.localized("Other Brands"), [
+                // v1.4 C：v1.3 起已支援（DiveImportKit v0.7.7 放行 ATMOS 的 FIT），清單補上
+                ("ATMOS FIT",                         ".fit",         "waveform.path.ecg"),
                 ("Shearwater Cloud",                  ".xml",         "gauge.with.dots.needle.67percent"),
                 ("DAN DL7",                            ".dl7, .zxu, .zxl",   "doc.text"),
                 ("Divesoft DLF",                       ".dlf",               "doc.text"),
@@ -691,7 +693,7 @@ private struct FormatRow: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .shrinkOnlyIfNeeded(minimumScale: 0.8) // v1.4 C：原 .minimumScaleFactor(0.8)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)

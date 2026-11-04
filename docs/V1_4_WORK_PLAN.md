@@ -101,13 +101,13 @@ A1 → A2 → A3 → B1＋B2（兩者相依、同批）→ C（順手帶）。A 
 
 | 項目 | 位置 | 估時 | 備註 |
 |---|---|---|---|
-| 換用 v5 新 App Icon | `Assets.xcassets/AppIcon.appiconset`（只換 4 個檔，`Contents.json` 不動） | 0.25 天 | 來源 `_JD2-family/brand-assets/ICON_v5/`；詳見 HANDOFF；不手改圖檔 |
-| 匯入頁格式清單補 ATMOS FIT | `ImportWizardView.swift:281-306` | 0.25 天 | 補完需 PM 重拍 macOS 匯入頁截圖 |
-| "Manual Entry" 走在地化 | `DiveLogDetailView.swift:496` | 0.1 天 | catalog 已有鍵 |
-| 4 處 `.minimumScaleFactor` 改 `ViewThatFits` | `DiveLogListView.swift:307,313`、`DiveRowView.swift:114`、`ImportWizardView.swift:694` | 0.5 天 | 與 v1.2 截圖對照 |
-| 清理 `%lld%%`（stale） | `Localizable.xcstrings` | 0.1 天 | build 前後 `git diff --stat` 防 reflow |
-| 「原始匯入資料」6 個鍵名補 18 語 | `cns`／`minPPO2`／`maxPPO2`／`altitudeRange`／`decoRequired`／`gasSwitches` | 0.5–1 天 | `gasSwitches` 值是 JSON 需整理 |
-| GDPR／UMP 同意流程 | — | 2–3 天 | PM 10/05 裁示延下一版；本次未點名優先 |
+| ✅ 換用 v5 新 App Icon（11/04；🟡 深色／著色、Dock 未目視，交 PM） | `Assets.xcassets/AppIcon.appiconset`（只換 4 個檔，`Contents.json` 不動） | 0.25 天 | 來源 `_JD2-family/brand-assets/ICON_v5/`；詳見 HANDOFF；不手改圖檔 |
+| ✅ 匯入頁格式清單補 ATMOS FIT（11/04；⏸ PM 重拍 macOS 匯入頁截圖） | `ImportWizardView.swift:281-306` | 0.25 天 | 補完需 PM 重拍 macOS 匯入頁截圖 |
+| ✅ "Manual Entry" 走在地化（11/04） | `DiveLogDetailView.swift:496` | 0.1 天 | catalog 已有鍵 |
+| ✅ 4 處 `.minimumScaleFactor` 改 `ViewThatFits`（11/04；🟡 改前改後逐像素相同、原症狀未重現、縮小路徑未實測） | `DiveLogListView.swift:307,313`、`DiveRowView.swift:114`、`ImportWizardView.swift:694` | 0.5 天 | 與 v1.2 截圖對照 |
+| ✅ 清理 `%lld%%`（stale）（11/04） | `Localizable.xcstrings` | 0.1 天 | build 前後 `git diff --stat` 防 reflow |
+| 🟡 「原始匯入資料」6 個鍵名補 18 語（11/04；譯文草稿，併入上架前審稿批；iOS 展開畫面未截） | `cns`／`minPPO2`／`maxPPO2`／`altitudeRange`／`decoRequired`／`gasSwitches` | 0.5–1 天 | `gasSwitches` 值是 JSON 需整理 |
+| ⏸ GDPR／UMP 同意流程（PM 10/05 延下一版） | — | 2–3 天 | PM 10/05 裁示延下一版；本次未點名優先 |
 
 ## 五、不在本計劃內
 
