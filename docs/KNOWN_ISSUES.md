@@ -45,7 +45,8 @@
 | 匯入不辨識潛水模式（自潛／浮潛皆當水肺） | DiveImportKit 尚無欄位；PM 10/04 裁示等 App-u 日誌格式定案 | 匯入資料的潛水類型 | 待 App-u |
 | `Localizable.xcstrings` 的 `%lld%%` 被 Xcode 標 `extractionState: stale` | 編輯頁改用 percentText 後無人引用；Xcode 每次 build／Archive 也會自動重排整份 xcstrings（2026-10-10 還原過一次），**提交前先 `git diff --stat`，需要時 `git checkout --` 還原** | 無功能影響 | v1.4 清理 |
 | UDDF 以 `<link ref>` 引用的潛伴未匯入、搜不到（稽核 F16，2026-10-27） | DiveImportKit `UDDFParser.swift:483-489` 只讀直寫的 firstname；測試 `DiveSearchTests.testUDDFLinkedBuddyIsNotImportedYet` 鎖現況 | 標準寫法 UDDF 的潛伴不可搜尋 | DiveImportKit（已回報總指揮，未排程） |
-| 搜尋 2,000 筆時每鍵 30–38 ms（稽核 T26／D-E，2026-10-27） | 每次按鍵對每筆解碼 `importExtrasJSON`；A2 前 12 ms。門檻 16 ms 為本專案決定；Debug、模擬器量測 | 大量資料打字略頓 | D-E 待 PM（App-lb 建議先記已知限制） |
+| 手動新增的潛水沒有潛伴／標籤欄位（稽核 F11／D-B，2026-10-27） | 潛伴／標籤只存在匯入紀錄的 `importExtrasJSON`；編輯頁無對應欄位，不動 schema | 手動紀錄的潛伴／標籤無法填寫、搜尋擴充只對匯入紀錄有效 | ✅ PM 11/04 裁示 D-B ①：不加欄位、不動 schema，列為已知限制（`docs/decisions/D-2026-11-04-DB-DE已知限制與F-09複數形實驗.md`） |
+| 搜尋 2,000 筆時每鍵 30–38 ms（稽核 T26／D-E，2026-10-27） | 每次按鍵對每筆解碼 `importExtrasJSON`；A2 前 12 ms。門檻 16 ms 為本專案決定；Debug、模擬器量測 | 大量資料打字略頓 | ✅ PM 11/04 裁示 D-E ①：接受，列為已知限制（一般使用者紀錄數遠少於 2,000）；有使用者回報再做解碼快取（`docs/decisions/D-2026-11-04-DB-DE已知限制與F-09複數形實驗.md`） |
 | 最大字級（AX5）版面：列表統計列占約六成、潛水列截斷；剖面圖時間刻度重疊；德文編輯頁標題截斷（稽核 F17） | 既有版面，`git diff ae3a629..HEAD` 佐證非 v1.4 引入 | 無障礙大字級可讀性 | 待 PM 排程 |
 | `MockDataSeeder` 類別隨 Release 出貨（稽核 F18） | `MockDataSeeder.swift:10` 未包 `#if DEBUG`；入口在 `#if DEBUG` 內，Release 無呼叫點 | 死碼，無功能影響 | PM 另行排程（10/27） |
 | `Localizable.xcstrings.backup` 被打包進 App（稽核 F19） | 400 KB 舊翻譯檔，2026-05-29 起在版控，fileSystemSynchronizedGroups 帶進 bundle；推定 v1.0–v1.3 已出貨 | App 多 400 KB，無機敏資料 | PM 另行排程（10/27） |

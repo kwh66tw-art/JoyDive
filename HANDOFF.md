@@ -14,12 +14,13 @@
 - **B1／B1-A 的完整經過**：`docs/decisions/D-2026-10-26-v1.4-D3至D7裁示.md`（MapKit 實測、A／H5 失敗、問題重新定義、依資料縮放、多尺寸表、B1-A 規則與情境×平台表、開地圖自動置中根因、跳轉縮放被置中蓋掉、故障注入、字串檔事件）。截圖 `docs/screenshots/v1.4-B/00–55`。
 
 ## 進行中的決策（尚未定案）
-- **App-u 的 B2 跟進**（同座標聚合點點不開）與 **App-u 是否有同樣的「開地圖自動置中」provider 寫法**：由總指揮查與排程，本 repo 不動。
+- **App-u 的 B2 跟進**（同座標聚合點點不開）：由總指揮與 PM 處理，本 repo 不動。~~App-u 是否有同樣的「開地圖自動置中」~~ 總指揮 11/04 查過：沒有（只在按鈕後置中），不用跟進。
 - **「一個潛點一根圖釘」改版**：排入待辦，卡在「同一潛點」怎麼判定（名稱撞名／座標完全相同合不了 22–73 m／距離合併需要門檻），見決策檔 B1-A 節。
-- **D-B**（手動新增要不要加潛伴／標籤欄位，動 schema）、**D-E**（搜尋 2,000 筆每鍵 30–38 ms）：未裁示。
+- 🗑 「Safety stop became mandatory…」死鍵：PM 11/04 裁示刪除（xcstrings 258→257）；`DiveAnalysisView.swift:503` 的歷史註解保留。
+- ~~D-B、D-E~~ ✅ PM 11/04 皆選①，列為已知限制（`docs/decisions/D-2026-11-04-DB-DE已知限制與F-09複數形實驗.md`）。
 - **F17／F18／F19／F21**：PM 10/27 另行排程，現在不處理。
 - **文案**：A1／D-A／A2／A3／B1／B2／B1-A 新字串皆為草稿（英／繁中／日）；⏸ 上架前收尾＋其餘 14 語。
-  - ⚠️ **上架前補語言待辦**：B1-A 的「+%lld more」用 `String(format:)` 帶數字、沒有複數形；克羅埃西亞語、希臘語等要依數量變化（F-09），而 Logbook 的 `languageManager` 路徑目前**不支援依數量選複數形**——補語言前先決定做法（擴充 plural variations 或改寫成不需複數的句子）。
+  - ⚠️ **上架前補語言待辦**：B1-A 的「+%lld more」要依數量變形時，**只需在 xcstrings 加 Vary by Plural，程式碼不用動**（`DiveMapRepresentable.swift:72` 的 `String(format:locale:)` 已帶 `languageManager.locale`；11/04 實驗 hr 1／2／5／21 選出 one／few／other／one，見 `docs/decisions/D-2026-11-04-DB-DE已知限制與F-09複數形實驗.md` 第三節）。**hr 只有三類**：one（1, 21…）／few（2–4, 22–24…）／other（總指揮 11/04 核對 CLDR，F-09 已更正原寫的四類）。
 
 ## 下一步（按順序）
 1. ~~commit＋push 本次交接文件~~ ✅（PM 11/04 指示）。
