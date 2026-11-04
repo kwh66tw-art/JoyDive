@@ -30,13 +30,13 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - B1 縮放改依資料決定（PM 2026-11-04，212e606）：跳轉不再沿用「回到我的位置」的 0.05°（約 5.5 km，無出處），改為讓目標與其他座標不同的潛點在畫面上不重疊所需的縮放（圖釘大小讀自實際 view，以 `mapRectThatFits` 補償安全區）；「回到我的位置」不變。
   已知行為：MapKit 貼邊仍聚合，最近一筆可能仍與目標聚成小聚合點，點它照 D7。先前 A／H5 等四次嘗試皆撤，紀錄在決策檔。多尺寸實測：iPhone 402／375 pt、macOS 預設／最窄視窗。
 
-### B1-A 聚合點名稱與選取標示（PM 2026-11-04；決策 `docs/decisions/D-2026-10-26-v1.4-D3至D7裁示.md`「B1-A」節）
+### B1-A 聚合點名稱與選取標示（PM 2026-11-04；cd9ecc8＋5fdc8e5，已推送；決策 `docs/decisions/D-2026-10-26-v1.4-D3至D7裁示.md`「B1-A」節）
 - 聚合點不再由 MapKit 從成員任挑一筆當標題，改自建（`mapView(_:clusterAnnotationForMemberAnnotations:)`）：① 含選取中的潛水 ⇒ 用它的地點並標藍；② 地點都相同 ⇒ 該名稱；③ 不同地點 ⇒「多個潛點」；④ 空白 ⇒「未知地點」。副標「+其他 N 筆」走 App 內語言（MapKit 原生副標只跟啟動時語言）。規則為純函式 `DiveClusterLabeling`。
 - 選取改變、語言切換時重新聚合（移除再加回標註，不靠計時）。
 - 修正：開地圖會自動移到使用者位置（建立定位元件時的授權回呼就抓位置）——改為只有按「回到我的位置」觸發的授權詢問通過後才抓（PM 2026-11-04 裁示，v1.1 #11 規格只有按鈕）。
 - 修正：地圖已在遠處縮放時跳轉，選取置中在 4 ms 後蓋掉縮放動畫，地圖停在原縮放。
 - 新字串 2 個（英／繁中／日草稿）；「+%lld more」無複數形，上架前補 14 語時須處理（F-09）。
-- 測試 +12：`DiveClusterLabelTests` 7、`UserLocationAuthorizationTests` 5 ⇒ **245/0/1**（完整數字以提交前實跑為準）。提交前故障注入 4 次（拿掉規則 ① RED；判斷函式 RED；回呼繞過判斷函式原本 GREEN ⇒ 補回呼路徑測試後 RED）。
+- 測試 +12：`DiveClusterLabelTests` 7、`UserLocationAuthorizationTests` 5 ⇒ **245/0/1**（提交前實跑，總指揮重跑相同）。提交前故障注入 4 次（拿掉規則 ① RED；判斷函式 RED；回呼繞過判斷函式原本 GREEN ⇒ 補回呼路徑測試後 RED）。
 - 實測：iPhone 17 Pro、iPhone SE、macOS（截圖 `docs/screenshots/v1.4-B/19–55`）。
 
 ### A3 列表篩選（PM 2026-11-01；規格 `docs/decisions/D-2026-11-01-A3-列表篩選規格.md`，App-u 亦照此做）
