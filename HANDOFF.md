@@ -9,7 +9,7 @@
 - **里程碑**：v1.4 開發中（v1.3 Build 4 已上架）。功能面全部完成：A1／A2／A3、D-A／D-C、B1／B2／B1-A、搜尋收合（B 案）、C 組；GDPR ⏸ 下一版（PM 10/05）。
   進度：`docs/V1_4_WORK_PLAN.md`；稽核：`docs/V1_4_AUDIT_TEST_PLAN.md`；**送審前待辦：`docs/SUBMISSION_CHECK_NEXT.md` 最上段**。
 - **git**：本交接提交並推送後工作樹乾淨、與 origin/main 相同（hash 以 `git log -1` 為準）。
-- **測試**：`run_tests.sh logbook` **248／0／1**（Kit v0.8.3，11/04 App-lb 與總指揮各跑一次；唯一 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`）。
+- **測試**：`run_tests.sh logbook` **249／0／1**（Kit v0.8.3，11/04 CH-23 修正後；唯一 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`）。
 - **共用層**：DiveKit **v9.8.0**、DiveImportKit **v0.8.3**（v0.8.3＝Diving Log 備註 RTF 修正，91b960f）；`check_doc_version_sync.sh` 通過。
 - **決策檔**（本週）：`docs/decisions/D-2026-10-26-v1.4-D3至D7裁示.md`（B1／B1-A）、`D-2026-11-01-A3-列表篩選規格.md`、`D-2026-11-04-DB-DE已知限制與F-09複數形實驗.md`、`D-2026-11-04-搜尋收合成按鈕.md`。
 
@@ -37,6 +37,7 @@
 - 暫時 log／DEBUG 預填一律用備份覆蓋撤回，撤完 build＋`grep` 0 處再測。
 - 推送、電腦操作、改 `CLAUDE.md`：要 PM 在本 session **直接**同意（總指揮轉述不算）。
 - Kit 可能未通知就更新：開工前 `describe --tags` 兩個 Kit。
+- 🔴 生產碼不得建構 `.trimix(`（CH-23 `check_trimix_boundary.sh`，用途不分顯示或計算；白名單要 PM 裁示）——要 trimix 名稱用 `GasMix.percentText` 組字串。提交前跑一次該腳本。
 
 **xcstrings**
 - Xcode 開著 build 可能整份改寫 ⇒ 不得提交。加／刪鍵：HEAD round-trip 逐位元相同後用 `json.dumps(indent=2, separators=(',', ' : '), ensure_ascii=False)`＋空物件 `{\n\n<indent>}`；鍵序依 `localizedStandardCompare`。
@@ -67,4 +68,4 @@
 - 截圖：`docs/screenshots/` 下 `v1.4-A1`、`v1.4-A2`、`v1.4-audit-sim`、`v1.4-A3`、`v1.4-B`（00–55）、`v1.4-search`（含 README）、`v1.4-C`（含 README）。
 
 ## 開場指令建議（給下一個 session）
-先讀本檔與 `docs/SUBMISSION_CHECK_NEXT.md` 最上段；確認 Kit 版號（DiveKit v9.8.0、DiveImportKit v0.8.3：`git -C /Users/kevin/Documents/AppProject/_JD2-family/<Kit> describe --tags`）；`git status` 應乾淨；跑 `run_tests.sh logbook` 對照 **248／0／1**；再向總指揮確認下一項（送審準備或 App-u 跟進）。
+先讀本檔與 `docs/SUBMISSION_CHECK_NEXT.md` 最上段；確認 Kit 版號（DiveKit v9.8.0、DiveImportKit v0.8.3：`git -C /Users/kevin/Documents/AppProject/_JD2-family/<Kit> describe --tags`）；`git status` 應乾淨；跑 `run_tests.sh logbook` 對照 **249／0／1**；再向總指揮確認下一項（送審準備或 App-u 跟進）。

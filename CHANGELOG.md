@@ -57,6 +57,7 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 刪除 stale 鍵 `%lld%%`（無程式碼引用）。
 - 「原始匯入資料」6 個鍵給標籤：`cns`→CNS、`altitudeRange`→Altitude Range、`decoRequired`→Deco Required（值 Yes／No）、`minPPO2`／`maxPPO2`→Min／Max PO₂（拼法依家族 App）、`gasSwitches`→Gas Switches（值整理成「0:00 Air → 23:40 EANx50」，氣體分類沿用 DiveImportKit 同一規則）。新字串 8 個 × 18 語，**非英文皆為草稿、標 needs_review**。
 - 測試 +3（`ImportExtraDisplayTests`）⇒ **248/0/1**。截圖 `docs/screenshots/v1.4-C/`。
+- 修正（家族收工檢查 CH-23，總指揮 11/04）：換氣紀錄的 trimix 名稱原本在生產碼建構 `GasMix.trimix` 取 `displayName`，違反「三 App 生產碼零 `.trimix(` 建構」（PM 2026-09-15）⇒ 改用 Kit 公開的 `GasMix.percentText` 直接組字串（格式同 `displayName`；畸形比例顯示原值不夾值）。測試 +1 斷言與 `displayName` 逐字相同 ⇒ **249/0/1**；`check_trimix_boundary.sh` 通過。
 
 ### A3 列表篩選（PM 2026-11-01；規格 `docs/decisions/D-2026-11-01-A3-列表篩選規格.md`，App-u 亦照此做）
 - 篩選三類：氣體（空氣／高氧／Trimix／未知氣體，與列表標籤同源）、潛水類型（水肺／自由潛水／浮潛）、組織負荷（有／無，＝詳細頁實際有沒有畫出組織負荷）。只列資料裡存在的選項；同類 OR、跨類 AND、再與搜尋 AND；空結果顯示「沒有符合的潛水」＋清除篩選。統計列與地圖不跟篩選（D5）。
