@@ -47,6 +47,8 @@ struct MapView: View {
     @AppStorage(UserLocationProvider.isEnabledKey) private var gpsLocationEnabled = false
     @State private var locationProvider = UserLocationProvider()
     @State private var recenterCoordinate: CLLocationCoordinate2D?
+    /// v1.4 B1：「在地圖上顯示」的目標；地圖依資料算縮放後置中（`DiveMapRepresentable.focusRect`），與「回到我的位置」分開。
+    @State private var focusZoomTargetID: PersistentIdentifier?
 
     private var showsUserLocationDot: Bool {
         gpsLocationEnabled && locationProvider.authorizationStatus.isAuthorizedForRecenter
@@ -75,6 +77,7 @@ struct MapView: View {
                 selectedDive:       selectedDive,
                 showsUserLocation:  showsUserLocationDot,
                 recenterCoordinate: $recenterCoordinate,
+                focusZoomTargetID:  $focusZoomTargetID,
                 onAnnotationTapped: { dive in
                     clusterDives = []
                     selectedDive = dive
@@ -215,15 +218,15 @@ struct MapView: View {
         selectedDive = dive
     }
 
-    /// 取走 `MapFocusRequest` 的目標：選取並置中（D6）。置中用 recenter 路徑（span 與「回到我的位置」相同），
-    /// 讓目標若原本被聚合也有機會拆開；座標完全相同仍聚合時，卡片／面板直接顯示這筆，不影響。
+    /// 取走 `MapFocusRequest` 的目標：選取並置中（D6）。縮放依資料決定（B1，PM 2026-11-04），不沿用「回到我的位置」的範圍；
+    /// 座標完全相同的仍聚合，卡片／面板直接顯示這筆，點聚合點照 D7 列清單。
     private func handleFocusRequest() {
         guard let id = mapFocus?.take(),
               let dive = mappableDives.first(where: { $0.persistentModelID == id }),
-              let lat = dive.latitude, let lon = dive.longitude else { return }
+              dive.latitude != nil, dive.longitude != nil else { return }
         clusterDives = []
         selectedDive = dive
-        recenterCoordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        focusZoomTargetID = id
         #if os(iOS)
         isSheetPresented = true
         #endif

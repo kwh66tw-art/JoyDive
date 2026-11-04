@@ -109,6 +109,8 @@ struct DiveMapRepresentable: UIViewRepresentable {
     var showsUserLocation: Bool = false
     /// v1.1 #11：recenter 按鈕觸發的目標座標；套用後由 _updateMapView 清空。
     @Binding var recenterCoordinate: CLLocationCoordinate2D?
+    /// v1.4 B1：「在地圖上顯示」的目標；套用依資料算出的縮放後由 _updateMapView 清空。
+    @Binding var focusZoomTargetID: PersistentIdentifier?
     var onAnnotationTapped: (DiveLog) -> Void
     /// v1.4 B2：聚合點拆不開 ⇒ 列出該處潛水。
     var onClusterListRequested: ([DiveLog]) -> Void = { _ in }
@@ -141,6 +143,8 @@ struct DiveMapRepresentable: NSViewRepresentable {
     var showsUserLocation: Bool = false
     /// v1.1 #11：recenter 按鈕觸發的目標座標；套用後由 _updateMapView 清空。
     @Binding var recenterCoordinate: CLLocationCoordinate2D?
+    /// v1.4 B1：「在地圖上顯示」的目標；套用依資料算出的縮放後由 _updateMapView 清空。
+    @Binding var focusZoomTargetID: PersistentIdentifier?
     var onAnnotationTapped: (DiveLog) -> Void
     /// v1.4 B2：聚合點拆不開 ⇒ 列出該處潛水。
     var onClusterListRequested: ([DiveLog]) -> Void = { _ in }
@@ -167,6 +171,51 @@ struct DiveMapRepresentable: NSViewRepresentable {
 // 兩平台的 make / update 邏輯完全相同，抽出成 private 方法避免重複。
 
 private extension DiveMapRepresentable {
+
+    /// v1.4 B1（PM 2026-11-04）：跳轉時讓目標和其他潛點在畫面上至少相隔一個圖釘，算出所需縮放；只放大、不縮小。
+    /// 出處：MapKit `MKAnnotationView.h:161` "Default collision mode is rectangle."；`:149` 相同 clusteringIdentifier 的 view 可聚合。
+    /// 查證：標頭沒寫「聚合＝圖釘矩形重疊」，以「兩個圖釘矩形不重疊就不聚合」為推論；矩形 ⇒ 水平差 ≥ 寬或垂直差 ≥ 高即不重疊。
+    ///       實測（11/04）：貼邊或多 1 像素仍會聚合，MapKit 另有未公開間距 ⇒ 最近一筆可能仍與目標聚合，點它照 D7 處理（已知行為）。
+    ///       座標完全相同的不列入（本來就是同一地點，維持聚合，點聚合點照 D7 列清單）。超過 MapKit 縮放上限時由 MapKit 夾住。
+    /// 驗證：iOS 模擬器實測見 `docs/decisions/D-2026-10-26-v1.4-D3至D7裁示.md`「B1 重開」節。
+    static func focusRect(for targetID: PersistentIdentifier, dives: [DiveLog], in mapView: MKMapView) -> MKMapRect? {
+        guard let target = dives.first(where: { $0.persistentModelID == targetID }),
+              let lat = target.latitude, let lon = target.longitude else { return nil }
+        let center = MKMapPoint(CLLocationCoordinate2D(latitude: lat, longitude: lon))
+        let pinSize = markerSize(in: mapView)
+        // 每 pt 的 map point 數：目前值，以及每個鄰居要求的上限，取最小（只放大）。
+        var mapPointsPerPt = mapView.visibleMapRect.size.width / Double(mapView.bounds.width)
+        for dive in dives where dive.persistentModelID != targetID {
+            guard let dLat = dive.latitude, let dLon = dive.longitude, dLat != lat || dLon != lon else { continue }
+            let p = MKMapPoint(CLLocationCoordinate2D(latitude: dLat, longitude: dLon))
+            let needed = max(abs(p.x - center.x) / Double(pinSize.width), abs(p.y - center.y) / Double(pinSize.height))
+            mapPointsPerPt = min(mapPointsPerPt, needed)
+        }
+        let size = MKMapSize(width: mapPointsPerPt * Double(mapView.bounds.width),
+                             height: mapPointsPerPt * Double(mapView.bounds.height))
+        var rect = MKMapRect(x: center.x - size.width / 2, y: center.y - size.height / 2, width: size.width, height: size.height)
+        // MapKit 套用時會調整範圍（11/04 實測：要求 0.570 m／pt，實得 0.640）⇒ 先用 MapKit 自己的 mapRectThatFits 問它會變成多大，
+        // 再依比例縮小，讓實際結果符合需要的縮放。
+        let fitted = mapView.mapRectThatFits(rect)
+        let fittedPerPt = fitted.size.width / Double(mapView.bounds.width)
+        if fittedPerPt > mapPointsPerPt {
+            let shrink = mapPointsPerPt / fittedPerPt
+            rect = MKMapRect(x: center.x - size.width * shrink / 2, y: center.y - size.height * shrink / 2,
+                             width: size.width * shrink, height: size.height * shrink)
+        }
+        return rect
+    }
+
+    /// 圖釘實際大小：讀地圖上現有的潛點圖釘；都沒有（全被聚合）時建一個同類別的 view 讀它的大小。
+    static func markerSize(in mapView: MKMapView) -> CGSize {
+        if let size = mapView.annotations.lazy
+            .filter({ $0 is DiveSiteAnnotation })
+            .compactMap({ mapView.view(for: $0)?.frame.size })
+            .first(where: { $0.width > 0 && $0.height > 0 }) {
+            return size
+        }
+        return DiveSiteAnnotationView(annotation: nil, reuseIdentifier: nil).frame.size
+    }
 
     func _makeMapView(_ coordinator: DiveMapCoordinator) -> MKMapView {
         let mapView = MKMapView()
@@ -214,6 +263,17 @@ private extension DiveMapRepresentable {
             DispatchQueue.main.async {
                 mapView.setRegion(region, animated: true)
                 recenterCoordinate = nil
+            }
+        }
+
+        // ── v1.4 B1：「在地圖上顯示」——依資料決定縮放（不沿用上方「回到我的位置」的 0.05°）──
+        // 剛切到地圖分頁時 bounds 可能還是 0 ⇒ 留著請求，等下一次 update 再套用。
+        if let targetID = focusZoomTargetID {
+            DispatchQueue.main.async {
+                guard focusZoomTargetID == targetID, mapView.bounds.width > 0,
+                      let rect = Self.focusRect(for: targetID, dives: dives, in: mapView) else { return }
+                mapView.setVisibleMapRect(rect, animated: true)
+                focusZoomTargetID = nil
             }
         }
 
