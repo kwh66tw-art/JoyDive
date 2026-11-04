@@ -1263,6 +1263,36 @@
         }
       }
     },
+    "+%lld more" : {
+      "comment" : "v1.4 B1-A: subtitle of a map cluster — how many other dives besides the one named in the title. Self-generated because MapKit's native subtitle doesn't follow the in-app language switch. Worded to avoid plural forms (F-09). DRAFT — PM to finalize; other 14 languages pending.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld more"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld more"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+他 %lld 件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+其他 %lld 筆"
+          }
+        }
+      }
+    },
     "10L (Steel)" : {
       "localizations" : {
         "de" : {
@@ -13590,6 +13620,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "多氣體或循環呼吸器潛水——此處無法編輯氣體，將保留原始資料。"
+          }
+        }
+      }
+    },
+    "Multiple Dive Sites" : {
+      "comment" : "v1.4 B1-A: title of a map cluster whose dives are at different dive sites (no single site name applies). No number on purpose: Logbook's language path can't pick plural forms (F-09). DRAFT — PM to finalize; other 14 languages pending. F-10: dive site=潛點/ダイビングポイント.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Multiple Dive Sites"
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Multiple Dive Sites"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "複数のダイビングポイント"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "多個潛點"
           }
         }
       }

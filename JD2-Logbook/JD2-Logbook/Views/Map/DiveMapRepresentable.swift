@@ -25,6 +25,17 @@ final class DiveMapCoordinator: NSObject, MKMapViewDelegate {
     /// 已平移置中過的潛點 ID，確保每次選取只置中一次。
     var lastCenteredID: PersistentIdentifier? = nil
 
+    // ── v1.4 B1-A：聚合點名稱與選取標示由我們決定（`DiveClusterLabeling`）──
+    /// 目前選取的潛水；聚合點依它決定名稱與選取標示。由 `_updateMapView` 設定。
+    var selectedDiveID: PersistentIdentifier? = nil
+    /// 上一次據以產生聚合點的選取；與 `selectedDiveID` 不同時要重新聚合。
+    var labeledSelectionID: PersistentIdentifier? = nil
+    var unknownLocationText = ""
+    var multipleSitesText = ""
+    /// 「+其他 N 筆」：MapKit 原生 subtitle 只跟啟動時的語言，App 內切換語言後不會更新（11/04 實測）⇒ 自己產生，走 languageManager。
+    var othersFormat = ""
+    var locale = Locale.current
+
     init(onAnnotationTapped: @escaping (DiveLog) -> Void,
          onClusterListRequested: @escaping ([DiveLog]) -> Void) {
         self.onAnnotationTapped = onAnnotationTapped
@@ -45,6 +56,49 @@ final class DiveMapCoordinator: NSObject, MKMapViewDelegate {
             return .list
         }
         return visibleWidthAfterFit < visibleWidthBefore ? .zoom : .list
+    }
+
+    // MARK: 聚合點（B1-A）
+
+    /// 自建聚合點，名稱依 `DiveClusterLabeling` 決定，不讓 MapKit 從成員中任挑一筆。
+    /// 出處：MapKit `MKMapView.h:345` `mapView(_:clusterAnnotationForMemberAnnotations:)`——
+    ///       "it is illegal to return a cluster annotation not containing the identical array of member annotations given."
+    /// 查證：標頭沒說原生 subtitle 的語言；實測（11/04）原生 subtitle 只跟啟動時的語言，App 內切換後不變 ⇒ subtitle 也自己產生。
+    /// 驗證：`DiveClusterLabelTests`（規則①–④）＋模擬器／macOS 實測，見決策檔。
+    func mapView(_ mapView: MKMapView,
+                 clusterAnnotationForMemberAnnotations memberAnnotations: [MKAnnotation]) -> MKClusterAnnotation {
+        let cluster = MKClusterAnnotation(memberAnnotations: memberAnnotations)
+        cluster.title = clusterLabel(for: memberAnnotations).title
+        cluster.subtitle = String(format: othersFormat, locale: locale, memberAnnotations.count - 1)
+        return cluster
+    }
+
+    func clusterLabel(for memberAnnotations: [MKAnnotation]) -> DiveClusterLabel {
+        let dives = memberAnnotations.compactMap { ($0 as? DiveSiteAnnotation)?.dive }
+        return DiveClusterLabeling.label(
+            memberLocations: dives.map(\.location),
+            selectedIndex: selectedDiveID.flatMap { id in dives.firstIndex { $0.persistentModelID == id } },
+            unknownLocationText: unknownLocationText,
+            multipleSitesText: multipleSitesText)
+    }
+
+    /// 含選取潛水的聚合點，顏色沿用單筆潛點圖釘的藍色（`DiveSiteAnnotationView`）；其餘維持 MapKit 原生顏色（nil）。
+    func applyClusterHighlight(to view: MKAnnotationView) {
+        guard let cluster = view.annotation as? MKClusterAnnotation,
+              let marker = view as? MKMarkerAnnotationView else { return }
+        #if os(iOS)
+        let wanted: UIColor? = clusterLabel(for: cluster.memberAnnotations).containsSelection ? .systemBlue : nil
+        #else
+        let wanted: NSColor? = clusterLabel(for: cluster.memberAnnotations).containsSelection ? .systemBlue : nil
+        #endif
+        if marker.markerTintColor != wanted { marker.markerTintColor = wanted }
+    }
+
+    /// 聚合點的 view 被加上地圖（含重用）時套用選取標示。
+    func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {
+        for view in views where view.annotation is MKClusterAnnotation {
+            applyClusterHighlight(to: view)
+        }
     }
 
     // MARK: viewFor annotation
@@ -242,6 +296,14 @@ private extension DiveMapRepresentable {
         // 更新 callback 防止 stale closure
         coordinator.onAnnotationTapped = onAnnotationTapped
         coordinator.onClusterListRequested = onClusterListRequested
+        coordinator.unknownLocationText = languageManager.localized("Unknown Location")
+        coordinator.othersFormat = languageManager.localized("+%lld more")
+        coordinator.locale = languageManager.locale
+        let multipleSitesText = languageManager.localized("Multiple Dive Sites")
+        // App 內語言切換後，既有聚合點的名稱要跟著換 ⇒ 全部重新聚合（移除再加回）。
+        let languageChanged = !coordinator.multipleSitesText.isEmpty && coordinator.multipleSitesText != multipleSitesText
+        coordinator.multipleSitesText = multipleSitesText
+        coordinator.selectedDiveID = selectedDive?.persistentModelID
 
         // ── Map type ─────────────────────────────────────────────────
         if mapView.mapType != mapType {
@@ -272,6 +334,9 @@ private extension DiveMapRepresentable {
             DispatchQueue.main.async {
                 guard focusZoomTargetID == targetID, mapView.bounds.width > 0,
                       let rect = Self.focusRect(for: targetID, dives: dives, in: mapView) else { return }
+                // 這次縮放已以目標為中心：標記為已置中，下方選取同步就不再 setCenter（帶動畫的 setCenter 會打斷這段縮放，
+                // 地圖停在原本的遠景——11/04 實測：FOCUS 後 4 ms 被 setCenter 蓋掉）。
+                coordinator.lastCenteredID = targetID
                 mapView.setVisibleMapRect(rect, animated: true)
                 focusZoomTargetID = nil
             }
@@ -310,6 +375,20 @@ private extension DiveMapRepresentable {
             .map    { DiveSiteAnnotation(dive: $0, unknownLocationText: unknownLocationText) }
 
         mapView.addAnnotations(toAdd)
+
+        // ── v1.4 B1-A：選取改變（或語言切換）⇒ 讓相關聚合點重新產生，名稱與選取標示才會跟著變 ──
+        // 把前後兩筆選取移除再加回，MapKit 會重新聚合並再次呼叫 clusterAnnotationForMemberAnnotations。不靠計時。
+        if languageChanged || coordinator.labeledSelectionID != coordinator.selectedDiveID {
+            let ids = [coordinator.labeledSelectionID, coordinator.selectedDiveID].compactMap { $0 }
+            let affected = mapView.annotations
+                .compactMap { $0 as? DiveSiteAnnotation }
+                .filter { languageChanged || ids.contains($0.dive.persistentModelID) }
+            coordinator.labeledSelectionID = coordinator.selectedDiveID
+            if !affected.isEmpty {
+                mapView.removeAnnotations(affected)
+                mapView.addAnnotations(affected)
+            }
+        }
 
         // ── 漏洞 2 + 選取 pin 自動置中（解決卡死 + 推開式面板遮擋）──────────
         // ⚠️ 關鍵：選取/取消選取/置中等會觸發地圖重新佈局的操作，
