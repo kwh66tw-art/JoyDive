@@ -68,7 +68,7 @@ Text("Max Depth")
 | 潛水日誌 | 潛水日誌 | 潜水日志 | Dive Logbook |
 | 最大深度 | 最大深度 | 最大深度 | Max Depth |
 | 氣體混合 | 氣體混合 | 气体混合 | Gas Mix |
-| 高氧 | 高氧 | 富氧 | Enriched Air / Nitrox |
+| 高氧 | 高氧 | 高氧 | Enriched Air / Nitrox |
 | 匯入 | 匯入 | 导入 | Import |
 | 設定 | 設定 | 设置 | Settings |
 

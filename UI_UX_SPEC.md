@@ -191,7 +191,7 @@ JD2_LogbookApp
 
 ### 4.1 LogbookContainerView（容器）
 
-- **Navigation Title**：「Dive Logbook」（`.large`）
+- **Navigation Title**：鍵「Dive Logbook」（`.large`）；**v1.4 起各語顯示值＝分頁「Logbook」譯文**（英文 Logbook、繁中 日誌…；PM 2026-11-05，捲動後小標題要和四顆工具列按鈕並存）
 - **右上角工具列**：切換 List ↔ Calendar 按鈕
 - **共用 navigationDestination**：`DiveLog.self` → `DiveLogDetailView`
 - **Week 11 擴充**：

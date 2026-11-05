@@ -13,7 +13,7 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 翻譯：v1.4 新鍵 16 個補其餘 14 語草稿（`needs_review`，待 PM 審）；`+%lld more` 改依數量變形（Vary by Plural，18 語；程式不動，`String(format:locale:)` 已帶 locale）。審稿表 `docs/reports/R-2026-11-05-v1.4翻譯審稿對照表.md`。
 - 稽核 F18：`MockDataSeeder` 整檔包 `#if DEBUG`，Release 不再含此類別。
 - 翻譯追加（11/05）：外部稽核採用 5 處修正（zh-Hant／de／hr／vi／fr）；法、義文撇號全檔統一 `’`（Localizable 57＋InfoPlist 2）；組織負荷說明頁標題 `About Tissue Loading` 在 iPhone SE 截斷 ⇒ 12 語改用「Tissue Loading」既有譯文（`needs_review`；en／CJK 放得下不改）。「Dive Logbook」「Dive Details」長語言截斷列已知限制（`docs/KNOWN_ISSUES.md`）。截圖 `docs/screenshots/v1.4-L10N-layout/`。
-- 截斷與冗字（11/05 後續）：iOS 詳細頁刪除＋編輯收進「…」選單（PM 實機確認刪除正常）；「Dive Logbook」it／el 改短（SE 放得下）；斜線並列／括號重述冗字 16 處改單一說法（盤點與出處 `docs/reports/R-2026-11-05-翻譯冗字盤點.md`）；日文匯入用語 9 句統一 Apple 標準「読み込み」（PM：非潛水通用詞一律採 Apple 標準翻譯）；義文「Done」= Fine（Apple iOS 詞彙表佐證）。iOS 編輯／新增 sheet「取消」「儲存」改 ✕／✓（✓ 用 iOS 26 `.confirm` 強調樣式）；篩選按鈕改無外框 `line.3.horizontal.decrease`、啟用中改強調色（PM：比照 Apple HIG）。
+- 截斷與冗字（11/05 後續）：iOS 詳細頁刪除＋編輯收進「…」選單（PM 實機確認刪除正常）；列表標題「Dive Logbook」18 語（含英文）一律改用分頁「Logbook」譯文（PM 11/05；捲動後小標題與四顆工具列按鈕並存，17pt 實量最寬 94 pt）；斜線並列／括號重述冗字 16 處改單一說法（盤點與出處 `docs/reports/R-2026-11-05-翻譯冗字盤點.md`）；日文匯入用語 9 句統一 Apple 標準「読み込み」（PM：非潛水通用詞一律採 Apple 標準翻譯）；義文「Done」= Fine（Apple iOS 詞彙表佐證）。iOS 編輯／新增 sheet「取消」「儲存」改 ✕／✓（✓ 用 iOS 26 `.confirm` 強調樣式）；篩選按鈕改無外框 `line.3.horizontal.decrease`、啟用中改強調色（PM：比照 Apple HIG）。
 - 稽核 F19：刪除 `Localizable.xcstrings.backup`（原本被打包進 App）。
 - What's New v1.4 三語草稿（`docs/APPSTORE_COPY.md`，待 PM 定稿）。
 - 測試：`EnvironmentEdgeCaseTests.testReasonSentenceJoiningAcrossAllAppLanguages` 原本鎖定「韓文未翻譯 ⇒ 回退英文」的現況，改為檢查 ko／de／th／zh-Hans 已有譯文；`run_tests.sh logbook` 249/0/1。

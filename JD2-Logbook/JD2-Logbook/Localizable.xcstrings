@@ -7055,12 +7055,12 @@
       }
     },
     "Dive Logbook" : {
-      "comment" : "Main logbook navigation title v1.4 (PM 11/05): it/el shortened (large title truncated on iPhone SE); other languages fit and are unchanged. Shared with App-u (F-10).",
+      "comment" : "Main logbook navigation title (list; macOS sidebar list and empty state). v1.4 (PM 11/05): all 18 languages use the tab-label 'Logbook' translation — scrolled inline title must fit beside four toolbar buttons (< 145 pt at 17 pt semibold; German 'Taucherlogbuch' still truncated on device). Key name unchanged. Shared with App-u (F-10).",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Taucherlogbuch"
+            "state" : "needs_review",
+            "value" : "Logbuch"
           }
         },
         "el" : {
@@ -7071,98 +7071,98 @@
         },
         "en" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dive Logbook"
+            "state" : "needs_review",
+            "value" : "Logbook"
           }
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dive Logbook"
+            "state" : "needs_review",
+            "value" : "Logbook"
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diario de inmersiones"
+            "state" : "needs_review",
+            "value" : "Diario"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Carnet de plongée"
+            "state" : "needs_review",
+            "value" : "Carnet"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ronilački logbook"
+            "state" : "needs_review",
+            "value" : "Logbook"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Logbook Penyelaman"
+            "state" : "needs_review",
+            "value" : "Logbook"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Diario di immersione"
+            "value" : "Giornale"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "ダイビングログ"
+            "state" : "needs_review",
+            "value" : "ログ"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "다이빙 로그북"
+            "state" : "needs_review",
+            "value" : "로그북"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Log selam"
+            "state" : "needs_review",
+            "value" : "Log"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Duiklogboek"
+            "state" : "needs_review",
+            "value" : "Logboek"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diário de mergulhos"
+            "state" : "needs_review",
+            "value" : "Diário"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "สมุดบันทึกไดฟ์"
+            "state" : "needs_review",
+            "value" : "สมุดบันทึก"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nhật ký lặn"
+            "state" : "needs_review",
+            "value" : "Nhật ký"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "潜水日志"
+            "state" : "needs_review",
+            "value" : "日志"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "潛水日誌"
+            "state" : "needs_review",
+            "value" : "日誌"
           }
         }
       }
