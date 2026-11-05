@@ -135,7 +135,7 @@ struct DiveLogListView: View {
 
     private var noMatchesView: some View {
         ContentUnavailableView {
-            Label(languageManager.localized("No matching dives"), systemImage: "line.3.horizontal.decrease.circle")
+            Label(languageManager.localized("No matching dives"), systemImage: "line.3.horizontal.decrease")
         } actions: {
             Button(languageManager.localized("Clear Filters")) { filter = DiveListFilter() }
         }

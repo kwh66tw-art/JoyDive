@@ -2632,7 +2632,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Höhen tauchen / Höhe"
+            "value" : "Höhentauchen"
           }
         },
         "el" : {
@@ -3661,7 +3661,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ø-Tiefe / Mittlere Tiefe"
+            "value" : "Durchschnittstiefe"
           }
         },
         "el" : {
@@ -3691,7 +3691,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prof. moy. / Profondeur moyenne"
+            "value" : "Profondeur moyenne"
           }
         },
         "hr" : {
@@ -4003,7 +4003,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Σύντροφος / Buddy"
+            "value" : "Buddy"
           }
         },
         "en" : {
@@ -4033,7 +4033,7 @@
         "hr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buddy / Partner"
+            "value" : "Buddy"
           }
         },
         "id" : {
@@ -4075,7 +4075,7 @@
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buddy / Companheiro"
+            "value" : "Buddy"
           }
         },
         "th" : {
@@ -7055,7 +7055,7 @@
       }
     },
     "Dive Logbook" : {
-      "comment" : "Main logbook navigation title",
+      "comment" : "Main logbook navigation title v1.4 (PM 11/05): it/el shortened (large title truncated on iPhone SE); other languages fit and are unchanged. Shared with App-u (F-10).",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7065,8 +7065,8 @@
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ημερολόγιο καταδύσεων"
+            "state" : "needs_review",
+            "value" : "Ημερολόγιο"
           }
         },
         "en" : {
@@ -7107,8 +7107,8 @@
         },
         "it" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Logbook / Diario di immersione"
+            "state" : "needs_review",
+            "value" : "Diario di immersione"
           }
         },
         "ja" : {
@@ -8133,7 +8133,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "インポートしたダイビング数：%lld"
+            "value" : "読み込んだダイビング数：%lld"
           }
         },
         "ko" : {
@@ -8353,7 +8353,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fine / Fatto"
+            "value" : "Fine"
           }
         },
         "ja" : {
@@ -8898,7 +8898,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pression de sortie / Pression finale"
+            "value" : "Pression finale"
           }
         },
         "hr" : {
@@ -8922,7 +8922,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "終了圧力（エンド圧）"
+            "value" : "終了圧力"
           }
         },
         "ko" : {
@@ -9318,7 +9318,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Umgebung / Gewässer"
+            "value" : "Umgebung"
           }
         },
         "el" : {
@@ -10981,7 +10981,7 @@
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ส่วนผสมแก๊ส / ก๊าซผสม"
+            "value" : "ก๊าซผสม"
           }
         },
         "vi" : {
@@ -11290,7 +11290,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "読み込む / インポート"
+            "value" : "読み込み"
           }
         },
         "ko" : {
@@ -11402,7 +11402,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バックアップをインポート"
+            "value" : "バックアップを読み込む"
           }
         },
         "ko" : {
@@ -11514,7 +11514,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "インポート完了（問題あり）"
+            "value" : "読み込み完了（問題あり）"
           }
         },
         "ko" : {
@@ -11627,7 +11627,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ダイビングをインポート"
+            "value" : "ダイビングを読み込む"
           }
         },
         "ko" : {
@@ -11965,7 +11965,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d 件の潜水記録をインポートし、%d 件の重複をスキップしました。"
+            "value" : "%d 件の潜水記録を読み込み、%d 件の重複をスキップしました。"
           }
         },
         "ko" : {
@@ -12079,7 +12079,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ファイル %1$lld / %2$lld を取り込み中：%3$@"
+            "value" : "ファイル %1$lld / %2$lld を読み込み中：%3$@"
           }
         },
         "ko" : {
@@ -15513,13 +15513,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nitrox（高氧）"
+            "value" : "高氧"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nitrox（高氧）"
+            "value" : "高氧"
           }
         }
       }
@@ -18974,7 +18974,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "インポート元データ"
+            "value" : "読み込み元データ"
           }
         },
         "ko" : {
@@ -19921,7 +19921,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "洶湧 / 大浪"
+            "value" : "大浪"
           }
         }
       }
@@ -26991,7 +26991,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "「取り込み」タブからダイビングコンピューターのログを追加してください。"
+            "value" : "「読み込み」タブからダイビングコンピューターのログを追加してください。"
           }
         },
         "ko" : {
@@ -28837,7 +28837,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "防寒衣 / 濕式防寒衣"
+            "value" : "防寒衣"
           }
         }
       }

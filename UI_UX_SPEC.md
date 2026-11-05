@@ -286,10 +286,10 @@ Section 6 — Buddy（有才顯示）
 
 **Week 11 擴充 — DiveLogEditSheet**
 
-Toolbar 右上 Edit 按鈕 → `.sheet` 呈現：
+Toolbar 右上 Edit 按鈕 → `.sheet` 呈現（**v1.4 起 iOS 改為右上「…」選單內「編輯潛水」「刪除潛水」**，長語言標題在 SE 上才放得下，PM 2026-11-05；macOS 維持兩顆按鈕）：
 
 ```
-[Cancel]  Edit Dive  [Save]
+[Cancel]  Edit Dive  [Save]      ← v1.4 起 iOS 為 [✕]  Edit Dive  [✓]（✓ 強調樣式；PM 2026-11-05，HIG〈Toolbars〉），macOS 維持文字
 ─────────────────────────
 Location      [TextField]
 Date & Time   [DatePicker]

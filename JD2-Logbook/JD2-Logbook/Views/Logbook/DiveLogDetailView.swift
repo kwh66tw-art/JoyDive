@@ -272,6 +272,27 @@ struct DiveLogDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         #endif
         .toolbar {
+            #if os(iOS)
+            // v1.4（PM 11/05）：刪除＋編輯收進「…」選單——iPhone SE 上長語言（el／it／fr／es）的標題
+            // 被兩顆按鈕擠成「…」；縮字級騰不出足夠空間（實測量字寬），收成一顆圖示才放得下。
+            // 選單項沿用既有鍵「Edit Dive」「Delete Dive」；「…」圖示的 VoiceOver 名稱用系統內建（跟系統語言）。
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Button {
+                        showEditSheet = true
+                    } label: {
+                        Label(languageManager.localized("Edit Dive"), systemImage: "pencil")
+                    }
+                    Button(role: .destructive) {
+                        showDeleteConfirm = true
+                    } label: {
+                        Label(languageManager.localized("Delete Dive"), systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
+            }
+            #else
             // ── Delete 按鈕 ──────────────────────────────────
             ToolbarItem(placement: .automatic) {
                 Button(role: .destructive) {
@@ -290,6 +311,7 @@ struct DiveLogDetailView: View {
                 }
                 .accessibilityLabel(languageManager.localized("Edit Dive"))
             }
+            #endif
         }
         // ── 刪除確認 ──────────────────────────────────────────
         .confirmationDialog(

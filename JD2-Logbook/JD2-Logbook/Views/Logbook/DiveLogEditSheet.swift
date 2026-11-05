@@ -740,6 +740,29 @@ struct DiveLogEditSheet: View {
             #endif
             .formStyle(.grouped) // iOS 會自動呈現 Inset-Grouped 質感；macOS 原生分組表單
             .toolbar {
+                #if os(iOS)
+                // v1.4（PM 11/05）：「取消」「儲存」改 ✕／✓ 圖示——長語言（el「Επεξεργασία κατάδυσης」等）標題
+                // 被兩顆文字按鈕擠成「…」。VoiceOver 名稱沿用既有鍵「Cancel」「Save」（跟 App 內語言）。macOS 維持文字。
+                ToolbarItem(placement: .cancellationAction) {
+                    Button { dismiss() } label: { Image(systemName: "xmark") }
+                        .accessibilityLabel(languageManager.localized("Cancel"))
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    // HIG〈Toolbars〉"Use the [prominent] style for key actions such as Done or Submit"——iOS 26 起 `.confirm` 角色由系統套強調樣式。
+                    Group {
+                        if #available(iOS 26.0, *) {
+                            Button(role: .confirm) { save() } label: { Image(systemName: "checkmark") }
+                        } else {
+                            Button { save() } label: { Image(systemName: "checkmark") }
+                        }
+                    }
+                        .disabled(!isSaveEnabled)
+                        .accessibilityLabel(languageManager.localized("Save"))
+                        .accessibilityHint(
+                            isSaveEnabled ? "" : "\(languageManager.localized("Max Depth")): \(languageManager.localized("Required"))"
+                        )
+                }
+                #else
                 ToolbarItem(placement: .cancellationAction) {
                     Button(languageManager.localized("Cancel")) { dismiss() }
                 }
@@ -751,6 +774,7 @@ struct DiveLogEditSheet: View {
                             isSaveEnabled ? "" : "\(languageManager.localized("Max Depth")): \(languageManager.localized("Required"))"
                         )
                 }
+                #endif
             }
         }
         #if !os(iOS)
