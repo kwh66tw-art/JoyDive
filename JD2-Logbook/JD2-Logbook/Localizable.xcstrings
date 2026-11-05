@@ -2261,7 +2261,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Température de l'air"
+            "value" : "Température de l’air"
           }
         },
         "hr" : {
@@ -2279,7 +2279,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Temperatura dell'aria"
+            "value" : "Temperatura dell’aria"
           }
         },
         "ja" : {
@@ -2373,7 +2373,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Température de l'air : %@"
+            "value" : "Température de l’air : %@"
           }
         },
         "hr" : {
@@ -2391,7 +2391,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Temperatura dell'aria: %@"
+            "value" : "Temperatura dell’aria: %@"
           }
         },
         "ja" : {
@@ -2485,7 +2485,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Température de l'air : Non enregistré"
+            "value" : "Température de l’air : Non enregistré"
           }
         },
         "hr" : {
@@ -2503,7 +2503,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Temperatura dell'aria: Non registrato"
+            "value" : "Temperatura dell’aria: Non registrato"
           }
         },
         "ja" : {
@@ -2890,7 +2890,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Plage d'altitude"
+            "value" : "Plage d’altitude"
           }
         },
         "hr" : {
@@ -3116,7 +3116,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Une plongée antérieure dans les 96 heures est marquée comme plongée en altitude, mais aucune pression de surface n'est enregistrée ; la charge tissulaire ne peut donc pas être estimée."
+            "value" : "Une plongée antérieure dans les 96 heures est marquée comme plongée en altitude, mais aucune pression de surface n’est enregistrée ; la charge tissulaire ne peut donc pas être estimée."
           }
         },
         "hr" : {
@@ -3134,7 +3134,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Un'immersione precedente nelle 96 ore è contrassegnata come in altitudine, ma non ha una pressione in superficie registrata, quindi il carico tissutale non può essere stimato."
+            "value" : "Un’immersione precedente nelle 96 ore è contrassegnata come in altitudine, ma non ha una pressione in superficie registrata, quindi il carico tissutale non può essere stimato."
           }
         },
         "ja" : {
@@ -3229,7 +3229,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Langue de l'app"
+            "value" : "Langue de l’app"
           }
         },
         "hr" : {
@@ -3247,7 +3247,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lingua dell'app"
+            "value" : "Lingua dell’app"
           }
         },
         "ja" : {
@@ -6188,7 +6188,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eliminare questo log d'immersione?"
+            "value" : "Eliminare questo log d’immersione?"
           }
         },
         "ja" : {
@@ -6414,7 +6414,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Firmware de l'Appareil"
+            "value" : "Firmware de l’Appareil"
           }
         },
         "hr" : {
@@ -6526,7 +6526,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modèle de l'Appareil"
+            "value" : "Modèle de l’Appareil"
           }
         },
         "hr" : {
@@ -6638,7 +6638,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Numéro de Série de l'Appareil"
+            "value" : "Numéro de Série de l’Appareil"
           }
         },
         "hr" : {
@@ -6769,7 +6769,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dati & ora dell'immersione"
+            "value" : "Dati & ora dell’immersione"
           }
         },
         "ja" : {
@@ -9011,7 +9011,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Profitez d'un carnet de plongée sans interruption."
+            "value" : "Profitez d’un carnet de plongée sans interruption."
           }
         },
         "hr" : {
@@ -9235,7 +9235,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Heure d'entrée"
+            "value" : "Heure d’entrée"
           }
         },
         "hr" : {
@@ -9685,7 +9685,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exportez toutes les plongées vers un fichier JSON, ou restaurez à partir d'un fichier précédemment exporté."
+            "value" : "Exportez toutes les plongées vers un fichier JSON, ou restaurez à partir d’un fichier précédemment exporté."
           }
         },
         "hr" : {
@@ -11716,7 +11716,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Échec de l'import"
+            "value" : "Échec de l’import"
           }
         },
         "hr" : {
@@ -12168,7 +12168,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La charge tissulaire interactive n'est pas disponible pour cette plongée — voir le détail"
+            "value" : "La charge tissulaire interactive n’est pas disponible pour cette plongée — voir le détail"
           }
         },
         "hr" : {
@@ -12623,7 +12623,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aujourd'hui"
+            "value" : "Aujourd’hui"
           }
         },
         "hr" : {
@@ -13073,7 +13073,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les changements de langue prennent effet immédiatement. Certains panneaux fournis par le système peuvent continuer à utiliser la langue de l'appareil jusqu'à ce que vous rouvriez l'application."
+            "value" : "Les changements de langue prennent effet immédiatement. Certains panneaux fournis par le système peuvent continuer à utiliser la langue de l’appareil jusqu’à ce que vous rouvriez l’application."
           }
         },
         "hr" : {
@@ -13091,7 +13091,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le modifiche alla lingua hanno effetto immediato. Alcuni pannelli di sistema potrebbero continuare a usare la lingua del dispositivo finché non riapri l'app."
+            "value" : "Le modifiche alla lingua hanno effetto immediato. Alcuni pannelli di sistema potrebbero continuare a usare la lingua del dispositivo finché non riapri l’app."
           }
         },
         "ja" : {
@@ -13523,7 +13523,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les données de localisation restent sur votre appareil et ne sont demandées que lorsque l'option est activée."
+            "value" : "Les données de localisation restent sur votre appareil et ne sont demandées que lorsque l’option est activée."
           }
         },
         "hr" : {
@@ -14878,7 +14878,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Plongée multigaz ou en recycleur — le gaz n'est pas modifiable ici. Les données d'origine sont conservées."
+            "value" : "Plongée multigaz ou en recycleur — le gaz n’est pas modifiable ici. Les données d’origine sont conservées."
           }
         },
         "hr" : {
@@ -16692,7 +16692,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucun carnet de plongée pris en charge n'a été trouvé."
+            "value" : "Aucun carnet de plongée pris en charge n’a été trouvé."
           }
         },
         "hr" : {
@@ -18950,7 +18950,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Données Brutes d'Importation"
+            "value" : "Données Brutes d’Importation"
           }
         },
         "hr" : {
@@ -19625,7 +19625,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Restaurer l'achat"
+            "value" : "Restaurer l’achat"
           }
         },
         "hr" : {
@@ -21451,7 +21451,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seleziona un'immersione dall'elenco per visualizzare i dettagli."
+            "value" : "Seleziona un’immersione dall’elenco per visualizzare i dettagli."
           }
         },
         "ja" : {
@@ -21661,7 +21661,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sélectionner l'année et le mois"
+            "value" : "Sélectionner l’année et le mois"
           }
         },
         "hr" : {
@@ -25045,7 +25045,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Cette plongée est marquée comme plongée en altitude, mais aucune pression de surface n'est enregistrée ; la charge tissulaire ne peut donc pas être estimée."
+            "value" : "Cette plongée est marquée comme plongée en altitude, mais aucune pression de surface n’est enregistrée ; la charge tissulaire ne peut donc pas être estimée."
           }
         },
         "hr" : {
@@ -25271,7 +25271,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ce format de fichier n'est pas pris en charge."
+            "value" : "Ce format de fichier n’est pas pris en charge."
           }
         },
         "hr" : {
@@ -25611,7 +25611,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "La charge tissulaire est calculée à partir de la pression de surface et du facteur profondeur-pression enregistrés avec la plongée (par défaut : eau de mer au niveau de la mer, 1,0 bar, 10 m par bar). Le type d'eau (salée ou douce) sert uniquement à vos archives et n'affecte pas le calcul."
+            "value" : "La charge tissulaire est calculée à partir de la pression de surface et du facteur profondeur-pression enregistrés avec la plongée (par défaut : eau de mer au niveau de la mer, 1,0 bar, 10 m par bar). Le type d’eau (salée ou douce) sert uniquement à vos archives et n’affecte pas le calcul."
           }
         },
         "hr" : {
@@ -25629,7 +25629,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Il carico tissutale è calcolato dalla pressione in superficie e dal fattore profondità-pressione salvati con l'immersione (predefinito: acqua di mare al livello del mare, 1,0 bar, 10 m per bar). Il tipo di acqua (salata o dolce) serve solo per i tuoi registri e non influisce sul calcolo."
+            "value" : "Il carico tissutale è calcolato dalla pressione in superficie e dal fattore profondità-pressione salvati con l’immersione (predefinito: acqua di mare al livello del mare, 1,0 bar, 10 m per bar). Il tipo di acqua (salata o dolce) serve solo per i tuoi registri e non influisce sul calcolo."
           }
         },
         "ja" : {
@@ -25725,7 +25725,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La charge tissulaire utilise le modèle Bühlmann ZHL-16C pour calculer des valeurs de référence pour la plongée loisir. Les plongées successives d'une même série incluent l'azote résiduel des plongées précédentes."
+            "value" : "La charge tissulaire utilise le modèle Bühlmann ZHL-16C pour calculer des valeurs de référence pour la plongée loisir. Les plongées successives d’une même série incluent l’azote résiduel des plongées précédentes."
           }
         },
         "hr" : {
@@ -25743,7 +25743,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il carico tissutale utilizza il modello Bühlmann ZHL-16C per calcolare i valori di riferimento per le immersioni ricreative. Le immersioni ripetitive della stessa serie includono l'azoto residuo delle immersioni precedenti."
+            "value" : "Il carico tissutale utilizza il modello Bühlmann ZHL-16C per calcolare i valori di riferimento per le immersioni ricreative. Le immersioni ripetitive della stessa serie includono l’azoto residuo delle immersioni precedenti."
           }
         },
         "ja" : {
@@ -25970,7 +25970,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tocca e trascina il profilo per visualizzare l'immersione in qualsiasi momento, stimata con Bühlmann ZHL-16C"
+            "value" : "Tocca e trascina il profilo per visualizzare l’immersione in qualsiasi momento, stimata con Bühlmann ZHL-16C"
           }
         },
         "ja" : {
@@ -26178,7 +26178,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le mélange de gaz Trimix n'est pas modifiable ici — le mélange d'origine est conservé."
+            "value" : "Le mélange de gaz Trimix n’est pas modifiable ici — le mélange d’origine est conservé."
           }
         },
         "hr" : {
@@ -26967,7 +26967,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Utilisez l'onglet Importer pour ajouter les carnets de votre ordinateur."
+            "value" : "Utilisez l’onglet Importer pour ajouter les carnets de votre ordinateur."
           }
         },
         "hr" : {
@@ -27641,7 +27641,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Courant d'eau"
+            "value" : "Courant d’eau"
           }
         },
         "hr" : {
@@ -27659,7 +27659,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Corrente d'acqua"
+            "value" : "Corrente d’acqua"
           }
         },
         "ja" : {
@@ -27867,7 +27867,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Température de l'eau : %@"
+            "value" : "Température de l’eau : %@"
           }
         },
         "hr" : {
@@ -27885,7 +27885,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Temperatura dell'acqua: %@"
+            "value" : "Temperatura dell’acqua: %@"
           }
         },
         "ja" : {
@@ -27980,7 +27980,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Température de l'eau : Non enregistré"
+            "value" : "Température de l’eau : Non enregistré"
           }
         },
         "hr" : {
@@ -27998,7 +27998,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Temperatura dell'acqua: Non registrato"
+            "value" : "Temperatura dell’acqua: Non registrato"
           }
         },
         "ja" : {
@@ -28093,7 +28093,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Type d'eau"
+            "value" : "Type d’eau"
           }
         },
         "hr" : {
@@ -29221,7 +29221,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Impossible d'ouvrir votre carnet de plongée"
+            "value" : "Impossible d’ouvrir votre carnet de plongée"
           }
         },
         "hr" : {
@@ -29335,7 +29335,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vos plongées enregistrées n'ont pas été supprimées. Veuillez mettre à jour JoyDive² vers la dernière version. Si le problème persiste, contactez-nous via la page de l'App Store."
+            "value" : "Vos plongées enregistrées n’ont pas été supprimées. Veuillez mettre à jour JoyDive² vers la dernière version. Si le problème persiste, contactez-nous via la page de l’App Store."
           }
         },
         "hr" : {

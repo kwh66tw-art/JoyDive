@@ -62,7 +62,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Utilisé pour afficher votre position actuelle sur la carte afin de pouvoir la recentrer. La position n'est demandée que si vous l'activez dans Réglages et reste uniquement sur votre appareil."
+            "value" : "Utilisé pour afficher votre position actuelle sur la carte afin de pouvoir la recentrer. La position n’est demandée que si vous l’activez dans Réglages et reste uniquement sur votre appareil."
           }
         },
         "hr" : {
