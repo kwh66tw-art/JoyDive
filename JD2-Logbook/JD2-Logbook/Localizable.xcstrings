@@ -1149,7 +1149,7 @@
       }
     },
     "+%lld more" : {
-      "comment" : "v1.4 B1-A: subtitle of a map cluster — how many other dives besides the one named in the title. Self-generated because MapKit's native subtitle doesn't follow the in-app language switch. Worded to avoid plural forms (F-09). DRAFT — PM to finalize; other 14 languages pending.",
+      "comment" : "v1.4 B1-A: subtitle of a map cluster — how many other dives besides the one named in the title. Self-generated because MapKit's native subtitle doesn't follow the in-app language switch. Plural variations per language (D-2026-11-04: the in-app language path does pick plural forms; corrects F-09). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -1266,19 +1266,19 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "needs_review",
-                  "value" : "+još %lld uron"
+                  "value" : "+još %lld"
                 }
               },
               "few" : {
                 "stringUnit" : {
                   "state" : "needs_review",
-                  "value" : "+još %lld urona"
+                  "value" : "+još %lld"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "needs_review",
-                  "value" : "+još %lld urona"
+                  "value" : "+još %lld"
                 }
               }
             }
@@ -1404,7 +1404,7 @@
               "other" : {
                 "stringUnit" : {
                   "state" : "needs_review",
-                  "value" : "+%lld lần lặn khác"
+                  "value" : "+%lld nữa"
                 }
               }
             }
@@ -2740,7 +2740,7 @@
       }
     },
     "Altitude (legacy label)" : {
-      "comment" : "v1.4 A1: edit-sheet Water Type option shown only for old records stored as 'altitude'. DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages pending.",
+      "comment" : "v1.4 A1: edit-sheet Water Type option shown only for old records stored as 'altitude'. DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages drafted 11/05, needs_review.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -2890,7 +2890,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Plage d’altitude"
+            "value" : "Plage d'altitude"
           }
         },
         "hr" : {
@@ -3080,7 +3080,7 @@
       }
     },
     "An earlier dive within 96 hours is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated." : {
-      "comment" : "v1.4 D-A interim (PM 10/26): reason when a preceding dive within 96h is a legacy altitude record at default 1.0 bar. Remove when Kit a' ships. DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages pending.",
+      "comment" : "v1.4 D-A interim (PM 10/26): reason when a preceding dive within 96h is a legacy altitude record at default 1.0 bar. Remove when Kit a' ships. DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages drafted 11/05, needs_review.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -4218,7 +4218,7 @@
       }
     },
     "Calculating…" : {
-      "comment" : "Shown at the bottom of the list while tissue-loading filter results are being computed. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages pending (PM 10/26).",
+      "comment" : "Shown at the bottom of the list while tissue-loading filter results are being computed. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -4781,7 +4781,7 @@
       }
     },
     "Clear Filters" : {
-      "comment" : "Clears list filters only (not the search text). v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages pending (PM 10/26).",
+      "comment" : "Clears list filters only (not the search text). v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -7959,7 +7959,7 @@
       }
     },
     "Dives at This Site" : {
-      "comment" : "v1.4 B2: title of the list shown when a map cluster can't be split (same coordinates / max zoom). DRAFT — PM to finalize; other 14 languages pending (PM 10/26). F-10 terms: map=地圖/マップ, dive site=潛點/ダイビングポイント.",
+      "comment" : "v1.4 B2: title of the list shown when a map cluster can't be split (same coordinates / max zoom). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26). F-10 terms: map=地圖/マップ, dive site=潛點/ダイビングポイント.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -10215,7 +10215,7 @@
       }
     },
     "Filter" : {
-      "comment" : "Filter button accessibility label / help. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages pending (PM 10/26).",
+      "comment" : "Filter button accessibility label / help. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -14956,7 +14956,7 @@
       }
     },
     "Multiple Dive Sites" : {
-      "comment" : "v1.4 B1-A: title of a map cluster whose dives are at different dive sites (no single site name applies). No number on purpose: Logbook's language path can't pick plural forms (F-09). DRAFT — PM to finalize; other 14 languages pending. F-10: dive site=潛點/ダイビングポイント.",
+      "comment" : "v1.4 B1-A: title of a map cluster whose dives are at different dive sites (no single site name applies). No number on purpose (kept after D-2026-11-04 showed plural forms do work). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review. F-10: dive site=潛點/ダイビングポイント.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -16317,7 +16317,7 @@
       }
     },
     "No matching dives" : {
-      "comment" : "Empty state when filters (and search) match nothing. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages pending (PM 10/26).",
+      "comment" : "Empty state when filters (and search) match nothing. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -16770,7 +16770,7 @@
       }
     },
     "No Tissue Loading" : {
-      "comment" : "Filter option: dives without tissue loading (no profile, or not computable). Deliberately not 'Not supported' (PM 11/01). v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages pending (PM 10/26).",
+      "comment" : "Filter option: dives without tissue loading (no profile, or not computable). Deliberately not 'Not supported' (PM 11/01). v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -20603,7 +20603,7 @@
       }
     },
     "Search" : {
-      "comment" : "v1.4: accessibility label / tooltip of the toolbar magnifying-glass button that expands the collapsed dive-list search field. Verb per F-10 (search location: 検索／搜尋). DRAFT — other 14 languages pending.",
+      "comment" : "v1.4: accessibility label / tooltip of the toolbar magnifying-glass button that expands the collapsed dive-list search field. Verb per F-10 (search location: 検索／搜尋). DRAFT — other 14 languages drafted 11/05, needs_review.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -20831,7 +20831,7 @@
       }
     },
     "Search site, buddy, tags…" : {
-      "comment" : "v1.4 A2: list search prompt (searches site/location, notes, buddy, tags). DRAFT — PM to finalize; other 14 languages pending. Replaces 'Search location…' (F-10 shared key with App-u, left untouched).",
+      "comment" : "v1.4 A2: list search prompt (searches site/location, notes, buddy, tags). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review. Replaces 'Search location…' (F-10 shared key with App-u, left untouched).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -21964,7 +21964,7 @@
       }
     },
     "Show on Map" : {
-      "comment" : "v1.4 B1: accessibility hint on the Coordinates row (detail page switches to the Map tab; map card recenters). DRAFT — PM to finalize; other 14 languages pending (PM 10/26). F-10 terms: map=地圖/マップ, dive site=潛點/ダイビングポイント.",
+      "comment" : "v1.4 B1: accessibility hint on the Coordinates row (detail page switches to the Map tab; map card recenters). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26). F-10 terms: map=地圖/マップ, dive site=潛點/ダイビングポイント.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -25009,7 +25009,7 @@
       }
     },
     "This dive is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated." : {
-      "comment" : "v1.4 A1: reason shown before the 'not available' notice for legacy altitude records at default 1.0 bar. DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages pending.",
+      "comment" : "v1.4 A1: reason shown before the 'not available' notice for legacy altitude records at default 1.0 bar. DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages drafted 11/05, needs_review.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -25575,13 +25575,13 @@
       }
     },
     "Tissue loading is calculated from the surface pressure and depth-to-pressure factor stored with the dive (sea-level seawater by default: 1.0 bar, 10 m per bar). The water type (salt or fresh) is for your records only and does not affect the calculation." : {
-      "comment" : "v1.4 A1: Tissue loading info page disclosure (decision D-2026-10-26 §4 draft v2). DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages pending.",
+      "comment" : "v1.4 A1: Tissue loading info page disclosure (decision D-2026-10-26 §4 draft v2). DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages drafted 11/05, needs_review.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Die Gewebebelastung wird aus dem mit dem Tauchgang gespeicherten Oberflächendruck und Tiefen-Druck-Faktor berechnet (Standard: Meerwasser auf Meereshöhe, 1,0 bar, 10 m pro bar). Die Wasserart (Salz- oder Süßwasser) dient nur Ihren Aufzeichnungen und wirkt sich nicht auf die Berechnung aus."
+            "value" : "Die Gewebebelastung wird aus dem mit dem Tauchgang gespeicherten Oberflächendruck und dem Tiefen-Druck-Faktor berechnet (Standard: Meerwasser auf Meereshöhe, 1,0 bar, 10 m pro bar). Die Wasserart (Salz- oder Süßwasser) dient nur Ihren Aufzeichnungen und wirkt sich nicht auf die Berechnung aus."
           }
         },
         "el" : {
@@ -25683,7 +25683,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "組織負荷依紀錄中的水面氣壓與深度換算係數計算（預設為海平面海水：1.0 bar、每 10 公尺 1 bar）。水域類型（海水／淡水）僅供紀錄，不影響計算。"
+            "value" : "組織負荷依紀錄中的水面氣壓與深度換算係數計算（預設為海平面海水：1.0 bar、每 10 公尺 1 bar）。水域類型（海水／淡水）僅供記錄，不影響計算。"
           }
         }
       }
@@ -28957,7 +28957,7 @@
       }
     },
     "With Tissue Loading" : {
-      "comment" : "Filter option: dives whose detail page shows interactive tissue loading. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages pending (PM 10/26).",
+      "comment" : "Filter option: dives whose detail page shows interactive tissue loading. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
