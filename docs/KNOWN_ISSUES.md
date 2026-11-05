@@ -56,6 +56,7 @@
 | `MockDataSeeder` 類別隨 Release 出貨（稽核 F18） | `MockDataSeeder.swift:10` 未包 `#if DEBUG`；入口在 `#if DEBUG` 內，Release 無呼叫點 | 死碼，無功能影響 | ✅ v1.4 修正（2026-11-05）：整檔包 `#if DEBUG`，Release 產物不再含此類別 |
 | `Localizable.xcstrings.backup` 被打包進 App（稽核 F19） | 400 KB 舊翻譯檔，2026-05-29 起在版控，fileSystemSynchronizedGroups 帶進 bundle；推定 v1.0–v1.3 已出貨 | App 多 400 KB，無機敏資料 | ✅ v1.4 修正（2026-11-05）：檔案自 repo 移除，Release 產物 0 個 `.backup` |
 | 地圖同座標 2 筆以上聚合後無法點開看 log（PM 2026-10-26） | 讀碼推斷：`DiveMapRepresentable.swift:54-56` 點聚合只 `showAnnotations`，成員座標相同時縮放無法拆開。**未實機重現**；App-u 同寫法（總指揮 10/26 讀碼，未重現） | 同座標多筆紀錄看不到 | v1.4（`V1_4_WORK_PLAN.md` B2；修完回報總指揮評估 App-u） |
+| iPhone SE 寬度下兩個標題被截斷（2026-11-05 模擬器，SE 3） | 列表大標題「Dive Logbook」：希臘文「Ημερολόγιο καταδύ…」、義文「Logbook / Diario di i…」；詳細頁標題「Dive Details」：希臘、義、法、西文被右側刪除／編輯按鈕擠成「…」。iOS 標題放不下時的標準截斷；v1.3 已同樣上架。兩鍵為 F-10 與 App-u 共用詞（截圖 `docs/screenshots/v1.4-L10N-layout/04`、`05`、`10`、`12`） | 小螢幕＋長語言的標題不完整 | ⏸ PM 11/05（經總指揮）：v1.4 不改，送審後與 App-u 一起處理（需母語確認） |
 | 環境欄位無「未記錄」：解析器皆不填 `environmentType`，每筆預設 `seawater` | `DiveLog.swift:108`；舊資料無法分辨預設值與真實選擇 | 淡水／高海拔紀錄顯示為海水 | ✅ v1.4 A1 已實作（未發布；2026-10-26，`docs/decisions/D-2026-10-26-環境欄位未記錄.md`）；舊資料不回溯 |
 
 ---

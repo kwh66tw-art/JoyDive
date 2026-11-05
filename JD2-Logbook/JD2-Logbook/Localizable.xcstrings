@@ -1774,19 +1774,19 @@
       }
     },
     "About Tissue Loading" : {
-      "comment" : "Tissue loading info page (PM 2026-10-05: positive, concise).",
+      "comment" : "Tissue loading info page (PM 2026-10-05: positive, concise). v1.4 (PM 11/05): shortened to the 'Tissue Loading' term (no 'About') where the large title truncated on iPhone SE; CJK unchanged (fits).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Über Gewebebelastung"
+            "state" : "needs_review",
+            "value" : "Gewebebelastung"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Σχετικά με τη φόρτωση ιστών"
+            "state" : "needs_review",
+            "value" : "Φόρτωση Ιστών"
           }
         },
         "en" : {
@@ -1803,32 +1803,32 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acerca de la carga tisular"
+            "state" : "needs_review",
+            "value" : "Carga Tisular"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "À propos de la charge tissulaire"
+            "state" : "needs_review",
+            "value" : "Charge Tissulaire"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "O opterećenju tkiva"
+            "state" : "needs_review",
+            "value" : "Opterećenje Tkiva"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tentang Beban Jaringan"
+            "state" : "needs_review",
+            "value" : "Beban Jaringan"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Informazioni sul carico tissutale"
+            "state" : "needs_review",
+            "value" : "Carico Tissutale"
           }
         },
         "ja" : {
@@ -1845,32 +1845,32 @@
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Perihal Bebanan Tisu"
+            "state" : "needs_review",
+            "value" : "Bebanan Tisu"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Over weefselbelasting"
+            "state" : "needs_review",
+            "value" : "Weefselbelasting"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sobre a carga tecidual"
+            "state" : "needs_review",
+            "value" : "Carga Tecidual"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "เกี่ยวกับภาระเนื้อเยื่อ"
+            "state" : "needs_review",
+            "value" : "ภาระเนื้อเยื่อ"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Giới thiệu về tải trọng mô"
+            "state" : "needs_review",
+            "value" : "Tải Trọng Mô"
           }
         },
         "zh-Hans" : {

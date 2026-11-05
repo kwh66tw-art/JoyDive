@@ -12,6 +12,7 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 版號 1.4（5）：6 組 build setting；Release iOS／macOS 產物 `defaults read` 驗證。
 - 翻譯：v1.4 新鍵 16 個補其餘 14 語草稿（`needs_review`，待 PM 審）；`+%lld more` 改依數量變形（Vary by Plural，18 語；程式不動，`String(format:locale:)` 已帶 locale）。審稿表 `docs/reports/R-2026-11-05-v1.4翻譯審稿對照表.md`。
 - 稽核 F18：`MockDataSeeder` 整檔包 `#if DEBUG`，Release 不再含此類別。
+- 翻譯追加（11/05）：外部稽核採用 5 處修正（zh-Hant／de／hr／vi／fr）；法、義文撇號全檔統一 `’`（Localizable 57＋InfoPlist 2）；組織負荷說明頁標題 `About Tissue Loading` 在 iPhone SE 截斷 ⇒ 12 語改用「Tissue Loading」既有譯文（`needs_review`；en／CJK 放得下不改）。「Dive Logbook」「Dive Details」長語言截斷列已知限制（`docs/KNOWN_ISSUES.md`）。截圖 `docs/screenshots/v1.4-L10N-layout/`。
 - 稽核 F19：刪除 `Localizable.xcstrings.backup`（原本被打包進 App）。
 - What's New v1.4 三語草稿（`docs/APPSTORE_COPY.md`，待 PM 定稿）。
 - 測試：`EnvironmentEdgeCaseTests.testReasonSentenceJoiningAcrossAllAppLanguages` 原本鎖定「韓文未翻譯 ⇒ 回退英文」的現況，改為檢查 ko／de／th／zh-Hans 已有譯文；`run_tests.sh logbook` 249/0/1。
