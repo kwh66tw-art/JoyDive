@@ -1149,7 +1149,7 @@
       }
     },
     "+%lld more" : {
-      "comment" : "v1.4 B1-A: subtitle of a map cluster — how many other dives besides the one named in the title. Self-generated because MapKit's native subtitle doesn't follow the in-app language switch. Plural variations per language (D-2026-11-04: the in-app language path does pick plural forms; corrects F-09). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review.",
+      "comment" : "v1.4 B1-A: subtitle of a map cluster — how many other dives besides the one named in the title. Self-generated because MapKit's native subtitle doesn't follow the in-app language switch. Plural variations per language (D-2026-11-04: the in-app language path does pick plural forms; corrects F-09). 18 languages approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -1157,13 +1157,13 @@
             "plural" : {
               "one" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld weiterer"
                 }
               },
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld weitere"
                 }
               }
@@ -1175,13 +1175,13 @@
             "plural" : {
               "one" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld ακόμη"
                 }
               },
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld ακόμη"
                 }
               }
@@ -1229,13 +1229,13 @@
             "plural" : {
               "one" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld más"
                 }
               },
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld más"
                 }
               }
@@ -1247,13 +1247,13 @@
             "plural" : {
               "one" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld autre"
                 }
               },
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld autres"
                 }
               }
@@ -1265,19 +1265,19 @@
             "plural" : {
               "one" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+još %lld"
                 }
               },
               "few" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+još %lld"
                 }
               },
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+još %lld"
                 }
               }
@@ -1289,7 +1289,7 @@
             "plural" : {
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld lainnya"
                 }
               }
@@ -1301,13 +1301,13 @@
             "plural" : {
               "one" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld altra"
                 }
               },
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld altre"
                 }
               }
@@ -1331,7 +1331,7 @@
             "plural" : {
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld개 더"
                 }
               }
@@ -1343,7 +1343,7 @@
             "plural" : {
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld lagi"
                 }
               }
@@ -1355,13 +1355,13 @@
             "plural" : {
               "one" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld meer"
                 }
               },
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld meer"
                 }
               }
@@ -1373,13 +1373,13 @@
             "plural" : {
               "one" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld outro"
                 }
               },
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld outros"
                 }
               }
@@ -1391,7 +1391,7 @@
             "plural" : {
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+อีก %lld รายการ"
                 }
               }
@@ -1403,7 +1403,7 @@
             "plural" : {
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+%lld nữa"
                 }
               }
@@ -1415,7 +1415,7 @@
             "plural" : {
               "other" : {
                 "stringUnit" : {
-                  "state" : "needs_review",
+                  "state" : "translated",
                   "value" : "+其他 %lld 条"
                 }
               }
@@ -1779,13 +1779,13 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gewebebelastung"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Φόρτωση Ιστών"
           }
         },
@@ -1803,31 +1803,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Carga Tisular"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Charge Tissulaire"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Opterećenje Tkiva"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Beban Jaringan"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Carico Tissutale"
           }
         },
@@ -1845,31 +1845,31 @@
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bebanan Tisu"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Weefselbelasting"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Carga Tecidual"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ภาระเนื้อเยื่อ"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tải Trọng Mô"
           }
         },
@@ -2740,18 +2740,18 @@
       }
     },
     "Altitude (legacy label)" : {
-      "comment" : "v1.4 A1: edit-sheet Water Type option shown only for old records stored as 'altitude'. DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages drafted 11/05, needs_review.",
+      "comment" : "v1.4 A1: edit-sheet Water Type option shown only for old records stored as 'altitude'. 18 languages approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Höhe (alte Bezeichnung)"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Υψόμετρο (παλιά ετικέτα)"
           }
         },
@@ -2769,31 +2769,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Altitud (etiqueta antigua)"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Altitude (ancien libellé)"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nadmorska visina (stara oznaka)"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ketinggian (label lama)"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Altitudine (etichetta precedente)"
           }
         },
@@ -2805,43 +2805,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "고산 (이전 라벨)"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Altitud (label lama)"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hoogte (oud label)"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Altitude (etiqueta antiga)"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ความสูง (ป้ายกำกับเดิม)"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Độ cao (nhãn cũ)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "高海拔潜水（旧标签）"
           }
         },
@@ -2854,18 +2854,18 @@
       }
     },
     "Altitude Range" : {
-      "comment" : "v1.4 C: Raw Import Data label for Diving Log 'altitudeRange' (free text from the source). DRAFT — translations pending PM/native review.",
+      "comment" : "v1.4 C: Raw Import Data label for Diving Log 'altitudeRange' (free text from the source). Translations approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Höhenbereich"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Εύρος υψομέτρου"
           }
         },
@@ -2883,85 +2883,85 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Rango de altitud"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Plage d’altitude"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Raspon nadmorske visine"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Rentang ketinggian"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Intervallo di altitudine"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "標高範囲"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "고도 범위"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Julat ketinggian"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hoogtebereik"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Intervalo de altitude"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ช่วงระดับความสูง"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Phạm vi độ cao"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "海拔范围"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "海拔範圍"
           }
         }
@@ -3080,18 +3080,18 @@
       }
     },
     "An earlier dive within 96 hours is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated." : {
-      "comment" : "v1.4 D-A interim (PM 10/26): reason when a preceding dive within 96h is a legacy altitude record at default 1.0 bar. Remove when Kit a' ships. DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages drafted 11/05, needs_review.",
+      "comment" : "v1.4 D-A interim (PM 10/26): reason when a preceding dive within 96h is a legacy altitude record at default 1.0 bar. Remove when Kit a' ships. 18 languages approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ein früherer Tauchgang innerhalb von 96 Stunden ist als Höhentauchgang markiert, hat aber keinen aufgezeichneten Oberflächendruck, daher kann die Gewebebelastung nicht geschätzt werden."
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Μια προηγούμενη κατάδυση εντός 96 ωρών έχει σήμανση υψομέτρου, αλλά δεν έχει καταγεγραμμένη πίεση επιφανείας, οπότε η φόρτωση ιστών δεν μπορεί να εκτιμηθεί."
           }
         },
@@ -3109,31 +3109,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Una inmersión anterior dentro de las últimas 96 horas está etiquetada como de altitud, pero no tiene presión en superficie registrada, por lo que no se puede estimar la carga tisular."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Une plongée antérieure dans les 96 heures est marquée comme plongée en altitude, mais aucune pression de surface n’est enregistrée ; la charge tissulaire ne peut donc pas être estimée."
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Raniji uron unutar 96 sati označen je kao uron na nadmorskoj visini, ali nema zabilježen površinski tlak, pa se opterećenje tkiva ne može procijeniti."
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Penyelaman sebelumnya dalam 96 jam diberi label ketinggian, tetapi tidak memiliki tekanan permukaan yang tercatat, sehingga beban jaringan tidak dapat diperkirakan."
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Un’immersione precedente nelle 96 ore è contrassegnata come in altitudine, ma non ha una pressione in superficie registrata, quindi il carico tissutale non può essere stimato."
           }
         },
@@ -3145,43 +3145,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "96시간 이내의 이전 다이빙이 고산으로 표시되어 있지만 기록된 수면 기압이 없어 조직 부하를 추정할 수 없습니다."
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Selaman terdahulu dalam tempoh 96 jam dilabel sebagai altitud tetapi tiada tekanan permukaan yang direkodkan, jadi bebanan tisu tidak dapat dianggarkan."
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Een eerdere duik binnen 96 uur is gemarkeerd als hoogteduik, maar heeft geen vastgelegde oppervlaktedruk, dus de weefselbelasting kan niet worden geschat."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Um mergulho anterior nas últimas 96 horas está marcado como de altitude, mas não tem pressão à superfície registada, pelo que não é possível estimar a carga tecidual."
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ไดฟ์ก่อนหน้าภายใน 96 ชั่วโมงถูกระบุว่าเป็นการดำน้ำที่ความสูง แต่ไม่มีการบันทึกความดันที่ผิวน้ำ จึงไม่สามารถประมาณภาระเนื้อเยื่อได้"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Một lần lặn trước đó trong vòng 96 giờ được gắn nhãn độ cao nhưng không có áp suất bề mặt được ghi lại, nên không thể ước tính tải trọng mô."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "96 小时内有一次较早的潜水标记为高海拔，但没有记录水面气压，无法推算组织负荷。"
           }
         },
@@ -4218,18 +4218,18 @@
       }
     },
     "Calculating…" : {
-      "comment" : "Shown at the bottom of the list while tissue-loading filter results are being computed. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26).",
+      "comment" : "Shown at the bottom of the list while tissue-loading filter results are being computed. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). 18 languages approved by PM 11/07 (PM 10/26).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wird berechnet…"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Υπολογισμός…"
           }
         },
@@ -4247,31 +4247,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Calculando…"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Calcul en cours…"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Izračunavanje…"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Menghitung…"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Calcolo in corso…"
           }
         },
@@ -4283,43 +4283,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "계산 중…"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mengira…"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Berekenen…"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "A calcular…"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "กำลังคำนวณ…"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Đang tính…"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "计算中…"
           }
         },
@@ -4781,18 +4781,18 @@
       }
     },
     "Clear Filters" : {
-      "comment" : "Clears list filters only (not the search text). v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26).",
+      "comment" : "Clears list filters only (not the search text). v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). 18 languages approved by PM 11/07 (PM 10/26).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Filter zurücksetzen"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Εκκαθάριση φίλτρων"
           }
         },
@@ -4810,31 +4810,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Borrar filtros"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Effacer les filtres"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Očisti filtre"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hapus Filter"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cancella filtri"
           }
         },
@@ -4846,43 +4846,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "필터 지우기"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kosongkan Penapis"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Filters wissen"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Limpar filtros"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ล้างตัวกรอง"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Xóa bộ lọc"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "清除筛选"
           }
         },
@@ -5120,18 +5120,18 @@
       }
     },
     "CNS" : {
-      "comment" : "v1.4 C: Raw Import Data label for Diving Log 'cns' (CNS oxygen toxicity, value shown as imported). DRAFT — translations pending PM/native review.",
+      "comment" : "v1.4 C: Raw Import Data label for Diving Log 'cns' (CNS oxygen toxicity, value shown as imported). Translations approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
@@ -5149,85 +5149,85 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "CNS"
           }
         }
@@ -5684,18 +5684,18 @@
       }
     },
     "Deco Required" : {
-      "comment" : "v1.4 C: Raw Import Data label for Diving Log 'decoRequired' (value Yes/No). DRAFT — translations pending PM/native review.",
+      "comment" : "v1.4 C: Raw Import Data label for Diving Log 'decoRequired' (value Yes/No). Translations approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Deko erforderlich"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Απαιτείται αποσυμπίεση"
           }
         },
@@ -5713,85 +5713,85 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Requiere deco"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Déco requise"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Potrebna dekompresija"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Perlu deko"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Deco richiesta"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "減圧が必要"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "감압 필요"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Perlu deko"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Deco vereist"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Requer deco"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ต้องทำดีโก้"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cần deco"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "需要减压"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "需要減壓"
           }
         }
@@ -7059,109 +7059,109 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Logbuch"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ημερολόγιο"
           }
         },
         "en" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Logbook"
           }
         },
         "en-GB" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Logbook"
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Diario"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Carnet"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Logbook"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Logbook"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Giornale"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ログ"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "로그북"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Log"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Logboek"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Diário"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "สมุดบันทึก"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nhật ký"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "日志"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "日誌"
           }
         }
@@ -7959,18 +7959,18 @@
       }
     },
     "Dives at This Site" : {
-      "comment" : "v1.4 B2: title of the list shown when a map cluster can't be split (same coordinates / max zoom). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26). F-10 terms: map=地圖/マップ, dive site=潛點/ダイビングポイント.",
+      "comment" : "v1.4 B2: title of the list shown when a map cluster can't be split (same coordinates / max zoom). 18 languages approved by PM 11/07 (PM 10/26). F-10 terms: map=地圖/マップ, dive site=潛點/ダイビングポイント.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tauchgänge an diesem Tauchplatz"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Καταδύσεις σε αυτήν την τοποθεσία"
           }
         },
@@ -7988,31 +7988,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Inmersiones en este punto"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Plongées sur ce site"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Uroni na ovoj lokaciji"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Penyelaman di Lokasi Ini"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Immersioni in questo punto"
           }
         },
@@ -8024,43 +8024,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "이 다이빙 포인트의 다이빙"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Selaman di Tapak Ini"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Duiken op deze locatie"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mergulhos neste local"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ไดฟ์ที่จุดดำน้ำนี้"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Các lần lặn tại địa điểm này"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "此潜点的潜水"
           }
         },
@@ -10215,18 +10215,18 @@
       }
     },
     "Filter" : {
-      "comment" : "Filter button accessibility label / help. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26).",
+      "comment" : "Filter button accessibility label / help. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). 18 languages approved by PM 11/07 (PM 10/26).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Filter"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Φίλτρο"
           }
         },
@@ -10244,31 +10244,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Filtrar"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Filtrer"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Filtar"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Filter"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Filtra"
           }
         },
@@ -10280,43 +10280,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "필터"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Penapis"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Filter"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Filtrar"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ตัวกรอง"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bộ lọc"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "筛选"
           }
         },
@@ -11005,18 +11005,18 @@
       }
     },
     "Gas Switches" : {
-      "comment" : "v1.4 C: Raw Import Data label for Subsurface 'gasSwitches' (value: '0:00 Air → 23:40 EANx50'). DRAFT — translations pending PM/native review.",
+      "comment" : "v1.4 C: Raw Import Data label for Subsurface 'gasSwitches' (value: '0:00 Air → 23:40 EANx50'). Translations approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gaswechsel"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Αλλαγές αερίου"
           }
         },
@@ -11034,85 +11034,85 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cambios de gas"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Changements de gaz"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Promjene plina"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pergantian gas"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cambi gas"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ガス切り替え"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "기체 전환"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pertukaran gas"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gaswissels"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mudanças de gás"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "การเปลี่ยนแก๊ส"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chuyển khí"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "换气记录"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "換氣紀錄"
           }
         }
@@ -14280,18 +14280,18 @@
       }
     },
     "Max PO₂" : {
-      "comment" : "v1.4 C: Raw Import Data label for Diving Log 'maxPPO2' (recorded maximum, not a limit). PO₂ spelling per family apps. zh-Hant deliberately differs from App-i's 'Max PO₂' = 'PO₂ 上限': that one is a configured LIMIT, this is the value RECORDED on this dive — different quantities, do not unify (coordinator + App-lb 2026-11-04). DRAFT — translations pending PM/native review.",
+      "comment" : "v1.4 C: Raw Import Data label for Diving Log 'maxPPO2' (recorded maximum, not a limit). PO₂ spelling per family apps. zh-Hant deliberately differs from App-i's 'Max PO₂' = 'PO₂ 上限': that one is a configured LIMIT, this is the value RECORDED on this dive — different quantities, do not unify (coordinator + App-lb 2026-11-04). Translations approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Max. PO₂"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Μέγ. PO₂"
           }
         },
@@ -14309,85 +14309,85 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ máx."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ max."
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Maks. PO₂"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ maks"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ max"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最大PO₂"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "최대 PO₂"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ maks"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Max. PO₂"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ máx."
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ สูงสุด"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ tối đa"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最高 PO₂"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最高 PO₂"
           }
         }
@@ -14506,18 +14506,18 @@
       }
     },
     "Min PO₂" : {
-      "comment" : "v1.4 C: Raw Import Data label for Diving Log 'minPPO2' (recorded minimum, not a limit). PO₂ spelling per family apps. zh-Hant deliberately differs from App-i's 'Max PO₂' = 'PO₂ 上限': that one is a configured LIMIT, this is the value RECORDED on this dive — different quantities, do not unify (coordinator + App-lb 2026-11-04). DRAFT — translations pending PM/native review.",
+      "comment" : "v1.4 C: Raw Import Data label for Diving Log 'minPPO2' (recorded minimum, not a limit). PO₂ spelling per family apps. zh-Hant deliberately differs from App-i's 'Max PO₂' = 'PO₂ 上限': that one is a configured LIMIT, this is the value RECORDED on this dive — different quantities, do not unify (coordinator + App-lb 2026-11-04). Translations approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Min. PO₂"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ελάχ. PO₂"
           }
         },
@@ -14535,85 +14535,85 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ mín."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ min."
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Min. PO₂"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ min"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ min"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最小PO₂"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "최소 PO₂"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ min"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Min. PO₂"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ mín."
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ ต่ำสุด"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "PO₂ tối thiểu"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最低 PO₂"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最低 PO₂"
           }
         }
@@ -14956,18 +14956,18 @@
       }
     },
     "Multiple Dive Sites" : {
-      "comment" : "v1.4 B1-A: title of a map cluster whose dives are at different dive sites (no single site name applies). No number on purpose (kept after D-2026-11-04 showed plural forms do work). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review. F-10: dive site=潛點/ダイビングポイント.",
+      "comment" : "v1.4 B1-A: title of a map cluster whose dives are at different dive sites (no single site name applies). No number on purpose (kept after D-2026-11-04 showed plural forms do work). 18 languages approved by PM 11/07. F-10: dive site=潛點/ダイビングポイント.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mehrere Tauchplätze"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Πολλές τοποθεσίες κατάδυσης"
           }
         },
@@ -14985,31 +14985,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Varios puntos de inmersión"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Plusieurs sites de plongée"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Više lokacija urona"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Beberapa Lokasi Penyelaman"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Più punti di immersione"
           }
         },
@@ -15021,43 +15021,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "여러 다이빙 포인트"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Beberapa Tapak Selam"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Meerdere duiklocaties"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vários locais de mergulho"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "หลายจุดดำน้ำ"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nhiều địa điểm lặn"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "多个潜点"
           }
         },
@@ -15638,18 +15638,18 @@
       }
     },
     "No" : {
-      "comment" : "v1.4 C: Raw Import Data value for 'Deco Required'. DRAFT — translations pending PM/native review.",
+      "comment" : "v1.4 C: Raw Import Data value for 'Deco Required'. Translations approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nein"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Όχι"
           }
         },
@@ -15667,85 +15667,85 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "No"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Non"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ne"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tidak"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "No"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "いいえ"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "아니요"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tidak"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nee"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Não"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ไม่ใช่"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Không"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "否"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "否"
           }
         }
@@ -16317,18 +16317,18 @@
       }
     },
     "No matching dives" : {
-      "comment" : "Empty state when filters (and search) match nothing. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26).",
+      "comment" : "Empty state when filters (and search) match nothing. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). 18 languages approved by PM 11/07 (PM 10/26).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Keine passenden Tauchgänge"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Δεν υπάρχουν καταδύσεις που να ταιριάζουν"
           }
         },
@@ -16346,31 +16346,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "No hay inmersiones que coincidan"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aucune plongée correspondante"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nema odgovarajućih urona"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tidak ada penyelaman yang cocok"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nessuna immersione corrispondente"
           }
         },
@@ -16382,43 +16382,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "일치하는 다이빙 없음"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tiada selaman yang sepadan"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Geen overeenkomende duiken"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nenhum mergulho correspondente"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ไม่มีไดฟ์ที่ตรงกัน"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Không có lần lặn phù hợp"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "没有符合的潜水"
           }
         },
@@ -16770,18 +16770,18 @@
       }
     },
     "No Tissue Loading" : {
-      "comment" : "Filter option: dives without tissue loading (no profile, or not computable). Deliberately not 'Not supported' (PM 11/01). v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26).",
+      "comment" : "Filter option: dives without tissue loading (no profile, or not computable). Deliberately not 'Not supported' (PM 11/01). v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). 18 languages approved by PM 11/07 (PM 10/26).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ohne Gewebebelastung"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Χωρίς φόρτωση ιστών"
           }
         },
@@ -16799,31 +16799,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sin carga tisular"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sans charge tissulaire"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bez opterećenja tkiva"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tanpa Beban Jaringan"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Senza carico tissutale"
           }
         },
@@ -16835,43 +16835,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "조직 부하 없음"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tanpa Bebanan Tisu"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zonder weefselbelasting"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sem carga tecidual"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ไม่มีภาระเนื้อเยื่อ"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Không có tải trọng mô"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "无组织负荷"
           }
         },
@@ -20603,18 +20603,18 @@
       }
     },
     "Search" : {
-      "comment" : "v1.4: accessibility label / tooltip of the toolbar magnifying-glass button that expands the collapsed dive-list search field. Verb per F-10 (search location: 検索／搜尋). DRAFT — other 14 languages drafted 11/05, needs_review.",
+      "comment" : "v1.4: accessibility label / tooltip of the toolbar magnifying-glass button that expands the collapsed dive-list search field. Verb per F-10 (search location: 検索／搜尋). 18 languages approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Suchen"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Αναζήτηση"
           }
         },
@@ -20632,31 +20632,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Buscar"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Rechercher"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pretraži"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cari"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cerca"
           }
         },
@@ -20668,43 +20668,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "검색"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cari"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zoeken"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pesquisar"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ค้นหา"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tìm kiếm"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "搜索"
           }
         },
@@ -20831,18 +20831,18 @@
       }
     },
     "Search site, buddy, tags…" : {
-      "comment" : "v1.4 A2: list search prompt (searches site/location, notes, buddy, tags). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review. Replaces 'Search location…' (F-10 shared key with App-u, left untouched).",
+      "comment" : "v1.4 A2: list search prompt (searches site/location, notes, buddy, tags). 18 languages approved by PM 11/07. Replaces 'Search location…' (F-10 shared key with App-u, left untouched).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tauchplatz, Buddy, Schlagwörter suchen…"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Αναζήτηση τοποθεσίας, buddy, ετικετών…"
           }
         },
@@ -20860,31 +20860,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Buscar punto, compañero, etiquetas…"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Rechercher site, binôme, étiquettes…"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pretraži lokaciju, buddyja, oznake…"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cari lokasi, buddy, tag…"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cerca punto, compagno, tag…"
           }
         },
@@ -20896,43 +20896,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "포인트, 버디, 태그 검색…"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cari tapak, rakan selam, tag…"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zoek locatie, duikmaatje, tags…"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pesquisar local, buddy, etiquetas…"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ค้นหาจุดดำน้ำ บัดดี้ แท็ก…"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tìm địa điểm, bạn lặn, thẻ…"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "搜索潜点、潜伴、标签…"
           }
         },
@@ -21964,18 +21964,18 @@
       }
     },
     "Show on Map" : {
-      "comment" : "v1.4 B1: accessibility hint on the Coordinates row (detail page switches to the Map tab; map card recenters). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26). F-10 terms: map=地圖/マップ, dive site=潛點/ダイビングポイント.",
+      "comment" : "v1.4 B1: accessibility hint on the Coordinates row (detail page switches to the Map tab; map card recenters). 18 languages approved by PM 11/07 (PM 10/26). F-10 terms: map=地圖/マップ, dive site=潛點/ダイビングポイント.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Auf Karte anzeigen"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Εμφάνιση στον χάρτη"
           }
         },
@@ -21993,31 +21993,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mostrar en el mapa"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Afficher sur la carte"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Prikaži na karti"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tampilkan di Peta"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mostra sulla mappa"
           }
         },
@@ -22029,43 +22029,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "지도에서 보기"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tunjukkan pada Peta"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Toon op kaart"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mostrar no mapa"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "แสดงบนแผนที่"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hiển thị trên bản đồ"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "在地图上显示"
           }
         },
@@ -25009,18 +25009,18 @@
       }
     },
     "This dive is labeled as altitude but has no recorded surface pressure, so tissue loading can't be estimated." : {
-      "comment" : "v1.4 A1: reason shown before the 'not available' notice for legacy altitude records at default 1.0 bar. DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages drafted 11/05, needs_review.",
+      "comment" : "v1.4 A1: reason shown before the 'not available' notice for legacy altitude records at default 1.0 bar. 18 languages approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Dieser Tauchgang ist als Höhentauchgang markiert, hat aber keinen aufgezeichneten Oberflächendruck, daher kann die Gewebebelastung nicht geschätzt werden."
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Αυτή η κατάδυση έχει σήμανση υψομέτρου, αλλά δεν έχει καταγεγραμμένη πίεση επιφανείας, οπότε η φόρτωση ιστών δεν μπορεί να εκτιμηθεί."
           }
         },
@@ -25038,31 +25038,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Esta inmersión está etiquetada como de altitud, pero no tiene presión en superficie registrada, por lo que no se puede estimar la carga tisular."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cette plongée est marquée comme plongée en altitude, mais aucune pression de surface n’est enregistrée ; la charge tissulaire ne peut donc pas être estimée."
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ovaj uron označen je kao uron na nadmorskoj visini, ali nema zabilježen površinski tlak, pa se opterećenje tkiva ne može procijeniti."
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Penyelaman ini diberi label ketinggian, tetapi tidak memiliki tekanan permukaan yang tercatat, sehingga beban jaringan tidak dapat diperkirakan."
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Questa immersione è contrassegnata come in altitudine, ma non ha una pressione in superficie registrata, quindi il carico tissutale non può essere stimato."
           }
         },
@@ -25074,43 +25074,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "이 다이빙은 고산으로 표시되어 있지만 기록된 수면 기압이 없어 조직 부하를 추정할 수 없습니다."
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Selaman ini dilabel sebagai altitud tetapi tiada tekanan permukaan yang direkodkan, jadi bebanan tisu tidak dapat dianggarkan."
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Deze duik is gemarkeerd als hoogteduik, maar heeft geen vastgelegde oppervlaktedruk, dus de weefselbelasting kan niet worden geschat."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Este mergulho está marcado como de altitude, mas não tem pressão à superfície registada, pelo que não é possível estimar a carga tecidual."
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ไดฟ์นี้ถูกระบุว่าเป็นการดำน้ำที่ความสูง แต่ไม่มีการบันทึกความดันที่ผิวน้ำ จึงไม่สามารถประมาณภาระเนื้อเยื่อได้"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lần lặn này được gắn nhãn độ cao nhưng không có áp suất bề mặt được ghi lại, nên không thể ước tính tải trọng mô."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "这次潜水标记为高海拔，但没有记录水面气压，无法推算组织负荷。"
           }
         },
@@ -25575,18 +25575,18 @@
       }
     },
     "Tissue loading is calculated from the surface pressure and depth-to-pressure factor stored with the dive (sea-level seawater by default: 1.0 bar, 10 m per bar). The water type (salt or fresh) is for your records only and does not affect the calculation." : {
-      "comment" : "v1.4 A1: Tissue loading info page disclosure (decision D-2026-10-26 §4 draft v2). DRAFT — finalize at pre-release wrap-up (PM 10/26); other 14 languages drafted 11/05, needs_review.",
+      "comment" : "v1.4 A1: Tissue loading info page disclosure (decision D-2026-10-26 §4 draft v2). 18 languages approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die Gewebebelastung wird aus dem mit dem Tauchgang gespeicherten Oberflächendruck und dem Tiefen-Druck-Faktor berechnet (Standard: Meerwasser auf Meereshöhe, 1,0 bar, 10 m pro bar). Die Wasserart (Salz- oder Süßwasser) dient nur Ihren Aufzeichnungen und wirkt sich nicht auf die Berechnung aus."
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Η φόρτωση ιστών υπολογίζεται από την πίεση επιφανείας και τον συντελεστή μετατροπής βάθους σε πίεση που είναι αποθηκευμένοι με την κατάδυση (προεπιλογή: θαλασσινό νερό στο επίπεδο της θάλασσας, 1,0 bar, 10 m ανά bar). Ο τύπος νερού (θαλασσινό ή γλυκό) είναι μόνο για τα αρχεία σας και δεν επηρεάζει τον υπολογισμό."
           }
         },
@@ -25604,31 +25604,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "La carga tisular se calcula a partir de la presión en superficie y el factor de profundidad a presión guardados con la inmersión (por defecto: agua de mar a nivel del mar, 1,0 bar, 10 m por bar). El tipo de agua (salada o dulce) es solo para tu registro y no afecta al cálculo."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "La charge tissulaire est calculée à partir de la pression de surface et du facteur profondeur-pression enregistrés avec la plongée (par défaut : eau de mer au niveau de la mer, 1,0 bar, 10 m par bar). Le type d’eau (salée ou douce) sert uniquement à vos archives et n’affecte pas le calcul."
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Opterećenje tkiva izračunava se iz površinskog tlaka i faktora pretvorbe dubine u tlak spremljenih uz uron (zadano: morska voda na razini mora, 1,0 bar, 10 m po baru). Vrsta vode (morska ili slatka) služi samo za vašu evidenciju i ne utječe na izračun."
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Beban jaringan dihitung dari tekanan permukaan dan faktor kedalaman-ke-tekanan yang disimpan bersama penyelaman (bawaan: air laut di permukaan laut, 1,0 bar, 10 m per bar). Jenis air (asin atau tawar) hanya untuk catatan Anda dan tidak memengaruhi perhitungan."
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Il carico tissutale è calcolato dalla pressione in superficie e dal fattore profondità-pressione salvati con l’immersione (predefinito: acqua di mare al livello del mare, 1,0 bar, 10 m per bar). Il tipo di acqua (salata o dolce) serve solo per i tuoi registri e non influisce sul calcolo."
           }
         },
@@ -25640,43 +25640,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "조직 부하는 다이빙에 저장된 수면 기압과 수심-압력 환산 계수로 계산합니다(기본값: 해수면의 해수, 1.0 bar, 10 m당 1 bar). 수질 유형(해수 또는 담수)은 기록용이며 계산에 영향을 주지 않습니다."
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bebanan tisu dikira daripada tekanan permukaan dan faktor kedalaman-ke-tekanan yang disimpan bersama selaman (lalai: air laut pada aras laut, 1.0 bar, 10 m setiap bar). Jenis air (masin atau tawar) hanya untuk rekod anda dan tidak menjejaskan pengiraan."
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "De weefselbelasting wordt berekend op basis van de oppervlaktedruk en de diepte-drukfactor die bij de duik zijn opgeslagen (standaard: zeewater op zeeniveau, 1,0 bar, 10 m per bar). Het watertype (zout of zoet) is alleen voor je eigen administratie en heeft geen invloed op de berekening."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "A carga tecidual é calculada a partir da pressão à superfície e do fator de conversão profundidade-pressão guardados com o mergulho (predefinição: água do mar ao nível do mar, 1,0 bar, 10 m por bar). O tipo de água (salgada ou doce) serve apenas para os seus registos e não afeta o cálculo."
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ภาระเนื้อเยื่อคำนวณจากความดันที่ผิวน้ำและค่าแปลงความลึกเป็นความดันที่บันทึกไว้กับไดฟ์ (ค่าเริ่มต้น: น้ำทะเลที่ระดับน้ำทะเล 1.0 bar, 10 m ต่อ 1 bar) ประเภทน้ำ (น้ำทะเลหรือน้ำจืด) ใช้สำหรับบันทึกเท่านั้นและไม่มีผลต่อการคำนวณ"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Tải trọng mô được tính từ áp suất bề mặt và hệ số quy đổi độ sâu sang áp suất được lưu cùng lần lặn (mặc định: nước biển ở mực nước biển, 1,0 bar, 10 m mỗi bar). Loại nước (mặn hoặc ngọt) chỉ dùng để ghi chép và không ảnh hưởng đến phép tính."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "组织负荷根据记录中的水面气压与深度换算系数计算（默认为海平面海水：1.0 bar、每 10 米 1 bar）。水域类型（海水／淡水）仅供记录，不影响计算。"
           }
         },
@@ -28957,18 +28957,18 @@
       }
     },
     "With Tissue Loading" : {
-      "comment" : "Filter option: dives whose detail page shows interactive tissue loading. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). DRAFT — PM to finalize; other 14 languages drafted 11/05, needs_review (PM 10/26).",
+      "comment" : "Filter option: dives whose detail page shows interactive tissue loading. v1.4 A3 list filter (docs/decisions/D-2026-11-01-A3-列表篩選規格.md). 18 languages approved by PM 11/07 (PM 10/26).",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mit Gewebebelastung"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Με φόρτωση ιστών"
           }
         },
@@ -28986,31 +28986,31 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Con carga tisular"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Avec charge tissulaire"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "S opterećenjem tkiva"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Dengan Beban Jaringan"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Con carico tissutale"
           }
         },
@@ -29022,43 +29022,43 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "조직 부하 있음"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Dengan Bebanan Tisu"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Met weefselbelasting"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Com carga tecidual"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "มีภาระเนื้อเยื่อ"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Có tải trọng mô"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "有组织负荷"
           }
         },
@@ -29071,18 +29071,18 @@
       }
     },
     "Yes" : {
-      "comment" : "v1.4 C: Raw Import Data value for 'Deco Required'. DRAFT — translations pending PM/native review.",
+      "comment" : "v1.4 C: Raw Import Data value for 'Deco Required'. Translations approved by PM 11/07.",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ja"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ναι"
           }
         },
@@ -29100,85 +29100,85 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sí"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Oui"
           }
         },
         "hr" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Da"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ya"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sì"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "はい"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "예"
           }
         },
         "ms" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ya"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ja"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sim"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ใช่"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Có"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "是"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "是"
           }
         }

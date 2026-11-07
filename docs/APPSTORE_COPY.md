@@ -63,7 +63,7 @@ dive log,divelog,Tauchlogbuch,duiklogboek,plongée,buceo,bitácora,immersioni,me
 
 ---
 
-## What's New — v1.4（🟡 草稿，待 PM 定稿，2026-11-05）
+## What's New — v1.4（✅ PM 2026-11-07 定稿）
 
 Search your logbook by dive site, buddy, tags, or notes, and filter dives by gas, dive type, or whether tissue loading is available. Tap a dive's coordinates to jump to it on the map. The dive detail page now shows more of the original data from imported files, such as CNS, PO₂ range, and gas switches. Plus multiple minor bug fixes and improvements.
 
@@ -191,7 +191,7 @@ JoyDive²，陪你從第一次下水到每一次進階潛水的潛水日誌。
 
 ---
 
-## 版本說明（What's New）— v1.4（🟡 草稿，待 PM 定稿，2026-11-05）
+## 版本說明（What's New）— v1.4（✅ PM 2026-11-07 定稿）
 
 新增日誌搜尋（潛點、潛伴、標籤、備註）與篩選（氣體、潛水類型、是否有組織負荷）；點潛水的座標可直接跳到地圖；潛水詳細頁可查看更多匯入檔的原始資料，例如 CNS、PO₂ 範圍與換氣紀錄，並修正多項小問題。
 
@@ -294,7 +294,7 @@ GPS座標から地図上へ自動的にピンをドロップ。これまで訪�
 
 ---
 
-## 新機能（What's New）— v1.4（🟡 下書き、PM 確定待ち、2026-11-05）
+## 新機能（What's New）— v1.4（✅ PM 2026-11-07 定稿）
 
 ログの検索（ダイビングポイント・バディ・タグ・メモ）と絞り込み（ガス、ダイビングの種類、組織負荷の有無）に対応しました。ダイブの座標をタップするとマップに移動します。ダイブ詳細画面で、インポートしたファイルの元データ（CNS、PO₂ の範囲、ガス切り替えなど）を確認できるようになりました。そのほか複数の軽微な不具合を修正しました。
 

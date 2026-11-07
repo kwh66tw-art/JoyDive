@@ -23,9 +23,9 @@
 1. **送審前待辦**（`docs/SUBMISSION_CHECK_NEXT.md` 最上段）：
    - **TestFlight 覆蓋升級首次啟動是否卡住**（PM 11/04 用 Xcode 裝到 iPhone 16 時卡 10–20 秒、重開不卡）。候選：Xcode 偵錯器、Debug 建置、首次遷移（lightweight，可能性低）。仍卡 ⇒ 先在 Release 實機用 Time Profiler／`os_signpost` 量測，再提案。
    - ~~PM 重拍 macOS 匯入頁上架截圖~~ ✅ PM 11/05 確認 OK。
-   - **翻譯審稿（PM）**：11/05 已補 16 鍵 × 14 語草稿＋`+%lld more` 依數量變形（18 語）；C 組 8 鍵草稿維持。審稿表 `docs/reports/R-2026-11-05-v1.4翻譯審稿對照表.md`；**PM 審完才把 `needs_review` 改 `translated`**。
+   - **翻譯審稿（PM）**：11/05 已補 16 鍵 × 14 語草稿＋`+%lld more` 依數量變形（18 語）；C 組 8 鍵草稿維持。審稿表 `docs/reports/R-2026-11-05-v1.4翻譯審稿對照表.md`；✅ **PM 2026-11-07 審核通過**，26 鍵已改 `translated`。
      - zh-Hant「最高／最低 PO₂」（紀錄值）與 App-i「PO₂ 上限」（設定上限）**刻意不同，不要統一**。
-   - What's New v1.4 三語草稿待 PM 定稿（`docs/APPSTORE_COPY.md`）。
+   - ✅ What's New v1.4 三語 PM 2026-11-07 定稿（`docs/APPSTORE_COPY.md`）。
 2. **v1.4 送審準備**：版號 ✅ 1.4（5）（11/05，Release 產物已驗）；F18／F19 ✅；其餘照 `app-store-submission-guide` 與 `SUBMISSION_CHECK_NEXT.md` 逐項查證。⚠️ `CLAUDE.md`「下次發布流程」仍寫「目前 4、下次 5」，改 CLAUDE.md 要 PM 直接同意。
 3. （可選）macOS 兩格未驗：「選取中按回到我的位置」、「GPS 開著冷啟動」——需 PM 先確認 audit App 定位授權。
 4. 待 PM 手動：iOS 模擬器文字輸入（T4、T27、T28）。
