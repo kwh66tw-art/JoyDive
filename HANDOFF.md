@@ -75,9 +75,9 @@
 - 撇號：法、義文全檔用 `’`（U+2019）；xcstrings 改動一律 round-trip 腳本＋JSON 對 HEAD 比對（value／state／comment 分開計數）。
 
 ## 專用模擬器與測試資料（可刪）
-- iOS：`JD2-LB-Audit`（iPhone 17 Pro，105 筆＋DA／T 系列特製紀錄）、`JD2-LB-B1-SE`（SE 3，資料同稽核機；11/05 多語截圖用，store 已由備份還原、SHA 相同）、`JD2-LB-FreshInstall`、`JD2-LB-UpgradeTest`、`JD2-LB-Upgrade-v10／v12／v13`。全部關機。11/05 測試時 SE 外觀曾切深色後改回淺色。
+- iOS：`JD2-LB-Audit`（iPhone 17 Pro，105 筆＋DA／T 系列特製紀錄）、`JD2-LB-B1-SE`（SE 3，資料同稽核機；11/05 多語截圖用，store 已由備份還原、SHA 相同）、`JD2-LB-FreshInstall`、`JD2-LB-UpgradeTest`、`JD2-LB-Upgrade-v10／v12／v13`、`JD2-LB-Shots`（iPhone 17 Pro Max，11/07 上架截圖用，截圖專用資料 84 筆）。全部關機。11/05 測試時 SE 外觀曾切深色後改回淺色。
 - macOS：`~/Library/Containers/com.jd2logbook.JD2-Logbook.audit`（104 筆）。
-- 截圖：`docs/screenshots/` 下各 v1.4 資料夾；11/05 多語版面 `v1.4-L10N-layout/01`–`25`。
+- 截圖：`docs/screenshots/` 下各 v1.4 資料夾；11/05 多語版面 `v1.4-L10N-layout/01`–`25`。11/07 上架截圖 `v1.4-appstore-iphone-6.9/`、`v1.4-appstore-mac-1280x800/`（三語）。
 
 ## 開場指令建議（給下一個 session）
 先讀本檔與 `docs/SUBMISSION_CHECK_NEXT.md` 最上段；確認 Kit 版號（`git -C /Users/kevin/Documents/AppProject/_JD2-family/<Kit> describe --tags` ⇒ v9.8.0／v0.8.3）；`git status` 應乾淨；跑 `run_tests.sh logbook` 對照 **249／0／1**；再向總指揮確認下一項（TestFlight 驗證或送審後項目）。
