@@ -7,7 +7,7 @@
 
 ## 目前狀態
 - **里程碑**：v1.4 **送審準備**（v1.3 Build 4 已上架）。功能面完成；11/05 介面與翻譯收尾完成；**11/07 PM：翻譯審核通過（26 鍵 391 條 → `translated`）、What's New 三語定稿**。
-  送審前清單：`docs/SUBMISSION_CHECK_NEXT.md` 最上段——**只剩 TestFlight 覆蓋升級首次啟動檢查（⬜）**與 ASC 上傳／送審（PM）。
+  送審前清單：`docs/SUBMISSION_CHECK_NEXT.md` 最上段——TestFlight 覆蓋升級首次啟動 **✅ PM 11/07 結案**（v1.3＋既有資料 → TestFlight 1.4（5），無延遲）；1.4（5）iOS＋macOS 皆已上傳 ASC（11/07，Organizer 顯示 Uploaded to Apple）。**只剩 ASC 送審（PM）**。
 - **版號**：1.4（5），Release 產物已驗；下次發布改 6（`CLAUDE.md`「下次發布流程」）。
 - **git**：本交接提交並推送後工作樹乾淨、與 origin/main 相同（hash 以 `git log -1` 為準）。
 - **測試**：`run_tests.sh logbook` **249／0／1**（唯一 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`）。
@@ -29,8 +29,8 @@
 - 可選：Premium 頁「Close」、說明頁「Done」比照 HIG 改 ✕／✓——PM 未裁示。
 
 ## 下一步（按順序）
-1. **TestFlight 覆蓋升級首次啟動**（`SUBMISSION_CHECK_NEXT.md` 第一列）：App Store v1.3＋既有資料 → TestFlight Release 升 v1.4 → 第一次啟動計時。不卡 ⇒ 結案；仍卡 ⇒ 先 Instruments 量測再提案。
-2. Archive／上傳／送審（PM；`CLAUDE.md`「下次發布流程」、`app-store-submission-guide`）。
+1. ~~TestFlight 覆蓋升級首次啟動~~ ✅ PM 11/07 結案（同機 v1.3＋既有資料升級，無延遲）。iOS 1.4（5）已上傳（11/07；上傳前需先在開發者帳號同意更新的 PLA）。
+2. ~~macOS Archive／上傳~~ ✅ 11/07 14:11（Organizer 截圖）。ASC 送審（PM；`CLAUDE.md`「下次發布流程」、`app-store-submission-guide`）。
 3. 送審後：強調色原則落地、通用詞全掃、與 App-u 統一共用詞（等總指揮派工）。
 
 ## 陷阱提醒（精簡；細節與真實案例見前幾版歸檔）
