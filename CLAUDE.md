@@ -39,12 +39,15 @@
 > 立即修正，不等下一輪。v1.1 階段紀錄本身沒有錯，移到下方「v1.1 開發」小節
 > 保留為歷史紀錄。
 
-- **狀態（2026-10-16）**：線上版本 **v1.3 (Build 4)**（2026-10-10 晚送審，**已上架，PM 2026-10-14 通知、2026-10-16 PM 確認**，iOS + macOS）；
-  前版 v1.2 (Build 3) 2026-07-29 上架。
+- **狀態（2026-11-08）**：線上版本 **v1.4 (Build 5)**（2026-11-07 送審，**已上架，PM 2026-11-08 通知**，iOS + macOS）；
+  v1.4 工作紀錄見 `docs/V1_4_WORK_PLAN.md`，送審檢查見 `docs/SUBMISSION_CHECK_NEXT.md`（v1.4 段），
+  變更見 `CHANGELOG.md` [v1.4.0]。⏰ **下一版送審必改 iOS 英文關鍵字**（1.4 只有 macOS 換成新組，見
+  `docs/SUBMISSION_CHECK_NEXT.md` 最上段）。
+  前版 v1.3 (Build 4) 2026-10-10 送審、PM 2026-10-14 通知上架；再前 v1.2 (Build 3) 2026-07-29 上架。
   v1.3 工作紀錄見 `docs/V1_3_WORK_PLAN.md`，送審檢查見 `docs/SUBMISSION_CHECK_NEXT.md`
   （10/10 段），上架文案見 `docs/APPSTORE_COPY.md`，變更見 `CHANGELOG.md` [v1.3.0]。
   v1.1／v1.0 為已完成的歷史階段，見下方小節與 `V1_1_BACKLOG.md`。
-- **目標上線**：v1.3 已上架；v1.4 開發中（2026-10-26 起，Kit v9.8.0／v0.8.3，進度見 `HANDOFF.md`）。
+- **目標上線**：v1.4 已上架（以 Kit v9.8.0／v0.8.3 送審）；下一版未排程（待辦見 `HANDOFF.md`）。
 - **App 類別**：運動（`LSApplicationCategoryType = public.app-category.sports`，PM 2026-10-10；
   ASC 主類別已於 2026-10-10 改為 Sports——由 App-lb 在建立 1.3 版本草稿後自動化操作，PM 10/18 確認）。
 - **平台**：iOS 17.0+ / macOS 14.0+，Swift 6
@@ -52,7 +55,7 @@
 - **Apple Team**：HUA SHENG Huang（77UHM3NN7J）
 - **最新 commit**：以 `git log` 為準（本檔不寫死 commit 資訊）
 
-### 審核狀態（v1.2 2026-07-29 通過；v1.3 已上架）
+### 審核狀態（v1.2 2026-07-29 通過；v1.3 已上架；v1.4 2026-11-08 PM 通知已上架）
 - **iOS App 1.2 (Build 3)**：✅ **已通過審核並上架**（2026-07-29，修正 2.3.6/5.1.2(i) 兩項拒絕理由後過關）
 - **macOS App 1.2 (Build 3)**：✅ **已通過審核並上架**（2026-07-29）
 - **IAP**：`com.jd2logbook.premium`，Non-Consumable，$1.99，隨 v1.2 版本上架

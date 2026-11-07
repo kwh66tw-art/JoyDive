@@ -6,16 +6,16 @@
 2026-11-07 晚（產生方式：/handoff skill；PM 指示「先更新文件、交接」）
 
 ## 目前狀態
-- **里程碑**：v1.4 **PM 2026-11-07 已送審（iOS＋macOS 1.4（5））**，等審核結果（v1.3 Build 4 仍為線上版）。
+- **里程碑**：v1.4 **已上架（iOS＋macOS 1.4（5））**——PM 2026-11-07 送審、**2026-11-08 PM 通知已上架**；線上版本＝1.4（5）。
   - ⏰ **下一版送審必提醒 PM：iOS 英文關鍵字要改成新組**——11/07 PM 只改了 macOS，iOS 1.4 送出的是 v1.3 舊組（`docs/SUBMISSION_CHECK_NEXT.md` 最上段「下一版送審前必做」）。
   - **ASC iOS 1.4／macOS 1.4 內容（App-lb 11/07 經 Chrome 操作、PM 授權；PM 檢查後送審）**：三語截圖（iPhone 6.9 吋各 6 張、Mac 各 5 張，取代 v1.3 舊圖；舊圖仍在素材庫）、三語 What's New（`APPSTORE_COPY.md` v1.4 定稿）、建置 1.4（5）皆已存；英文關鍵字 PM 自行改——**只改到 macOS，iOS 仍是舊組**。
   - ⚠️ App Review 備註（Notes）草稿時仍是 v1.2 退件的舊說明（"This submission addresses the two issues…"）；PM 送審前是否刪改**未知**——若被問到或下一版，先查 ASC。
 - **版號**：1.4（5），Release 產物已驗；下次發布改 6（`CLAUDE.md`「下次發布流程」）。
-- **git**：見下方「未提交／未推送」。
+- **git**：11/07 交接時的未提交／未推送項目已全部提交並推送（`4412465`，local＝origin）；線上隱私頁已更新（11/07 讀回三語）。
 - **測試**：`run_tests.sh logbook` **249／0／1**（11/07 後無程式變更）。
 - **共用層**：DiveKit **v9.8.0**、DiveImportKit **v0.8.3**（11/07 核對）。
 
-## 未提交／未推送（交接當下）
+## ~~未提交／未推送（11/07 交接當下）~~ ✅ 已於 `4412465` 提交並推送（保留原文供對照）
 - **未推送提交**：`39c9b1b`（TestFlight 結案）、`7a98d93`（上架截圖初版）、`f8eb4dc`（上架截圖重做）——推送要 PM 在本 session 直接同意。
 - **未提交**（等 PM「提交」）：`logbook/privacy.md`（三語：刪除無程式依據的「廣告不個人化」句、廣告段標「僅 iOS」並寫明 Mac 版不含 AdMob（Mac Release／Debug 產物 0 筆、iOS 對照 11 筆）、更新日改 11/7）；`docs/APPSTORE_COPY.md`、`docs/KEYWORDS_NEXT_DRAFT.md`（英文關鍵字 v1.4 新組）；本交接與 `SUBMISSION_CHECK_NEXT`、`KNOWN_ISSUES`、`CHANGELOG` 同步。
 - **線上隱私頁**（GitHub Pages）要推送後才會更新；ASC 隱私問卷不需改（v1.4 無新增資料收集，已逐項查證）。
@@ -37,8 +37,8 @@
 - 可選：Premium 頁「Close」、說明頁「Done」比照 HIG 改 ✕／✓——PM 未裁示。
 
 ## 下一步（按順序）
-1. PM「提交」⇒ 提交上述未提交檔（閘門照舊）；PM「推送」⇒ 推送（含 3 筆未推提交），線上隱私頁隨之更新。
-2. ~~PM 送審~~ ✅ 11/07 已送（iOS＋macOS）。等審核結果；被退件時先讀退件信再對照 `app-store-submission-guide`。**下一版送審：提醒 PM 改 iOS 英文關鍵字。**
+1. ~~提交／推送~~ ✅ `4412465` 已推送。
+2. ~~PM 送審~~ ✅ 11/07 已送（iOS＋macOS）；✅ **11/08 PM 通知已上架**。**下一版送審：提醒 PM 改 iOS 英文關鍵字。**
 3. 送審後：強調色原則落地、通用詞全掃、與 App-u 統一共用詞（等總指揮派工）；下一版 GDPR／UMP。
 
 ## 陷阱提醒（精簡；細節與真實案例見前幾版歸檔）

@@ -6,7 +6,7 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ---
 
-## [v1.4.0] — 未發布（開發中）
+## [v1.4.0] — 2026-11-08 上架（PM 2026-11-07 送審、11/08 通知上架；iOS＋macOS 1.4（5））
 
 ### 送審收尾（2026-11-05，總指揮派工，PM 11/05 同意）
 - 版號 1.4（5）：6 組 build setting；Release iOS／macOS 產物 `defaults read` 驗證。
