@@ -11,6 +11,7 @@
 | F18 `MockDataSeeder` 不進 Release | ✅ | 整檔包 `#if DEBUG`。Release 執行檔 `grep -a -o MockDataSeeder`：修前 iOS 17／macOS 34 ⇒ 修後 0／0（對照組 `No matching dives` 修前修後皆 1／2） |
 | F19 `.xcstrings.backup` 不出貨 | ✅ | `git rm`（歷史仍可取回）。Release 產物 `find -name '*.backup'`：修前 iOS 1／macOS 1 ⇒ 修後 0／0 |
 | What's New v1.4 三語 | ✅ PM 2026-11-07 定稿（內文不改；不加環境「未記錄」句） | `APPSTORE_COPY.md` 三處 v1.4 段 |
+| 11/05 介面變更（iOS 詳細頁「…」選單、編輯／新增 sheet ✕／✓、篩選圖示無外框＋啟用強調色、列表標題 18 語＝「Logbook」、冗字 16 處、日文匯入用語） | ✅ | SE 模擬器截圖 `docs/screenshots/v1.4-L10N-layout/15`–`25`；PM 11/05 iPhone 實機：「…」→刪除跳出確認正常、希臘文／德文列表捲動後小標題完整；`run_tests.sh logbook` 249／0／1（commit `01be146`、`6a9be55`、`cfca736`） |
 | v5 圖示外觀（iOS 一般／深色／著色、Mac Dock） | ✅ | PM 11/04 iPhone 實機截圖；Mac Dock PM 11/04 Mac 實機截圖，經總指揮轉述 |
 
 ## 2026-10-10 送審前再複核（10/07 之後：送審前 7 項＋PM 追加；以指令查證）

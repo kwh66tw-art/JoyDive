@@ -1,36 +1,39 @@
 # HANDOFF — JD2-Logbook
 
-> 交接文件（固定檔名滾動式）。前一版（含已結案項目的完整敘述）：`docs/handoff-archive/HANDOFF_2026-11-04_2.md`。
+> 交接文件（固定檔名滾動式）。前一版：`docs/handoff-archive/HANDOFF_2026-11-04_3.md`（再前：`_2.md`）。
 
 ## 交接時間
-2026-11-04 22:00（產生方式：/handoff skill；PM 指示「更新文件、交接，壓縮文件後再推送」——本版為精簡版）
+2026-11-07（產生方式：/handoff skill；PM 指示「確認文件、交接更新全面正確，push，通知我壓縮」）
 
 ## 目前狀態
-- **里程碑**：v1.4 開發中（v1.3 Build 4 已上架）。功能面全部完成：A1／A2／A3、D-A／D-C、B1／B2／B1-A、搜尋收合（B 案）、C 組；GDPR ⏸ 下一版（PM 10/05）。
-  進度：`docs/V1_4_WORK_PLAN.md`；稽核：`docs/V1_4_AUDIT_TEST_PLAN.md`；**送審前待辦：`docs/SUBMISSION_CHECK_NEXT.md` 最上段**。
+- **里程碑**：v1.4 **送審準備**（v1.3 Build 4 已上架）。功能面完成；11/05 介面與翻譯收尾完成；**11/07 PM：翻譯審核通過（26 鍵 391 條 → `translated`）、What's New 三語定稿**。
+  送審前清單：`docs/SUBMISSION_CHECK_NEXT.md` 最上段——**只剩 TestFlight 覆蓋升級首次啟動檢查（⬜）**與 ASC 上傳／送審（PM）。
+- **版號**：1.4（5），Release 產物已驗；下次發布改 6（`CLAUDE.md`「下次發布流程」）。
 - **git**：本交接提交並推送後工作樹乾淨、與 origin/main 相同（hash 以 `git log -1` 為準）。
-- **測試**：`run_tests.sh logbook` **249／0／1**（Kit v0.8.3，11/04 CH-23 修正後；唯一 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`）。
-- **共用層**：DiveKit **v9.8.0**、DiveImportKit **v0.8.3**（v0.8.3＝Diving Log 備註 RTF 修正，91b960f）；`check_doc_version_sync.sh` 通過。
-- **決策檔**（本週）：`docs/decisions/D-2026-10-26-v1.4-D3至D7裁示.md`（B1／B1-A）、`D-2026-11-01-A3-列表篩選規格.md`、`D-2026-11-04-DB-DE已知限制與F-09複數形實驗.md`、`D-2026-11-04-搜尋收合成按鈕.md`。
+- **測試**：`run_tests.sh logbook` **249／0／1**（唯一 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`）。
+- **共用層**：DiveKit **v9.8.0**、DiveImportKit **v0.8.3**（11/07 `describe --tags` 核對）。
 
-## 進行中的決策／排隊（尚未定案）
-- **App-u 的 B2 跟進**：總指揮與 PM 處理，本 repo 不動。
-- **「一個潛點一根圖釘」**：待辦，卡在「同一潛點」判定（見 D3–D7 決策檔 B1-A 節）。
-- **F17／F21**：PM 10/27 另行排程（F18／F19 已於 11/05 v1.4 送審收尾修正）。
-- **已匯入的 Diving Log 舊備註 RTF 殘留**：PM 11/04 裁示不自動清理（`docs/KNOWN_ISSUES.md`）。
+## 11/05–11/07 完成（細節見 `CHANGELOG.md` [v1.4.0]「送審收尾」）
+- 送審收尾派工：版號、F18／F19、16 鍵補 14 語、「+%lld more」依數量變形、What's New。
+- 外部翻譯稽核 → 採用 5 處；待查證清單 `docs/reports/R-2026-11-05-v1.4翻譯待查證清單.md`（#1–#9 結案）。
+- 法、義文撇號全檔 `’`；組織負荷說明頁標題 12 語縮短；列表標題「Dive Logbook」18 語＝分頁「Logbook」譯文（含英文；PM 實機希臘／德文確認）。
+- iOS 詳細頁刪除＋編輯收進「…」（PM 實機確認刪除正常）；編輯／新增 sheet ✕／✓（✓ 為 iOS 26 `.confirm`）；篩選圖示無外框＋啟用強調色（HIG）。
+- 冗字 16 處改單一說法（`docs/reports/R-2026-11-05-翻譯冗字盤點.md`）；Nitrox 中文「高氧」；日文匯入用語統一「読み込み」；義文 Done＝Fine（Apple 詞彙表）。
+
+## 進行中的決策／排隊（尚未定案或送審後）
+- **送審後**：介面強調色原則落地（家族 `decisions/2026-11-05_App介面強調色使用原則.md` §四；`docs/KNOWN_ISSUES.md` 有一列）——資料數值／圖示改 `.primary`／`.secondary`、地圖未選中圖釘與選中區分、氣體標籤不用強調色；**剖面圖藍色維持**；強調色維持系統藍（品牌薄荷綠白底 2.05:1，不採用）。
+- **送審後**：非潛水通用詞全掃（Apple 標準翻譯）——總指揮排程。
+- **送審後**：「Dive Logbook」等共用詞與 App-u 統一（總指揮轉 App-u）。
+- 待查證清單 #10–#12（稽核未附出處斷言、14 語母語審稿以外的實機排版、地圖副標實機目視）——非阻斷。
+- 「一個潛點一根圖釘」、F17／F21、Diving Log 舊備註 RTF 殘留：同前版（未排程／不自動清理）。
+- 可選：Premium 頁「Close」、說明頁「Done」比照 HIG 改 ✕／✓——PM 未裁示。
 
 ## 下一步（按順序）
-1. **送審前待辦**（`docs/SUBMISSION_CHECK_NEXT.md` 最上段）：
-   - **TestFlight 覆蓋升級首次啟動是否卡住**（PM 11/04 用 Xcode 裝到 iPhone 16 時卡 10–20 秒、重開不卡）。候選：Xcode 偵錯器、Debug 建置、首次遷移（lightweight，可能性低）。仍卡 ⇒ 先在 Release 實機用 Time Profiler／`os_signpost` 量測，再提案。
-   - ~~PM 重拍 macOS 匯入頁上架截圖~~ ✅ PM 11/05 確認 OK。
-   - **翻譯審稿（PM）**：11/05 已補 16 鍵 × 14 語草稿＋`+%lld more` 依數量變形（18 語）；C 組 8 鍵草稿維持。審稿表 `docs/reports/R-2026-11-05-v1.4翻譯審稿對照表.md`；✅ **PM 2026-11-07 審核通過**，26 鍵已改 `translated`。
-     - zh-Hant「最高／最低 PO₂」（紀錄值）與 App-i「PO₂ 上限」（設定上限）**刻意不同，不要統一**。
-   - ✅ What's New v1.4 三語 PM 2026-11-07 定稿（`docs/APPSTORE_COPY.md`）。
-2. **v1.4 送審準備**：版號 ✅ 1.4（5）（11/05，Release 產物已驗）；F18／F19 ✅；其餘照 `app-store-submission-guide` 與 `SUBMISSION_CHECK_NEXT.md` 逐項查證。⚠️ `CLAUDE.md`「下次發布流程」仍寫「目前 4、下次 5」，改 CLAUDE.md 要 PM 直接同意。
-3. （可選）macOS 兩格未驗：「選取中按回到我的位置」、「GPS 開著冷啟動」——需 PM 先確認 audit App 定位授權。
-4. 待 PM 手動：iOS 模擬器文字輸入（T4、T27、T28）。
+1. **TestFlight 覆蓋升級首次啟動**（`SUBMISSION_CHECK_NEXT.md` 第一列）：App Store v1.3＋既有資料 → TestFlight Release 升 v1.4 → 第一次啟動計時。不卡 ⇒ 結案；仍卡 ⇒ 先 Instruments 量測再提案。
+2. Archive／上傳／送審（PM；`CLAUDE.md`「下次發布流程」、`app-store-submission-guide`）。
+3. 送審後：強調色原則落地、通用詞全掃、與 App-u 統一共用詞（等總指揮派工）。
 
-## 陷阱提醒（精簡；細節與真實案例見前一版歸檔）
+## 陷阱提醒（精簡；細節與真實案例見前幾版歸檔）
 **流程／閘門**
 - 提交前跑 bash 閘門（`bash -euo pipefail`）：機敏掃描附對照樣本＋`check_doc_version_sync.sh`；逐檔 `git add`；零命中的 grep 用 `{ grep … || true; }`。zsh 不拆 `$var`、會展開 `--include=*.swift`、沒有 `PIPESTATUS` ⇒ 一律寫成腳本檔用 bash 跑（內嵌引號易壞）。
 - 提交前故障注入只能手動（`inject.sh` 要乾淨工作樹）：恰好命中 1 次、備份＋SHA 還原、`run_tests.sh --only`；FAIL 但 failed=0／無 RESULT 一律 ABORT。只測判斷函式會漏掉呼叫路徑。
@@ -62,10 +65,19 @@
 - sheet 閉包讀到舊的 `@State` ⇒ 用 Binding 傳進子 View。
 - 測試中不得釋放 `@MainActor @Observable` 類別 ⇒ static 共用實例；測試用到 Kit 型別要 `import DiveKit`。
 
+**11/05 新增**
+- 模擬器（iOS 26.5，SE 與 17 Pro）列表**捲動後不顯示小標題**（任何語言），與實機不同 ⇒ 捲動狀態只能 PM 實機驗。
+- 模擬器點選單項目常落在動畫中途（點「刪除」曾兩次打開編輯）；實機正常。同一操作兩次不成就停，請 PM 實機。
+- `simctl install` 會換 App container UUID ⇒ 還原 store 前用 `find …/Containers/Data/Application -name default.store` 重找路徑。
+- HIG 網頁是 JS 渲染，WebFetch 取不到 ⇒ `curl https://developer.apple.com/tutorials/data/design/human-interface-guidelines/<頁>.json` 取原文。
+- Apple 在地化詞彙表（iOS 13.3，17 語）查詢：`python3 /Users/kevin/Documents/AppProject/_JD2-family/scripts/apple_glossary_lookup.py "<詞>"`（唯讀，**詞彙表檔不得進版控**）。非潛水通用詞一律採 Apple 標準（例外登錄於家族 decisions，例：zh-Hant Import 維持「匯入」）。
+- 本 repo 公開：報告不寫品牌與出處網址（品牌／URL 只給總指揮存家族內部）；不得以 GPL 專案翻譯檔為出處。
+- 撇號：法、義文全檔用 `’`（U+2019）；xcstrings 改動一律 round-trip 腳本＋JSON 對 HEAD 比對（value／state／comment 分開計數）。
+
 ## 專用模擬器與測試資料（可刪）
-- iOS：`JD2-LB-Audit`（105 筆，App 內語言日文、GPS 未開）、`JD2-LB-B1-SE`（SE 3，資料同稽核機）、`JD2-LB-FreshInstall`（11/04 全新安裝測試，0 筆）、`JD2-LB-UpgradeTest`、`JD2-LB-Upgrade-v10／v12／v13`（T1–T3）。全部關機。
-- macOS：`~/Library/Containers/com.jd2logbook.JD2-Logbook.audit`（104 筆，11/04 測後由備份還原）。
-- 截圖：`docs/screenshots/` 下 `v1.4-A1`、`v1.4-A2`、`v1.4-audit-sim`、`v1.4-A3`、`v1.4-B`（00–55）、`v1.4-search`（含 README）、`v1.4-C`（含 README）。
+- iOS：`JD2-LB-Audit`（iPhone 17 Pro，105 筆＋DA／T 系列特製紀錄）、`JD2-LB-B1-SE`（SE 3，資料同稽核機；11/05 多語截圖用，store 已由備份還原、SHA 相同）、`JD2-LB-FreshInstall`、`JD2-LB-UpgradeTest`、`JD2-LB-Upgrade-v10／v12／v13`。全部關機。11/05 測試時 SE 外觀曾切深色後改回淺色。
+- macOS：`~/Library/Containers/com.jd2logbook.JD2-Logbook.audit`（104 筆）。
+- 截圖：`docs/screenshots/` 下各 v1.4 資料夾；11/05 多語版面 `v1.4-L10N-layout/01`–`25`。
 
 ## 開場指令建議（給下一個 session）
-先讀本檔與 `docs/SUBMISSION_CHECK_NEXT.md` 最上段；確認 Kit 版號（DiveKit v9.8.0、DiveImportKit v0.8.3：`git -C /Users/kevin/Documents/AppProject/_JD2-family/<Kit> describe --tags`）；`git status` 應乾淨；跑 `run_tests.sh logbook` 對照 **249／0／1**；再向總指揮確認下一項（送審準備或 App-u 跟進）。
+先讀本檔與 `docs/SUBMISSION_CHECK_NEXT.md` 最上段；確認 Kit 版號（`git -C /Users/kevin/Documents/AppProject/_JD2-family/<Kit> describe --tags` ⇒ v9.8.0／v0.8.3）；`git status` 應乾淨；跑 `run_tests.sh logbook` 對照 **249／0／1**；再向總指揮確認下一項（TestFlight 驗證或送審後項目）。
