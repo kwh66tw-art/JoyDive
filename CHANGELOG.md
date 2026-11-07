@@ -16,6 +16,9 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 截斷與冗字（11/05 後續）：iOS 詳細頁刪除＋編輯收進「…」選單（PM 實機確認刪除正常）；列表標題「Dive Logbook」18 語（含英文）一律改用分頁「Logbook」譯文（PM 11/05；捲動後小標題與四顆工具列按鈕並存，17pt 實量最寬 94 pt）；斜線並列／括號重述冗字 16 處改單一說法（盤點與出處 `docs/reports/R-2026-11-05-翻譯冗字盤點.md`）；日文匯入用語 9 句統一 Apple 標準「読み込み」（PM：非潛水通用詞一律採 Apple 標準翻譯）；義文「Done」= Fine（Apple iOS 詞彙表佐證）。iOS 編輯／新增 sheet「取消」「儲存」改 ✕／✓（✓ 用 iOS 26 `.confirm` 強調樣式）；篩選按鈕改無外框 `line.3.horizontal.decrease`、啟用中改強調色（PM：比照 Apple HIG）。
 - 稽核 F19：刪除 `Localizable.xcstrings.backup`（原本被打包進 App）。
 - What's New v1.4 三語（`docs/APPSTORE_COPY.md`）：✅ PM 2026-11-07 定稿。
+- 送審準備（2026-11-07）：TestFlight 覆蓋升級首次啟動 PM 實機結案；iOS／macOS 1.4（5）上傳；上架截圖重做（比照 ASC v1.3 構圖，詳細頁用 PM 真實紀錄）；ASC iOS／macOS 1.4 草稿備妥（三語截圖、What's New、建置），待 PM 送審。
+- 隱私政策（2026-11-07，PM 裁示）：刪除無程式依據的「廣告不使用個人化定向」；廣告段標明僅 iOS、Mac 版不含 AdMob；更新日 2026-11-07（三語）。
+- 英文關鍵字（2026-11-07，PM 裁示）：網路查證各語言實際用詞後改組（加 logbook／scuba／carnet／inmersiones／로그북），見 `docs/APPSTORE_COPY.md`。
 - 翻譯審核：✅ PM 2026-11-07 通過——26 鍵全部語言 `needs_review` → `translated`（391 條；JSON 對 HEAD 比對值 0 變動，另更新 24 鍵註解的 DRAFT 字樣）。
 - 測試：`EnvironmentEdgeCaseTests.testReasonSentenceJoiningAcrossAllAppLanguages` 原本鎖定「韓文未翻譯 ⇒ 回退英文」的現況，改為檢查 ko／de／th／zh-Hans 已有譯文；`run_tests.sh logbook` 249/0/1。
 

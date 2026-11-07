@@ -1,24 +1,30 @@
 # HANDOFF — JD2-Logbook
 
-> 交接文件（固定檔名滾動式）。前一版：`docs/handoff-archive/HANDOFF_2026-11-04_3.md`（再前：`_2.md`）。
+> 交接文件（固定檔名滾動式）。前一版：`docs/handoff-archive/HANDOFF_2026-11-07.md`（再前：`HANDOFF_2026-11-04_3.md`）。
 
 ## 交接時間
-2026-11-07（產生方式：/handoff skill；PM 指示「確認文件、交接更新全面正確，push，通知我壓縮」）
+2026-11-07 晚（產生方式：/handoff skill；PM 指示「先更新文件、交接」）
 
 ## 目前狀態
-- **里程碑**：v1.4 **送審準備**（v1.3 Build 4 已上架）。功能面完成；11/05 介面與翻譯收尾完成；**11/07 PM：翻譯審核通過（26 鍵 391 條 → `translated`）、What's New 三語定稿**。
-  送審前清單：`docs/SUBMISSION_CHECK_NEXT.md` 最上段——TestFlight 覆蓋升級首次啟動 **✅ PM 11/07 結案**（v1.3＋既有資料 → TestFlight 1.4（5），無延遲）；1.4（5）iOS＋macOS 皆已上傳 ASC（11/07，Organizer 顯示 Uploaded to Apple）。**只剩 ASC 送審（PM）**。
+- **里程碑**：v1.4 **PM 2026-11-07 已送審（iOS＋macOS 1.4（5））**，等審核結果（v1.3 Build 4 仍為線上版）。
+  - ⏰ **下一版送審必提醒 PM：iOS 英文關鍵字要改成新組**——11/07 PM 只改了 macOS，iOS 1.4 送出的是 v1.3 舊組（`docs/SUBMISSION_CHECK_NEXT.md` 最上段「下一版送審前必做」）。
+  - **ASC iOS 1.4／macOS 1.4 內容（App-lb 11/07 經 Chrome 操作、PM 授權；PM 檢查後送審）**：三語截圖（iPhone 6.9 吋各 6 張、Mac 各 5 張，取代 v1.3 舊圖；舊圖仍在素材庫）、三語 What's New（`APPSTORE_COPY.md` v1.4 定稿）、建置 1.4（5）皆已存；英文關鍵字 PM 自行改——**只改到 macOS，iOS 仍是舊組**。
+  - ⚠️ App Review 備註（Notes）草稿時仍是 v1.2 退件的舊說明（"This submission addresses the two issues…"）；PM 送審前是否刪改**未知**——若被問到或下一版，先查 ASC。
 - **版號**：1.4（5），Release 產物已驗；下次發布改 6（`CLAUDE.md`「下次發布流程」）。
-- **git**：本交接提交並推送後工作樹乾淨、與 origin/main 相同（hash 以 `git log -1` 為準）。
-- **測試**：`run_tests.sh logbook` **249／0／1**（唯一 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`）。
-- **共用層**：DiveKit **v9.8.0**、DiveImportKit **v0.8.3**（11/07 `describe --tags` 核對）。
+- **git**：見下方「未提交／未推送」。
+- **測試**：`run_tests.sh logbook` **249／0／1**（11/07 後無程式變更）。
+- **共用層**：DiveKit **v9.8.0**、DiveImportKit **v0.8.3**（11/07 核對）。
 
-## 11/05–11/07 完成（細節見 `CHANGELOG.md` [v1.4.0]「送審收尾」）
-- 送審收尾派工：版號、F18／F19、16 鍵補 14 語、「+%lld more」依數量變形、What's New。
-- 外部翻譯稽核 → 採用 5 處；待查證清單 `docs/reports/R-2026-11-05-v1.4翻譯待查證清單.md`（#1–#9 結案）。
-- 法、義文撇號全檔 `’`；組織負荷說明頁標題 12 語縮短；列表標題「Dive Logbook」18 語＝分頁「Logbook」譯文（含英文；PM 實機希臘／德文確認）。
-- iOS 詳細頁刪除＋編輯收進「…」（PM 實機確認刪除正常）；編輯／新增 sheet ✕／✓（✓ 為 iOS 26 `.confirm`）；篩選圖示無外框＋啟用強調色（HIG）。
-- 冗字 16 處改單一說法（`docs/reports/R-2026-11-05-翻譯冗字盤點.md`）；Nitrox 中文「高氧」；日文匯入用語統一「読み込み」；義文 Done＝Fine（Apple 詞彙表）。
+## 未提交／未推送（交接當下）
+- **未推送提交**：`39c9b1b`（TestFlight 結案）、`7a98d93`（上架截圖初版）、`f8eb4dc`（上架截圖重做）——推送要 PM 在本 session 直接同意。
+- **未提交**（等 PM「提交」）：`logbook/privacy.md`（三語：刪除無程式依據的「廣告不個人化」句、廣告段標「僅 iOS」並寫明 Mac 版不含 AdMob（Mac Release／Debug 產物 0 筆、iOS 對照 11 筆）、更新日改 11/7）；`docs/APPSTORE_COPY.md`、`docs/KEYWORDS_NEXT_DRAFT.md`（英文關鍵字 v1.4 新組）；本交接與 `SUBMISSION_CHECK_NEXT`、`KNOWN_ISSUES`、`CHANGELOG` 同步。
+- **線上隱私頁**（GitHub Pages）要推送後才會更新；ASC 隱私問卷不需改（v1.4 無新增資料收集，已逐項查證）。
+
+## 11/07 完成（細節見 `CHANGELOG.md` [v1.4.0]「送審收尾」）
+- TestFlight 覆蓋升級首次啟動 PM 實機結案；iOS／macOS 1.4（5）上傳（上傳前需同意更新的 PLA）。
+- 上架截圖重做：構圖比照 ASC v1.3，詳細頁用 PM 真實紀錄（蘭嶼母雞岩外礁，組織負荷 6 格黃）；`docs/screenshots/v1.4-appstore-*`。
+- ASC 1.4 草稿（見上）。
+- 隱私政策審查與修正（見上）；英文關鍵字網路查證後改組（證據等級＝實際用詞、非搜尋量；出處含品牌已交總指揮存家族內部）。
 
 ## 進行中的決策／排隊（尚未定案或送審後）
 - **送審後**：介面強調色原則落地（家族 `decisions/2026-11-05_App介面強調色使用原則.md` §四；`docs/KNOWN_ISSUES.md` 有一列）——資料數值／圖示改 `.primary`／`.secondary`、地圖未選中圖釘與選中區分、氣體標籤不用強調色；**剖面圖藍色維持**；強調色維持系統藍（品牌薄荷綠白底 2.05:1，不採用）。
@@ -26,12 +32,14 @@
 - **送審後**：「Dive Logbook」等共用詞與 App-u 統一（總指揮轉 App-u）。
 - 待查證清單 #10–#12（稽核未附出處斷言、14 語母語審稿以外的實機排版、地圖副標實機目視）——非阻斷。
 - 「一個潛點一根圖釘」、F17／F21、Diving Log 舊備註 RTF 殘留：同前版（未排程／不自動清理）。
+- 隱私／廣告：程式送出的廣告請求未設定非個人化（`AdBannerView.swift:37` `Request()`），GDPR／UMP 同意流程延下一版（`docs/KNOWN_ISSUES.md`）——做的時候一併決定是否明確要求非個人化廣告，並回頭更新隱私政策。
+- 關鍵字：v1.4 新組上架 1–2 個月後看 ASC 分析的搜尋來源；要更準需 Apple Search Ads 關鍵字熱門度。
 - 可選：Premium 頁「Close」、說明頁「Done」比照 HIG 改 ✕／✓——PM 未裁示。
 
 ## 下一步（按順序）
-1. ~~TestFlight 覆蓋升級首次啟動~~ ✅ PM 11/07 結案（同機 v1.3＋既有資料升級，無延遲）。iOS 1.4（5）已上傳（11/07；上傳前需先在開發者帳號同意更新的 PLA）。
-2. ~~macOS Archive／上傳~~ ✅ 11/07 14:11（Organizer 截圖）。ASC 送審（PM；`CLAUDE.md`「下次發布流程」、`app-store-submission-guide`）。
-3. 送審後：強調色原則落地、通用詞全掃、與 App-u 統一共用詞（等總指揮派工）。
+1. PM「提交」⇒ 提交上述未提交檔（閘門照舊）；PM「推送」⇒ 推送（含 3 筆未推提交），線上隱私頁隨之更新。
+2. ~~PM 送審~~ ✅ 11/07 已送（iOS＋macOS）。等審核結果；被退件時先讀退件信再對照 `app-store-submission-guide`。**下一版送審：提醒 PM 改 iOS 英文關鍵字。**
+3. 送審後：強調色原則落地、通用詞全掃、與 App-u 統一共用詞（等總指揮派工）；下一版 GDPR／UMP。
 
 ## 陷阱提醒（精簡；細節與真實案例見前幾版歸檔）
 **流程／閘門**
@@ -65,6 +73,12 @@
 - sheet 閉包讀到舊的 `@State` ⇒ 用 Binding 傳進子 View。
 - 測試中不得釋放 `@MainActor @Observable` 類別 ⇒ static 共用實例；測試用到 Kit 型別要 `import DiveKit`。
 
+**11/07 新增（上架截圖與 ASC）**
+- 上架截圖資料：`scratchpad/shot/make_stores.py`（稽核機 store 複本＋PM 正式 store 的**唯讀**複本取真實剖面，用完即刪）；正式 store「綠島石朗」是 CCR 測試檔改名（序號 01234567、水溫 4 °C），不得當真實紀錄。
+- iOS 模擬器：剖面拖曳放開後讀數與組織負荷會留著，可直接截；地圖拖曳用慢速 `touch_path`（每點 150 ms＋結尾停 800 ms）避免慣性；App 重開會回到上次的詳細頁，第一下點擊常被吃掉——每步截圖確認。
+- Mac 截圖：命令列無螢幕錄製權限（`screencapture` 失敗，權限要 PM 自己開）⇒ 用電腦操作工具 `app_zoom` 整窗（1389×868 JPEG）再 `sips` 縮成 1280×800 PNG；`app_screenshot` 會畫出工具的游標標記，`app_zoom` 不會。audit 版加 `-NSRequiresAquaSystemAppearance YES` 強制淺色；年月選擇器浮層截窗會變灰塊；sheet 取消後視窗可能失焦，用 `open <app>` 帶回前景。
+- ASC（Chrome）：6.9 吋在 Media Manager「iPhone with Dynamic Island (large display)」，必填的 6.1／6.3 吋會沿用；Remove All 只移除本版草稿（素材庫保留）。file input 被收合或隱藏時，用 JS 加 aria-label 再 `find` 取 ref 上傳；What's New 要用點擊＋實際打字（直接設 value 不會存）；跳出的提示框會吃掉打字，打完用 JS 讀回確認長度。
+
 **11/05 新增**
 - 模擬器（iOS 26.5，SE 與 17 Pro）列表**捲動後不顯示小標題**（任何語言），與實機不同 ⇒ 捲動狀態只能 PM 實機驗。
 - 模擬器點選單項目常落在動畫中途（點「刪除」曾兩次打開編輯）；實機正常。同一操作兩次不成就停，請 PM 實機。
@@ -80,4 +94,4 @@
 - 截圖：`docs/screenshots/` 下各 v1.4 資料夾；11/05 多語版面 `v1.4-L10N-layout/01`–`25`。11/07 上架截圖 `v1.4-appstore-iphone-6.9/`、`v1.4-appstore-mac-1280x800/`（三語）。
 
 ## 開場指令建議（給下一個 session）
-先讀本檔與 `docs/SUBMISSION_CHECK_NEXT.md` 最上段；確認 Kit 版號（`git -C /Users/kevin/Documents/AppProject/_JD2-family/<Kit> describe --tags` ⇒ v9.8.0／v0.8.3）；`git status` 應乾淨；跑 `run_tests.sh logbook` 對照 **249／0／1**；再向總指揮確認下一項（TestFlight 驗證或送審後項目）。
+先讀本檔與 `docs/SUBMISSION_CHECK_NEXT.md` 最上段；`git status`／`git log origin/main..HEAD` 確認是否已提交、推送；確認 Kit 版號（`git -C /Users/kevin/Documents/AppProject/_JD2-family/<Kit> describe --tags` ⇒ v9.8.0／v0.8.3）；跑 `run_tests.sh logbook` 對照 **249／0／1**；再問 PM 送審結果（審核中／被退件）或向總指揮確認送審後項目。

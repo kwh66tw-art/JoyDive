@@ -1,11 +1,20 @@
 # 下一版送審檢查（2026-10-03 建立；**2026-10-06 送審收尾複核**，依 `app-store-submission-guide` §0 清單）
 
+## ⏰ 下一版送審前必做（PM 2026-11-07 交代：下次送審時提醒）
+
+| 項目 | 狀態 | 說明 |
+|---|---|---|
+| **iOS 英文關鍵字改成 v1.4 新組** | ⬜ | 11/07 PM 只改了 **macOS** 1.4 的英文關鍵字，**iOS 1.4 送審時仍是 v1.3 舊組**（`dive log,divelog,…,selam,lặn`）。關鍵字只能隨新版本更改 ⇒ 下一版建立 iOS 版本草稿時，把英文 Keywords 換成 `docs/APPSTORE_COPY.md` Keywords 段的現行組（並再確認 macOS 仍一致） |
+
 ## v1.4 送審前待辦（2026-11-04 起累積；送審當天逐項以指令／實機查證）
 
 | 項目 | 狀態 | 驗證方式 |
 |---|---|---|
 | **TestFlight 覆蓋升級首次啟動不卡**（PM 11/04 實機：Xcode 安裝 v1.4 到 iPhone 16（既有 71 筆）後第一次啟動，整個畫面卡在日誌頁 10–20 秒，重開不再卡；模擬器全新安裝 0 筆、既有 105 筆皆未重現） | ✅ PM 2026-11-07 結案 | **結果（PM 11/07 實機）**：同一支 iPhone 先回到 App Store v1.3＋v1.3 時期資料 → TestFlight 安裝 1.4（5）Release 升級 → 第一次啟動無延遲、升級 OK ⇒ 11/04 卡頓非 Release 遷移所致（歸因於 Xcode 偵錯器／Debug 建置，未個別量測）。上傳：Xcode Organizer 11/07，PLA 更新同意後成功（iOS 與 macOS 1.4（5）皆 Uploaded to Apple；macOS 14:11）；警告僅 GoogleMobileAds／UserMessagingPlatform 缺 dSYM（第三方預編框架，只影響該 SDK 內當機符號化）。以下為原紀錄：**候選（皆未量測）**：① Xcode 偵錯器首次附掛；③ Xcode 裝的是 **Debug** 建置（DiveKit 等未最佳化，啟動時任何重活都比 Release 慢很多）；② v1.4 首次資料庫遷移——v1.3→v1.4 為 **lightweight 遷移**（`DiveLogSchema.swift:211`，三段皆 lightweight），71 筆一般為毫秒級，**可能性較低**（推論，總指揮 11/04）。**驗證**：iPhone 先留 App Store v1.3＋既有資料 → 不經 Xcode，用 TestFlight（Release）升級到 v1.4 → 第一次啟動計時、確認可點分頁。TestFlight 為 Release ⇒ 同時排除 ①③。**不卡** ⇒ 結案。**仍卡 ⇒ 先量測再提案，不先猜做法**：Release 實機用 Instruments Time Profiler（或 `os_signpost` 包住 `ModelContainer` 建立與首頁 `.task`）量一次，看卡在哪一段；量完才提案（若卡在遷移，再提「背景遷移＋顯示準備中」），PM 決定後再改 |
 | 上架截圖 v1.4（英／繁中／日） | ✅ 備妥，待 PM 上傳 ASC | **PM 11/07 重做：構圖比照 ASC 上 v1.3 現行截圖**（唯讀查看；iPhone 6 張、Mac 5 張／語言，三語各自在地化）。iPhone 6.9 吋 1320×2868 各 6 張（列表、詳細＋剖面拖曳後組織負荷、地圖、匯入、日曆、新增潛水）：`docs/screenshots/v1.4-appstore-iphone-6.9/`；Mac 1280×800 各 5 張（列表＋詳細＋組織負荷、地圖、匯入、日曆、新增潛水）：`docs/screenshots/v1.4-appstore-mac-1280x800/`。**詳細頁用 PM 真實潛水紀錄**：蘭嶼母雞岩外礁（29.7 m／36 min／空氣，UDDF；取自 PM Mac 正式 store 的唯讀複本，用完即刪），拖曳到 25′26″（iPhone）／25′50″（Mac）＝快組織 6 格黃、免減壓 1′／2′；同潛旅另放玉女岩、母雞岩兩筆真實剖面。正式 store 另一筆「綠島石朗」查為 CCR 測試檔改名（裝置序號 01234567、水溫 4 °C）⇒ 不採用。其餘資料＝稽核機 store 複本去測試列與 trimix、補剖面（84 筆）。iPhone 用 `JD2-LB-Shots`；Mac 用 audit bundle＋淺色，拍後 audit store 還原 SHA-256 相同、正式 store SHA-256 前後相同。v1.3 Mac 日曆開著年月選擇器——該浮層單獨截窗時背景呈灰色方塊 ⇒ 改拍未開選擇器。已知：繁中／日文「69h 8m」「min」未在地化（既有行為）；匯入頁含廠牌名（App 本身畫面） |
+| ASC 1.4 草稿（iOS＋macOS） | ✅ PM 2026-11-07 已送審（iOS＋macOS） | 11/07 App-lb 經 Chrome 操作（PM 授權）：建立 iOS 1.4、macOS 1.4；三語截圖（iPhone 6.9 吋 large display 各 6、Mac 各 5，舊圖 Remove All 只移出草稿）；三語 What's New；建置 1.4（5）。逐語言切換讀回：截圖張數、What's New 開頭、Build 欄、Save 灰（無未存變更）。⚠️ App Review 備註仍是 v1.2 退件舊說明，待 PM 刪改 |
+| 隱私政策（`logbook/privacy.md`） | ✅ 已改，⬜ 待提交＋推送（線上頁才更新） | 11/07 審查：v1.3 送審（`125a85b`）後 plist／entitlements／xcprivacy／Package.resolved 無變更，新程式無網路／分享／分析呼叫；定位改為只在按「回到我的位置」時抓（`cd9ecc8`），政策寫法仍正確。修正（PM 裁示 a＋2）：刪「廣告不個人化」（程式 `AdBannerView.swift:37` 無此設定）、廣告段標「僅 iOS」並寫 Mac 版不含 AdMob（Mac 產物 0 筆／iOS 11 筆）、更新日 11/7。ASC 隱私問卷不需改 |
+| 英文關鍵字 | 🟡 PM 11/07 定案；**只有 macOS 已改，iOS 仍為 v1.3 舊組**（PM 11/07 已送審；下一版補改，見本檔最上段） | `docs/APPSTORE_COPY.md` Keywords 段（95 字元）；查證方式與證據等級寫在該段 |
 | macOS 匯入頁上架截圖重拍（多了 ATMOS FIT） | ✅ 結案 | PM 11/05 確認 OK（總指揮轉述） |
 | 新字串補 14 語＋審稿 | ✅ PM 2026-11-07 審核通過，26 鍵 `needs_review` → `translated`（391 條，值 0 變動） | 11/05：16 鍵補 14 語草稿（210 條 `needs_review`）；`+%lld more` 改依數量變形（18 語，Release 產物實測 hr 1／2／5／21 ⇒ one／few／other／one）；C 組 8 鍵維持 `needs_review`。重掃（非 `shouldTranslate=false`、缺語言者）只剩派工排除的 Sustained Ascent ×2、Developer Tools、AL100、符號鍵。審稿表 `docs/reports/R-2026-11-05-v1.4翻譯審稿對照表.md`；**PM 審完才改 `translated`** |
 | 版號 1.4（5） | ✅ | 6 組 build setting 全改（`project.pbxproj` `grep -c 'MARKETING_VERSION = 1.4'`＝6、`CURRENT_PROJECT_VERSION = 5`＝6）；Release iOS／macOS 產物 `defaults read` ⇒ `CFBundleShortVersionString`＝1.4、`CFBundleVersion`＝5 |

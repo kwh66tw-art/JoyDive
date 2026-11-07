@@ -1,6 +1,6 @@
 # Privacy Policy — JoyDive²
 
-**Last Updated**: October 6, 2026
+**Last Updated**: November 7, 2026
 
 ---
 
@@ -21,15 +21,15 @@ JoyDive² ("the App") is designed with your privacy in mind. This policy explain
 
 ### Data Collected Automatically
 
-#### Advertising — Non-Premium Users
+#### Advertising — Non-Premium Users (iOS Only)
 
-The App uses **Google AdMob** to display banner advertisements for non-premium users. AdMob may collect:
+On iOS, the App uses **Google AdMob** to display banner advertisements for non-premium users. The macOS version does not show ads and does not include AdMob. AdMob may collect:
 
 - IP address
 - Device type and OS version
 - Ad interaction data
 
-The App does not use the device advertising identifier (IDFA) and does not request App Tracking Transparency permission, because it does not track your activity across other companies' apps or websites. Ads are served without personalized ad targeting.
+The App does not use the device advertising identifier (IDFA) and does not request App Tracking Transparency permission, because it does not track your activity across other companies' apps or websites. How ads are selected and served is determined by Google in accordance with its own policies.
 
 For details, see [Google's Privacy Policy](https://policies.google.com/privacy).
 
@@ -95,7 +95,7 @@ For privacy questions, contact: **joydive.app@gmail.com**
 
 # 隱私政策 — JoyDive²
 
-**最後更新**：2026 年 10 月 6 日
+**最後更新**：2026 年 11 月 7 日
 
 ---
 
@@ -116,15 +116,15 @@ JoyDive²（「本應用程式」）以保護您的隱私為設計核心。本�
 
 ### 自動收集的資料
 
-#### 廣告 — 非付費用戶
+#### 廣告 — 非付費用戶（僅 iOS）
 
-本應用程式使用 **Google AdMob** 向非付費用戶顯示橫幅廣告。AdMob 可能收集：
+在 iOS 上，本應用程式使用 **Google AdMob** 向非付費用戶顯示橫幅廣告；macOS 版不顯示廣告，也不包含 AdMob。AdMob 可能收集：
 
 - IP 位址
 - 裝置型號與作業系統版本
 - 廣告互動資料
 
-本應用程式不使用裝置廣告識別碼（IDFA），也不會請求「App 追蹤透明度」授權，因為本應用程式不會跨其他公司的 App 或網站追蹤您的活動。廣告投放不會使用個人化廣告定向。
+本應用程式不使用裝置廣告識別碼（IDFA），也不會請求「App 追蹤透明度」授權，因為本應用程式不會跨其他公司的 App 或網站追蹤您的活動。廣告如何選擇與投放，由 Google 依其政策決定。
 
 詳情請參閱 [Google 隱私政策](https://policies.google.com/privacy)。
 
@@ -190,7 +190,7 @@ JoyDive²（「本應用程式」）以保護您的隱私為設計核心。本�
 
 # プライバシーポリシー — JoyDive²
 
-**最終更新日**：2026年10月6日
+**最終更新日**：2026年11月7日
 
 ---
 
@@ -211,15 +211,15 @@ JoyDive²（以下「本アプリ」）は、ユーザーのプライバシー�
 
 ### 自動的に収集されるデータ
 
-#### 広告 — 非プレミアム（無料版）ユーザー
+#### 広告 — 非プレミアム（無料版）ユーザー（iOS のみ）
 
-本アプリでは、非プレミアムユーザーに対してバナー広告を表示するために **Google AdMob** を使用しています。AdMobは以下のデータを収集する場合があります。
+iOS 版の本アプリでは、非プレミアムユーザーに対してバナー広告を表示するために **Google AdMob** を使用しています。macOS 版では広告を表示せず、AdMob も含まれていません。AdMobは以下のデータを収集する場合があります。
 
 - IPアドレス
 - デバイスの機種およびOSのバージョン
 - 広告へのインタラクション（操作）データ
 
-本アプリはデバイスの広告識別子（IDFA）を使用せず、「Appのトラッキング透明性」の許諾もリクエストしません。これは、本アプリが他社のアプリやウェブサイトを横断してユーザーの行動を追跡することがないためです。広告はパーソナライズされたターゲティングなしで配信されます。
+本アプリはデバイスの広告識別子（IDFA）を使用せず、「Appのトラッキング透明性」の許諾もリクエストしません。これは、本アプリが他社のアプリやウェブサイトを横断してユーザーの行動を追跡することがないためです。広告の選択と配信は、Google が同社のポリシーに基づいて行います。
 
 詳細は、[Googleプライバシーポリシー](https://policies.google.com/privacy)をご参照ください。
 

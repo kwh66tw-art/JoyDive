@@ -37,7 +37,7 @@
 
 | 項目 | 說明 | 影響 | 排定版本 |
 |------|------|------|---------|
-| GDPR／UMP 廣告同意流程未做 | `GoogleUserMessagingPlatform` 被解析為相依套件，但程式碼 UMP 呼叫 0 筆；非個人化廣告仍需同意（`docs/V1_3_D6_D7_RESEARCH.md`） | 歐洲區廣告合規 | 下一版（PM 10/05 裁示） |
+| GDPR／UMP 廣告同意流程未做 | `GoogleUserMessagingPlatform` 被解析為相依套件，但程式碼 UMP 呼叫 0 筆；非個人化廣告仍需同意（`docs/V1_3_D6_D7_RESEARCH.md`）。另：程式送出的廣告請求未設定非個人化（`AdBannerView.swift:37` `Request()`），「App 只走非個人化廣告」無程式依據；隱私政策 11/07 已刪此說法（PM 裁示） | 歐洲區廣告合規 | 下一版（PM 10/05 裁示） |
 | 另 4 處 `.minimumScaleFactor` 在 Xcode 27 建置下放得下也縮小 | `DiveLogListView.swift:307,313`（統計列）、`DiveRowView.swift:114`（日期區塊）、`ImportWizardView.swift:694`（副檔名）；改法同剖面讀數的 `ViewThatFits`，改完與 v1.2 截圖對照 | 版面外觀 | ✅ v1.4 C 已改（`View.shrinkOnlyIfNeeded`）；⚠️ 未驗證效果：11/04 Xcode 27.2／iOS 26.2 建置改前改後逐像素相同、原症狀未重現、縮小路徑（放不下時）未實測 |
 | SwiftData 無 `SchemaMigrationPlan`（稽核 R-07） | 目前單一版本 `Schema`；v1.3 實測 lightweight migration 105 筆正常，但 breaking schema 變更沒有遷移路徑 | 日後改資料模型 | 下次改資料模型時一起做 |
 | 最大字級（XXXL）＋窄機時剖面讀數數值被「…」截斷 | v1.2 起即有 | 極端字級 | PM 10/05：不處理（系統字級放到最大，各 App 皆如此） |

@@ -52,12 +52,19 @@ Traditional Chinese, Simplified Chinese, English, Japanese, Korean, French, Germ
 
 ## Keywords (100 characters, comma-separated, no words already in App Name)
 
-dive log,divelog,Tauchlogbuch,duiklogboek,plongée,buceo,bitácora,immersioni,mergulho,다이빙로그,selam,lặn
+logbook,scuba,Tauchlogbuch,duiklogboek,carnet,plongée,inmersiones,buceo,immersioni,mergulho,로그북
+
+> ⚠️ **ASC 實際狀態（PM 11/07）**：只有 **macOS 1.4** 改成下列新組；**iOS 1.4 送審時仍是 v1.3 舊組** ⇒ 下一版 iOS 版本草稿務必改（`docs/SUBMISSION_CHECK_NEXT.md` 最上段）。
+> ✅ **v1.4（PM 2026-11-07 裁示）**：依網路查證改組（95 字元／102 bytes）。查證方式：各語言潛水教學機構在地化頁面、潛水聯合會線上日誌、論壇與當地 App Store 的 App 名稱實際用詞（出處 URL 含品牌，依公開 repo 規則交總指揮存家族內部紀錄）。**證據是「有人這樣用」，不是搜尋量**——搜尋量要用 Apple Search Ads 關鍵字熱門度才能比。
+>   - 加：`logbook`（義、葡、西、德各國 App 介紹與網站常直接用；舊組完全沒有）、`scuba`、`carnet`（法文說法是 carnet de plongée）、`inmersiones`（西文 diario／registro de inmersiones）、`로그북`（韓國 App 名稱用「로그 북」）
+>   - 移除：`dive log`／`divelog`（英文副標已有 Dive、Log——是否需要重複未查證）、`bitácora`（只見於「cuaderno de bitácora」，證據弱）、`다이빙로그`、`selam`、`lặn`（證據不足；代價：印尼／馬來／越南不再有當地語詞）
+>   - 未涵蓋：泰、希、克、簡中（同 v1.3）。
+> 🗄 v1.3 組（PM 2026-10-10）：`dive log,divelog,Tauchlogbuch,duiklogboek,plongée,buceo,bitácora,immersioni,mergulho,다이빙로그,selam,lặn`（100 字元）
 
 > ✅ **v1.3（2026-10-03，PM 裁示）**：移除品牌名（2.3.7＋艦隊紅線）；台灣／日本在地化，其他 storefront 用英文組。依據 `docs/KEYWORDS_NEXT_DRAFT.md`。舊組（v1.2）：`dive log,scuba,logbook,Shearwater,UDDF,Garmin,Suunto,Subsurface,nitrox,dive computer,freediving`
 
 > ✅ **v1.3 再修訂（PM 2026-10-10）**：英文組**只放各國「潛水日誌」用詞**（不放品牌、不放泛用詞）——英 dive log／divelog、德 Tauchlogbuch、荷 duiklogboek、法 plongée、西 buceo／bitácora、義 immersioni、葡 mergulho、韓 다이빙로그、印尼／馬來 selam、越 lặn。片語拆成單字（App Store 會自動組合搜尋），18 語全放約 200 字元放不下，PM 選此組（未涵蓋：泰、希、克、簡中）。10/03 那組（logbook,scuba,diving,…,depth）已換掉。
-> ⚠️ 100 characters / 114 bytes (no spaces after commas). Apple limit: 100 — ✅ **ASC 以字元計（2026-10-10 實測：100 字元／114 bytes 完整接受、剩餘 0）**，不必拿掉 lặn 或 selam。
+> ⚠️ v1.4 組 95 characters / 102 bytes (no spaces after commas). Apple limit: 100 — ASC 以字元計（2026-10-10 實測：v1.3 組 100 字元／114 bytes 完整接受）。
 > 📜 History: the v1.2 set (brand names such as Shearwater/Garmin/Suunto/Subsurface) was found unsearchable after launch
 >   (2026-07-29); replaced in v1.3 per PM 2026-10-03. Details: `docs/KEYWORDS_NEXT_DRAFT.md`.
 
