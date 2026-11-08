@@ -10,7 +10,7 @@
 
 - **F5 已完成（2026-07-18）**：`JD2Core/Algorithm/` 的 DiveKit-fork（`Buhlmann`／
   `DiveEngine`／`AlgorithmConstants`／`GasMix`／`DiveEnvironment` 等）已整包刪除，
-  改用統一 DiveKit 外部引用（`../../_JD2-family/DiveKit`，SPM local path、無版本鎖定；v1.3 (Build 4) 以 v9.3.0 送審，**目前 Kit 現況 v9.8.0**（v9.7.0 `environmentUntrusted`＝v1.4 D-A 已採用；v9.8.0 `implausibleEnvironment`＝F14；`run_tests.sh logbook` 249/0/1，2026-11-07 核對），2026-10-28）。
+  改用統一 DiveKit 外部引用（`../../_JD2-family/DiveKit`，SPM local path、無版本鎖定；v1.3 (Build 4) 以 v9.3.0 送審，**目前 Kit 現況 v9.10.0**（v9.7.0 `environmentUntrusted`＝v1.4 D-A 已採用；v9.8.0 `implausibleEnvironment`＝F14；v1.4 以 v9.8.0 送審；`run_tests.sh logbook` 249/0/1——總指揮 2026-11-09 以 DiveKit v9.10.0／DiveImportKit v0.9.0 量測，唯一 skip＝StoreKit 價格測試），2026-10-28）。
   **本 repo 已無任何演算法拷貝**。**2026-09-02修正**：本條原寫「`JD2Core/Algorithm/`
   僅留`DiveReplayEngine.swift`」——該檔已不存在，DiveKit v1.9.0（2026-08-22）把
   剖面重放引擎本體上收為`DiveReplay.swift`後，本repo已改用DiveKit的版本，
@@ -18,7 +18,7 @@
   本身）。發現演算法問題→回統一 DiveKit修（單一戰場），不得在本 repo 繞道；
   `SYNC_TO_JD2-ULTRA.md` 仍是 Logbook↔ultra單向記錄機制（非 DiveKit 相關問題才用）。
 - **F6/F8/B組已完成（2026-07-19）**：Importers 全部（15 種格式）搬遷至獨立的
-  `DiveImportKit`（`../../_JD2-family/DiveImportKit`，**v1.3 (Build 4) 以 v0.7.8 送審，目前 Kit 現況 v0.8.3**（v0.8.2＝F15 Subsurface XML 水面氣壓合理範圍；v0.8.3＝Diving Log 備註 RTF 轉純文字修正，2026-11-04 核對）），本 repo 已無任何本地
+  `DiveImportKit`（`../../_JD2-family/DiveImportKit`，**v1.3 (Build 4) 以 v0.7.8 送審，目前 Kit 現況 v0.9.0**（v0.8.2＝F15 Subsurface XML 水面氣壓合理範圍；v0.8.3＝Diving Log 備註 RTF 轉純文字修正；v1.4 以 v0.8.3 送審；v0.9.0 於 2026-11-09 核對 tag）），本 repo 已無任何本地
   解析器/去重邏輯拷貝，只剩 `JD2Core/Importers/DiveImportKitAdapter.swift`
   （全 App 唯一 import 點）。**解析器 bug 同樣回統一 DiveImportKit 修**。
   **本地複製的 `DiveLogImportError`（`JD2Core/Importers/DiveLogImporter.swift`）
