@@ -77,6 +77,7 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 - 詳細頁來源格式「Manual Entry」改走在地化（catalog 既有 18 語）。
 - 4 處 `.minimumScaleFactor` 改「先試原字級、放不下才縮」（新 `View.shrinkOnlyIfNeeded`，與剖面讀數同做法）：列表統計列 2 處、列表日期月份、匯入頁副檔名。
 - 刪除 stale 鍵 `%lld%%`（無程式碼引用）。
+- 刪除死鍵「Safety stop became mandatory: …」（PM 11/04 裁示；`f0c342f`）：2026-09-21 移除強制安全停留後已無程式碼使用（`DiveAnalysisView.swift:503` 只剩歷史註解）；`extractionState` 為 manual、Xcode 不標 stale，故手動刪除；catalog 258→257 鍵、其他鍵不變。此鍵是 Logbook 唯一的日文「セーフティストップ」，刪除後家族 F-01「日文安全停止統一」即完成（日文基準為「安全停止」，見家族術語表 `safety stop`）。（2026-11-15 補登，PM 同意）
 - 「原始匯入資料」6 個鍵給標籤：`cns`→CNS、`altitudeRange`→Altitude Range、`decoRequired`→Deco Required（值 Yes／No）、`minPPO2`／`maxPPO2`→Min／Max PO₂（拼法依家族 App）、`gasSwitches`→Gas Switches（值整理成「0:00 Air → 23:40 EANx50」，氣體分類沿用 DiveImportKit 同一規則）。新字串 8 個 × 18 語，**非英文皆為草稿、標 needs_review**。
 - 測試 +3（`ImportExtraDisplayTests`）⇒ **248/0/1**。截圖 `docs/screenshots/v1.4-C/`。
 - 修正（家族收工檢查 CH-23，總指揮 11/04）：換氣紀錄的 trimix 名稱原本在生產碼建構 `GasMix.trimix` 取 `displayName`，違反「三 App 生產碼零 `.trimix(` 建構」（PM 2026-09-15）⇒ 改用 Kit 公開的 `GasMix.percentText` 直接組字串（格式同 `displayName`；畸形比例顯示原值不夾值）。測試 +1 斷言與 `displayName` 逐字相同 ⇒ **249/0/1**；`check_trimix_boundary.sh` 通過。
