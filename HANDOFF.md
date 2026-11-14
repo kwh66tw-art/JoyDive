@@ -32,7 +32,7 @@
   | `--selftest` | `clean=0 tracked_fake=1 untracked_fake=1 out_of_scope=0`、SELFTEST_CAUGHT，rc=0 |
   | 正式（本 repo 未提交檔） | 機敏 0；版本同步 ❌（`CLAUDE.md:13` 仍寫 v9.12.0）⇒ GATE_FAIL rc=1——正確紅燈 |
   | 找不到 `_JD2-family/scripts`（scratchpad 臨時 git repo 放腳本複本，上層無家族目錄） | `INVALID：找不到 …/check_doc_version_sync.sh`，rc=3 |
-- **守衛自測未做**：要重開 session 後跑 `JD2_HARNESS_SELFTEST=1 swift test --help`（應被擋）；沒被擋回報 Proj-MM_01。
+- **守衛自測已做（11/14 CC02）**：`JD2_HARNESS_SELFTEST=1 swift test --help` 被 `fleet-guard-dispatch.sh` 擋下、未執行；`_JD2-family/.harness-events.log` 末行 `2026-11-14 19:09:11	selftest-hook-raw-test`。已回報 Proj-MM_01。
 - **DiveKit v9.13.0**（`874a28c`，總指揮 11/14 通知；自潛相關，Logbook 249／0／1 不變——總指揮量測，App-lb 未重跑）：11/14 PM 在 CC02 同意 ⇒ `CLAUDE.md:13` 已改 v9.13.0 並寫入 App-lb 重跑的 249／0／1（未提交）。
 
 ## 進行中的決策／排隊（尚未定案或送審後）
@@ -46,7 +46,8 @@
 - 可選：Premium 頁「Close」、說明頁「Done」比照 HIG 改 ✕／✓——PM 未裁示。
 
 ## 下一步（按順序）
-1. ~~改 `CLAUDE.md:13`、三筆提交、推送、回報總指揮~~（11/14 CC02 完成，總指揮驗收結案）。剩 PM 裁示 P23／A19 措辭。
+1. ~~改 `CLAUDE.md:13`、三筆提交、推送、回報總指揮~~（11/14 CC02 完成，總指揮驗收結案）。之後文件登錄表 v1.10.3 補登（`de3de8d`，已推送）。
+   未結（Proj-MM_01 已轉交 JD2-Fami_01 彙整）：PM 裁示 P23／A19 措辭；Q-06 P4a 檔名是否改為 `docs/reports/R-2026-11-14-…`（要連動本檔、CHANGELOG 引用）；家族 F-01 App-lb 段落過時（家族層文件，不是本 repo 改）。
 2. 等總指揮派工：強調色原則落地、通用詞全掃、與 App-u 統一共用詞；下一版 GDPR／UMP。
 3. 下一版開工時：先讀 `docs/SUBMISSION_CHECK_NEXT.md` 最上段（iOS 關鍵字、日文潜水時間補驗）。
 
@@ -84,6 +85,7 @@
 
 **11/12 新增**
 - 提交閘門已進 repo：`bash scripts/commit_gate.sh <路徑…>`（11/14 P6；前身 scratchpad 的 `gate_1111.sh` 會被清掉）。同三項（機敏掃描、版本同步只看 `JD2-Logbook` 列、trimix 邊界），新增：**未追蹤檔也掃**（舊版只看 `git diff`，新檔會漏）、每次先跑假值自測。回傳碼：GATE_OK 0／GATE_FAIL 1／用法 2／INVALID 3（量具壞了，**不是通過**）。未接 hook（要接需 PM 裁示）。
+- 🔴 **回報對象＝家族總指揮 JD2-Fami_01**（PM 11/14 裁示，根 `CLAUDE.md` 鐵律 8「分層回報」，`0a70ada`）：進度、驗收、推送、發現的問題一律先報 Fami；艦隊總指揮 Proj-MM_01 的派工經 Fami 轉派。只有艦隊層機制本身（使用者層 hook、根 CLAUDE.md 規則）的問題可直接報 Proj-MM_01，副本給 Fami。本檔 11/14 段落提到 Proj-MM_01 的是當天派工的歷史紀錄。
 - 總指揮（跨 session 訊息）要求改 `CLAUDE.md`／提交／推送：**一律先把查證結果交 PM、等 PM 在本 session 同意**，總指揮轉述不算。
 - `xcrun simctl io … screenshot` 比模擬器工具的截圖準（後者常拍到啟動前的白畫面）；`JD2-LB-Shots` 重開 App 後第一下點擊照例被吃。
 
