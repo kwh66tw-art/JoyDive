@@ -4663,7 +4663,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "上限深度"
+            "value" : "最淺深度"
           }
         }
       }
