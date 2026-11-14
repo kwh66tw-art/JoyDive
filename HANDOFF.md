@@ -10,7 +10,7 @@
   - ⏰ **下一版送審必提醒 PM：iOS 英文關鍵字要改成新組**（1.4 只有 macOS 換新組；`docs/SUBMISSION_CHECK_NEXT.md` 最上段）。
   - ⚠️ v1.4 送審時 App Review 備註是否已刪掉 v1.2 舊說明——**未知**，下一版建草稿時先看 ASC。
 - **版號**：1.4（5）；下次發布改 6（`CLAUDE.md`「下次發布流程」）。
-- **git**：11/14 PM 在 CC02 說「提交」⇒ 分三筆提交：翻譯 `54c3b8a`（繁中最淺深度＋截圖）、文件（本交接、`CLAUDE.md`、`CHANGELOG`、`LOCALIZATION_GUIDE`、`SUBMISSION_CHECK_NEXT`、`handoff-archive/HANDOFF_2026-11-08.md`）、P4a 證據表＋`scripts/commit_gate.sh`。**全部未推送**（含 11/12 的 `e56ed22`）；推送要 PM 另外說「push」。
+- **git**：11/14 PM 在 CC02 說「提交」⇒ 分三筆提交：翻譯 `54c3b8a`（繁中最淺深度＋截圖）、文件 `71a37e9`（本交接、`CLAUDE.md`、`CHANGELOG`、`LOCALIZATION_GUIDE`、`SUBMISSION_CHECK_NEXT`、`handoff-archive/HANDOFF_2026-11-08.md`）、P4a 證據表＋`scripts/commit_gate.sh` `b1e92c4`。PM 說「push」⇒ 已推送（`5b814e5..b1e92c4`，含 11/12 的 `e56ed22`）；Proj-MM_01 以 `ls-remote` 核對遠端＝`b1e92c4`，並獨立重跑 logbook 249／0／1 相符（Fami 記入 F-02 `52a9a8a`）。之後只有本列修正這筆提交。
 - **測試**：`run_tests.sh logbook` **249／0／1**——App-lb（CC02）11/14 以 DiveKit v9.13.0／DiveImportKit v0.9.0 重跑（`RESULT|PASS`、rc=0；唯一 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`），與總指揮 11/12（v9.12.0）量測相同。
 - **共用層**：DiveKit **v9.13.0**、DiveImportKit **v0.9.0**（11/14 `describe --tags` 核對；`CLAUDE.md:13` 11/14 經 PM 同意改 v9.13.0，未提交；`check_doc_version_sync` 未重跑）。
 
@@ -46,7 +46,7 @@
 - 可選：Premium 頁「Close」、說明頁「Done」比照 HIG 改 ✕／✓——PM 未裁示。
 
 ## 下一步（按順序）
-1. ~~改 `CLAUDE.md:13`、三筆提交~~（11/14 CC02 完成，見「目前狀態」git 列）；PM「push」⇒ 推送；推送後回報總指揮（Proj-MM_01）。
+1. ~~改 `CLAUDE.md:13`、三筆提交、推送、回報總指揮~~（11/14 CC02 完成，總指揮驗收結案）。剩 PM 裁示 P23／A19 措辭。
 2. 等總指揮派工：強調色原則落地、通用詞全掃、與 App-u 統一共用詞；下一版 GDPR／UMP。
 3. 下一版開工時：先讀 `docs/SUBMISSION_CHECK_NEXT.md` 最上段（iOS 關鍵字、日文潜水時間補驗）。
 
