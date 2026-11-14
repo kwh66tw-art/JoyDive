@@ -6,6 +6,14 @@ Format: `[vX.Y.Z] — YYYY-MM-DD`
 
 ---
 
+## [Unreleased] — 下一版（未排程）
+
+### 翻譯
+- 日文「Dive Time」ダイブタイム → **潜水時間**（PM 2026-11-12 裁示：維持漢字、省空間；總指揮通知，家族 `decisions/2026-11-12_Type6-日文術語第一參考.md` §六，F-10 術語表 ja 基準已改）。同一 App 的「Duration: %d minutes」日文本來就是「潜水時間：%d 分」，此後一致。只改 1 個值（逐鍵對 HEAD：僅此鍵變更）；iOS 模擬器日文詳細頁截圖 `docs/screenshots/2026-11-12_ja-dive-time/`（編輯頁、地圖潛點頁、macOS 未截圖）。commit `e56ed22`。
+- 繁中「Ceiling」上限深度 → **最淺深度**（PM 2026-11-12 裁示：中文「上／下」方位與數字大小易混；出處 Type3 繁中 p.13、p.16；家族 `decisions/2026-11-12_深度用詞-極限限制與最淺深度.md`，F-10 `ceiling` zh-Hant 基準已改）。只出現在剖面資訊列（`DiveAnalysisView.swift:340`）；只改 1 個值（逐鍵對 HEAD：僅此鍵）；日文シーリング、簡中减压顶未動。iOS 模擬器繁中剖面拖曳截圖 `docs/screenshots/2026-11-13_zh-Hant-ceiling/`（無減壓狀態，數值為「—」；macOS 未截圖）。commit `54c3b8a`。
+
+---
+
 ## [v1.4.0] — 2026-11-08 上架（PM 2026-11-07 送審、11/08 通知上架；iOS＋macOS 1.4（5））
 
 ### 送審收尾（2026-11-05，總指揮派工，PM 11/05 同意）

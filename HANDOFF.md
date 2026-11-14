@@ -1,30 +1,39 @@
 # HANDOFF — JD2-Logbook
 
-> 交接文件（固定檔名滾動式）。前一版：`docs/handoff-archive/HANDOFF_2026-11-07.md`（再前：`HANDOFF_2026-11-04_3.md`）。
+> 交接文件（固定檔名滾動式）。前一版：`docs/handoff-archive/HANDOFF_2026-11-08.md`（再前：`HANDOFF_2026-11-07.md`）。
 
 ## 交接時間
-2026-11-07 晚（產生方式：/handoff skill；PM 指示「先更新文件、交接」）
+2026-11-14 更新（11/12 由 /handoff skill 產生；11/14 補試行派工 P4a／P6）
 
 ## 目前狀態
-- **里程碑**：v1.4 **已上架（iOS＋macOS 1.4（5））**——PM 2026-11-07 送審、**2026-11-08 PM 通知已上架**；線上版本＝1.4（5）。
-  - ⏰ **下一版送審必提醒 PM：iOS 英文關鍵字要改成新組**——11/07 PM 只改了 macOS，iOS 1.4 送出的是 v1.3 舊組（`docs/SUBMISSION_CHECK_NEXT.md` 最上段「下一版送審前必做」）。
-  - **ASC iOS 1.4／macOS 1.4 內容（App-lb 11/07 經 Chrome 操作、PM 授權；PM 檢查後送審）**：三語截圖（iPhone 6.9 吋各 6 張、Mac 各 5 張，取代 v1.3 舊圖；舊圖仍在素材庫）、三語 What's New（`APPSTORE_COPY.md` v1.4 定稿）、建置 1.4（5）皆已存；英文關鍵字 PM 自行改——**只改到 macOS，iOS 仍是舊組**。
-  - ⚠️ App Review 備註（Notes）草稿時仍是 v1.2 退件的舊說明（"This submission addresses the two issues…"）；PM 送審前是否刪改**未知**——若被問到或下一版，先查 ASC。
-- **版號**：1.4（5），Release 產物已驗；下次發布改 6（`CLAUDE.md`「下次發布流程」）。
-- **git**：11/07 交接時的未提交／未推送項目已全部提交並推送（`4412465`，local＝origin）；線上隱私頁已更新（11/07 讀回三語）。
-- **測試**：`run_tests.sh logbook` **249／0／1**（11/07 後無程式變更）。
-- **共用層**：DiveKit **v9.8.0**、DiveImportKit **v0.8.3**（11/07 核對）。
+- **里程碑**：線上版本 **v1.4（5）iOS＋macOS**（PM 11/07 送審、11/08 通知上架）。下一版未排程。
+  - ⏰ **下一版送審必提醒 PM：iOS 英文關鍵字要改成新組**（1.4 只有 macOS 換新組；`docs/SUBMISSION_CHECK_NEXT.md` 最上段）。
+  - ⚠️ v1.4 送審時 App Review 備註是否已刪掉 v1.2 舊說明——**未知**，下一版建草稿時先看 ASC。
+- **版號**：1.4（5）；下次發布改 6（`CLAUDE.md`「下次發布流程」）。
+- **git**：11/14 PM 在 CC02 說「提交」⇒ 分三筆提交：翻譯 `54c3b8a`（繁中最淺深度＋截圖）、文件（本交接、`CLAUDE.md`、`CHANGELOG`、`LOCALIZATION_GUIDE`、`SUBMISSION_CHECK_NEXT`、`handoff-archive/HANDOFF_2026-11-08.md`）、P4a 證據表＋`scripts/commit_gate.sh`。**全部未推送**（含 11/12 的 `e56ed22`）；推送要 PM 另外說「push」。
+- **測試**：`run_tests.sh logbook` **249／0／1**——App-lb（CC02）11/14 以 DiveKit v9.13.0／DiveImportKit v0.9.0 重跑（`RESULT|PASS`、rc=0；唯一 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`），與總指揮 11/12（v9.12.0）量測相同。
+- **共用層**：DiveKit **v9.13.0**、DiveImportKit **v0.9.0**（11/14 `describe --tags` 核對；`CLAUDE.md:13` 11/14 經 PM 同意改 v9.13.0，未提交；`check_doc_version_sync` 未重跑）。
 
-## ~~未提交／未推送（11/07 交接當下）~~ ✅ 已於 `4412465` 提交並推送（保留原文供對照）
-- **未推送提交**：`39c9b1b`（TestFlight 結案）、`7a98d93`（上架截圖初版）、`f8eb4dc`（上架截圖重做）——推送要 PM 在本 session 直接同意。
-- **未提交**（等 PM「提交」）：`logbook/privacy.md`（三語：刪除無程式依據的「廣告不個人化」句、廣告段標「僅 iOS」並寫明 Mac 版不含 AdMob（Mac Release／Debug 產物 0 筆、iOS 對照 11 筆）、更新日改 11/7）；`docs/APPSTORE_COPY.md`、`docs/KEYWORDS_NEXT_DRAFT.md`（英文關鍵字 v1.4 新組）；本交接與 `SUBMISSION_CHECK_NEXT`、`KNOWN_ISSUES`、`CHANGELOG` 同步。
-- **線上隱私頁**（GitHub Pages）要推送後才會更新；ASC 隱私問卷不需改（v1.4 無新增資料收集，已逐項查證）。
+## 11/08–11/12 完成
+- 11/08 v1.4 上架：`CLAUDE.md` 狀態、`CHANGELOG` [v1.4.0]、`SUBMISSION_CHECK_NEXT`、交接同步（`231b4f7`，已推送）。
+- Kit 版號三次跟進（總指揮通知、PM 每次在本 session 同意）：v9.10.0／v0.9.0（`9573cba`）→ v9.11.0（`929cd62`）→ v9.12.0（`5b814e5`），皆已推送。App-lb 不需改程式（總指揮說明：v9.11.0 模式切換閘門、v9.12.0 自由潛水警報，Logbook 不呼叫；**App-lb 未自讀 Kit 程式碼確認**）。
+- 11/12 日文「Dive Time」ダイブタイム → 潜水時間（`e56ed22`；細節 `CHANGELOG.md` [Unreleased]）。iOS 詳細頁已截圖；編輯頁、地圖潛點頁、macOS 未看（`SUBMISSION_CHECK_NEXT` 有一列）。
+- 11/13 繁中「Ceiling」上限深度 → 最淺深度（總指揮通知、PM 同意；細節 `CHANGELOG.md` [Unreleased]）。
+- 新規則記入 `docs/LOCALIZATION_GUIDE.md`「用詞規範（日文）」：日文潛水術語以 Type6 日文原生手冊為第一參考（家族 decisions 11/12）。
 
-## 11/07 完成（細節見 `CHANGELOG.md` [v1.4.0]「送審收尾」）
-- TestFlight 覆蓋升級首次啟動 PM 實機結案；iOS／macOS 1.4（5）上傳（上傳前需同意更新的 PLA）。
-- 上架截圖重做：構圖比照 ASC v1.3，詳細頁用 PM 真實紀錄（蘭嶼母雞岩外礁，組織負荷 6 格黃）；`docs/screenshots/v1.4-appstore-*`。
-- ASC 1.4 草稿（見上）。
-- 隱私政策審查與修正（見上）；英文關鍵字網路查證後改組（證據等級＝實際用詞、非搜尋量；出處含品牌已交總指揮存家族內部）。
+## 11/14 試行派工（Proj-MM_01，決策 `_App管理/decisions/D-2026-11-14-問題分析能力試行.md`）
+- **P4a 對外宣稱稽核**（唯讀）：`docs/P4a_對外宣稱證據表_2026-11-14.md`（未提交）。50 列：相符 36／部分 5／未驗證 9／不符 0；總指揮獨立重跑驗收通過。
+  - 交 PM 裁示（未改對外文字）：**P23** 隱私政策「刪 App 即刪所有資料」未涵蓋使用者自行匯出的 JSON 備份；**A19** v1.4 What's New「依潛伴／標籤搜尋」只對匯入資料有效（手動紀錄無此欄位）。
+  - 列入 P4b（下次送審閘門化）：entitlements 不得出現 iCloud（SwiftData `cloudKitDatabase` 預設 `.automatic`，現在只因沒權限才不同步）。
+- **P6 閘門進 repo**：`scripts/commit_gate.sh`（未提交）。實測：
+  | 情境 | 結果 |
+  |---|---|
+  | 不帶參數 | 印用法，rc=2 |
+  | `--selftest` | `clean=0 tracked_fake=1 untracked_fake=1 out_of_scope=0`、SELFTEST_CAUGHT，rc=0 |
+  | 正式（本 repo 未提交檔） | 機敏 0；版本同步 ❌（`CLAUDE.md:13` 仍寫 v9.12.0）⇒ GATE_FAIL rc=1——正確紅燈 |
+  | 找不到 `_JD2-family/scripts`（scratchpad 臨時 git repo 放腳本複本，上層無家族目錄） | `INVALID：找不到 …/check_doc_version_sync.sh`，rc=3 |
+- **守衛自測未做**：要重開 session 後跑 `JD2_HARNESS_SELFTEST=1 swift test --help`（應被擋）；沒被擋回報 Proj-MM_01。
+- **DiveKit v9.13.0**（`874a28c`，總指揮 11/14 通知；自潛相關，Logbook 249／0／1 不變——總指揮量測，App-lb 未重跑）：11/14 PM 在 CC02 同意 ⇒ `CLAUDE.md:13` 已改 v9.13.0 並寫入 App-lb 重跑的 249／0／1（未提交）。
 
 ## 進行中的決策／排隊（尚未定案或送審後）
 - **送審後**：介面強調色原則落地（家族 `decisions/2026-11-05_App介面強調色使用原則.md` §四；`docs/KNOWN_ISSUES.md` 有一列）——資料數值／圖示改 `.primary`／`.secondary`、地圖未選中圖釘與選中區分、氣體標籤不用強調色；**剖面圖藍色維持**；強調色維持系統藍（品牌薄荷綠白底 2.05:1，不採用）。
@@ -37,9 +46,9 @@
 - 可選：Premium 頁「Close」、說明頁「Done」比照 HIG 改 ✕／✓——PM 未裁示。
 
 ## 下一步（按順序）
-1. ~~提交／推送~~ ✅ `4412465` 已推送。
-2. ~~PM 送審~~ ✅ 11/07 已送（iOS＋macOS）；✅ **11/08 PM 通知已上架**。**下一版送審：提醒 PM 改 iOS 英文關鍵字。**
-3. 送審後：強調色原則落地、通用詞全掃、與 App-u 統一共用詞（等總指揮派工）；下一版 GDPR／UMP。
+1. ~~改 `CLAUDE.md:13`、三筆提交~~（11/14 CC02 完成，見「目前狀態」git 列）；PM「push」⇒ 推送；推送後回報總指揮（Proj-MM_01）。
+2. 等總指揮派工：強調色原則落地、通用詞全掃、與 App-u 統一共用詞；下一版 GDPR／UMP。
+3. 下一版開工時：先讀 `docs/SUBMISSION_CHECK_NEXT.md` 最上段（iOS 關鍵字、日文潜水時間補驗）。
 
 ## 陷阱提醒（精簡；細節與真實案例見前幾版歸檔）
 **流程／閘門**
@@ -73,6 +82,11 @@
 - sheet 閉包讀到舊的 `@State` ⇒ 用 Binding 傳進子 View。
 - 測試中不得釋放 `@MainActor @Observable` 類別 ⇒ static 共用實例；測試用到 Kit 型別要 `import DiveKit`。
 
+**11/12 新增**
+- 提交閘門已進 repo：`bash scripts/commit_gate.sh <路徑…>`（11/14 P6；前身 scratchpad 的 `gate_1111.sh` 會被清掉）。同三項（機敏掃描、版本同步只看 `JD2-Logbook` 列、trimix 邊界），新增：**未追蹤檔也掃**（舊版只看 `git diff`，新檔會漏）、每次先跑假值自測。回傳碼：GATE_OK 0／GATE_FAIL 1／用法 2／INVALID 3（量具壞了，**不是通過**）。未接 hook（要接需 PM 裁示）。
+- 總指揮（跨 session 訊息）要求改 `CLAUDE.md`／提交／推送：**一律先把查證結果交 PM、等 PM 在本 session 同意**，總指揮轉述不算。
+- `xcrun simctl io … screenshot` 比模擬器工具的截圖準（後者常拍到啟動前的白畫面）；`JD2-LB-Shots` 重開 App 後第一下點擊照例被吃。
+
 **11/07 新增（上架截圖與 ASC）**
 - 上架截圖資料：`scratchpad/shot/make_stores.py`（稽核機 store 複本＋PM 正式 store 的**唯讀**複本取真實剖面，用完即刪）；正式 store「綠島石朗」是 CCR 測試檔改名（序號 01234567、水溫 4 °C），不得當真實紀錄。
 - iOS 模擬器：剖面拖曳放開後讀數與組織負荷會留著，可直接截；地圖拖曳用慢速 `touch_path`（每點 150 ms＋結尾停 800 ms）避免慣性；App 重開會回到上次的詳細頁，第一下點擊常被吃掉——每步截圖確認。
@@ -91,7 +105,7 @@
 ## 專用模擬器與測試資料（可刪）
 - iOS：`JD2-LB-Audit`（iPhone 17 Pro，105 筆＋DA／T 系列特製紀錄）、`JD2-LB-B1-SE`（SE 3，資料同稽核機；11/05 多語截圖用，store 已由備份還原、SHA 相同）、`JD2-LB-FreshInstall`、`JD2-LB-UpgradeTest`、`JD2-LB-Upgrade-v10／v12／v13`、`JD2-LB-Shots`（iPhone 17 Pro Max，11/07 上架截圖用，截圖專用資料 84 筆）。全部關機。11/05 測試時 SE 外觀曾切深色後改回淺色。
 - macOS：`~/Library/Containers/com.jd2logbook.JD2-Logbook.audit`（104 筆）。
-- 截圖：`docs/screenshots/` 下各 v1.4 資料夾；11/05 多語版面 `v1.4-L10N-layout/01`–`25`。11/07 上架截圖 `v1.4-appstore-iphone-6.9/`、`v1.4-appstore-mac-1280x800/`（三語）。
+- 截圖：`docs/screenshots/` 下各 v1.4 資料夾；11/05 多語版面 `v1.4-L10N-layout/01`–`25`。11/07 上架截圖 `v1.4-appstore-iphone-6.9/`、`v1.4-appstore-mac-1280x800/`（三語）。11/12 日文潜水時間 `2026-11-12_ja-dive-time/`（`JD2-LB-Shots`，已關機）。
 
 ## 開場指令建議（給下一個 session）
-先讀本檔與 `docs/SUBMISSION_CHECK_NEXT.md` 最上段；`git status`／`git log origin/main..HEAD` 確認是否已提交、推送；確認 Kit 版號（`git -C /Users/kevin/Documents/AppProject/_JD2-family/<Kit> describe --tags` ⇒ v9.8.0／v0.8.3）；跑 `run_tests.sh logbook` 對照 **249／0／1**；再問 PM 送審結果（審核中／被退件）或向總指揮確認送審後項目。
+先讀本檔與 `docs/SUBMISSION_CHECK_NEXT.md` 最上段；`git status`／`git log origin/main..HEAD` 確認推送狀態；`git -C /Users/kevin/Documents/AppProject/_JD2-family/<Kit> describe --tags` 對照 v9.13.0／v0.9.0（不同就是 Kit 又升了，更新 `CLAUDE.md` 要 PM 同意）；跑 `run_tests.sh logbook` 對照 **249／0／1**。

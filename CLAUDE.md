@@ -10,7 +10,7 @@
 
 - **F5 已完成（2026-07-18）**：`JD2Core/Algorithm/` 的 DiveKit-fork（`Buhlmann`／
   `DiveEngine`／`AlgorithmConstants`／`GasMix`／`DiveEnvironment` 等）已整包刪除，
-  改用統一 DiveKit 外部引用（`../../_JD2-family/DiveKit`，SPM local path、無版本鎖定；v1.3 (Build 4) 以 v9.3.0 送審，**目前 Kit 現況 v9.12.0**（v9.7.0 `environmentUntrusted`＝v1.4 D-A 已採用；v9.8.0 `implausibleEnvironment`＝F14；v1.4 以 v9.8.0 送審；`run_tests.sh logbook` 249/0/1——總指揮 2026-11-12 以 DiveKit v9.12.0／DiveImportKit v0.9.0 量測，唯一 skip＝StoreKit 價格測試），2026-10-28）。
+  改用統一 DiveKit 外部引用（`../../_JD2-family/DiveKit`，SPM local path、無版本鎖定；v1.3 (Build 4) 以 v9.3.0 送審，**目前 Kit 現況 v9.13.0**（v9.7.0 `environmentUntrusted`＝v1.4 D-A 已採用；v9.8.0 `implausibleEnvironment`＝F14；v1.4 以 v9.8.0 送審；`run_tests.sh logbook` 249/0/1——App-lb 2026-11-14 以 DiveKit v9.13.0／DiveImportKit v0.9.0 量測，唯一 skip＝StoreKit 價格測試 `PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`），2026-10-28）。
   **本 repo 已無任何演算法拷貝**。**2026-09-02修正**：本條原寫「`JD2Core/Algorithm/`
   僅留`DiveReplayEngine.swift`」——該檔已不存在，DiveKit v1.9.0（2026-08-22）把
   剖面重放引擎本體上收為`DiveReplay.swift`後，本repo已改用DiveKit的版本，
