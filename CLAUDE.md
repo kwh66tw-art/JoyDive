@@ -18,7 +18,7 @@
   本身）。發現演算法問題→回統一 DiveKit修（單一戰場），不得在本 repo 繞道；
   `SYNC_TO_JD2-ULTRA.md` 仍是 Logbook↔ultra單向記錄機制（非 DiveKit 相關問題才用）。
 - **F6/F8/B組已完成（2026-07-19）**：Importers 全部（15 種格式）搬遷至獨立的
-  `DiveImportKit`（`../../_JD2-family/DiveImportKit`，**v1.3 (Build 4) 以 v0.7.8 送審，目前 Kit 現況 v0.9.0**（v0.8.2＝F15 Subsurface XML 水面氣壓合理範圍；v0.8.3＝Diving Log 備註 RTF 轉純文字修正；v1.4 以 v0.8.3 送審；v0.9.0 於 2026-11-09 核對 tag）），本 repo 已無任何本地
+  `DiveImportKit`（`../../_JD2-family/DiveImportKit`，**v1.3 (Build 4) 以 v0.7.8 送審，目前 Kit 現況 v0.10.0**（v0.8.2＝F15 Subsurface XML 水面氣壓合理範圍；v0.8.3＝Diving Log 備註 RTF 轉純文字修正；v1.4 以 v0.8.3 送審；v0.9.0 於 2026-11-09 核對 tag；v0.10.0＝簽章納入 `algorithmInfoHiddenReasons`，App-lb 不用；總指揮 2026-11-15 重跑 `run_tests.sh logbook` 249/0/1）），本 repo 已無任何本地
   解析器/去重邏輯拷貝，只剩 `JD2Core/Importers/DiveImportKitAdapter.swift`
   （全 App 唯一 import 點）。**解析器 bug 同樣回統一 DiveImportKit 修**。
   **本地複製的 `DiveLogImportError`（`JD2Core/Importers/DiveLogImporter.swift`）
