@@ -11,8 +11,8 @@
   - ⚠️ v1.4 送審時 App Review 備註是否已刪掉 v1.2 舊說明——**未知**，下一版建草稿時先看 ASC。
 - **版號**：1.4（5）；下次發布改 6（`CLAUDE.md`「下次發布流程」）。
 - **git**：11/14 PM 在 CC02 說「提交」⇒ 分三筆提交：翻譯 `54c3b8a`（繁中最淺深度＋截圖）、文件 `71a37e9`（本交接、`CLAUDE.md`、`CHANGELOG`、`LOCALIZATION_GUIDE`、`SUBMISSION_CHECK_NEXT`、`handoff-archive/HANDOFF_2026-11-08.md`）、P4a 證據表＋`scripts/commit_gate.sh` `b1e92c4`。PM 說「push」⇒ 已推送（`5b814e5..b1e92c4`，含 11/12 的 `e56ed22`）；Proj-MM_01 以 `ls-remote` 核對遠端＝`b1e92c4`，並獨立重跑 logbook 249／0／1 相符（Fami 記入 F-02 `52a9a8a`）。之後只有本列修正這筆提交。
-- **測試**：`run_tests.sh logbook` **249／0／1**——App-lb（CC02）11/14 以 DiveKit v9.13.0／DiveImportKit v0.9.0 重跑（`RESULT|PASS`、rc=0；唯一 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`），與總指揮 11/12（v9.12.0）量測相同。
-- **共用層**：DiveKit **v9.13.0**、DiveImportKit **v0.9.0**（11/14 `describe --tags` 核對；`CLAUDE.md:13` 11/14 經 PM 同意改 v9.13.0，未提交；`check_doc_version_sync` 未重跑）。
+- **測試**：`run_tests.sh logbook` **249／0／1**——App-lb（CC02）11/15 以 DiveKit v9.14.0／DiveImportKit v0.9.0 重跑（`RESULT|PASS`、rc=0；唯一 skip＝`PurchasePriceDisplayTests.testPremiumPriceStringIsNilWhenProductNotYetLoaded`），與 11/14（v9.13.0）、總指揮 11/12（v9.12.0）量測相同。
+- **共用層**：DiveKit **v9.14.0**（`3244a7e`，11/15 打 tag，**本 session 未收到通知**，是 commit_gate 版本同步攔下才發現）、DiveImportKit **v0.9.0**（11/15 `describe --tags` 核對；`CLAUDE.md:13` 11/15 經 PM 同意改 v9.14.0）。
 
 ## 11/08–11/12 完成
 - 11/08 v1.4 上架：`CLAUDE.md` 狀態、`CHANGELOG` [v1.4.0]、`SUBMISSION_CHECK_NEXT`、交接同步（`231b4f7`，已推送）。
@@ -47,7 +47,7 @@
 
 ## 下一步（按順序）
 1. ~~改 `CLAUDE.md:13`、三筆提交、推送、回報總指揮~~（11/14 CC02 完成，總指揮驗收結案）。之後文件登錄表 v1.10.3 補登（`de3de8d`，已推送）。
-   未結（Proj-MM_01 已轉交 JD2-Fami_01 彙整）：PM 裁示 P23／A19 措辭；~~Q-06 P4a 改名~~（11/15 PM 裁示，已改為 `docs/reports/R-2026-11-14-P4a對外宣稱證據表.md`）；家族 F-01 App-lb 段落過時（家族層文件，不是本 repo 改）。
+   未結（Proj-MM_01 已轉交 JD2-Fami_01 彙整）：PM 裁示 P23／A19 措辭——**PM 11/15：下一版上架前再決定**，已列入 `docs/SUBMISSION_CHECK_NEXT.md` 最上段；~~Q-06 P4a 改名~~（11/15 PM 裁示，已改為 `docs/reports/R-2026-11-14-P4a對外宣稱證據表.md`）；家族 F-01 App-lb 段落過時（家族層文件，不是本 repo 改）。
 2. 等總指揮派工：強調色原則落地、通用詞全掃、與 App-u 統一共用詞；下一版 GDPR／UMP。
 3. 下一版開工時：先讀 `docs/SUBMISSION_CHECK_NEXT.md` 最上段（iOS 關鍵字、日文潜水時間補驗）。
 
@@ -110,4 +110,4 @@
 - 截圖：`docs/screenshots/` 下各 v1.4 資料夾；11/05 多語版面 `v1.4-L10N-layout/01`–`25`。11/07 上架截圖 `v1.4-appstore-iphone-6.9/`、`v1.4-appstore-mac-1280x800/`（三語）。11/12 日文潜水時間 `2026-11-12_ja-dive-time/`（`JD2-LB-Shots`，已關機）。
 
 ## 開場指令建議（給下一個 session）
-先讀本檔與 `docs/SUBMISSION_CHECK_NEXT.md` 最上段；`git status`／`git log origin/main..HEAD` 確認推送狀態；`git -C /Users/kevin/Documents/AppProject/_JD2-family/<Kit> describe --tags` 對照 v9.13.0／v0.9.0（不同就是 Kit 又升了，更新 `CLAUDE.md` 要 PM 同意）；跑 `run_tests.sh logbook` 對照 **249／0／1**。
+先讀本檔與 `docs/SUBMISSION_CHECK_NEXT.md` 最上段；`git status`／`git log origin/main..HEAD` 確認推送狀態；`git -C /Users/kevin/Documents/AppProject/_JD2-family/<Kit> describe --tags` 對照 v9.14.0／v0.9.0（不同就是 Kit 又升了，更新 `CLAUDE.md` 要 PM 同意）；跑 `run_tests.sh logbook` 對照 **249／0／1**。
